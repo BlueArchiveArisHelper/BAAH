@@ -1,0 +1,197 @@
+{
+    "INFO00": "不懂的看置顶视频：https://space.bilibili.com/7331920?spm_id_from=333.1007.0.0",
+    "TARGET_PORT": 16384,
+    "TARGET_EMULATOR_PATH": "D:/MuMuPlayer-12.0/shell/MuMuPlayer.exe",
+    "TIME_AFTER_CLICK": 0.5,
+    "INFO1": "课程表",
+    "TIMETABLE_TASK": [
+        [],
+        [],
+        [
+            7,
+            8
+        ],
+        [
+            7,
+            8
+        ],
+        [
+            7,
+            8
+        ],
+        [
+            7,
+            8
+        ]
+    ],
+    "INFO2": "悬赏通缉",
+    "WANTED_HIGHEST_LEVEL": [
+        [
+            [
+                1,
+                9,
+                -1
+            ]
+        ],
+        [
+            [
+                2,
+                9,
+                -1
+            ]
+        ],
+        [
+            [
+                3,
+                9,
+                -1
+            ]
+        ]
+    ],
+    "INFO3": "特殊任务",
+    "SPECIAL_HIGHTEST_LEVEL": [],
+    "INFO4": "学园交流会",
+    "EXCHANGE_HIGHEST_LEVEL": [],
+    "INFO5": "活动关卡",
+    "EVENT_QUEST_LEVEL": [
+        [
+            [
+                9,
+                -1
+            ]
+        ]
+    ],
+    "INFO6": "困难关卡",
+    "HARD": [
+        [
+            [
+                19,
+                3,
+                -1
+            ],
+            [
+                14,
+                3,
+                -1
+            ],
+            [
+                14,
+                1,
+                -1
+            ],
+            [
+                12,
+                2,
+                -1,
+                true
+            ]
+        ]
+    ],
+    "INFO7": "普通关卡",
+    "NORMAL": [],
+    "INFO8": "任务的执行顺序",
+    "TASK_ORDER": [
+        "登录游戏",
+        "登录游戏",
+        "咖啡馆"
+    ],
+    "SERVER_INFO": "服务器信息",
+    "PIC_PATH": "./DATA/assets_cn",
+    "ACTIVITY_PATH": "com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
+    "Warning": "下方内容一般无需更改",
+    "ADB_PATH": "F:/platform-tools/adb.exe",
+    "SCREENSHOT_NAME": "824edb4f.png",
+    "RESPOND_Y": 60,
+    "NEXT_CONFIG": "",
+    "TARGET_IP_PATH": "127.0.0.1",
+    "SHOP_NORMAL": [
+        [
+            1,
+            2,
+            3,
+            4
+        ],
+        [
+            1,
+            2,
+            3,
+            4
+        ]
+    ],
+    "SHOP_CONTEST": [
+        [
+            2
+        ]
+    ],
+    "TASK_ACTIVATE": [
+        true,
+        true,
+        true
+    ],
+    "SHOP_NORMAL_REFRESH_TIME": 0,
+    "SHOP_CONTEST_REFRESH_TIME": 0,
+    "LOCK_SERVER_TO_RESPOND_Y": true,
+    "CAFE_CAMERA_FULL": true,
+    "SERVER_TYPE": "CN",
+    "CLOSE_EMULATOR_BAAH": true,
+    "FANHEXIE": true,
+    "KILL_PORT_IF_EXIST": false,
+    "AUTO_EVENT_STORY_PUSH": false,
+    "GRID_SOL_PATH": "./DATA/grid_solution",
+    "PUSH_NORMAL_QUEST": 0,
+    "PUSH_HARD_QUEST": 0,
+    "PUSH_NORMAL_QUEST_LEVEL": 1,
+    "PUSH_HARD_QUEST_LEVEL": 1,
+    "EXPLORE_RAINBOW_TEAMS": true,
+    "ENABLE_MAIL_NOTI": false,
+    "CAFE_TOUCH_WAY_DIFF": true,
+    "USE_VPN": false,
+    "VPN_CONFIG": {
+        "VPN_ACTIVITY": "com.github.kr328.clash/com.github.kr328.clash.MainActivity",
+        "CLICK_AND_WAIT_LIST": [
+            [
+                [
+                    623,
+                    249
+                ],
+                3
+            ]
+        ]
+    },
+    "AUTO_PUSH_EVENT_QUEST": false,
+    "CAFE_COLLECT": true,
+    "CAFE_TOUCH": true,
+    "CAFE_INVITE": false,
+    "RAISE_ERROR_IF_CANNOT_PUSH_EVENT_QUEST": true,
+    "MAIL_USER": "89314259",
+    "MAIL_PASS": "PQQ[UEWX_LVPTT\\V",
+    "ADVANCED_EMAIL": false,
+    "SENDER_EMAIL": "",
+    "RECEIVER_EMAIL": "",
+    "MAIL_HOST": "",
+    "AUTO_ASSAULT": false,
+    "AUTO_ASSAULT_LEVEL": 4,
+    "RUN_UNTIL_TRY_TIMES": 9,
+    "RUN_UNTIL_WAIT_TIME": 0.7,
+    "ADB_DIRECT_USE_SERIAL_NUMBER": false,
+    "ADB_SEIAL_NUMBER": "emulator-5554",
+    "IS_AUTO_ASSAULT_STUDENT_HELP": false,
+    "AUTO_ASSAULT_HELP_STUDENT": "",
+    "AUTO_ASSAULT_HELP_STUDENT_IS_SUPPORT": false,
+    "ENABLE_HTTP_NOTI": false,
+    "TARGET_HTTP_URL": "",
+    "TARGET_HTTP_TOKEN": "",
+    "USE_MEMORY_IMAGE": false,
+    "SMART_TIMETABLE": true,
+    "TIMETABLE_WEIGHT_OF_REWARD": 10,
+    "TIMETABLE_WEIGHT_OF_HEART": 20,
+    "TIMETABLE_WEIGHT_OF_LOCK": 10,
+    "BUY_AP_MAX_PRICE": 30,
+    "BUY_AP_ADD_TIMES": 1,
+    "SHOP_NORMAL_SWITCH": true,
+    "SHOP_CONTEST_SWITCH": true,
+    "PRE_COMMAND": "F:/platform-tools/adb.exe -s 127.0.0.1:16384 shell am force-stop com.RoamingStar.BlueArchive",
+    "POST_COMMAND": "",
+    "CAFE_INVITE1": false,
+    "CAFE_INVITE2": false
+}
