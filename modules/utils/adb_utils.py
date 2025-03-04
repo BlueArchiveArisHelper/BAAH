@@ -180,6 +180,15 @@ def open_app(activity_path: str):
     appname = activity_path.split("/")[0]
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), 'shell', 'monkey', '-p', appname, '1'], isasync=True)
 
+
+def close_app(activity_path: str):
+    """
+    使用adb关闭app
+    """
+    package_name = activity_path.split("/")[0]
+    logging.info("{} -s {} shell am force-stop {}".format(get_config_adb_path(), getNewestSeialNumber(), package_name))
+    subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), 'shell', 'am', 'force-stop', package_name], isasync=True)
+
 # NO_NEED = "NO_NEED"
 # ERROR = "ERROR"
 # FAILED = "FAILED"

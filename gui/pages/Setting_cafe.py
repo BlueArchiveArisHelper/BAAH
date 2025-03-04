@@ -19,3 +19,5 @@ def set_cafe(config):
         
     with ui.row():
         ui.checkbox(config.get_text("cafe_invite_desc")).bind_value(config.userconfigdict, "CAFE_INVITE").bind_visibility_from(config.userconfigdict, "CAFE_TOUCH")
+        ui.checkbox(config.get_text("cafe_invite_desc1")).bind_value(config.userconfigdict, "CAFE_INVITE1").bind_visibility_from(config.userconfigdict, "CAFE_TOUCH")
+        ui.checkbox(config.get_text("cafe_invite_desc2")).bind_value(config.userconfigdict, "CAFE_INVITE2").bind_visibility_from(config.userconfigdict, "CAFE_TOUCH")

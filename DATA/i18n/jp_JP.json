@@ -105,6 +105,8 @@
     "cafe_collect_desc": "カフェでのコレクションをするかどうか",
     "cafe_touch_desc": "カフェでのなでなでをするかどうか",
     "cafe_invite_desc": "カフェでの招待をするかどうか（デフォルトは1番目／2番目のリスト）",
+    "cafe_invite_desc1": "カフェで1の招待をするかどうか",
+    "cafe_invite_desc2": "カフェで2の招待をするかどうか",
     "raise_error_if_can_not_push_event_level": "この項目をチェックすると、イベントステージが3つ星にならない場合にエラーが発生し、チェックを外すとエラーが発生しても次のタスクが実行されます",
     "config_email_advaned": "カスタムメール送信サーバー",
     "config_email_sender": "送信者のメールアドレス",

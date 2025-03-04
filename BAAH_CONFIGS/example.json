@@ -254,5 +254,7 @@
     "PRE_COMMAND": "",
     "POST_COMMAND": "",
     "SHOP_NORMAL_SWITCH": true,
-    "SHOP_CONTEST_SWITCH": true
+    "SHOP_CONTEST_SWITCH": true,
+    "CAFE_INVITE1": true,
+    "CAFE_INVITE2": true
 }

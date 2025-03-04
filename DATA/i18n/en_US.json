@@ -105,6 +105,8 @@
     "cafe_collect_desc":"Whether collect in cafe",
     "cafe_touch_desc":"Whether touch in cafe",
     "cafe_invite_desc":"Whether invite in cafe (the first or second in the invitation list)",
+    "cafe_invite_desc1":"Whether invite in cafe1",
+    "cafe_invite_desc2":"Whether invite in cafe2",
     "raise_error_if_can_not_push_event_level": "Raise error if can not push event level",
     "config_email_advaned":"Advanced Email Configuration",
     "config_email_sender":"Sender Email",

@@ -5,7 +5,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, config, ocr_area
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, config, ocr_area, close_app
 # =====
 from .Loginin import Loginin
 from .CloseInform import CloseInform
@@ -43,7 +43,9 @@ class EnterGame(Task):
      
     def on_run(self) -> None:
         Loginin().run()
+        close_app("com.android.browser")
         CloseInform().run()
+        close_app("com.android.browser")
         # 如果登入到游戏，记录资源
         self.record_resources()
         

@@ -21,16 +21,13 @@ class InClub(Task):
     
      
     def on_run(self) -> None:
-        if config.userconfigdict["SERVER_TYPE"]=="JP":
-            # 日服适配新界面
-            click((565, 669), sleeptime=3)
-            click((299, 330), sleeptime=3)
-        else:
-            self.run_until(
-                lambda: click((563, 665)),
-                lambda: Page.is_page(PageName.PAGE_CLUB),
-                sleeptime=2
-            )
+        sleep(1)
+        self.run_until(
+            lambda: self.back_to_home(),
+            lambda: Page.is_page(PageName.PAGE_HOME),
+        )
+        click((565, 669), sleeptime=10)
+        click((299, 330), sleeptime=5)
         self.run_until(
             lambda: self.back_to_home(),
             lambda: Page.is_page(PageName.PAGE_HOME),

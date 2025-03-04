@@ -37,7 +37,7 @@ class InContest(Task):
         )
         # 进入竞技场
         # 适配日服
-        if config.userconfigdict["SERVER_TYPE"] == "JP":
+        if config.userconfigdict["SERVER_TYPE"] == "JP" or config.userconfigdict["SERVER_TYPE"] == "GLOBAL":
             canincontest = self.run_until(
                 lambda: click((878, 595)),
                 lambda: Page.is_page(PageName.PAGE_CONTEST)
@@ -78,10 +78,10 @@ class InContest(Task):
             # Enter Editting Team Page
             # check whether jump option is open
             # if not, tick it
-            self.run_until(
-                lambda: click((1144, 602)),
-                lambda: match(button_pic(ButtonName.BUTTON_JUMP), returnpos=True)[2]>match(button_pic(ButtonName.BUTTON_NOT_JUMP), returnpos=True)[2]
-            )
+            # self.run_until(
+            #     lambda: click((1144, 602)),
+            #     lambda: match(button_pic(ButtonName.BUTTON_JUMP), returnpos=True)[2]>match(button_pic(ButtonName.BUTTON_NOT_JUMP), returnpos=True)[2]
+            # )
             # go fight and return to the Fight Result Popup
             # 点击战斗按钮，此时是一定有票的，但是有可能冷却还没过，所以要多次尝试，最大60s冷却
             # 这之间会不断弹出剩余时间弹窗，不过依旧能检测到战斗按钮，所以不影响

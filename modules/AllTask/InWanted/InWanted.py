@@ -43,12 +43,13 @@ class InWanted(Task):
         self.run_until(
             lambda: click((1196, 567)),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
-            sleeptime=4
+            sleeptime=5
         )
         # 进入悬赏通缉页面
         caninwanted = self.run_until(
             lambda: click((741, 440)),
             lambda: Page.is_page(PageName.PAGE_WANTED),
+            sleeptime=3
         )
         if not caninwanted:
             logging.warn({"zh_CN": "无法打开通缉页面，任务退出", "en_US": "Can't open wanted page, task quit"})

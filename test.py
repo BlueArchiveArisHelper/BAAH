@@ -35,6 +35,8 @@ from modules.AllPage.Page import Page
 from email.mime.text import MIMEText
 from email.header import Header
 from smtplib import SMTP_SSL
+from fgo import fgo_start
+from hbr import hbr_start
 
 if __name__=="__main__":
     # #sender_qq为发件人的qq号码
@@ -83,8 +85,8 @@ if __name__=="__main__":
     #     if len(response.json()['data']) != 0:
     #         print(response.json()['data'])
     
-    connect_to_device()
-    screenshot()
+    # connect_to_device()
+    # screenshot()
 
     # print(Page.is_page(PageName.PAGE_CAFE))
     # print(match(button_pic(ButtonName.BUTTON_COLLECT_GRAY)))
@@ -95,7 +97,7 @@ if __name__=="__main__":
     # res1 = match_pattern(config.userconfigdict['SCREENSHOT_NAME'], page_pic(PageName.PAGE_GRID_FIGHT),  show_result=True, auto_rotate_if_trans=False)
 
     # 比划点
-    screencut_tool()
+    # screencut_tool()
     # offset = 40
     
     
@@ -105,7 +107,9 @@ if __name__=="__main__":
     # AutoStory().run()
     
     # 获取入口activity
-    # print(get_now_running_app_entrance_activity())
+    #config.parse_user_config("CN_hard.json")
+    #print(get_now_running_app_entrance_activity())
+    hbr_start()
     
     # 推图那一套
     # FightQuest(backtopic=page_pic(PageName.PAGE_EVENT)).run()

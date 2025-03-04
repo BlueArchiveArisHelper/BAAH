@@ -162,9 +162,11 @@ def BAAH_open_target_app():
     """
     打开游戏
     """
-    if check_app_running(config.userconfigdict['ACTIVITY_PATH']):
-        logging.info({"zh_CN": "检测到游戏已经在运行", "en_US": "Detected that the game is already running"})
-        return True
+    # logging.info({"zh_CN": "先关闭游戏", "en_US": "Detected that the game is already running"})
+    # close_app(config.userconfigdict['ACTIVITY_PATH'])
+    # if check_app_running(config.userconfigdict['ACTIVITY_PATH']):
+    #     logging.info({"zh_CN": "检测到游戏已经在运行", "en_US": "Detected that the game is already running"})
+    #     return True
     for i in range(40):
         logging.info({"zh_CN": f"打开游戏{i}/30", "en_US": f"Try to open the game {i}/30"})
         open_app(config.userconfigdict['ACTIVITY_PATH'])
@@ -259,11 +261,11 @@ def BAAH_auto_quit(forcewait = False):
     """ 结束运行，如果用户没有勾选自动关闭模拟器与BAAH，等待用户按回车键 """
     # 用于GUI识别是否结束的关键字
     print("GUI_BAAH_TASK_END")
-    if forcewait or not config.userconfigdict["CLOSE_EMULATOR_BAAH"]:
-        input("Press Enter to exit/回车退出:")
-    else:
-        logging.info({"zh_CN": "10秒后自动关闭", "en_US": "Auto close in 10 seconds"})
-        sleep(10)
+    # if forcewait or not config.userconfigdict["CLOSE_EMULATOR_BAAH"]:
+    #     input("Press Enter to exit/回车退出:")
+    # else:
+    logging.info({"zh_CN": "10秒后自动关闭", "en_US": "Auto close in 10 seconds"})
+    sleep(10)
         
 def BAAH_rm_pic():
     """运行结束后，删除截图文件，内含try-except"""
