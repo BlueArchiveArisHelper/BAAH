@@ -26,6 +26,7 @@ schedule.every().day.at("09:10").do(run_task, name = "HK_touch.json")
 schedule.every().day.at("10:10").do(run_task, name = "CN_touch.json")
 schedule.every().day.at("12:15").do(run_task, name = "HK_touch.json")
 schedule.every().day.at("13:15").do(run_task, name = "CN_touch.json")
+schedule.every().day.at("14:00").do(run_task, name = "CN_getFirst.json")
 
 schedule.every().day.at("15:00").do(run_task, name = "HK_daily.json")
 schedule.every().day.at("16:00").do(run_task, name = "CN_daily.json")

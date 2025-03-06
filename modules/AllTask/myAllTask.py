@@ -19,6 +19,7 @@ task_dict= {
     "特殊任务":[InSpecial,{}],
     "学园交流会":[InExchange,{}],
     "战术大赛":[InContest, {'collect':False}],
+    "战术大赛只领奖":[InContest, {'onlyFirst':True}],
     "总力战":[AutoAssault,{}],
     "困难关卡":[InQuest, {'types':["hard"]}],
     "活动关卡":[InEvent,{}],

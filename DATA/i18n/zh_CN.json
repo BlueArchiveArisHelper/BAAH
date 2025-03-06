@@ -11,6 +11,7 @@
     "task_special":"特殊任务/委托/依赖",
     "task_exchange":"学园交流会",
     "task_contest":"战术大赛/竞技场",
+    "task_contest_only_reward":"战术大赛只领奖",
     "task_hard":"困难关卡",
     "task_event":"活动关卡",
     "task_normal":"普通关卡",

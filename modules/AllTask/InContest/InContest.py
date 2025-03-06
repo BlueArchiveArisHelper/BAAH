@@ -10,10 +10,11 @@ from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, 
 from modules.utils.log_utils import logging
 
 class InContest(Task):
-    def __init__(self, collect=True, name="InContest") -> None:
+    def __init__(self, collect=True, name="InContest", onlyFirst=False) -> None:
         super().__init__(name)
         # 是否领取奖励
         self.collect = collect
+        self.onlyFirst = onlyFirst
 
     def set_collect(self, collect :bool) -> None:
         self.collect = collect
@@ -49,6 +50,21 @@ class InContest(Task):
             )
         if not canincontest:
             logging.warning({"zh_CN": "无法打开竞技场页面，跳过任务", "en_US": "Can't open contest page, task quit"})
+            self.back_to_home()
+            return
+        # 检测是否第一名，领奖
+        if self.onlyFirst:
+            if match(popup_pic(PopupName.POPUP_CONTEST_FIRST)):
+                logging.info({"zh_CN": "符合条件，只收第一名奖励",
+                          "en_US": "Meet the conditions, only receive the first prize"})
+                self.run_until(
+                    self.collect_and_magic,
+                    lambda: match(button_pic(ButtonName.BUTTON_CONTEST_COLLECT_BOTH_GRAY)),
+                    times=4
+            )
+            else:
+                logging.info({"zh_CN": "不符合条件，退出",
+                          "en_US": "Does not meet the conditions, exit"})
             self.back_to_home()
             return
         # click the first enemy

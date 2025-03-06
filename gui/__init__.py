@@ -48,6 +48,7 @@ def show_GUI(load_jsonname, config, shared_softwareconfig):
         "特殊任务":config.get_text("task_special"),
         "学园交流会":config.get_text("task_exchange"),
         "战术大赛":config.get_text("task_contest"),
+        "战术大赛只领奖":config.get_text("task_contest_only_reward"),
         "困难关卡":config.get_text("task_hard"),
         "活动关卡":config.get_text("task_event"),
         "总力战":config.get_text("task_assault"),
