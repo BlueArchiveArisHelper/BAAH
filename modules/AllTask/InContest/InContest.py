@@ -54,7 +54,7 @@ class InContest(Task):
             return
         # 检测是否第一名，领奖
         if self.onlyFirst:
-            if match(popup_pic(PopupName.POPUP_CONTEST_FIRST)):
+            if match(popup_pic(PopupName.POPUP_CONTEST_FIRST), threshold=0.97):
                 logging.info({"zh_CN": "符合条件，只收第一名奖励",
                           "en_US": "Meet the conditions, only receive the first prize"})
                 self.run_until(
