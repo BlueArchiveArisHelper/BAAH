@@ -67,12 +67,15 @@ def set_emulator(config):
         kill_port.set_value(False)
         kill_port.set_enabled(False)
     
-    with ui.row():    
+    with ui.row():
+        ui.checkbox(config.get_text("config_physics")).bind_value(config.userconfigdict, 'CONFIG_PHYSICS').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: v)
+    
+    with ui.row().bind_visibility_from(config.userconfigdict, "CONFIG_PHYSICS", lambda v: not v):    
         ui.input(config.get_text("config_emulator_path"),
                     ).bind_value(config.userconfigdict, 'TARGET_EMULATOR_PATH',forward=lambda v: v.replace("\\", "/").replace('"','')).style('width: 400px')
     
     # 结束后自动关闭操作
-    with ui.card():
+    with ui.card().bind_visibility_from(config.userconfigdict, "CONFIG_PHYSICS", lambda v: not v):
         with ui.row():
             ui.checkbox(config.get_text("config_close_emulator_when_finish")).bind_value(config.userconfigdict, 'CLOSE_EMULATOR_FINISH')
             ui.checkbox(config.get_text("config_close_even_if_error")).bind_value(config.userconfigdict, 'CLOSE_EMULATOR_ERROR').bind_visibility_from(config.userconfigdict, "CLOSE_EMULATOR_FINISH")
@@ -88,4 +91,4 @@ def set_emulator(config):
 
     # 登录超时重启模拟器
     ui.number(config.get_text("config_login_timeout"), min=180, precision=0, step=1).bind_value(config.userconfigdict, "GAME_LOGIN_TIMEOUT", forward= lambda x: int(x)).style("width: 200px")
-    ui.number(config.get_text("config_max_emulator_restart_times"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "MAX_RESTART_EMULATOR_TIMES", forward= lambda x: int(x)).style("width: 400px")
+    ui.number(config.get_text("config_max_emulator_restart_times"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "MAX_RESTART_EMULATOR_TIMES", forward= lambda x: int(x)).style("width: 400px").bind_visibility_from(config.userconfigdict, "CONFIG_PHYSICS", lambda v: not v)

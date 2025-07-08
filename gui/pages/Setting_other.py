@@ -67,6 +67,9 @@ def set_other(config, gui_shared_config):
         ui.checkbox(config.get_text("adb_direct_use_serial")).bind_value(config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')
     
     with ui.row():
+        ui.checkbox(config.get_text("config_physics")).bind_value(config.userconfigdict, 'CONFIG_PHYSICS').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: v)
+    
+    with ui.row():
         ui.input(config.get_text("config_adb_path")).bind_value(config.userconfigdict, 'ADB_PATH',forward=lambda v: v.replace("\\", "/")).style('width: 400px')
 
     

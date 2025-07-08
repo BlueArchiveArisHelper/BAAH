@@ -204,6 +204,7 @@
     "big_update_type_api": "API",
     "big_update_type_urlget": "URLGET",
     
+    "config_physics":"If you are using shizuku/physical machine/AVD, please check this option",
 
     "status_finish": "All Tasks Completed"
 }

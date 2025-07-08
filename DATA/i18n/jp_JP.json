@@ -204,6 +204,7 @@
     "big_update_type_api": "API",
     "big_update_type_urlget": "URLGET",
 
+    "config_physics":"Shizuku/物理机/AVDを使用している場合は、この項目にチェックを入れてください。",
 
     "status_finish": "すべてのタスクが終了しました"
 }

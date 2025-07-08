@@ -34,7 +34,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
     # ============= Import =============
 
     import os
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, check_shizuku, set_dpi ,set_wm_size, reset_dpi, reset_wm_size, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN
     from modules.AllTask.myAllTask import my_AllTask
 
     def print_BAAH_info():
@@ -139,7 +139,9 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         检查adb连接
         """
         # 检查adb连接
-        disconnect_this_device()
+        # shizuku断联会假死，AVD/实体机断联会连不上，已经连接不会多出<devices>:5555的设备  --BlockHaity
+        if config.userconfigdict["CONFIG_PHYSICS"] is False:
+            disconnect_this_device()
         for i in range(1, 10):
             sleep(i)
             if check_connect():
@@ -412,6 +414,18 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 logging.error({"zh_CN": "发送邮件失败", "en_US": "Failed to send email"})
                 logging.error(eagain)
 
+    def BAAH_physical_start():
+        """物理机开头操作"""
+        if check_shizuku() is True:
+            logging.warn({"zh_CN": "检测到shizuku,Android Termux支持为实验性支持，建议使用mumu模拟器运行BAAH"})
+        set_dpi("240")
+        set_wm_size([1280, 720])
+    
+    def BAAH_physical_end():
+        """物理机结尾操作"""
+        reset_dpi()
+        reset_wm_size()
+    
     def BAAH_main(run_precommand = True):
         """
         执行BAAH主程序, 在此之前config应该已经被单独import然后解析为用户指定的配置文件->随后再导入my_AllTask以及其他依赖config的模块
@@ -424,9 +438,12 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 print_BAAH_config_info()
                 if run_precommand:
                     BAAH_run_pre_command()
-                BAAH_release_adb_port()
-                BAAH_start_emulator()
+                if config.userconfigdict["CONFIG_PHYSICS"] is False:
+                    BAAH_release_adb_port()
+                    BAAH_start_emulator()
                 BAAH_check_adb_connect()
+                if config.userconfigdict["CONFIG_PHYSICS"] is True:
+                    BAAH_physical_start()
                 BAAH_start_VPN()
                 BAAH_open_target_app()
                 
@@ -436,7 +453,10 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 logging.info({"zh_CN": "所有任务结束", "en_US": "All tasks are finished"})
                 BAAH_close_target_app()
                 BAAH_close_VPN()
-                BAAH_kill_emulator()
+                if config.userconfigdict["CONFIG_PHYSICS"] is True:
+                    BAAH_physical_end()
+                if config.userconfigdict["CONFIG_PHYSICS"] is False:
+                    BAAH_kill_emulator()
                 BAAH_send_email()
                 print_BAAH_finish()
                 BAAH_rm_pic()

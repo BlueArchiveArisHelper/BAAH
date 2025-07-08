@@ -258,7 +258,43 @@ def set_dpi(target_dpi, use_config=None):
     if isinstance(target_dpi, float):
         target_dpi = int(target_dpi)
     subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density", str(target_dpi)], isasync=True)
+
+def set_wm_size(size=[], use_config=None):
+    """
+    设置屏幕分辨率
+    """
+    if not use_config:
+        use_config = config
+    if len(size) == 0:
+        raise Exception("size is empty")
+    subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "size", f"{size[0]}x{size[1]}"], isasync=True)
     
+def reset_dpi(use_config=None):
+    """
+    重置屏幕dpi
+    """
+    if not use_config:
+        use_config = config
+    subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density", "reset"], isasync=True)
+    
+def reset_wm_size(use_config=None):
+    """
+    重置屏幕分辨率
+    """
+    if not use_config:
+        use_config = config
+    subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "size", "reset"], isasync=True)
+
+def check_shizuku(use_config=None):
+    """
+    检查shizuku是否安装
+    """
+    package_list = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "pm", "list", "packages"]).stdout()
+    if "moe.shizuku.privileged.api" in package_list:
+        return True
+    else:
+        return False
+
 def install_apk(filepath):
     status = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "install", filepath], isasync=True)
     if status.returncode != 0:

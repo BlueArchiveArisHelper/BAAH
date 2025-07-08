@@ -229,7 +229,10 @@ def check_connect():
         wm_height = sc_data.shape[0]
         wm_width = sc_data.shape[1]
         # 第一维度是高，第二维度是宽
-        if wm_height == 720 and wm_width == 1280:
+        if config.userconfigdict["CONFIG_PHYSICS"] is True:
+            logging.info({"zh_CN": "启动物理机适配，跳过分辨率检查"})
+            return True
+        elif wm_height == 720 and wm_width == 1280:
             logging.info({"zh_CN": "图片分辨率为1280*720", "en_US":"The resolution is 1280*720"})
             dpi_res = get_dpi()
             logging.info(f"DPI: {dpi_res}")

@@ -322,5 +322,22 @@
     "ARIA2_MAX_TRIES": 5,
     "ARIA2_FAILURED_WAIT_TIME": 0.5,
     "BIG_UPDATE": false,
-    "BIG_UPDATE_TYPE": "API"
+    "BIG_UPDATE_TYPE": "API",
+    "UPDATE_API_URL": "https://bluearchive-cn.com/download",
+    "CLOSE_EMULATOR_ERROR": false,
+    "CLOSE_GAME_ERROR": false,
+    "CLOSE_BAAH_ERROR": false,
+    "CLOSE_VPN": false,
+    "VPN_CLOSE_CONFIG": {
+        "VPN_ACTIVITY": "com.github.kr328.clash/com.github.kr328.clash.MainActivity",
+        "CLICK_AND_WAIT_LIST": [
+            [
+                [
+                    622,
+                    248
+                ],
+                2
+            ]
+        ]
+    }
 }
