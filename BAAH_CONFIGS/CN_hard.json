@@ -53,7 +53,7 @@
         [
             [
                 1,
-                12,
+                13,
                 -1,
                 true
             ]
@@ -75,88 +75,82 @@
     "HARD": [
         [
             [
-                19,
+                22,
                 3,
                 -1,
                 true
             ],
             [
-                9,
-                3,
+                24,
+                2,
                 -1,
                 true
-            ],
-            [
-                11,
-                2,
-                -1,
-                false
-            ],
-            [
-                8,
-                2,
-                -1,
-                false
             ],
             [
                 21,
                 3,
                 -1,
-                false
+                true
             ],
             [
                 13,
                 3,
                 -1,
-                false
+                true
             ],
             [
                 10,
                 3,
                 -1,
-                false
-            ],
-            [
-                23,
-                3,
-                -1,
-                false
+                true
             ],
             [
                 22,
                 2,
                 -1,
-                false
-            ],
-            [
-                22,
-                3,
-                -1,
-                false
+                true
             ],
             [
                 19,
                 1,
                 -1,
-                false
-            ],
-            [
-                14,
-                2,
-                -1,
-                false
-            ],
-            [
-                17,
-                2,
-                -1,
-                false
+                true
             ],
             [
                 23,
                 1,
                 -1,
-                false
+                true
+            ],
+            [
+                10,
+                1,
+                -1,
+                true
+            ],
+            [
+                6,
+                1,
+                -1,
+                true
+            ],
+            [
+                16,
+                3,
+                -1,
+                true
+            ],
+            [
+                10,
+                2,
+                -1,
+                true
+            ],
+            [
+                24,
+                3,
+                -1,
+                true
             ]
         ]
     ],
@@ -164,8 +158,8 @@
     "NORMAL": [
         [
             [
-                23,
-                4,
+                22,
+                1,
                 -1,
                 true
             ]
@@ -211,7 +205,7 @@
         true,
         true,
         false,
-        true,
+        false,
         false
     ],
     "SHOP_NORMAL_REFRESH_TIME": 0,
@@ -245,7 +239,7 @@
         ]
     },
     "AUTO_PUSH_EVENT_QUEST": false,
-    "CAFE_COLLECT": false,
+    "CAFE_COLLECT": true,
     "CAFE_TOUCH": true,
     "CAFE_INVITE": false,
     "RAISE_ERROR_IF_CANNOT_PUSH_EVENT_QUEST": true,

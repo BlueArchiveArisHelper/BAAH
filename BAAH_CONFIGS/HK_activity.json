@@ -177,7 +177,7 @@
             ]
         ]
     },
-    "AUTO_PUSH_EVENT_QUEST": false,
+    "AUTO_PUSH_EVENT_QUEST": true,
     "CAFE_COLLECT": true,
     "CAFE_TOUCH": true,
     "CAFE_INVITE": false,

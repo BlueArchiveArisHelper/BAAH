@@ -65,7 +65,7 @@
         ],
         [
             [
-                2,
+                1,
                 4,
                 -1,
                 true
@@ -73,7 +73,7 @@
         ],
         [
             [
-                3,
+                1,
                 4,
                 -1,
                 true
@@ -274,7 +274,7 @@
     "BUY_AP_MAX_PRICE": 30,
     "BUY_AP_ADD_TIMES": 1,
     "SHOP_NORMAL_SWITCH": true,
-    "SHOP_CONTEST_SWITCH": true,
+    "SHOP_CONTEST_SWITCH": false,
     "PRE_COMMAND": "F:/platform-tools/adb.exe -s 127.0.0.1:16384 shell am force-stop com.RoamingStar.BlueArchive",
     "POST_COMMAND": "",
     "CAFE_INVITE1": true,

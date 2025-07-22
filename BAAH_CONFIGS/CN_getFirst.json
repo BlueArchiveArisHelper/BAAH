@@ -79,7 +79,8 @@
     "INFO8": "任务的执行顺序",
     "TASK_ORDER": [
         "登录游戏",
-        "战术大赛只领奖"
+        "战术大赛只领奖",
+        "咖啡馆"
     ],
     "SERVER_INFO": "服务器信息",
     "PIC_PATH": "./DATA/assets_cn",
@@ -106,6 +107,7 @@
     ],
     "SHOP_CONTEST": [],
     "TASK_ACTIVATE": [
+        true,
         true,
         true
     ],
@@ -142,7 +144,7 @@
     "AUTO_PUSH_EVENT_QUEST": false,
     "CAFE_COLLECT": false,
     "CAFE_TOUCH": true,
-    "CAFE_INVITE": true,
+    "CAFE_INVITE": false,
     "RAISE_ERROR_IF_CANNOT_PUSH_EVENT_QUEST": true,
     "MAIL_USER": "",
     "MAIL_PASS": "",
@@ -173,6 +175,6 @@
     "BUY_AP_ADD_TIMES": 1,
     "PRE_COMMAND": "",
     "POST_COMMAND": "",
-    "CAFE_INVITE1": true,
-    "CAFE_INVITE2": true
+    "CAFE_INVITE1": false,
+    "CAFE_INVITE2": false
 }

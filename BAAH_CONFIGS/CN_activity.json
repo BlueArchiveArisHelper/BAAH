@@ -139,7 +139,7 @@
             ]
         ]
     },
-    "AUTO_PUSH_EVENT_QUEST": false,
+    "AUTO_PUSH_EVENT_QUEST": true,
     "CAFE_COLLECT": false,
     "CAFE_TOUCH": true,
     "CAFE_INVITE": true,
