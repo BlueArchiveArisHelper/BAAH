@@ -37,6 +37,7 @@ from email.header import Header
 from smtplib import SMTP_SSL
 from fgo import fgo_start
 from hbr import hbr_start
+from modules.AllTask.InEvent.EventStory import EventStory
 
 if __name__=="__main__":
     # #sender_qq为发件人的qq号码
@@ -109,7 +110,8 @@ if __name__=="__main__":
     # 获取入口activity
     #config.parse_user_config("CN_hard.json")
     #print(get_now_running_app_entrance_activity())
-    hbr_start()
+    # hbr_start()
+    EventStory().run()
     
     # 推图那一套
     # FightQuest(backtopic=page_pic(PageName.PAGE_EVENT)).run()

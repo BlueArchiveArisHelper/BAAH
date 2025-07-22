@@ -9,9 +9,9 @@ from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, 
 
 class TouchHead(Task):
     # 安全的可点击边界，排除了下方按钮区域
-    SAFE_X_LEFT = 1
+    SAFE_X_LEFT = 110
     SAFE_X_RIGHT = 1279
-    SAFE_Y_TOP = 74
+    SAFE_Y_TOP = 130
     SAFE_Y_BOTTOM = 598
     def __init__(self, try_touch_epoch=3, name="TouchHead") -> None:
         super().__init__(name)

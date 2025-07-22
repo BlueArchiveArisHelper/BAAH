@@ -25,7 +25,7 @@ def process_folder(folder_path):
                 convert_32_to_24(file_path)
 
 # 示例用法
-input_image_path = 'D:/BAAH3/DATA/assets_cn/POPUP/POPUP_CONTEST_FIRST.png'
+input_image_path = 'D:/BAAH3/DATA/assets/BUTTON/BUTTON_CAFE_SET_ROOM.png'
 convert_32_to_24(input_image_path)
 #folder_path = 'D:/BAAH/DATA/assets/PAGE'
 #process_folder(folder_path)

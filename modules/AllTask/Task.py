@@ -67,7 +67,7 @@ class Task:
             config.sessiondict["INFO_DICT"][self.name+"_SKIP"] = f"跳过{self.name}任务"
 
     @staticmethod
-    def back_to_home(times = 3) -> bool:
+    def back_to_home(times = 5) -> bool:
         """
         尝试从游戏内的页面返回主页
         
