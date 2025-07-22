@@ -64,14 +64,7 @@
     "EVENT_QUEST_LEVEL": [
         [
             [
-                9,
-                -1,
-                true
-            ]
-        ],
-        [
-            [
-                10,
+                12,
                 -1,
                 true
             ]
@@ -243,7 +236,7 @@
         true,
         false,
         true,
-        true,
+        false,
         true
     ],
     "SHOP_NORMAL_REFRESH_TIME": 0,

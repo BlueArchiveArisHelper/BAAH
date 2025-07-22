@@ -211,7 +211,7 @@
         true,
         true,
         true,
-        true
+        false
     ],
     "SHOP_NORMAL_REFRESH_TIME": 0,
     "SHOP_CONTEST_REFRESH_TIME": 3,
