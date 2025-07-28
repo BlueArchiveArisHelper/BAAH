@@ -345,9 +345,9 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             content.append(info_str)
             # 自定义消息
             custom_str = config.userconfigdict["CUSTOM_EMAIL"]
-            custom_str = custom_str.replace("# diamond #", config.sessiondict["BEFORE_BAAH_SOURCES"]["diamond"])
-            custom_str = custom_str.replace("# credit #", config.sessiondict["BEFORE_BAAH_SOURCES"]["credit"])
-            custom_str = custom_str.replace("# power #", config.sessiondict["BEFORE_BAAH_SOURCES"]["power"])
+            custom_str = custom_str.replace("#diamond#", config.sessiondict["BEFORE_BAAH_SOURCES"]["diamond"])
+            custom_str = custom_str.replace("#credit#", config.sessiondict["BEFORE_BAAH_SOURCES"]["credit"])
+            custom_str = custom_str.replace("#power#", config.sessiondict["BEFORE_BAAH_SOURCES"]["power"])
             content.append(custom_str)
             # 发送
             fullcontent = "\r\n".join(content)
