@@ -135,6 +135,7 @@
     "config_email_sender":"Sender Email",
     "config_email_receiver":"Receiver Email",
     "config_email_smtp":"SMTP Server",
+    "config_email_custom": "To customize the content, you can use #diamond# #credit# #power# to send diamonds, credits, and stamina.",
     "desc_assault":"The target hardness of the assault, if it is unlock, BAAH will try to unlock it",
     "config_run_until_wait_time":"Wait time in loops",
     "config_run_until_try_times":"Try times in loops",
