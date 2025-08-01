@@ -18,8 +18,17 @@ def set_notification(config, shared_softwareconfig):
                 backward= lambda x: decrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"])
                 ).style("width: 300px")
             
+            # 启用自定义消息
+            ui.checkbox(config.get_text("config_email_custom")).bind_value(config.userconfigdict, "CUSTOM_EMAIL")
+            
+            email_custom_info_text = ""
+            for email_custom_info in config.get_text("email_custom_info"):
+                email_custom_info_text = email_custom_info_text + f"{email_custom_info}<br>"
+            
+            ui.html(email_custom_info_text).bind_visibility_from(config.userconfigdict, "CUSTOM_EMAIL")
+            
             # 自定义内容
-            ui.textarea(config.get_text("config_email_custom")).bind_value(config.userconfigdict, "CUSTOM_EMAIL").style("width: 800px")
+            ui.textarea(config.get_text("config_email_custom_text")).bind_value(config.userconfigdict, "CUSTOM_EMAIL_TEXT").style("width: 800px").bind_visibility_from(config.userconfigdict, "CUSTOM_EMAIL")
             
             # 高级模式让用户自己选择邮件发送服务器
             ui.checkbox(config.get_text("config_email_advaned")).bind_value(config.userconfigdict, "ADVANCED_EMAIL")

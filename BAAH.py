@@ -290,65 +290,78 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         logging.info({"zh_CN": "尝试发送通知", "en_US": "Trying to send notification"})
         try:
-            # 构造通知对象
-            notificationer = create_notificationer()
-            # 构造邮件内容
-            content = []
-            content.append(istr({
-                CN: "BAAH任务结束",
-                EN: "BAAH Finished"
-            }))
-            content.append(istr({
-                CN: "配置文件名称: " + config.nowuserconfigname,
-                EN: "Config name: " + config.nowuserconfigname
-            }))
+            if config.userconfigdict["CUSTOM_EMAIL"] is not True:
+                # 构造通知对象
+                notificationer = create_notificationer()
+                # 构造邮件内容
+                content = []
+                content.append(istr({
+                    CN: "BAAH任务结束",
+                    EN: "BAAH Finished"
+                }))
+                content.append(istr({
+                    CN: "配置文件名称: " + config.nowuserconfigname,
+                    EN: "Config name: " + config.nowuserconfigname
+                }))
             
-            content.append(istr({
-                CN: "任务开始时间: " + config.sessiondict["BAAH_START_TIME"],
-                EN: "Task start at: " + config.sessiondict["BAAH_START_TIME"],
-            }))
-            content.append(istr({
-                CN: "开始时资源: " + str(config.sessiondict["BEFORE_BAAH_SOURCES"]),
-                EN: "Resource at start: " + str(config.sessiondict["BEFORE_BAAH_SOURCES"])
-            }))
-            content.append(istr({
-                CN: "任务结束时间: " + time.strftime("%Y-%m-%d %H:%M:%S"),
-                EN: "Task finish at: " + time.strftime("%Y-%m-%d %H:%M:%S")
-            }))
-            content.append(istr({
-                CN: "结束时资源: " + str(config.sessiondict["AFTER_BAAH_SOURCES"]),
-                EN: "Resource in the end: " + str(config.sessiondict["AFTER_BAAH_SOURCES"])
-            }))
-            content.append(istr({
-                CN: "游戏区服: " + config.userconfigdict["SERVER_TYPE"],
-                EN: "Game server: " + config.userconfigdict["SERVER_TYPE"]
-            }))
-            # 任务内容
-            content.append(istr({
-                CN: "执行的任务内容:",
-                EN: "Task completed: "
-            }))
-            tasks_str = ""
-            for ind, task in enumerate(config.userconfigdict["TASK_ORDER"]):
-                if config.userconfigdict["TASK_ACTIVATE"][ind]:
-                    tasks_str += f" -> {task}"
-            content.append(tasks_str)
-            # 其他消息
-            content.append(istr({
-                CN: "其他消息:",
-                EN: "Other messages"
-            }))
-            info_str = ""
-            # INFO_DICT 里的信息
-            for key, value in config.sessiondict["INFO_DICT"].items():
-                info_str += f"{value}\n"
-            content.append(info_str)
-            # 自定义消息
-            custom_str = config.userconfigdict["CUSTOM_EMAIL"]
-            custom_str = custom_str.replace("#diamond#", config.sessiondict["BEFORE_BAAH_SOURCES"]["diamond"])
-            custom_str = custom_str.replace("#credit#", config.sessiondict["BEFORE_BAAH_SOURCES"]["credit"])
-            custom_str = custom_str.replace("#power#", config.sessiondict["BEFORE_BAAH_SOURCES"]["power"])
-            content.append(custom_str)
+                content.append(istr({
+                    CN: "任务开始时间: " + config.sessiondict["BAAH_START_TIME"],
+                    EN: "Task start at: " + config.sessiondict["BAAH_START_TIME"],
+                }))
+                content.append(istr({
+                    CN: "开始时资源: " + str(config.sessiondict["BEFORE_BAAH_SOURCES"]),
+                    EN: "Resource at start: " + str(config.sessiondict["BEFORE_BAAH_SOURCES"])
+                }))
+                content.append(istr({
+                    CN: "任务结束时间: " + time.strftime("%Y-%m-%d %H:%M:%S"),
+                    EN: "Task finish at: " + time.strftime("%Y-%m-%d %H:%M:%S")
+                }))
+                content.append(istr({
+                    CN: "结束时资源: " + str(config.sessiondict["AFTER_BAAH_SOURCES"]),
+                    EN: "Resource in the end: " + str(config.sessiondict["AFTER_BAAH_SOURCES"])
+                }))
+                content.append(istr({
+                    CN: "游戏区服: " + config.userconfigdict["SERVER_TYPE"],
+                    EN: "Game server: " + config.userconfigdict["SERVER_TYPE"]
+                }))
+                # 任务内容
+                content.append(istr({
+                    CN: "执行的任务内容:",
+                    EN: "Task completed: "
+                }))
+                tasks_str = ""
+                for ind, task in enumerate(config.userconfigdict["TASK_ORDER"]):
+                    if config.userconfigdict["TASK_ACTIVATE"][ind]:
+                        tasks_str += f" -> {task}"
+                content.append(tasks_str)
+                # 其他消息
+                content.append(istr({
+                    CN: "其他消息:",
+                    EN: "Other messages"
+                }))
+                info_str = ""
+                # INFO_DICT 里的信息
+                for key, value in config.sessiondict["INFO_DICT"].items():
+                    info_str += f"{value}\n"
+                content.append(info_str)
+            else:
+                tasks_str = ""
+                for ind, task in enumerate(config.userconfigdict["TASK_ORDER"]):
+                    if config.userconfigdict["TASK_ACTIVATE"][ind]:
+                        tasks_str += f" -> {task}"
+                extradict = {
+                    "CONFIG_FILE_NAME": config.nowuserconfigname,
+                    "END_TIME": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "TASK": tasks_str
+                    }
+                format_str = config.userconfigdict["CUSTOM_EMAIL_TEXT"]
+                for session_key in config.userconfigdict:
+                    format_str = format_str.replace(f"%{session_key}%", str(config.sessiondict[session_key]))
+                for info_key in config.sessiondict["INFO_DICT"]:
+                    format_str = format_str.replace(f"%{info_key}%", str(config.sessiondict["INFO_DICT"][info_key]))
+                for extra_key in extradict:
+                    format_str = format_str.replace(f"%{extra_key}%", str(extradict[extra_key]))
+                content = content.append(format_str)
             # 发送
             fullcontent = "\r\n".join(content)
             notificationer.send(fullcontent, title=istr({CN: "BAAH结束", EN: "BAAH finished"}))

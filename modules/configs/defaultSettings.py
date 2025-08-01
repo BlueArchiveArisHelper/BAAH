@@ -178,7 +178,8 @@ defaultUserDict = {
     "SENDER_EMAIL":{"d":""},
     "RECEIVER_EMAIL":{"d":""},
     "MAIL_HOST":{"d":""},
-    "CUSTOM_EMAIL":{"d":""},
+    "CUSTOM_EMAIL":{"d": False},
+    "CUSTOM_EMAIL_TEXT":{"d":""},
     
     "AUTO_ASSAULT_LEVEL":{"d":4},
     

@@ -340,6 +340,6 @@
             ]
         ]
     },
-    "CUSTOM_EMAIL_CONTENT": "",
-    "CUSTOM_EMAIL": ""
+    "CUSTOM_EMAIL": false,
+    "CUSTOM_EMAIL_TEXT": ""
 }
