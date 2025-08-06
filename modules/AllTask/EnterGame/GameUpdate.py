@@ -66,8 +66,9 @@ class GameUpdate(Task):
             logging.info({"zh_CN": f"开始下载文件: {url}, 线程数: {config.userconfigdict['ARIA2_THREADS']}, 尝试次数: {aria2c_try + 1}","en_US": f"Start downloading file: {url}, thread count: {config.userconfigdict['ARIA2_THREADS']}, try count: {aria2c_try + 1}"})
             run = subprocess_run([config.userconfigdict["ARIA2_PATH"], "-c", "-x", str(config.userconfigdict["ARIA2_THREADS"]), url, "-o", filename])
             if run.returncode != 0:
-                logging.error({"zh_CN": f"下载文件失败: {url}, 错误信息: {run.stderr.decode('utf-8')}",
-                                         "en_US": f"Download file failed: {url}, error message: {run.stderr.decode('utf-8')}"})
+                output = str(run.stderr)
+                logging.error({"zh_CN": f"下载文件失败: {url}, 错误信息: {output}",
+                                         "en_US": f"Download file failed: {url}, error message: {output}"})
                 aria2c_try += 1
                 time.sleep(config.userconfigdict["ARIA2_FAILURED_WAIT_TIME"])
             else:
