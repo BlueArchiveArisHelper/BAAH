@@ -81,7 +81,7 @@ class GameUpdate(Task):
             }))
         
     def _parse_download_link(self):
-        download_info = GameUpdateInfo(apk_url = "", is_xapk = None)
+        download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
         if (config.userconfigdict['SERVER_TYPE'] == 'JP'
             or config.userconfigdict['SERVER_TYPE'] == 'GLOBAL_EN'
             or config.userconfigdict['SERVER_TYPE'] == 'GLOBAL'):
@@ -90,9 +90,14 @@ class GameUpdate(Task):
         elif config.userconfigdict['SERVER_TYPE'] == 'CN':
             download_info.is_xapk = False
             download_info.apk_url = GameUpdate.htmlread(config.userconfigdict["UPDATE_API_URL"])
-        else:
-            download_info.apk_url = GameUpdate.jsonread(config.userconfigdict["UPDATE_API_URL"])
+        elif config.userconfigdict['SERVER_TYPE'] == 'CN_BILI':
             download_info.is_xapk = False
+            download_info.apk_url = GameUpdate.jsonread(config.userconfigdict["UPDATE_API_URL"])
+        else:
+            raise Exception(istr({
+                "zh_CN": "无法获取包体更新链接，请报告给开发者",
+                "en_US": "Cannot get apk update link, please report to the developer"
+            }))
         # 之前通过链接判断有误判风险，故改为通过配置文件判断是否为xapk
         # if 'html://' in config.userconfigdict["UPDATE_API_URL"]:
         #     download_info.apk_url = GameUpdate.htmlread(config.userconfigdict["UPDATE_API_URL"])
@@ -103,13 +108,18 @@ class GameUpdate(Task):
         return download_info
 
     def _download_apk_file(self, download_info):
-        if download_info.is_xapk:
+        if download_info.is_xapk is True:
             GameUpdate.aria2_download(download_info.apk_url, os.path.join(self.download_temp_folder, "update.xapk"))
             with zipfile.ZipFile(os.path.join(self.download_temp_folder, "update.xapk"), 'r') as zip_ref:
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
                 zip_ref.extractall(os.path.join(self.download_temp_folder, "unzip"))
-        else:
+        elif download_info.is_xapk is False:
             GameUpdate.aria2_download(download_info.apk_url, os.path.join(self.download_temp_folder, "update.apk"))
+        else:
+            raise Exception(istr({
+                "zh_CN": "无法获取包体更新链接，请报告给开发者",
+                "en_US": "Cannot get apk update link, please report to the developer"
+            }))
 
     def _install_apk_file(self, download_info):
         if download_info.is_xapk:
