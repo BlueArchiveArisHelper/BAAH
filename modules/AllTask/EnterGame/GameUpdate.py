@@ -81,13 +81,25 @@ class GameUpdate(Task):
             }))
         
     def _parse_download_link(self):
-        download_info = GameUpdateInfo(apk_url = config.userconfigdict["UPDATE_API_URL"], is_xapk = True)
-        if 'html://' in config.userconfigdict["UPDATE_API_URL"]:
-            download_info.apk_url = GameUpdate.htmlread(config.userconfigdict["UPDATE_API_URL"])
+        download_info = GameUpdateInfo(apk_url = "", is_xapk = None)
+        if (config.userconfigdict['SERVER_TYPE'] == 'JP'
+            or config.userconfigdict['SERVER_TYPE'] == 'GLOBAL_EN'
+            or config.userconfigdict['SERVER_TYPE'] == 'GLOBAL'):
+            download_info.is_xapk = True
+            download_info.apk_url = config.userconfigdict["UPDATE_API_URL"]
+        elif config.userconfigdict['SERVER_TYPE'] == 'CN':
             download_info.is_xapk = False
-        elif 'json://' in config.userconfigdict["UPDATE_API_URL"]:
+            download_info.apk_url = GameUpdate.htmlread(config.userconfigdict["UPDATE_API_URL"])
+        else:
             download_info.apk_url = GameUpdate.jsonread(config.userconfigdict["UPDATE_API_URL"])
             download_info.is_xapk = False
+        # 之前通过链接判断有误判风险，故改为通过配置文件判断是否为xapk
+        # if 'html://' in config.userconfigdict["UPDATE_API_URL"]:
+        #     download_info.apk_url = GameUpdate.htmlread(config.userconfigdict["UPDATE_API_URL"])
+        #     download_info.is_xapk = False
+        # elif 'json://' in config.userconfigdict["UPDATE_API_URL"]:
+        #     download_info.apk_url = GameUpdate.jsonread(config.userconfigdict["UPDATE_API_URL"])
+        #     download_info.is_xapk = False
         return download_info
 
     def _download_apk_file(self, download_info):
