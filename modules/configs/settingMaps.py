@@ -22,7 +22,7 @@ server2url = {
     "JP":"https://baah.02000721.xyz/apk/jp",
     "GLOBAL_EN":"https://baah.02000721.xyz/apk/global",
     "GLOBAL":"https://baah.02000721.xyz/apk/global",
-    "CN":"https://bluearchive-cn.com/download",
+    "CN":"html://https://mumu.163.com/games/22367.html",
     "CN_BILI":"json://https://line1-h5-pc-api.biligame.com/game/detail/gameinfo?game_base_id=109864"
 }
 
