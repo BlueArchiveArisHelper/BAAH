@@ -261,7 +261,7 @@ def set_dpi(target_dpi, use_config=None):
     subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density", str(target_dpi)], isasync=True)
     
 def install_apk(filepath):
-    status = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "install", filepath], isasync=True)
+    status = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "install", filepath])
     if status.returncode != 0:
         raise(Exception(istr({"zh_CN": "安装失败", "en_US": "Installation failed"})))
     
