@@ -4,6 +4,7 @@ compact_log.txt
 /*.png
 /DATA/CONFIGS/software_config.json
 /DATA/mu_bak
+/DATA/tmp
 /_internal
 /BAAH.exe
 /BAAH_GUI.exe

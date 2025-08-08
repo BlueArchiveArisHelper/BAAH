@@ -204,7 +204,8 @@
     "config_big_update": "Update the game package if needed （Experimental）",
     "big_update_type": "Update type",
     "big_update_type_api": "API",
-    "big_update_type_urlget": "URLGET",
+    "big_update_type_direct_get": "Direct Get",
+    "big_update_type_direct_get_tips": "This method relies on the server to update the URL file, and there may be a delay in server updates. Please refer to https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk for details",
     
 
     "status_finish": "All Tasks Completed"

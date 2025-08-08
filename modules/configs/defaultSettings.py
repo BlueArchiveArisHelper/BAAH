@@ -46,13 +46,6 @@ defaultUserDict = {
             "map": lambda x: activity2server[x] if x in activity2server else "GLOBAL"
         }
     },
-    "UPDATE_API_URL": {
-        "d":"https://baah.02000721.xyz/apk/global",
-        "m": {
-            "from": "SERVER_TYPE",
-            "map": lambda x: server2url[x] if x in server2url else "https://baah.02000721.xyz/apk/global"
-        }
-    },
     "TARGET_EMULATOR_PATH":{"d":""},
     "CLOSE_EMULATOR_BAAH":{"d":False}, # deprecate
     "CLOSE_EMULATOR_FINISH":{
@@ -303,7 +296,9 @@ defaultUserDict = {
     
     # 大更新配置
     "BIG_UPDATE":{"d":False},
-    "BIG_UPDATE_TYPE":{"d":"API","s":["API", "URLGET"]},
+    "BIG_UPDATE_TYPE":{"d":"API","s":["API", "DIRECT_GET"]},
+    "BIG_UPDATE_API":{"d":"xiaofeiRAN",
+                                        "s": "xiaofeiRAN"},
     # 通知内容格式化字符串，%KEY%
     "CUSTOM_EMAIL":{"d":""},
 }

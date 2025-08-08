@@ -1,5 +1,5 @@
 from nicegui import ui
-from modules.configs.settingMaps import server2pic, server2activity, server2respond, server2url
+from modules.configs.settingMaps import server2pic, server2activity, server2respond
 
 def set_server(config):
     with ui.row():
@@ -20,7 +20,6 @@ def set_server(config):
         config.userconfigdict["ACTIVITY_PATH"] = server2activity[servername]
         if config.userconfigdict["LOCK_SERVER_TO_RESPOND_Y"]:
             config.userconfigdict["RESPOND_Y"] = server2respond[servername]
-        config.userconfigdict["UPDATE_API_URL"] = server2url[servername]
     
     #  大更新配置
     #  BlockHaity:没写逻辑，先隐藏
@@ -30,9 +29,11 @@ def set_server(config):
     
     ui.radio({
         "API":config.get_text("big_update_type_api"),
-#        "URLGET":config.get_text("big_update_type_urlget")
+        "DIRECT_GET":config.get_text("big_update_type_direct_get")
     },
                     value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+    
+    ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
     
     def set_big_update_type(big_update_type):
         config.userconfigdict['BIG_UPDATE_TYPE'] = big_update_type
