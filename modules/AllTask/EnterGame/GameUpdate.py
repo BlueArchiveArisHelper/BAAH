@@ -58,7 +58,9 @@ class GameUpdate(Task):
             raise Exception("url must start with html://")
         try:
             html = requests.get(url.replace("html://", "")).text
-            apk_links = re.findall(r'https://pkg.bluearchive-cn.com[^\s\'"]+?\/com.RoamingStar.BlueArchive.apk', html)
+            # apk_links = re.findall(r'https://pkg.bluearchive-cn.com[^\s\'"]+?\/com.RoamingStar.BlueArchive.apk', html)
+            # mumu网页上游变动，故修改。
+            apk_links = re.findall(r'https://mumu-apk.fp.ps.netease.com/file[^\s\'"]+?.apk', html)
             return apk_links[0]
         except Exception as e:
             logging.error(e)
