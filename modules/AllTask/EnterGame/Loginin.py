@@ -84,9 +84,9 @@ class Loginin(Task):
                 EN: "Waiting for the Bilibili login banner to disappear"
             }))
             sleep(2)
-        # else:
-        #     # 活动弹窗
-        #     click((1250, 40))
+        else:
+            # 活动弹窗
+            click((1250, 40))
      
     def on_run(self) -> None:
         self.task_start_time = time.time()
