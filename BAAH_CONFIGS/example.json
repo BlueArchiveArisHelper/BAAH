@@ -322,5 +322,25 @@
     "ARIA2_MAX_TRIES": 5,
     "ARIA2_FAILURED_WAIT_TIME": 0.5,
     "BIG_UPDATE": false,
-    "BIG_UPDATE_TYPE": "API"
+    "BIG_UPDATE_TYPE": "API",
+    "CLOSE_EMULATOR_ERROR": false,
+    "CLOSE_GAME_ERROR": false,
+    "CLOSE_BAAH_ERROR": false,
+    "CLOSE_VPN": false,
+    "VPN_CLOSE_CONFIG": {
+        "VPN_ACTIVITY": "com.github.kr328.clash/com.github.kr328.clash.MainActivity",
+        "CLICK_AND_WAIT_LIST": [
+            [
+                [
+                    622,
+                    248
+                ],
+                2
+            ]
+        ]
+    },
+    "EXAM_ALLOW_FALLBACK": true,
+    "DOWNLOADER": "aria2",
+    "BIG_UPDATE_API": "xiaofeiRAN",
+    "CUSTOM_EMAIL": ""
 }

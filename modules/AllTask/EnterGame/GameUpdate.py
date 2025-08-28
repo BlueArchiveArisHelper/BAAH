@@ -4,7 +4,7 @@ import shutil
 import time
 import os
 import zipfile
-from DownloadKit import DownloadKit
+from urllib import request
 
 import requests
 
@@ -107,12 +107,17 @@ class GameUpdate(Task):
     def DownloadKit_Download(url, name, filename):
         aria2c_try = 0
         while aria2c_try < config.userconfigdict["ARIA2_MAX_TRIES"]:
-            logging.info({"zh_CN": f"开始从{name}下载文件: , 线程数: {config.userconfigdict['ARIA2_THREADS']}, 尝试次数: {aria2c_try + 1}",
-                                    "en_US": f"Start downloading file form {name} : , thread count: {config.userconfigdict['ARIA2_THREADS']}, try count: {aria2c_try + 1}"})
+            logging.info({"zh_CN": f"开始从{name}下载文件, 尝试次数: {aria2c_try + 1}",
+                                    "en_US": f"Start downloading file form {name}, try count: {aria2c_try + 1}"})
+            name = filename.split('/')[-1]
+            path = filename.replace(name, '')
             d = DownloadKit()
-            d.roads = config.userconfigdict["ARIA2_THREADS"]
+            d.goal_path = path
+            # d.roads = config.userconfigdict["ARIA2_THREADS"]
             try:
-                d.download(url, f'{config.userconfigdict["ARIA2_PATH"]}/{filename}',file_exists='overwrite')
+                mission = d.add(url)
+                d.show()
+                d.wait(mission)
                 break
             except Exception as e:
                 output = str(e)
@@ -196,7 +201,7 @@ class GameUpdate(Task):
                     if config.userconfigdict['DOWNLOADER'] == 'aria2':
                         GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     elif config.userconfigdict['DOWNLOADER'] == 'DownloadKit':
-                        DownloadKit.download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                        GameUpdate.DownloadKit_Download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     else:
                         logging.warn(istr({
                           "zh_CN": "未知的下载器，使用aria2下载",
@@ -234,7 +239,7 @@ class GameUpdate(Task):
             if config.userconfigdict['DOWNLOADER'] == 'aria2':
                 GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             elif config.userconfigdict['DOWNLOADER'] == 'DownloadKit':
-                DownloadKit.download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+                GameUpdate.DownloadKit_Download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             else:
                 logging.warn(istr({
                     "zh_CN": "未知的下载器，使用aria2下载",
