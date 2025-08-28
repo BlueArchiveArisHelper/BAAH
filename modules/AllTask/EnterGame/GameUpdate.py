@@ -193,7 +193,16 @@ class GameUpdate(Task):
             try_download = 1
             for apk_url in download_info.apk_url:
                 try:
-                    GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    if config.userconfigdict['DOWNLOADER'] == 'aria2':
+                        GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    elif config.userconfigdict['DOWNLOADER'] == 'DownloadKit':
+                        DownloadKit.download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    else:
+                        logging.warn(istr({
+                          "zh_CN": "未知的下载器，使用aria2下载",
+                          "en_US": "Unknown downloader, use aria2 to download"
+                        }))
+                        GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     break
                 except Exception as e:
                     if try_download == len(download_info.apk_url):
@@ -222,7 +231,16 @@ class GameUpdate(Task):
             
     def _download_apk_file_direct_get(self, download_info):
         if download_info.is_xapk is True:
-            GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            if config.userconfigdict['DOWNLOADER'] == 'aria2':
+                GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            elif config.userconfigdict['DOWNLOADER'] == 'DownloadKit':
+                DownloadKit.download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            else:
+                logging.warn(istr({
+                    "zh_CN": "未知的下载器，使用aria2下载",
+                    "en_US": "Unknown downloader, use aria2 to download"
+                }))
+                GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             with zipfile.ZipFile(os.path.join(self.download_temp_folder, "update.xapk"), 'r') as zip_ref:
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
                 zip_ref.extractall(os.path.join(self.download_temp_folder, "unzip"))
