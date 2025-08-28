@@ -4,6 +4,7 @@ import shutil
 import time
 import os
 import zipfile
+from DownloadKit import DownloadKit
 
 import requests
 
@@ -102,7 +103,26 @@ class GameUpdate(Task):
             raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {aria2c_try + 1} 次, 超出最大尝试次数",
                                  "en_US": f"Download file failed from {name}, try count: {aria2c_try + 1}, exceed max try count"
             }))
-        
+    
+    def DownloadKit_Download(url, name, filename):
+        aria2c_try = 0
+        while aria2c_try < config.userconfigdict["ARIA2_MAX_TRIES"]:
+            logging.info({"zh_CN": f"开始从{name}下载文件: , 线程数: {config.userconfigdict['ARIA2_THREADS']}, 尝试次数: {aria2c_try + 1}",
+                                    "en_US": f"Start downloading file form {name} : , thread count: {config.userconfigdict['ARIA2_THREADS']}, try count: {aria2c_try + 1}"})
+            d = DownloadKit()
+            d.roads = config.userconfigdict["ARIA2_THREADS"]
+            try:
+                d.download(url, f'{config.userconfigdict["ARIA2_PATH"]}/{filename}',file_exists='overwrite')
+                break
+            except Exception as e:
+                output = str(e)
+                logging.error({"zh_CN": f"从{name}下载文件失败, 错误信息: {output}",
+                                         "en_US": f"Download file failed from {name}, error message: {output}"})
+                aria2c_try += 1
+        else:
+            raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {aria2c_try + 1} 次, 超出最大尝试次数",
+                                 "en_US": f"Download file failed from {name}, try count: {aria2c_try + 1}, exceed max try count"}))
+    
     def _parse_download_link_api(self):
         download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
         if config.userconfigdict['SERVER_TYPE'] == 'JP':
