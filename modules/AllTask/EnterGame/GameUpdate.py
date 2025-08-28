@@ -4,6 +4,7 @@ import shutil
 import time
 import os
 import zipfile
+from urllib.request import urlretrieve
 
 import requests
 
@@ -102,6 +103,25 @@ class GameUpdate(Task):
             raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {aria2c_try + 1} 次, 超出最大尝试次数",
                                  "en_US": f"Download file failed from {name}, try count: {aria2c_try + 1}, exceed max try count"
             }))
+        
+        def download_urlretrieve(url, name, filename):
+            urlretrieve_try = 0
+            while urlretrieve_try < config.userconfigdict["URLRETRIEVE_MAX_TRIES"]:
+                try:
+                    logging.info({"zh_CN": f"开始从{name}下载文件, 尝试次数: {urlretrieve_try + 1}"})
+                    logging.warn({"zh_CN": "你正在使用urlretrieve下载，此工具仅支持单线程下载。",
+                                            "en_US": "You are using urlretrieve to download, this tool only supports single-threaded download."})
+                    urlretrieve(url, filename)
+                    logging.info({"zh_CN": f"下载文件成功",
+                                           "en_US": f"Download file success"})
+                    break
+                except Exception as e:
+                    logging.error(e)
+                    aria2c_try += 1
+                    time.sleep(config.userconfigdict["ARIA2_FAILURED_WAIT_TIME"])
+            else:
+                raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {urlretrieve_try + 1} 次, 超出最大尝试次数",
+                                                  "en_US": f"Download file failed from {name}, try count: {urlretrieve_try + 1}, exceed max try count"}))
         
     def _parse_download_link_api(self):
         download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
