@@ -35,16 +35,16 @@ def set_server(config):
     
     ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
     
-    ui.label(config.get_text("big_update_download_select")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+    ui.label(config.get_text("big_update_downloader_select")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
     ui.select({
-        "aria2":config.get_text("big_update_download_select_aria2"),
-        "DownloadKit":config.get_text("big_update_download_select_downloadkit")
+        "aria2":config.get_text("downlader_aria2"),
+        "urlretrieve":config.get_text("downlader_urlretrieve")
     },
-              value=config.userconfigdict['DOWNLOADER'], on_change=lambda a : set_downloader(a.value)).bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+              value=config.userconfigdict["BIG_UPDATE_DOWNLOADER"],on_change=lambda a:set_downloader(a.value)).bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
     def set_big_update_type(big_update_type):
         config.userconfigdict['BIG_UPDATE_TYPE'] = big_update_type
     
     def set_downloader(downloader):
-        config.userconfigdict['DOWNLOADER'] = downloader
+        config.userconfigdict["BIG_UPDATE_DOWNLOADER"] = downloader

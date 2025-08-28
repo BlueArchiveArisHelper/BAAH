@@ -104,24 +104,25 @@ class GameUpdate(Task):
                                  "en_US": f"Download file failed from {name}, try count: {aria2c_try + 1}, exceed max try count"
             }))
         
-        def download_urlretrieve(url, name, filename):
-            urlretrieve_try = 0
-            while urlretrieve_try < config.userconfigdict["URLRETRIEVE_MAX_TRIES"]:
-                try:
-                    logging.info({"zh_CN": f"开始从{name}下载文件, 尝试次数: {urlretrieve_try + 1}"})
-                    logging.warn({"zh_CN": "你正在使用urlretrieve下载，此工具仅支持单线程下载。",
-                                            "en_US": "You are using urlretrieve to download, this tool only supports single-threaded download."})
-                    urlretrieve(url, filename)
-                    logging.info({"zh_CN": f"下载文件成功",
-                                           "en_US": f"Download file success"})
-                    break
-                except Exception as e:
-                    logging.error(e)
-                    aria2c_try += 1
-                    time.sleep(config.userconfigdict["ARIA2_FAILURED_WAIT_TIME"])
-            else:
-                raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {urlretrieve_try + 1} 次, 超出最大尝试次数",
-                                                  "en_US": f"Download file failed from {name}, try count: {urlretrieve_try + 1}, exceed max try count"}))
+    def urlretrieve_download(url, name, filename):
+        urlretrieve_try = 0
+        while urlretrieve_try < config.userconfigdict["URLRETRIEVE_MAX_TRIES"]:
+            try:
+                logging.info({"zh_CN": f"开始从{name}下载文件, 尝试次数: {urlretrieve_try + 1}"})
+                logging.warn({"zh_CN": "你正在使用urlretrieve下载，此工具仅支持单线程下载。",
+                                        "en_US": "You are using urlretrieve to download, this tool only supports single-threaded download."})
+                urlretrieve(url, filename)
+                logging.info({"zh_CN": f"下载文件成功",
+                                       "en_US": f"Download file success"})
+                break
+            except Exception as e:
+                logging.error({"zh_CN": f"从{name}下载文件失败, 错误信息: {e}",
+                                        "en_US": f"Download file failed from {name}, error message: {e}"})
+                aria2c_try += 1
+                time.sleep(config.userconfigdict["ARIA2_FAILURED_WAIT_TIME"])
+        else:
+            raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {urlretrieve_try + 1} 次, 超出最大尝试次数",
+                                              "en_US": f"Download file failed from {name}, try count: {urlretrieve_try + 1}, exceed max try count"}))
         
     def _parse_download_link_api(self):
         download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
@@ -193,15 +194,13 @@ class GameUpdate(Task):
             try_download = 1
             for apk_url in download_info.apk_url:
                 try:
-                    if config.userconfigdict['DOWNLOADER'] == 'aria2':
+                    if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
                         GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
-                    elif config.userconfigdict['DOWNLOADER'] == 'DownloadKit':
-                        DownloadKit.download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                        GameUpdate.urlretrieve_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     else:
-                        logging.warn(istr({
-                          "zh_CN": "未知的下载器，使用aria2下载",
-                          "en_US": "Unknown downloader, use aria2 to download"
-                        }))
+                        logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
+                        logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
                         GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     break
                 except Exception as e:
@@ -222,7 +221,14 @@ class GameUpdate(Task):
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
                 zip_ref.extractall(os.path.join(self.download_temp_folder, "unzip"))
         elif download_info.is_xapk is False:
-            GameUpdate.aria2_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
+            if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
+                GameUpdate.aria2_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
+            elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                GameUpdate.urlretrieve_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
+            else:
+                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
+                logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
+                GameUpdate.aria2_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
         else:
             raise Exception(istr({
                 "zh_CN": "无法获取包体更新链接，请报告给开发者",
@@ -231,21 +237,24 @@ class GameUpdate(Task):
             
     def _download_apk_file_direct_get(self, download_info):
         if download_info.is_xapk is True:
-            if config.userconfigdict['DOWNLOADER'] == 'aria2':
+            if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
                 GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
-            elif config.userconfigdict['DOWNLOADER'] == 'DownloadKit':
-                DownloadKit.download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                GameUpdate.urlretrieve_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             else:
-                logging.warn(istr({
-                    "zh_CN": "未知的下载器，使用aria2下载",
-                    "en_US": "Unknown downloader, use aria2 to download"
-                }))
+                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
+                logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
                 GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             with zipfile.ZipFile(os.path.join(self.download_temp_folder, "update.xapk"), 'r') as zip_ref:
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
                 zip_ref.extractall(os.path.join(self.download_temp_folder, "unzip"))
         elif download_info.is_xapk is False:
-            GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.apk"))
+            if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
+                GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.apk"))
+            elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                GameUpdate.urlretrieve_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.apk"))
+            else:
+                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
         else:
             raise Exception(istr({
                 "zh_CN": "无法获取包体更新链接，请报告给开发者",
