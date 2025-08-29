@@ -5,6 +5,10 @@ import time
 import os
 import zipfile
 from urllib.request import urlretrieve
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
+import ssl
+import socket
 
 import requests
 
@@ -53,6 +57,104 @@ class GameUpdate(Task):
     
     def pre_condition(self) -> bool:
         return True
+    
+    def get_final_url(url, timeout=10, retry_count=3):
+        """
+        获取URL重定向后的最终链接
+    
+        参数:
+            url (str): 要检查的URL
+            timeout (int): 请求超时时间(秒)
+            retry_count (int): 失败重试次数
+        
+        返回:
+            str: 最终URL或None(如果失败)
+        """
+        # 设置请求头，模拟浏览器访问
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+        }
+    
+        # 尝试多次请求
+        for attempt in range(retry_count):
+            try:
+                # 创建请求对象
+                request = Request(url, headers=headers)
+            
+                # 创建SSL上下文，用于处理HTTPS
+                context = ssl.create_default_context()
+            
+                # 打开URL，设置超时和SSL上下文
+                # urllib默认会处理重定向，不需要额外设置
+                response = urlopen(request, timeout=timeout, context=context)
+
+                # 获取最终URL和状态码
+                final_url = response.geturl()
+                status_code = response.getcode()
+               
+                logging.debug(f"请求成功，状态码: {status_code}")
+                logging.debug(f"最终URL: {final_url}")
+            
+                return final_url
+            
+            except HTTPError as e:
+                logging.debug(f"HTTP错误: {e.code} {e.reason}")
+            
+                # 对于HTTP错误，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+            
+            except URLError as e:
+                # 处理URL错误，包括DNS解析失败
+                logging.debug(f"URL错误: {e.reason}")
+            
+                # 检查是否是DNS解析错误
+                if isinstance(e.reason, socket.gaierror) and "Name or service not known" in str(e.reason):
+                    logging.debug("\n检测到DNS解析问题")
+
+                    # 对于DNS错误，不再重试
+                    return None
+                
+                # 对于其他URL错误，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+            
+            except socket.timeout as e:
+                logging.debug(f"请求超时: {e}")
+            
+                # 对于超时错误，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+            
+            except Exception as e:
+                logging.debug(f"发生错误: {e}")
+            
+                # 对于其他异常，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+
     
     def htmlread(url):
         if "html://" not in url:
@@ -197,7 +299,8 @@ class GameUpdate(Task):
                     if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
                         GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
-                        GameUpdate.urlretrieve_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                        final_url = GameUpdate.get_final_url(apk_url)
+                        GameUpdate.urlretrieve_download(final_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     else:
                         logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
                         logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
