@@ -209,6 +209,9 @@
     "big_update_type_direct_get": "直接取得",
     "big_update_type_direct_get_tips": "この方法はサーバーがURLファイルを更新することに依存しており、サーバーの更新には遅延が生じる可能性があります。詳細については https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk をご参照ください。",
 
+    "big_update_downloader_select": "ダウンロードツールの選択",
+    "downloader_aria2": "Aria2",
+    "downloader_urlretrieve": "urlretrieve (シングルスレッド、バックアップ)",
 
     "status_finish": "すべてのタスクが終了しました"
 }

@@ -209,7 +209,9 @@
     "big_update_type_direct_get": "直接获取",
     "big_update_type_direct_get_tips": "此方法依赖服务器更新URL文件，服务器更新可能会出现延迟。详情请参考 https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk",
 
-
+    "big_update_downloader_select": "下载器选择",
+    "downloader_aria2":"Aria2",
+    "downloader_urlretrieve":"urlretrieve (单线程，备用）",
 
     "status_finish":"所有任务运行结束"
 }

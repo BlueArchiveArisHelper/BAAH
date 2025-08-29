@@ -4,6 +4,11 @@ import shutil
 import time
 import os
 import zipfile
+from urllib.request import urlretrieve
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
+import ssl
+import socket
 
 import requests
 
@@ -42,7 +47,7 @@ class GameUpdate(Task):
     }
 
     direct_get_urls = [
-        "https://api.blockhaity.dpdns.org/api/baapk.json",
+        "https://api.blockhaity.qzz.io/api/baapk.json",
         "https://blockhaity-api.netlify.app/api/baapk.json"
     ]
     
@@ -52,6 +57,104 @@ class GameUpdate(Task):
     
     def pre_condition(self) -> bool:
         return True
+    
+    def get_final_url(url, timeout=10, retry_count=3):
+        """
+        获取URL重定向后的最终链接
+    
+        参数:
+            url (str): 要检查的URL
+            timeout (int): 请求超时时间(秒)
+            retry_count (int): 失败重试次数
+        
+        返回:
+            str: 最终URL或None(如果失败)
+        """
+        # 设置请求头，模拟浏览器访问
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+        }
+    
+        # 尝试多次请求
+        for attempt in range(retry_count):
+            try:
+                # 创建请求对象
+                request = Request(url, headers=headers)
+            
+                # 创建SSL上下文，用于处理HTTPS
+                context = ssl.create_default_context()
+            
+                # 打开URL，设置超时和SSL上下文
+                # urllib默认会处理重定向，不需要额外设置
+                response = urlopen(request, timeout=timeout, context=context)
+
+                # 获取最终URL和状态码
+                final_url = response.geturl()
+                status_code = response.getcode()
+               
+                logging.debug(f"请求成功，状态码: {status_code}")
+                logging.debug(f"最终URL: {final_url}")
+            
+                return final_url
+            
+            except HTTPError as e:
+                logging.debug(f"HTTP错误: {e.code} {e.reason}")
+            
+                # 对于HTTP错误，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+            
+            except URLError as e:
+                # 处理URL错误，包括DNS解析失败
+                logging.debug(f"URL错误: {e.reason}")
+            
+                # 检查是否是DNS解析错误
+                if isinstance(e.reason, socket.gaierror) and "Name or service not known" in str(e.reason):
+                    logging.debug("\n检测到DNS解析问题")
+
+                    # 对于DNS错误，不再重试
+                    return None
+                
+                # 对于其他URL错误，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+            
+            except socket.timeout as e:
+                logging.debug(f"请求超时: {e}")
+            
+                # 对于超时错误，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+            
+            except Exception as e:
+                logging.debug(f"发生错误: {e}")
+            
+                # 对于其他异常，等待一段时间后重试
+                if attempt < retry_count - 1:
+                    wait_time = 2 ** attempt  # 指数退避
+                    logging.debug(f"等待 {wait_time} 秒后重试...")
+                    time.sleep(wait_time)
+                    continue
+                
+                return None
+
     
     def htmlread(url):
         if "html://" not in url:
@@ -102,6 +205,26 @@ class GameUpdate(Task):
             raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {aria2c_try + 1} 次, 超出最大尝试次数",
                                  "en_US": f"Download file failed from {name}, try count: {aria2c_try + 1}, exceed max try count"
             }))
+        
+    def urlretrieve_download(url, name, filename):
+        urlretrieve_try = 0
+        while urlretrieve_try < config.userconfigdict["URLRETRIEVE_MAX_TRIES"]:
+            try:
+                logging.info({"zh_CN": f"开始从{name}下载文件, 尝试次数: {urlretrieve_try + 1}"})
+                logging.warn({"zh_CN": "你正在使用urlretrieve下载，此工具仅支持单线程下载。",
+                                        "en_US": "You are using urlretrieve to download, this tool only supports single-threaded download."})
+                urlretrieve(url, filename)
+                logging.info({"zh_CN": f"下载文件成功",
+                                       "en_US": f"Download file success"})
+                break
+            except Exception as e:
+                logging.error({"zh_CN": f"从{name}下载文件失败, 错误信息: {e}",
+                                        "en_US": f"Download file failed from {name}, error message: {e}"})
+                aria2c_try += 1
+                time.sleep(config.userconfigdict["ARIA2_FAILURED_WAIT_TIME"])
+        else:
+            raise Exception(istr({"zh_CN": f"从{name}下载文件失败, 尝试次数: {urlretrieve_try + 1} 次, 超出最大尝试次数",
+                                              "en_US": f"Download file failed from {name}, try count: {urlretrieve_try + 1}, exceed max try count"}))
         
     def _parse_download_link_api(self):
         download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
@@ -173,7 +296,15 @@ class GameUpdate(Task):
             try_download = 1
             for apk_url in download_info.apk_url:
                 try:
-                    GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
+                        GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                        final_url = GameUpdate.get_final_url(apk_url)
+                        GameUpdate.urlretrieve_download(final_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
+                    else:
+                        logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
+                        logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
+                        GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     break
                 except Exception as e:
                     if try_download == len(download_info.apk_url):
@@ -193,7 +324,14 @@ class GameUpdate(Task):
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
                 zip_ref.extractall(os.path.join(self.download_temp_folder, "unzip"))
         elif download_info.is_xapk is False:
-            GameUpdate.aria2_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
+            if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
+                GameUpdate.aria2_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
+            elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                GameUpdate.urlretrieve_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
+            else:
+                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
+                logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
+                GameUpdate.aria2_download(download_info.apk_url,"API", os.path.join(self.download_temp_folder, "update.apk"))
         else:
             raise Exception(istr({
                 "zh_CN": "无法获取包体更新链接，请报告给开发者",
@@ -202,12 +340,24 @@ class GameUpdate(Task):
             
     def _download_apk_file_direct_get(self, download_info):
         if download_info.is_xapk is True:
-            GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
+                GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                GameUpdate.urlretrieve_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
+            else:
+                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
+                logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
+                GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             with zipfile.ZipFile(os.path.join(self.download_temp_folder, "update.xapk"), 'r') as zip_ref:
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
                 zip_ref.extractall(os.path.join(self.download_temp_folder, "unzip"))
         elif download_info.is_xapk is False:
-            GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.apk"))
+            if config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "aria2":
+                GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.apk"))
+            elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
+                GameUpdate.urlretrieve_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.apk"))
+            else:
+                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
         else:
             raise Exception(istr({
                 "zh_CN": "无法获取包体更新链接，请报告给开发者",
