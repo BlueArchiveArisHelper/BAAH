@@ -29,12 +29,12 @@ class GameUpdate(Task):
     api_urls = {
         "JP":[
             "https://baah.hitfun.top/apk/jp",
-            "https://api.blockhaity.dpdns.org/baapk/jp",
+            "https://api.blockhaity.qzz.io/baapk/jp",
             "https://blockhaity-api.netlify.app/baapk/jp"
         ],
         "GLOBAL":[
             "https://baah.hitfun.top/apk/global",
-            "https://api.blockhaity.dpdns.org/baapk/global",
+            "https://api.blockhaity.qzz.io/baapk/global",
             "https://blockhaity-api.netlify.app/baapk/global"
         ],
         "CN":"html://https://mumu.163.com/games/22367.html",
