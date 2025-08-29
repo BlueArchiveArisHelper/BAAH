@@ -42,7 +42,7 @@ class GameUpdate(Task):
     }
 
     direct_get_urls = [
-        "https://api.blockhaity.dpdns.org/api/baapk.json",
+        "https://api.blockhaity.qzz.io/api/baapk.json",
         "https://blockhaity-api.netlify.app/api/baapk.json"
     ]
     
