@@ -38,8 +38,8 @@ def set_server(config):
     ui.label(config.get_text("big_update_downloader_select")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
     ui.select({
-        "aria2":config.get_text("downlader_aria2"),
-        "urlretrieve":config.get_text("downlader_urlretrieve")
+        "aria2":config.get_text("downloader_aria2"),
+        "urlretrieve":config.get_text("downloader_urlretrieve")
     },
               value=config.userconfigdict["BIG_UPDATE_DOWNLOADER"],on_change=lambda a:set_downloader(a.value)).bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
