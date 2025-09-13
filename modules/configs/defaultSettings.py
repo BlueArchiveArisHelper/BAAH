@@ -294,11 +294,15 @@ defaultUserDict = {
     "ARIA2_MAX_TRIES":{"d":5},
     "ARIA2_FAILURED_WAIT_TIME":{"d":0.5},
     
+    # 下载器选择
+    "DOWNLOADER":{"d":"aria2","s":{"aria2","DownloadKit"}},
+    
     # 大更新配置
     "BIG_UPDATE":{"d":False},
     "BIG_UPDATE_TYPE":{"d":"API","s":["API", "DIRECT_GET"]},
     "BIG_UPDATE_API":{"d":"xiaofeiRAN",
                                         "s": "xiaofeiRAN"},
+    "BIG_UPDATE_DOWNLOADER":{"d":"aria2","s":["aria2", "urlretrieve"]},
     # 通知内容格式化字符串，%KEY%
     "CUSTOM_EMAIL":{"d":""},
 }
