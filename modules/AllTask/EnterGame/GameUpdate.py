@@ -302,8 +302,10 @@ class GameUpdate(Task):
                         final_url = GameUpdate.get_final_url(apk_url)
                         GameUpdate.urlretrieve_download(final_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     else:
-                        logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
-                        logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
+                        logging.warn(istr({
+                            "zh_CN": "未知的下载器，使用aria2下载",
+                            "en_US": "Unknown downloader, use aria2 to download"
+                        }))
                         GameUpdate.aria2_download(apk_url, istr({"zh_CN":"API节点 ","en_US":"API Node "}) + str(try_download),os.path.join(self.download_temp_folder, "update.xapk"))
                     break
                 except Exception as e:
@@ -345,8 +347,10 @@ class GameUpdate(Task):
             elif config.userconfigdict["BIG_UPDATE_DOWNLOADER"] == "urlretrieve":
                 GameUpdate.urlretrieve_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             else:
-                logging.error({"zh_CN": "未知的下载器类型", "en_US": "Unknown downloader type"})
-                logging.info({"zh_CN": "使用aria2下载器", "en_US": "Using aria2 downloader"})
+                logging.warn(istr({
+                    "zh_CN": "未知的下载器，使用aria2下载",
+                    "en_US": "Unknown downloader, use aria2 to download"
+                }))
                 GameUpdate.aria2_download(download_info.apk_url, "DirectGet", os.path.join(self.download_temp_folder, "update.xapk"))
             with zipfile.ZipFile(os.path.join(self.download_temp_folder, "update.xapk"), 'r') as zip_ref:
                 os.mkdir(os.path.join(self.download_temp_folder, "unzip"))
