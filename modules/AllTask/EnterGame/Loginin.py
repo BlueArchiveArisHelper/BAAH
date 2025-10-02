@@ -89,7 +89,7 @@ class Loginin(Task):
         else:
             keywords = ["Google"]
             emulator_pms = {'com.mumu.store': "更新",
-                                         "com.android.internal.app.ResolverActivity": False,
+                                         "android": False,
                                          "com.android.packageinstaller": "安装"}
             # OCR点弹窗
             for i in range(3):
