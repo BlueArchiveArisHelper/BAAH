@@ -93,7 +93,7 @@ class Loginin(Task):
                                          "com.android.packageinstaller": "安装"}
             # OCR点弹窗
             for i in range(3):
-                ocr_context = ocr_area((0,0),(1280,720))[0]
+                ocr_context = ocr_area((0,0),(1280,720),multi_lines=True)[0]
                 # 针对触发模拟器游戏包体的处理
                 for emulator_pm in emulator_pms:
                     if check_app_running(emulator_pm):
