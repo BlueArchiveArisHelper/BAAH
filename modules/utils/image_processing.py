@@ -10,7 +10,7 @@ import time
 from os.path import exists
 from math import isnan
 
-ZHT = TextSystem('en')
+ZHT = TextSystem('zhs')
 
 def get_similarity(img1, img2):
     """img1: MatLike, img2: MatLike"""
