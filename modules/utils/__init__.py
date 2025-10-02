@@ -152,6 +152,24 @@ def ocr_area_0(frompixel, topixel) -> bool:
     # 长度大于1直接返回False
     return False
 
+def find_text_in_image(target_text):
+    image_mat = get_screenshot_cv_data()
+    height, width = image_mat.shape[:2]
+    results = ocr_pic_area(image_mat, 0, 0, width, height, multi_lines=True)
+    
+    return_context = []
+    for text, confidence, position in results:
+        if target_text in text:
+            return_context.append({
+                "text": text,
+                "confidence": confidence,
+                "position": position  # 包含左上角和右下角坐标
+            })
+    if len(return_context) == 0:
+        return None
+    else:
+        return return_context
+    
 def match_pixel(xy, color, printit = False):
     """
         match whether the pixel is the given color

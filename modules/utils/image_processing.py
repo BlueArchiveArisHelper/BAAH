@@ -211,6 +211,23 @@ def ocr_pic_area(image_mat, fromx, fromy, tox, toy, multi_lines = False):
             # 图像识别多行
             resstring_list = ZHT.detect_and_ocr(rawImage)
             return [[replace_mis(res.ocr_text), res.score if not isnan(res.score) else 0, [local2global_pos(res.box[0]), local2global_pos(res.box[2])]] for res in resstring_list]
+
+def find_text_in_image_pic(image_mat, target_text):
+    height, width = image_mat.shape[:2]
+    results = ocr_pic_area(image_mat, 0, 0, width, height, multi_lines=True)
+    
+    return_context = []
+    for text, confidence, position in results:
+        if target_text in text:
+            return_context.append({
+                "text": text,
+                "confidence": confidence,
+                "position": position  # 包含左上角和右下角坐标
+            })
+    if len(return_context) == 0:
+        return None
+    else:
+        return return_context
     
 def match_pixel_color_range(image_mat, x, y, low_range, high_range, printit = False):
     """

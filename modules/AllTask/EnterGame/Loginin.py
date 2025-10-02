@@ -9,7 +9,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils.log_utils import logging
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel
+from modules.utils import click, find_text_in_image, ocr_area, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel
 
 from modules.AllTask.EnterGame.GameUpdate import GameUpdate
 
@@ -51,6 +51,8 @@ class Loginin(Task):
             sleep(2)
             screenshot()
 
+        #等个几秒，模拟器反应比较迟钝，弹出更新弹窗点击一下就爆了
+        sleep(5)
             # 大更新
         if match(popup_pic(PopupName.POPUP_UPDATE_APP)):
             if config.userconfigdict["BIG_UPDATE"]:
@@ -85,8 +87,37 @@ class Loginin(Task):
             }))
             sleep(2)
         else:
+            keywords = ["Google"]
+            emulator_pms = {'com.mumu.store': "更新",
+                                         "com.android.internal.app.ResolverActivity": False,
+                                         "com.android.packageinstaller": "安装"}
+            # OCR点弹窗
+            for i in range(3):
+                ocr_context = ocr_area((0,0),(1280,720))[0]
+                # 针对触发模拟器游戏包体的处理
+                for emulator_pm in emulator_pms:
+                    if check_app_running(emulator_pm):
+                        logging.info(istr({
+                            CN: "触发模拟器软件包体安装流程，开始安装",
+                            EN: "Triggered the emulator software package installation process, start installing"
+                        }))
+                        if emulator_pms[emulator_pm] is False:
+                            raise Exception(istr({
+                                CN: "触发浏览器选择器，请手动安装",
+                                EN: "Triggered browser selector, please install manually"
+                            }))
+                        elif isinstance(emulator_pms[emulator_pm], str):
+                            position = find_text_in_image(emulator_pms[emulator_pm])
+                            # 取最后一个匹配到的坐标，并且取中间点用于点击
+                            position = position[len(position) - 1]["position"]
+                            coord = (position[0][0]/2 + position[1][0]/2, position[1][0]/2 + position[0][1]/2)
+                            click(coord)
+                for keyword in keywords:
+                    if keyword in ocr_context:
+                        # 点掉弹窗
+                        click((1250, 40))
             # 活动弹窗
-            click((1250, 40))
+            # click((1250, 40))
      
     def on_run(self) -> None:
         self.task_start_time = time.time()
