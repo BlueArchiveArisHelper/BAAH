@@ -213,8 +213,7 @@ def ocr_pic_area(image_mat, fromx, fromy, tox, toy, multi_lines = False):
             return [[replace_mis(res.ocr_text), res.score if not isnan(res.score) else 0, [local2global_pos(res.box[0]), local2global_pos(res.box[2])]] for res in resstring_list]
 
 def find_text_in_image_pic(image_mat, target_text):
-    height, width = image_mat.shape[:2]
-    results = ocr_pic_area(image_mat, 0, 0, width, height, multi_lines=True)
+    results = ocr_pic_area(image_mat, 0, 0, 1280, 720, multi_lines=True)
     
     return_context = []
     for text, confidence, position in results:

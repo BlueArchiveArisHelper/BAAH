@@ -154,8 +154,7 @@ def ocr_area_0(frompixel, topixel) -> bool:
 
 def find_text_in_image(target_text):
     image_mat = get_screenshot_cv_data()
-    height, width = image_mat.shape[:2]
-    results = ocr_pic_area(image_mat, 0, 0, width, height, multi_lines=True)
+    results = ocr_pic_area(image_mat, 0, 0, 1280, 720, multi_lines=True)
     
     return_context = []
     for text, confidence, position in results:
