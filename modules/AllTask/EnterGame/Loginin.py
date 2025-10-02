@@ -114,6 +114,10 @@ class Loginin(Task):
                             click(coord)
                 for keyword in keywords:
                     if keyword in ocr_context:
+                        logging.info(istr({
+                            CN: f"检测到关键字{keyword}",
+                            EN: f"Detected keyword {keyword}"
+                        }))
                         # 点掉弹窗
                         click((1250, 40))
             # 活动弹窗
