@@ -24,6 +24,8 @@ class Loginin(Task):
         # 如果在安装器页面的话，要识别并点击安装新版本按钮
         self.installer_activities = ["com.mumu.store", "com.android.packageinstaller"]
         self.installer_texts = ["更新", "安装", "启动", "打开", "完成"]
+        # 识别关键字用于跳过一些弹窗，如Google框架提示
+        self.click_keywords = [ 'Google' ]
 
      
     def pre_condition(self) -> bool:
@@ -107,6 +109,10 @@ class Loginin(Task):
             # 第一次点击让游戏开始加载
             # 检测游戏加载前左下角的菜单字样
             click((1250, 40))
+        else:
+            for keyword in self.click_keywords:
+                if ocr_area([0, 0], [width, height], ocr_lang = OCR_LANG.ZHS) == keyword:
+                    click((1250, 40))
      
     def on_run(self) -> None:
         self.task_start_time = time.time()
