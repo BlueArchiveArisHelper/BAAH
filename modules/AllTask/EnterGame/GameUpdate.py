@@ -38,7 +38,7 @@ class GameUpdate(Task):
             "https://blockhaity-api.netlify.app/baapk/global"
         ],
         # "CN":"html://https://mumu.163.com/games/22367.html",
-        "CN":"request://https://github.com/BlockHaity/api/blob/main/api.py",
+        "CN":"request://https://gsqc-api.bluearchive-cn.com/api/state",
         "CN_BILI": "json://https://line1-h5-pc-api.biligame.com/game/detail/gameinfo?game_base_id=109864"
     }
 
