@@ -37,7 +37,8 @@ class GameUpdate(Task):
             "https://api.blockhaity.qzz.io/baapk/global",
             "https://blockhaity-api.netlify.app/baapk/global"
         ],
-        "CN":"html://https://mumu.163.com/games/22367.html",
+        # "CN":"html://https://mumu.163.com/games/22367.html",
+        "CN":"request://https://gsqc-api.bluearchive-cn.com/api/state",
         "CN_BILI": "json://https://line1-h5-pc-api.biligame.com/game/detail/gameinfo?game_base_id=109864"
     }
 
@@ -53,18 +54,19 @@ class GameUpdate(Task):
     def pre_condition(self) -> bool:
         return True
     
-    def htmlread(url):
-        if "html://" not in url:
-            raise Exception("url must start with html://")
-        try:
-            html = requests.get(url.replace("html://", "")).text
-            # apk_links = re.findall(r'https://pkg.bluearchive-cn.com[^\s\'"]+?\/com.RoamingStar.BlueArchive.apk', html)
-            # mumu网页上游变动，故修改。
-            apk_links = re.findall(r'https://mumu-apk.fp.ps.netease.com/file[^\s\'"]+?.apk', html)
-            return apk_links[0]
-        except Exception as e:
-            logging.error(e)
-            return None
+    
+    # def htmlread(url):
+    #     if "html://" not in url:
+    #         raise Exception("url must start with html://")
+    #     try:
+    #         html = requests.get(url.replace("html://", "")).text
+    #         # apk_links = re.findall(r'https://pkg.bluearchive-cn.com[^\s\'"]+?\/com.RoamingStar.BlueArchive.apk', html)
+    #         # mumu网页上游变动，故修改。
+    #         apk_links = re.findall(r'https://mumu-apk.fp.ps.netease.com/file[^\s\'"]+?.apk', html)
+    #         return apk_links[0]
+    #     except Exception as e:
+    #         logging.error(e)
+    #         return None
     
     def jsonread(url):
         """
@@ -81,6 +83,24 @@ class GameUpdate(Task):
             logging.error(e)
             return None
     
+    def requestread(url):
+        """
+        直接从国服的更新api里获取下载链接
+        """
+        if "request://" not in url:
+            return Exception("url must start with request://")
+        try:
+            headers = {
+                "APP-VER": "1.8.2",
+                "PLATFORM-ID": "1",
+                "CHANNEL-ID": "1"
+                }
+            url = url.replace("request://", "")
+            conetxt = requests.get(url, headers=headers).text
+            return json.loads(conetxt)['Msg']
+        except Exception as e:
+            logging.error(e)
+            return None
     
     def aria2_download(url, name, filename):
         aria2c_try = 0
@@ -114,7 +134,8 @@ class GameUpdate(Task):
             download_info.apk_url = GameUpdate.api_urls['GLOBAL']
         elif config.userconfigdict['SERVER_TYPE'] == 'CN':
             download_info.is_xapk = False
-            download_info.apk_url = GameUpdate.htmlread(GameUpdate.api_urls['CN'])
+            # download_info.apk_url = GameUpdate.htmlread(GameUpdate.api_urls['CN'])
+            download_info.apk_url = GameUpdate.requestread(GameUpdate.api_urls['CN'])
         elif config.userconfigdict['SERVER_TYPE'] == 'CN_BILI':
             download_info.is_xapk = False
             download_info.apk_url = GameUpdate.jsonread(GameUpdate.api_urls['CN_BILI'])

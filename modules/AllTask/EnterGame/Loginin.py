@@ -24,6 +24,8 @@ class Loginin(Task):
         # 如果在安装器页面的话，要识别并点击安装新版本按钮
         self.installer_activities = ["com.mumu.store", "com.android.packageinstaller"]
         self.installer_texts = ["更新", "安装", "启动", "打开", "完成"]
+        # 识别关键字用于跳过一些弹窗，如Google框架提示
+        self.click_keywords = [ 'Google' ]
 
      
     def pre_condition(self) -> bool:
@@ -49,6 +51,10 @@ class Loginin(Task):
                     CN: "模拟器卡顿，重启模拟器",
                     EN: "Emulator blocked, try to restart emulator"
                 }))
+        # 检测屏幕上是否有关键词，有则点击
+        for keyword in self.click_keywords:
+            if ocr_area([0, 0], [width, height], ocr_lang = OCR_LANG.ZHS) == keyword:
+                click((1250, 40))
         # 如果进入安装器页面
         if any([check_app_running(ins_act) for ins_act in self.installer_activities]):
             # 中心区域识别所有安装字样点击
