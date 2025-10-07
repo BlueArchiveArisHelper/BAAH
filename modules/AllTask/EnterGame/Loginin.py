@@ -56,7 +56,7 @@ class Loginin(Task):
         if self.login_finish:
             click((1250, 40))
         # 如果进入安装器页面
-        elif any([check_app_running(ins_act) for ins_act in self.installer_activities]):
+        if any([check_app_running(ins_act) for ins_act in self.installer_activities]):
             # 中心区域识别所有安装字样点击
             ocr_list = ocr_area((312, 250), (967, 719), multi_lines=True, ocr_lang=OCR_LANG.ZHS)
             ocr_list = list(filter(lambda text: any([ins_text == text[0] for ins_text in self.installer_texts]), ocr_list))
