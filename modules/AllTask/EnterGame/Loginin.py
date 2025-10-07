@@ -26,7 +26,8 @@ class Loginin(Task):
         self.installer_texts = ["更新", "安装", "启动", "打开"]
         # 识别关键字用于跳过一些弹窗，如Google框架提示，判断时会把ocr内容转小写
         self.click_keywords = [ 'google' ]
-
+        # 检测是否已经登陆（出现Menu
+        self.login_finish = False
      
     def pre_condition(self) -> bool:
         if(self.post_condition()):
@@ -51,8 +52,11 @@ class Loginin(Task):
                     CN: "模拟器卡顿，重启模拟器",
                     EN: "Emulator blocked, try to restart emulator"
                 }))
+        # 已经登陆了，就近似恢复之前的逻辑，每隔一段时间点一下
+        if self.login_finish:
+            click((1250, 40))
         # 如果进入安装器页面
-        if any([check_app_running(ins_act) for ins_act in self.installer_activities]):
+        elif any([check_app_running(ins_act) for ins_act in self.installer_activities]):
             # 中心区域识别所有安装字样点击
             ocr_list = ocr_area((312, 250), (967, 719), multi_lines=True, ocr_lang=OCR_LANG.ZHS)
             ocr_list = list(filter(lambda text: any([ins_text == text[0] for ins_text in self.installer_texts]), ocr_list))
@@ -109,6 +113,7 @@ class Loginin(Task):
             # 第一次点击让游戏开始加载
             # 检测游戏加载前左下角的菜单字样
             click((1250, 40))
+            self.login_finish = True
         elif any([click_word in ocr_area([300, 251], [900, 325])[0].strip().lower() for click_word in self.click_keywords]):
             # 识别到一些关键字弹窗后点击空白处关闭这个弹窗
             click((1250, 40))
