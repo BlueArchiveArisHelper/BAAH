@@ -52,9 +52,6 @@ class Loginin(Task):
                     CN: "模拟器卡顿，重启模拟器",
                     EN: "Emulator blocked, try to restart emulator"
                 }))
-        # 已经登陆了，就近似恢复之前的逻辑，每隔一段时间点一下
-        if self.login_finish:
-            click((1250, 40))
         # 如果进入安装器页面
         if any([check_app_running(ins_act) for ins_act in self.installer_activities]):
             # 中心区域识别所有安装字样点击
@@ -116,6 +113,9 @@ class Loginin(Task):
             self.login_finish = True
         elif any([click_word in ocr_area([300, 251], [900, 325])[0].strip().lower() for click_word in self.click_keywords]):
             # 识别到一些关键字弹窗后点击空白处关闭这个弹窗
+            click((1250, 40))
+        # 已经登陆了，就近似恢复之前的逻辑，每隔一段时间点一下
+        elif self.login_finish:
             click((1250, 40))
      
     def on_run(self) -> None:
