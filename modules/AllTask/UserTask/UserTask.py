@@ -11,6 +11,9 @@ from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, 
 from modules.utils.log_utils import logging
 
 class UserTask(Task):
+    """
+    执行用户自定义任务，当自定义任务执行失败时，尝试返回游戏主页
+    """
     def __init__(self, name="UserTask") -> None:
         super().__init__(name)
 

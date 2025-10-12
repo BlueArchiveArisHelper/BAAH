@@ -10,6 +10,9 @@ from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, 
 from modules.utils.log_utils import logging
 
 class ExecCode(Task):
+    """
+    使用exec执行自定义代码
+    """
     def __init__(self, content, name="ExecCode") -> None:
         super().__init__(name)
         self.content = content
