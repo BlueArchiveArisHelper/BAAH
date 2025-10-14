@@ -1,10 +1,15 @@
-# 字符串列表 与 模拟器操作的 映射转换
-import time
-import enum
 import random
 import secrets
 import string
-from modules.utils import *
+import enum
+
+# ParamsObj, [SubActionMainObj, SubPreJudgeObj], FlowActionObj, FlowActionGroup
+# 中括号包裹的是有预定义模板的，这些模板使得用户在GUI里能选择预定义的比较/操作
+# 无包裹的类都是动态创建的实例类
+
+# 映射集合
+action_id2obj = {}
+prejudge_id2obj = {}
 
 def generate_secure_random_string(length=5):
     characters = string.ascii_letters + string.digits
@@ -56,6 +61,7 @@ class ParamsObj:
             # 'param_type': self.param_type.value if self.param_type else None,
             'p_v': self.param_value
         }
+    
 
 # ============操作内容对象，需要注意预定义种类和复用问题================
 # 用户勾选选择添加新的操作内容：默认显示action_id2obj里所有的GUI key作为头，当用户选择某个GUI key后，找到对应的SubActionMainObj实例，调用return_copy()返回一个新的对象，在GUI里进行修改
@@ -109,52 +115,9 @@ class SubActionMainObj:
         param_values = [param.param_value for param in self.action_params]
         return self.action_func(*param_values)
 
+
 # 只有action_id_name, action_params需要从json文件中读取修改，其他参数使用预定义的实例里的
-# SubActionMainObj实例：
-# 点击图片
-subAction_click_pic = SubActionMainObj(
-    action_id_name='click_pic',
-    action_gui_name='click_pic',
-    action_func=lambda pic: click(pic),
-    action_params=[
-        ParamsObj('picPath', ParamsTypes.PICPATH, '')
-    ]
-)
-# 点击坐标
-subAction_click_xy = SubActionMainObj(
-    action_id_name='click_xy',
-    action_gui_name='click_xy',
-    action_func=lambda x, y: click((int(x), int(y))),
-    action_params=[
-        ParamsObj('x', ParamsTypes.NUMBER, 0),
-        ParamsObj('y', ParamsTypes.NUMBER, 0)
-    ]
-)
-# ocr
-subAction_ocr_pic = SubActionMainObj(
-    action_id_name='ocr_pic',
-    action_gui_name='ocr_pic',
-    action_func=lambda x1, y1, x2, y2: ocr_area((x1, y1), (x2, y2))[0],
-    action_params=[
-        ParamsObj('left_up_x', ParamsTypes.NUMBER, 0),
-        ParamsObj('left_up_y', ParamsTypes.NUMBER, 0),
-        ParamsObj('right_down_x', ParamsTypes.NUMBER, 100),
-        ParamsObj('right_down_y', ParamsTypes.NUMBER, 100),
-    ]
-
-)
-
-
-# 若干个action实例 与 action_id_name的映射关系
-# 使用这些实例的时候需要调用return_copy()来返回一个新的对象
-action_id2obj = {
-    subAction_click_pic.action_id_name: subAction_click_pic,
-    subAction_click_xy.action_id_name: subAction_click_xy,
-    # ...
-    subAction_ocr_pic.action_id_name: subAction_ocr_pic,
-}
-
-def load_action_main_from_dict(action_items):
+def load_action_main_from_dict(action_items:dict):
     """
     读取json文件中保存的操作内容，转换成ActionMainObj对象
     """
@@ -170,6 +133,7 @@ def load_action_main_from_dict(action_items):
         # 只把参数值覆盖到模板参数对象里，其他参数保持预定义的
         _sub_action.action_params[i].load_from_dict(_params[i])
     return _sub_action
+
 
 
 # ============前置条件对象================
@@ -224,30 +188,10 @@ class SubPreJudgeObj:
             compare_obj = self.compare_obj, # 这里不用深拷贝，每个PreJudge里的compare_obj都是独立赋值的
             compare_value = self.compare_value.return_copy()
         )
-
-# 前置操作具体子类
-subPreJudge_Num_Equal = SubPreJudgeObj(
-    compare_id_name='num_equal',
-    compare_gui_name='num_equal',
-    compare_method=lambda a, b: a == b,
-    compare_value=ParamsObj('value', ParamsTypes.NUMBER, 0)
-)
-subPreJudge_Num_NotEqual = SubPreJudgeObj(
-    compare_id_name='num_not_equal',
-    compare_gui_name='num_not_equal',
-    compare_method=lambda a, b: a != b,
-    compare_value=ParamsObj('value', ParamsTypes.NUMBER, 0)
-)
+    
 
 
-# 若干个prejudge实例 与 compare_id_name的映射关系
-prejudge_id2obj = {
-    subPreJudge_Num_Equal.compare_id_name: subPreJudge_Num_Equal,
-    subPreJudge_Num_NotEqual.compare_id_name: subPreJudge_Num_NotEqual,
-    # ...
-}
-
-def load_prejudge_from_dict(action_items):
+def load_prejudge_from_dict(action_items:dict):
     """
     读取json文件中保存的前置条件，转换成SubPreJudgeObj对象
     """
@@ -330,11 +274,10 @@ class FlowActionObj:
             if self.action_main:
                 return self.action_main.call_func()
         return None
-
-        
+    
 # ============操作组对象================
 
-class EmulatorActionGroup:
+class FlowActionGroup:
     """
     用户操作的链式组合，维护用户操作的相关状态和内容
 
@@ -342,49 +285,19 @@ class EmulatorActionGroup:
         操作对象列表
         操作关联的状态字典
     """
-    def __init__(self):
-        pass
+    def __init__(self, action_list:list[FlowActionObj] = None, status_dict = None):
+        self.action_list = action_list if action_list else [] # 操作对象列表
+        self.status_dict = status_dict if status_dict else {} # 操作关联的状态字典
 
-    def load_from_dictlist(self, action_group_items:list[FlowActionObj]):
-        pass
-
-    def load_from_params(self, actions:list[FlowActionObj]=None, state_dict:dict=None):
-        self.actions = actions if actions else []  # 操作对象列表
-        self.state_dict = state_dict if state_dict else {}  # 操作关联的状态字典
-
-
-
-
-if __name__ == "__main__":
-    # 测试代码，挪到test.py里执行
-    action_ocr = subAction_ocr_pic.return_copy()
-    action_ocr.action_params[0].param_value = 250
-    action_ocr.action_params[1].param_value = 397
-    action_ocr.action_params[2].param_value = 320
-    action_ocr.action_params[3].param_value = 436
-    print(action_ocr.call_func())
-
-    prejudge_eq = subPreJudge_Num_Equal.return_copy()
-    prejudge_eq.compare_value.param_value = "1457"
-    prejudge_eq.compare_obj = action_ocr
-    print(prejudge_eq.call_judge())
-
-    action_click_xy_1 = subAction_click_xy.return_copy()
-    action_click_xy_1.action_params[0].param_value = 1141
-    action_click_xy_1.action_params[1].param_value = 69
-
-    action_click_xy_2 = subAction_click_xy.return_copy()
-    action_click_xy_2.action_params[0].param_value = 1233
-    action_click_xy_2.action_params[1].param_value = 74
-
-    emulator_action = FlowActionObj(
-        precondition=prejudge_eq,
-        action_main = action_click_xy_1,
-        action_precond_failed = action_click_xy_2
-    )
-    # emulator_action.call_action()
-
-    str_action = emulator_action.to_json_dict()
-    print(str_action)
-    parse_back_action = FlowActionObj.load_from_dict(str_action)
-    parse_back_action.call_action()
+    def load_from_dictlist(self, action_group_items:list):
+        for item in action_group_items:
+            action_obj = FlowActionObj.load_from_dict(item)
+            if action_obj:
+                self.action_list.append(action_obj)
+    
+    def run_flow(self):
+        """
+        执行整个操作链
+        """
+        for action in self.action_list:
+            action.call_action()
