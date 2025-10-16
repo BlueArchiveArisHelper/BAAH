@@ -1,3 +1,13 @@
+# 将当前脚本所在目录添加到模块搜索路径
+import sys
+import os
+current_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(current_dir)
+# config logging before all imports
+from modules.utils.log_utils import logging
+from main import run_baah_script
+
+
 def main():
     # Use freeze_support to avoid running GUI again: https://blog.csdn.net/fly_leopard/article/details/121610641
     import multiprocessing
@@ -9,8 +19,10 @@ def main():
         
         print("GUI is running...")
         args = parse_args()
-        ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", language="zh-cn",
-            reload=False, host=args.host, port=args.port, show=args.show, storage_secret="32737")
+        if (args.config is not None and args.config.endswith(".json")):
+            run_baah_script(args.config)
+        else:
+            ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", language="zh-cn", reload=False, host=args.host, port=args.port, show=args.show, storage_secret="32737")
 
 if __name__ in {"__main__", "__mp_main__"}:
     main()
