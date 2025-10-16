@@ -14,6 +14,8 @@ for obj in _pre_judges:
 
 if __name__ == "__main__":
     # 测试代码，挪到test.py里执行
+    # screencut_tool()
+    
     action_ocr = action_id2obj["ocr_pic"].return_copy()
     action_ocr.action_params[0].param_value = 250
     action_ocr.action_params[1].param_value = 397
@@ -22,7 +24,7 @@ if __name__ == "__main__":
     print(action_ocr.call_func())
 
     prejudge_eq = prejudge_id2obj["num_equal"].return_copy()
-    prejudge_eq.compare_value.param_value = "1457"
+    prejudge_eq.compare_value.param_value = "1738"
     prejudge_eq.compare_obj = action_ocr
     print(prejudge_eq.call_judge())
 
@@ -44,4 +46,8 @@ if __name__ == "__main__":
     str_action = emulator_action.to_json_dict()
     print(str_action)
     parse_back_action = FlowActionObj.load_from_dict(str_action)
-    parse_back_action.call_action()
+    
+    # parse_back_action.call_action()
+
+    group = FlowActionGroup([parse_back_action])
+    group.run_flow()
