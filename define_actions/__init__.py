@@ -1,4 +1,6 @@
 # 字符串列表 与 模拟器操作的 映射转换
+# modules.utils  -> <this> -> modules.AllTask
+# gui.components ->        -> gui.pages
 from modules.utils import *
 from .basic_objects import *
 from .define_main_actions import _main_actions

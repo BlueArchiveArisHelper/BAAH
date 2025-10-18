@@ -2,6 +2,7 @@ import random
 import secrets
 import string
 import enum
+from nicegui import ui
 
 # ParamsObj, [SubActionMainObj, SubPreJudgeObj], FlowActionObj, FlowActionGroup
 # 中括号包裹的是有预定义模板的，这些模板使得用户在GUI里能选择预定义的比较/操作
@@ -61,6 +62,16 @@ class ParamsObj:
             # 'param_type': self.param_type.value if self.param_type else None,
             'p_v': self.param_value
         }
+    
+    def render(self, datadict, datakey):
+        if self.param_type == ParamsTypes.NUMBER:
+            ui.number(label=self.param_gui_name).bind_value(datadict, datakey)
+        elif self.param_type == ParamsTypes.STRING:
+            ui.input(label=self.param_gui_name).bind_value(datadict, datakey)
+        elif self.param_type == ParamsTypes.PICPATH:
+            ui.input(label=self.param_gui_name, placeholder="Please input pic path").bind_value(datadict, datakey)
+        else:
+            ui.label(f"Unkown param type: {self.param_type}")
     
 
 # ============操作内容对象，需要注意预定义种类和复用问题================
