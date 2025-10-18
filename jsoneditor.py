@@ -25,4 +25,13 @@ def main():
             ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", language="zh-cn", reload=False, host=args.host, port=args.port, show=args.show, storage_secret="32737")
 
 if __name__ in {"__main__", "__mp_main__"}:
+    # 检查是否有BAAH_GUI.exe 文件，删除
+    exe_path = os.path.join(current_dir, "BAAH_GUI.exe")
+    if os.path.exists(exe_path):
+        try:
+            os.remove(exe_path)
+            logging.info("Removed existing BAAH_GUI.exe file.")
+        except Exception as e:
+            logging.error(f"Failed to remove BAAH_GUI.exe: {e}")
+
     main()
