@@ -3,7 +3,7 @@ from modules.utils import *
 
 _main_actions = [
     SubActionMainObj(
-        action_id_name='click_pic',
+        id_name='click_pic',
         action_gui_name='click_pic',
         action_func=lambda pic: click(pic),
         action_params=[
@@ -11,7 +11,7 @@ _main_actions = [
         ]
     ),
     SubActionMainObj(
-        action_id_name='click_xy',
+        id_name='click_xy',
         action_gui_name='click_xy',
         action_func=lambda x, y: click((int(x), int(y))),
         action_params=[
@@ -20,7 +20,7 @@ _main_actions = [
         ]
     ),
     SubActionMainObj(
-        action_id_name='ocr_pic',
+        id_name='ocr_pic',
         action_gui_name='ocr_pic',
         action_func=lambda x1, y1, x2, y2: ocr_area((x1, y1), (x2, y2))[0],
         action_params=[

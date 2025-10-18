@@ -3,14 +3,22 @@ import secrets
 import string
 import enum
 from nicegui import ui
+from gui.components.cut_screenshot import screencut_button
 
-# ParamsObj, [SubActionMainObj, SubPreJudgeObj], FlowActionObj, FlowActionGroup
+# ParamsObj, [SubActionMainObj, SubPreJudgeObj], FlowItemObj, FlowActionGroup
 # 中括号包裹的是有预定义模板的，这些模板使得用户在GUI里能选择预定义的比较/操作
 # 无包裹的类都是动态创建的实例类
+
+# 共性：id_name属性, 有to_json_dict函数，return_copy函数, call_func函数
+#=======================
+# to_json_dict 必须导出 id_name，以及其他用户会改变的，需要持久化的参数
+# return_copy 时，防止同名实例内参数被引用修改，用户能够修改的那些参数需要深拷贝
+#=======================
 
 # 映射集合
 action_id2obj = {}
 prejudge_id2obj = {}
+flowitem_id2obj = {}
 
 def generate_secure_random_string(length=5):
     characters = string.ascii_letters + string.digits
@@ -63,13 +71,14 @@ class ParamsObj:
             'p_v': self.param_value
         }
     
-    def render(self, datadict, datakey):
+    def render_gui(self, dataconfig, datadict, datakey):
         if self.param_type == ParamsTypes.NUMBER:
             ui.number(label=self.param_gui_name).bind_value(datadict, datakey)
         elif self.param_type == ParamsTypes.STRING:
             ui.input(label=self.param_gui_name).bind_value(datadict, datakey)
         elif self.param_type == ParamsTypes.PICPATH:
-            ui.input(label=self.param_gui_name, placeholder="Please input pic path").bind_value(datadict, datakey)
+            with ui.column():
+                screencut_button(inconfig=dataconfig, resultdict=datadict, resultkey=datakey)
         else:
             ui.label(f"Unkown param type: {self.param_type}")
     
@@ -90,8 +99,8 @@ class SubActionMainObj:
     
     执行后可能需要返回出来一个变量
     """
-    def __init__(self, action_id_name:str, action_gui_name:str, action_func, action_params:list[ParamsObj]):
-        self.action_id_name = action_id_name  # 操作标识符
+    def __init__(self, id_name:str, action_gui_name:str, action_func, action_params:list[ParamsObj]):
+        self.id_name = id_name  # 操作标识符
         self.action_gui_name = action_gui_name  # 操作名称
         self.action_func = action_func # 操作函数
         self.action_params = action_params # 操作参数列表
@@ -101,10 +110,10 @@ class SubActionMainObj:
         由于需要复用多个预先定义的操作，这里以返回一个新的对象的方式来避免引用问题
         """
         return SubActionMainObj(
-            self.action_id_name,
+            self.id_name,
             self.action_gui_name,
             self.action_func,
-            [ParamsObj(param.param_gui_name, param.param_type, param.param_value) for param in self.action_params]
+            [param.return_copy() for param in self.action_params] # json读取覆盖ParamsObj值
         )
 
     def to_json_dict(self):
@@ -112,7 +121,7 @@ class SubActionMainObj:
         转换成json可保存的字典格式
         """
         return {
-            'a_id_n': self.action_id_name,
+            'a_id_n': self.id_name,
             # 'action_gui_name': self.action_gui_name,
             'a_p': [param.to_json_dict() for param in self.action_params]
         }
@@ -125,19 +134,28 @@ class SubActionMainObj:
             return None
         param_values = [param.param_value for param in self.action_params]
         return self.action_func(*param_values)
+    
+    def render_gui(self, dataconfig):
+        """
+        在GUI里渲染该操作内容的参数输入框
+        """
+        # 上层组件提供对下层组件的修改能力，所以这边不能修改这个Action的种类，只能更改这个Action的内部参数
+        with ui.row():
+            for i, param in enumerate(self.action_params):
+                param.render_gui(dataconfig, )
 
 
-# 只有action_id_name, action_params需要从json文件中读取修改，其他参数使用预定义的实例里的
+# 只有id_name, action_params需要从json文件中读取修改，其他参数使用预定义的实例里的
 def load_action_main_from_dict(action_items:dict):
     """
     读取json文件中保存的操作内容，转换成ActionMainObj对象
     """
     if not action_items:
         return None
-    _action_id_name = action_items.get('a_id_n', None)
-    if not _action_id_name or _action_id_name not in action_id2obj:
+    _id_name = action_items.get('a_id_n', None)
+    if not _id_name or _id_name not in action_id2obj:
         return None
-    _sub_action = action_id2obj[_action_id_name].return_copy()
+    _sub_action:SubActionMainObj = action_id2obj[_id_name].return_copy()
     # 读取参数
     _params = action_items.get('a_p', [])
     for i in range(min(len(_params), len(_sub_action.action_params))):
@@ -148,6 +166,7 @@ def load_action_main_from_dict(action_items:dict):
 
 
 # ============前置条件对象================
+# 实例多态
 
 # class CompareMethods(enum.Enum):
 #     EQUAL = 1 # 数字相等
@@ -169,8 +188,8 @@ class SubPreJudgeObj:
         比较方式
         比较值（ParamsObj）
     """
-    def __init__(self, compare_id_name:str, compare_gui_name:str, compare_method:callable,  compare_value:ParamsObj, compare_obj:SubActionMainObj=None):
-        self.compare_id_name = compare_id_name  # 比较标识符
+    def __init__(self, id_name:str, compare_gui_name:str, compare_method:callable,  compare_value:ParamsObj, compare_obj:SubActionMainObj=None):
+        self.id_name = id_name  # 比较标识符
         self.compare_gui_name = compare_gui_name # 比较名称
         self.compare_method = compare_method # 比较方式，函数
         self.compare_value = compare_value # 指定被比较值（类型）
@@ -185,7 +204,7 @@ class SubPreJudgeObj:
     
     def to_json_dict(self):
         return {
-            'c_id_n': self.compare_id_name,
+            'c_id_n': self.id_name,
             # 'compare_gui_name': self.compare_gui_name,
             'c_obj': self.compare_obj.to_json_dict() if self.compare_obj else None,
             'c_v': self.compare_value.to_json_dict() if self.compare_value else None,
@@ -193,11 +212,11 @@ class SubPreJudgeObj:
 
     def return_copy(self):
         return SubPreJudgeObj(
-            compare_id_name = self.compare_id_name,
+            id_name = self.id_name,
             compare_gui_name = self.compare_gui_name,
             compare_method = self.compare_method,
-            compare_obj = self.compare_obj, # 这里不用深拷贝，每个PreJudge里的compare_obj都是独立赋值的
-            compare_value = self.compare_value.return_copy()
+            compare_obj = self.compare_obj, # load时会读json new覆盖
+            compare_value = self.compare_value.return_copy() # load时json读取改变
         )
     
 
@@ -208,11 +227,11 @@ def load_prejudge_from_dict(action_items:dict):
     """
     if not action_items:
         return None
-    _compare_id_name = action_items.get('c_id_n', None)
-    if not _compare_id_name or _compare_id_name not in prejudge_id2obj:
+    _id_name = action_items.get('c_id_n', None)
+    if not _id_name or _id_name not in prejudge_id2obj:
         return None
     # 使用return_copy()来避免引用问题
-    _sub_prejudge = prejudge_id2obj[_compare_id_name].return_copy()
+    _sub_prejudge:SubPreJudgeObj = prejudge_id2obj[_id_name].return_copy()
     # 前置条件的被比较对象
     _compare_obj_dict = action_items.get('c_obj', None)
     if _compare_obj_dict:
@@ -223,69 +242,91 @@ def load_prejudge_from_dict(action_items:dict):
 
 
 # ============操作对象================
-
-class FlowActionObj:
+# 实例多态
+class FlowItemObj:
     """
     操作对象，多个对象链式可以组合成一个操作序列
 
     每个对象包含:
-        该操作的id（时间戳）
-        操作前置条件（可选）
-        操作内容（操作名称 + 操作参数，执行时调用对应的操作函数）
-        不符合前置条件时的操作内容（当有前置条件时）
+        该操作的id名称
+        该操作的gui名称
+        该操作的时间戳唯一标识符
+        内部逻辑函数
+        内部逻辑函数所需的SubPreJudgeObj和SubActionMainObj对象
+        
     """
     def __init__(self, 
-                precondition:SubPreJudgeObj=None, 
-                action_main:SubActionMainObj=None, 
-                action_precond_failed:SubActionMainObj=None, 
+                id_name,
+                flowitem_gui_name,
                 id:str=None, # 标识id,无指定标识id的时候生成时间戳id
+                inner_logic_func:callable=None,
+                inner_func_objs:list=None
                 ):
-        self.precondition = precondition  # 前置条件
-        self.action_main = action_main # 主要操作
-        self.action_precond_failed = action_precond_failed  # 前置条件不满足时的处理方式
-        self.action_id = id if id else generate_secure_random_string()  # 操作id
-    
-    @staticmethod
-    def load_from_dict(action_items):
-        """
-        读取json文件中保存的操作对象，转换成FlowActionObj对象
-        """
-        targetobj = FlowActionObj()
-        if not action_items:
-            return targetobj
-        targetobj.action_id = action_items.get('a_id', None)
-        targetobj.precondition = load_prejudge_from_dict(action_items.get('p_c', None))
-        targetobj.action_main = load_action_main_from_dict(action_items.get('a_m', None))
-        targetobj.action_precond_failed = load_action_main_from_dict(action_items.get('a_p_f', None))
-        return targetobj
+        self.id_name = id_name
+        self.flowitem_gui_name = flowitem_gui_name
+        self.id = id if id else generate_secure_random_string()  # 操作id
+        self.inner_logic_func = inner_logic_func
+        self.inner_func_objs = inner_func_objs if inner_func_objs else []
+        
+    def return_copy(self):
+        return FlowItemObj(
+            self.id_name,
+            self.flowitem_gui_name,
+            None, # id，load时会读json new覆盖，新建时生成新的id
+            self.inner_logic_func,
+            [func_obj.return_copy() for func_obj in self.inner_func_objs], # load时会读json new覆盖，新建时copy新的
+        )
 
     def to_json_dict(self):
         """
         转换成json可保存的字典格式
         """
         return {
-            'a_id': self.action_id,
-            'p_c': self.precondition.to_json_dict() if self.precondition else None,
-            'a_m': self.action_main.to_json_dict() if self.action_main else None,
-            'a_p_f': self.action_precond_failed.to_json_dict() if self.action_precond_failed else None,
+            'f_id_n': self.id_name,
+            'id': self.id,
+            # 内部逻辑函数不保存
+            'i_f_o': [obj.to_json_dict() for obj in self.inner_func_objs] if self.inner_func_objs else []
         }
+
+    def load_func_objs_from_dictlist(self, objs_json_list):
+        # 从json列表里读取内部对象
+        for i,item in enumerate(objs_json_list):
+            # 找到对应的模板里的inner_func_objs
+            target_item = self.inner_func_objs[i]
+            # 判断id_name
+            if target_item.id_name in action_id2obj:
+                # ActionMainObj
+                self.inner_func_objs[i] = load_action_main_from_dict(item)
+            elif target_item.id_name in prejudge_id2obj:
+                # SubPreJudgeObj
+                self.inner_func_objs[i] = load_prejudge_from_dict(item)
+            
+            
     
-    def call_action(self):
-        """
-        执行该操作对象
-        """
-        if self.precondition:
-            if self.precondition.call_judge():
-                if self.action_main:
-                    return self.action_main.call_func()
-            else:
-                if self.action_precond_failed:
-                    return self.action_precond_failed.call_func()
-        else:
-            if self.action_main:
-                return self.action_main.call_func()
+    def call_flowitem(self):
+        self.inner_logic_func(*self.inner_func_objs)
+
+
+
+def load_flow_item_from_dict(action_item:dict):
+    """
+    读取json文件中保存的操作对象，转换成FlowItemObj对象
+    """
+    if not action_item:
         return None
-    
+    _id_name = action_item.get('f_id_n', None)
+    if not _id_name or _id_name not in flowitem_id2obj:
+        return None
+    # 使用return_copy()来避免引用问题
+    _flow_item:FlowItemObj = flowitem_id2obj[_id_name].return_copy()
+    # 读取id
+    _flow_item.id = action_item.get('id', None)
+    # 读取内部逻辑函数对象列表
+    _inner_func_objs_dictlist = action_item.get('i_f_o', [])
+    if _inner_func_objs_dictlist:
+        _flow_item.load_func_objs_from_dictlist(_inner_func_objs_dictlist)
+    return _flow_item
+
 # ============操作组对象================
 
 class FlowActionGroup:
@@ -296,13 +337,13 @@ class FlowActionGroup:
         操作对象列表
         操作关联的状态字典
     """
-    def __init__(self, action_list:list[FlowActionObj] = None, status_dict = None):
+    def __init__(self, action_list:list[FlowItemObj] = None, status_dict = None):
         self.action_list = action_list if action_list else [] # 操作对象列表
         self.status_dict = status_dict if status_dict else {} # 操作关联的状态字典
 
     def load_from_dictlist(self, action_group_items:list):
         for item in action_group_items:
-            action_obj = FlowActionObj.load_from_dict(item)
+            action_obj = load_flow_item_from_dict(item)
             if action_obj:
                 self.action_list.append(action_obj)
     
@@ -311,4 +352,4 @@ class FlowActionGroup:
         执行整个操作链
         """
         for action in self.action_list:
-            action.call_action()
+            action.call_flowitem()

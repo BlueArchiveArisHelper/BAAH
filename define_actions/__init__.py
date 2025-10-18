@@ -1,16 +1,20 @@
 # 字符串列表 与 模拟器操作的 映射转换
 # modules.utils  -> <this> -> modules.AllTask
 # gui.components ->        -> gui.pages
-from modules.utils import *
 from .basic_objects import *
 from .define_main_actions import _main_actions
 from .define_pre_judges import _pre_judges
 
+
 # 从 .define_actions/define_main_actions 和 .define_actions/define_pre_judges 加载预定义的操作和判断, 构成映射字典
 for obj in _main_actions:
-    action_id2obj[obj.action_id_name] = obj
+    action_id2obj[obj.id_name] = obj
 for obj in _pre_judges:
-    prejudge_id2obj[obj.compare_id_name] = obj
+    prejudge_id2obj[obj.id_name] = obj
+# 等基本映射建立完毕后, 再加载流程控制类对象，否则_flow_items内部的inner_func_objs会取空
+from .define_flow_items import _flow_items
+for obj in _flow_items:
+    flowitem_id2obj[obj.id_name] = obj
 
 
 
@@ -25,7 +29,7 @@ if __name__ == "__main__":
     action_ocr.action_params[3].param_value = 436
     print(action_ocr.call_func())
 
-    prejudge_eq = prejudge_id2obj["num_equal"].return_copy()
+    prejudge_eq = prejudge_id2obj["equal"].return_copy()
     prejudge_eq.compare_value.param_value = "1738"
     prejudge_eq.compare_obj = action_ocr
     print(prejudge_eq.call_judge())
@@ -38,16 +42,17 @@ if __name__ == "__main__":
     action_click_xy_2.action_params[0].param_value = 1233
     action_click_xy_2.action_params[1].param_value = 74
 
-    emulator_action = FlowActionObj(
-        precondition=prejudge_eq,
-        action_main = action_click_xy_1,
-        action_precond_failed = action_click_xy_2
-    )
+    emulator_action = flowitem_id2obj["ifelse_action"]
+    emulator_action.inner_func_objs=[
+        prejudge_eq,
+        action_click_xy_1,
+        action_click_xy_2
+    ]
     # emulator_action.call_action()
 
     str_action = emulator_action.to_json_dict()
     print(str_action)
-    parse_back_action = FlowActionObj.load_from_dict(str_action)
+    parse_back_action = load_flow_item_from_dict(str_action)
     
     # parse_back_action.call_action()
 
