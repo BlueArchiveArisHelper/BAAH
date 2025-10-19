@@ -33,5 +33,22 @@ _main_actions = [
             ParamsObj('right_down_x', ParamsTypes.NUMBER, 100),
             ParamsObj('right_down_y', ParamsTypes.NUMBER, 100),
         ]
+    ),
+    SubActionMainObj(
+        id_name="sleep_time",
+        action_gui_name="sleep_time",
+        action_func=lambda t: sleep(float(t)),
+        action_params=[
+            ParamsObj('time_seconds', ParamsTypes.NUMBER, 1)
+        ]
+    ),
+    SubActionMainObj(
+        id_name="get_pixel_color",
+        action_gui_name="get_pixel_color",
+        action_func=lambda x, y: get_pixel((int(x), int(y))),
+        action_params=[
+            ParamsObj('x', ParamsTypes.NUMBER, 0),
+            ParamsObj('y', ParamsTypes.NUMBER, 0)
+        ]
     )
 ]

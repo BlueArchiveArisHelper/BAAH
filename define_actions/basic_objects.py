@@ -194,11 +194,11 @@ class SubPreJudgeObj:
         比较方式
         比较值（ParamsObj）
     """
-    def __init__(self, id_name:str, compare_gui_name:str, compare_method:callable,  compare_value:ParamsObj, compare_obj:SubActionMainObj):
+    def __init__(self, id_name:str, compare_gui_name:str, compare_method:callable,  compare_values:list[ParamsObj], compare_obj:SubActionMainObj):
         self.id_name = id_name  # 比较标识符
         self.compare_gui_name = compare_gui_name # 比较名称
         self.compare_method = compare_method # 比较方式，函数
-        self.compare_value = compare_value # 指定被比较值（类型）
+        self.compare_values = compare_values # 指定被比较值（类型）
         self.compare_obj = compare_obj # 被比较对象，通过ActionMainObj执行后返回的值
         
 
@@ -206,14 +206,14 @@ class SubPreJudgeObj:
         if not self.compare_obj or not self.compare_method:
             return False
         obj_value = self.compare_obj.call_func()
-        return self.compare_method(obj_value, self.compare_value.param_value)
+        return self.compare_method(obj_value, *[cv.param_value for cv in self.compare_values])
     
     def to_json_dict(self):
         return {
             'c_id_n': self.id_name,
             # 'compare_gui_name': self.compare_gui_name,
             'c_obj': self.compare_obj.to_json_dict() if self.compare_obj else None,
-            'c_v': self.compare_value.to_json_dict() if self.compare_value else None,
+            'c_v': [cv.to_json_dict() for cv in self.compare_values] if self.compare_values else [],
         }
 
     def return_copy(self):
@@ -222,7 +222,7 @@ class SubPreJudgeObj:
             compare_gui_name = self.compare_gui_name,
             compare_method = self.compare_method,
             compare_obj = self.compare_obj.return_copy(), # load时会读json new覆盖
-            compare_value = self.compare_value.return_copy() # load时json读取改变
+            compare_values = [cv.return_copy() for cv in self.compare_values] # load时json读取改变
         )
 
     def render_gui(self, dataconfig):
@@ -240,7 +240,8 @@ class SubPreJudgeObj:
                 with ui.column():
                     ui.label("比较值:")
                     # 只会更新ParamsObj里的属性值
-                    self.compare_value.render_gui(dataconfig)
+                    for cv in self.compare_values:
+                        cv.render_gui(dataconfig)
         sub_pre_judge_area()
         
         def change_compare_obj(new_id_name):
@@ -268,7 +269,9 @@ def load_prejudge_from_dict(action_items:dict):
     if _compare_obj_dict:
         _sub_prejudge.compare_obj = load_action_main_from_dict(_compare_obj_dict)
     # 前置条件的比较值ParamsObj, 只覆盖值
-    _sub_prejudge.compare_value.load_from_dict(action_items.get('c_v', None))
+    for i, cv in enumerate(_sub_prejudge.compare_values):
+        # 循环实例，load from json [i]
+        cv.load_from_dict(action_items.get('c_v', [])[i])
     return _sub_prejudge
 
 

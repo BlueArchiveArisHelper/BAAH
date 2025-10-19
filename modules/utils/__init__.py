@@ -152,6 +152,15 @@ def ocr_area_0(frompixel, topixel, ocr_lang = OCR_LANG.EN) -> bool:
     # 长度大于1直接返回False
     return False
 
+def get_pixel(xy):
+    """
+        get the pixel color at the given position
+        
+        axis is in image form
+    """
+    sc_mat_data = get_screenshot_cv_data()
+    return sc_mat_data[int(xy[1]), int(xy[0])][:3] if sc_mat_data is not None else [-1, -1, -1]
+
 def match_pixel(xy, color, printit = False):
     """
         match whether the pixel is the given color
