@@ -1,6 +1,8 @@
 from .basic_objects import *
 from modules.utils import *
 
+# 被比较值类型是由实例种类固定的（compare_value), 比较对象是可更改的（compare_obj)
+
 _pre_judges = [
     # 数字大于
     SubPreJudgeObj(
