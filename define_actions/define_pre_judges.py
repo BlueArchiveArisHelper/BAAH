@@ -52,6 +52,18 @@ _pre_judges = [
         compare_values=[ParamsObj('value', ParamsTypes.STRING, '')],
         compare_obj=action_id2obj['ocr_pic'].return_copy()
     ),
+    # 像素点颜色近似
+    SubPreJudgeObj(
+        compare_gui_name="pixel_similar",
+        id_name='pixel_similar',
+        compare_method=lambda bgr, b, g, r: abs(bgr[0] - b)<=5 and abs(bgr[1] - g)<=5 and abs(bgr[2] - r)<=5,
+        compare_values=[
+            ParamsObj('B', ParamsTypes.NUMBER, 0),
+            ParamsObj('G', ParamsTypes.NUMBER, 0),
+            ParamsObj('R', ParamsTypes.NUMBER, 0)
+        ],
+        compare_obj=action_id2obj['get_pixel_color'].return_copy()
+    ),
     # 永远为真
     SubPreJudgeObj(
         id_name='always_true', 
