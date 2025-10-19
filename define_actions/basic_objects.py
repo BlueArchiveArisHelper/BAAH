@@ -76,12 +76,15 @@ class ParamsObj:
     
     def __setitem__(self, key, value):
         setattr(self, key, value)
+
+    def call_func(self):
+        return self.param_value
     
     def render_gui(self, dataconfig):
         if self.param_type == ParamsTypes.NUMBER:
-            ui.number(label=self.param_gui_name).bind_value(self, 'param_value')
+            ui.number(label=self.param_gui_name).bind_value(self, 'param_value').style("width:100px")
         elif self.param_type == ParamsTypes.STRING:
-            ui.input(label=self.param_gui_name).bind_value(self, 'param_value')
+            ui.input(label=self.param_gui_name).bind_value(self, 'param_value').style("width:100px")
         elif self.param_type == ParamsTypes.PICPATH:
             with ui.column():
                 screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value')
@@ -228,16 +231,16 @@ class SubPreJudgeObj:
     def render_gui(self, dataconfig):
         @ui.refreshable
         def sub_pre_judge_area():
-            with ui.row():
-                with ui.column():
-                    ui.label("被比较对象:")
+            with ui.column():
+                with ui.row():
+                    ui.label("比较对象:")
                     # 提供修改下层组件的能力
                     ui.select({k:k for k in action_id2obj}, value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
                     self.compare_obj.render_gui(dataconfig)
-                with ui.column():
-                    # 上级组件提供对下级组件的修改能力，所以这边不能修改这个SubPreJudge的种类，只能更改这SubPreJudge的内部参数
-                    ui.label(self.compare_gui_name)
-                with ui.column():
+                # with ui.row():
+                #     # 上级组件提供对下级组件的修改能力，所以这边不能修改这个SubPreJudge的种类，只能更改这SubPreJudge的内部参数
+                #     ui.label(self.compare_gui_name)
+                with ui.row():
                     ui.label("比较值:")
                     # 只会更新ParamsObj里的属性值
                     for cv in self.compare_values:
@@ -345,26 +348,36 @@ class FlowItemObj:
         format_str_list = self.format_render_str.split('#')
         @ui.refreshable
         def flow_item_area():
-            ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
-            for i,stritem in enumerate(format_str_list):
-                if stritem.startswith("%"):
-                    # 替换为内部逻辑函数对象 #%0#
-                    index = int(stritem[1:])
-                    if index >= 0 and index < len(self.inner_func_objs):
-                        obj = self.inner_func_objs[index]
-                        if obj.id_name in action_id2obj:
-                            # ActionMainObj
-                            ui.select({k:k for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
-                            obj.render_gui(dataconfig)
-                        elif obj.id_name in prejudge_id2obj:
-                            # SubPreJudgeObj
-                            ui.select({k:k for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
-                            obj.render_gui(dataconfig)
-                    else:
-                        ui.label(f"索引超出范围: {stritem}")
-                else:
-                    # 文字部分直接label显示
-                    ui.label(stritem)
+            with ui.column():
+                ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
+                line = ui.row()
+                for i,stritem in enumerate(format_str_list):
+                    # 解析格式化字符串每个#分割的部分
+                    with line:
+                        if stritem.startswith("%"):
+                            # %开头则替换为对应下标的内部子组件
+                            # 替换为内部逻辑函数对象 #%0#
+                            index = int(stritem[1:])
+                            if index >= 0 and index < len(self.inner_func_objs):
+                                obj = self.inner_func_objs[index]
+                                if isinstance(obj, SubActionMainObj):
+                                    # ActionMainObj组件
+                                    ui.select({k:k for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
+                                    obj.render_gui(dataconfig)
+                                elif isinstance(obj, SubPreJudgeObj):
+                                    # SubPreJudgeObj组件
+                                    ui.select({k:k for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
+                                    obj.render_gui(dataconfig)
+                                elif isinstance(obj, ParamsObj):
+                                    # ParamsObj组件
+                                    obj.render_gui(dataconfig)
+                            else:
+                                ui.label(f"字符串索引超出范围: {stritem}")
+                            # 组件渲染之后换新行
+                            line = ui.row()
+                        else:
+                            # 文字部分直接label显示
+                            ui.label(stritem)
         
         flow_item_area()
         def change_inner_action_func_obj(new_id_name, obj_index):
@@ -432,13 +445,17 @@ class FlowActionGroup:
     def render_gui(self, dataconfig):
         @ui.refreshable
         def flow_group_area():
+            # 第一行，添加按钮
+            ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
             for i,action in enumerate(self.action_list):
-                ui.select({k:k for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
-                action.render_gui(dataconfig)
-                # 删除该行
-                ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,i=i: del_flow_item(i))
-            # 最后一行，添加按钮
-            ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(len(self.action_list)-1))
+                with ui.card():
+                    ui.select({k:k for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                    action.render_gui(dataconfig)
+                    with ui.row():
+                        # 该行下方添加
+                        ui.button(dataconfig.get_text("button_add"), on_click=lambda x,idx=i:add_flow_item(idx+1))
+                        # 删除该行
+                        ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,idx=i: del_flow_item(idx), color="red")
         flow_group_area()
 
         def change_flow_item_obj(new_id_name, obj_index):
