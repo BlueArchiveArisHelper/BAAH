@@ -19,14 +19,14 @@ def ifelse_action(precondition, action_main, action_precond_failed):
 
 _flow_items = [
     FlowItemObj(
-        id_name="ifelse_action",
-        flowitem_gui_name="ifelse_action",
+        id_name="ifelse_action_f",
+        flowitem_gui_name="ifelse_action_f",
         id=None,
         inner_logic_func=ifelse_action,
         inner_func_objs=[
-            prejudge_id2obj["equal"].return_copy(), 
-            action_id2obj["click_xy"].return_copy(), 
-            action_id2obj["click_xy"].return_copy()
+            prejudge_id2obj["equal_p"].return_copy(), 
+            action_id2obj["click_xy_a"].return_copy(), 
+            action_id2obj["click_xy_a"].return_copy()
         ],
         format_render_str="如果 #%0# 则执行 #%1# 否则执行 #%2#"
     )
