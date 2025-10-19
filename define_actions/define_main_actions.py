@@ -22,7 +22,7 @@ _main_actions = [
     SubActionMainObj(
         id_name='ocr_pic',
         action_gui_name='ocr_pic',
-        action_func=lambda x1, y1, x2, y2: ocr_area((x1, y1), (x2, y2))[0],
+        action_func=lambda x1, y1, x2, y2: ocr_area((int(x1), int(y1)), (int(x2), int(y2)))[0],
         action_params=[
             ParamsObj('left_up_x', ParamsTypes.NUMBER, 0),
             ParamsObj('left_up_y', ParamsTypes.NUMBER, 0),

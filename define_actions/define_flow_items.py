@@ -24,7 +24,7 @@ _flow_items = [
         id=None,
         inner_logic_func=ifelse_action,
         inner_func_objs=[
-            prejudge_id2obj["always_true"].return_copy(), 
+            prejudge_id2obj["equal"].return_copy(), 
             action_id2obj["click_xy"].return_copy(), 
             action_id2obj["click_xy"].return_copy()
         ],

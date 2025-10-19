@@ -2,13 +2,13 @@
 # modules.utils  -> <this> -> modules.AllTask
 # gui.components ->        -> gui.pages
 from .basic_objects import *
-from .define_main_actions import _main_actions
-from .define_pre_judges import _pre_judges
-
 
 # 从 .define_actions/define_main_actions 和 .define_actions/define_pre_judges 加载预定义的操作和判断, 构成映射字典
+from .define_main_actions import _main_actions
 for obj in _main_actions:
     action_id2obj[obj.id_name] = obj
+# pre judge 比较 action结果与给定参数，在action初始化之后导入
+from .define_pre_judges import _pre_judges
 for obj in _pre_judges:
     prejudge_id2obj[obj.id_name] = obj
 # 等基本映射建立完毕后, 再加载流程控制类对象，否则_flow_items内部的inner_func_objs会取空
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     prejudge_eq = prejudge_id2obj["equal"].return_copy()
     prejudge_eq.compare_value.param_value = "1738"
     prejudge_eq.compare_obj = action_ocr
-    print(prejudge_eq.call_judge())
+    print(prejudge_eq.call_func())
 
     action_click_xy_1 = action_id2obj["click_xy"].return_copy()
     action_click_xy_1.action_params[0].param_value = 1141
@@ -42,19 +42,18 @@ if __name__ == "__main__":
     action_click_xy_2.action_params[0].param_value = 1233
     action_click_xy_2.action_params[1].param_value = 74
 
-    emulator_action = flowitem_id2obj["ifelse_action"]
-    emulator_action.inner_func_objs=[
+    ifelse_action = flowitem_id2obj["ifelse_action"]
+    ifelse_action.inner_func_objs=[
         prejudge_eq,
         action_click_xy_1,
         action_click_xy_2
     ]
-    # emulator_action.call_action()
+    # ifelse_action.call_action()
+    group = FlowActionGroup([ifelse_action])
+    str_group = group.to_json_dict()
+    print(str_group)
+    ###
 
-    str_action = emulator_action.to_json_dict()
-    print(str_action)
-    parse_back_action = load_flow_item_from_dict(str_action)
-    
-    # parse_back_action.call_action()
+    parse_back_group = FlowActionGroup().load_from_dictlist(str_group)
 
-    group = FlowActionGroup([parse_back_action])
-    group.run_flow()
+    parse_back_group.run_flow()

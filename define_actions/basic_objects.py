@@ -194,7 +194,7 @@ class SubPreJudgeObj:
         比较方式
         比较值（ParamsObj）
     """
-    def __init__(self, id_name:str, compare_gui_name:str, compare_method:callable,  compare_value:ParamsObj, compare_obj:SubActionMainObj=None):
+    def __init__(self, id_name:str, compare_gui_name:str, compare_method:callable,  compare_value:ParamsObj, compare_obj:SubActionMainObj):
         self.id_name = id_name  # 比较标识符
         self.compare_gui_name = compare_gui_name # 比较名称
         self.compare_method = compare_method # 比较方式，函数
@@ -221,7 +221,7 @@ class SubPreJudgeObj:
             id_name = self.id_name,
             compare_gui_name = self.compare_gui_name,
             compare_method = self.compare_method,
-            compare_obj = self.compare_obj, # load时会读json new覆盖
+            compare_obj = self.compare_obj.return_copy(), # load时会读json new覆盖
             compare_value = self.compare_value.return_copy() # load时json读取改变
         )
 
@@ -232,7 +232,7 @@ class SubPreJudgeObj:
                 with ui.column():
                     ui.label("被比较对象:")
                     # 提供修改下层组件的能力
-                    ui.select(action_id2obj.keys(), value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
+                    ui.select({k:k for k in action_id2obj}, value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
                     self.compare_obj.render_gui(dataconfig)
                 with ui.column():
                     # 上级组件提供对下级组件的修改能力，所以这边不能修改这个SubPreJudge的种类，只能更改这SubPreJudge的内部参数
@@ -289,10 +289,10 @@ class FlowItemObj:
     def __init__(self, 
                 id_name,
                 flowitem_gui_name,
-                id:str=None, # 标识id,无指定标识id的时候生成时间戳id
-                inner_logic_func:callable=None,
-                inner_func_objs:list=None,
-                format_render_str:str = ""
+                id:str, # 标识id,无指定标识id的时候生成时间戳id
+                inner_logic_func:callable,
+                inner_func_objs:list,
+                format_render_str:str
                 ):
         self.id_name = id_name
         self.flowitem_gui_name = flowitem_gui_name
@@ -351,11 +351,11 @@ class FlowItemObj:
                         obj = self.inner_func_objs[index]
                         if obj.id_name in action_id2obj:
                             # ActionMainObj
-                            ui.select(action_id2obj.keys(), value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
+                            ui.select({k:k for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
                             obj.render_gui(dataconfig)
                         elif obj.id_name in prejudge_id2obj:
                             # SubPreJudgeObj
-                            ui.select(prejudge_id2obj.keys(), value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
+                            ui.select({k:k for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
                             obj.render_gui(dataconfig)
                     else:
                         ui.label(f"索引超出范围: {stritem}")
@@ -425,6 +425,41 @@ class FlowActionGroup:
             'a_l': [action.to_json_dict() for action in self.action_list],
             # 's_d': self.status_dict
         }
+
+    def render_gui(self, dataconfig):
+        @ui.refreshable
+        def flow_group_area():
+            for i,action in enumerate(self.action_list):
+                ui.select({k:k for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                action.render_gui(dataconfig)
+                # 删除该行
+                ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,i=i: del_flow_item(i))
+            # 最后一行，添加按钮
+            ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(len(self.action_list)-1))
+        flow_group_area()
+
+        def change_flow_item_obj(new_id_name, obj_index):
+            # 替换操作对象,更新实例
+            new_obj = flowitem_id2obj[new_id_name].return_copy()
+            self.action_list[obj_index] = new_obj
+            # 刷新GUI
+            flow_group_area.refresh()
+        
+        def add_flow_item(line_index):
+            """
+            添加一个操作对象
+            """
+            # 插入一个默认的操作对象
+            default_flow_item = list(flowitem_id2obj.values())[0].return_copy()
+            self.action_list.insert(line_index+1, default_flow_item)
+            flow_group_area.refresh()
+        
+        def del_flow_item(line_index):
+            """
+            删除一个操作对象
+            """
+            self.action_list.pop(line_index)
+            flow_group_area.refresh()
     
     def run_flow(self):
         """
