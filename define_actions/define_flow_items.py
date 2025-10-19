@@ -6,7 +6,7 @@ def ifelse_action(precondition, action_main, action_precond_failed):
     执行该操作对象
     """
     if precondition:
-        if precondition.call_judge():
+        if precondition.call_func():
             if action_main:
                 return action_main.call_func()
         else:
@@ -27,6 +27,7 @@ _flow_items = [
             prejudge_id2obj["always_true"].return_copy(), 
             action_id2obj["click_xy"].return_copy(), 
             action_id2obj["click_xy"].return_copy()
-        ]
+        ],
+        format_render_str="如果 #%0# 则执行 #%1# 否则执行 #%2#"
     )
 ]

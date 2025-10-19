@@ -5,11 +5,11 @@ import enum
 from nicegui import ui
 from gui.components.cut_screenshot import screencut_button
 
-# ParamsObj, [SubActionMainObj, SubPreJudgeObj], FlowItemObj, FlowActionGroup
+# ParamsObj, [SubActionMainObj, SubPreJudgeObj, FlowItemObj], FlowActionGroup
 # 中括号包裹的是有预定义模板的，这些模板使得用户在GUI里能选择预定义的比较/操作
 # 无包裹的类都是动态创建的实例类
 
-# 共性：id_name属性, 有to_json_dict函数，return_copy函数, call_func函数
+# 共性：id_name属性, 有to_json_dict函数，return_copy函数, call_func函数, render_gui函数
 #=======================
 # to_json_dict 必须导出 id_name，以及其他用户会改变的，需要持久化的参数
 # return_copy 时，防止同名实例内参数被引用修改，用户能够修改的那些参数需要深拷贝
@@ -71,14 +71,20 @@ class ParamsObj:
             'p_v': self.param_value
         }
     
-    def render_gui(self, dataconfig, datadict, datakey):
+    def __getitem__(self, key):
+        return getattr(self, key)
+    
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
+    
+    def render_gui(self, dataconfig):
         if self.param_type == ParamsTypes.NUMBER:
-            ui.number(label=self.param_gui_name).bind_value(datadict, datakey)
+            ui.number(label=self.param_gui_name).bind_value(self, 'param_value')
         elif self.param_type == ParamsTypes.STRING:
-            ui.input(label=self.param_gui_name).bind_value(datadict, datakey)
+            ui.input(label=self.param_gui_name).bind_value(self, 'param_value')
         elif self.param_type == ParamsTypes.PICPATH:
             with ui.column():
-                screencut_button(inconfig=dataconfig, resultdict=datadict, resultkey=datakey)
+                screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value')
         else:
             ui.label(f"Unkown param type: {self.param_type}")
     
@@ -139,10 +145,10 @@ class SubActionMainObj:
         """
         在GUI里渲染该操作内容的参数输入框
         """
-        # 上层组件提供对下层组件的修改能力，所以这边不能修改这个Action的种类，只能更改这个Action的内部参数
+        # 上层组件提供对下层组件的修改能力，所以这边不能修改这个SubAction的种类，只能更改这SubAction的内部参数
         with ui.row():
             for i, param in enumerate(self.action_params):
-                param.render_gui(dataconfig, )
+                param.render_gui(dataconfig)
 
 
 # 只有id_name, action_params需要从json文件中读取修改，其他参数使用预定义的实例里的
@@ -196,7 +202,7 @@ class SubPreJudgeObj:
         self.compare_obj = compare_obj # 被比较对象，通过ActionMainObj执行后返回的值
         
 
-    def call_judge(self):
+    def call_func(self):
         if not self.compare_obj or not self.compare_method:
             return False
         obj_value = self.compare_obj.call_func()
@@ -218,6 +224,31 @@ class SubPreJudgeObj:
             compare_obj = self.compare_obj, # load时会读json new覆盖
             compare_value = self.compare_value.return_copy() # load时json读取改变
         )
+
+    def render_gui(self, dataconfig):
+        @ui.refreshable
+        def sub_pre_judge_area():
+            with ui.row():
+                with ui.column():
+                    ui.label("被比较对象:")
+                    # 提供修改下层组件的能力
+                    ui.select(action_id2obj.keys(), value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
+                    self.compare_obj.render_gui(dataconfig)
+                with ui.column():
+                    # 上级组件提供对下级组件的修改能力，所以这边不能修改这个SubPreJudge的种类，只能更改这SubPreJudge的内部参数
+                    ui.label(self.compare_gui_name)
+                with ui.column():
+                    ui.label("比较值:")
+                    # 只会更新ParamsObj里的属性值
+                    self.compare_value.render_gui(dataconfig)
+        sub_pre_judge_area()
+        
+        def change_compare_obj(new_id_name):
+            # 替换被比较对象,更新实例
+            new_obj = action_id2obj[new_id_name].return_copy()
+            self.compare_obj = new_obj
+            # 刷新GUI
+            sub_pre_judge_area.refresh()
     
 
 
@@ -260,13 +291,15 @@ class FlowItemObj:
                 flowitem_gui_name,
                 id:str=None, # 标识id,无指定标识id的时候生成时间戳id
                 inner_logic_func:callable=None,
-                inner_func_objs:list=None
+                inner_func_objs:list=None,
+                format_render_str:str = ""
                 ):
         self.id_name = id_name
         self.flowitem_gui_name = flowitem_gui_name
         self.id = id if id else generate_secure_random_string()  # 操作id
         self.inner_logic_func = inner_logic_func
         self.inner_func_objs = inner_func_objs if inner_func_objs else []
+        self.format_render_str = format_render_str # 用于GUI显示的格式化字符串
         
     def return_copy(self):
         return FlowItemObj(
@@ -275,6 +308,7 @@ class FlowItemObj:
             None, # id，load时会读json new覆盖，新建时生成新的id
             self.inner_logic_func,
             [func_obj.return_copy() for func_obj in self.inner_func_objs], # load时会读json new覆盖，新建时copy新的
+            self.format_render_str
         )
 
     def to_json_dict(self):
@@ -301,10 +335,48 @@ class FlowItemObj:
                 # SubPreJudgeObj
                 self.inner_func_objs[i] = load_prejudge_from_dict(item)
             
-            
-    
-    def call_flowitem(self):
+    def call_func(self):
         self.inner_logic_func(*self.inner_func_objs)
+
+    def render_gui(self, dataconfig):
+        format_str_list = self.format_render_str.split('#')
+        @ui.refreshable
+        def flow_item_area():
+            ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
+            for i,stritem in enumerate(format_str_list):
+                if stritem.startswith("%"):
+                    # 替换为内部逻辑函数对象 #%0#
+                    index = int(stritem[1:])
+                    if index >= 0 and index < len(self.inner_func_objs):
+                        obj = self.inner_func_objs[index]
+                        if obj.id_name in action_id2obj:
+                            # ActionMainObj
+                            ui.select(action_id2obj.keys(), value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
+                            obj.render_gui(dataconfig)
+                        elif obj.id_name in prejudge_id2obj:
+                            # SubPreJudgeObj
+                            ui.select(prejudge_id2obj.keys(), value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
+                            obj.render_gui(dataconfig)
+                    else:
+                        ui.label(f"索引超出范围: {stritem}")
+                else:
+                    # 文字部分直接label显示
+                    ui.label(stritem)
+        
+        flow_item_area()
+        def change_inner_action_func_obj(new_id_name, obj_index):
+            # 替换内部逻辑函数对象,更新实例
+            new_obj = action_id2obj[new_id_name].return_copy()
+            self.inner_func_objs[obj_index] = new_obj
+            # 刷新GUI
+            flow_item_area.refresh()
+
+        def change_inner_prejudge_func_obj(new_id_name, obj_index):
+            # 替换内部逻辑函数对象,更新实例
+            new_obj = prejudge_id2obj[new_id_name].return_copy()
+            self.inner_func_objs[obj_index] = new_obj
+            # 刷新GUI
+            flow_item_area.refresh()
 
 
 
@@ -341,15 +413,22 @@ class FlowActionGroup:
         self.action_list = action_list if action_list else [] # 操作对象列表
         self.status_dict = status_dict if status_dict else {} # 操作关联的状态字典
 
-    def load_from_dictlist(self, action_group_items:list):
-        for item in action_group_items:
+    def load_from_dictlist(self, action_group_item:dict):
+        for item in action_group_item.get('a_l', []):
             action_obj = load_flow_item_from_dict(item)
             if action_obj:
                 self.action_list.append(action_obj)
+        return self
+    
+    def to_json_dict(self):
+        return {
+            'a_l': [action.to_json_dict() for action in self.action_list],
+            # 's_d': self.status_dict
+        }
     
     def run_flow(self):
         """
         执行整个操作链
         """
         for action in self.action_list:
-            action.call_flowitem()
+            action.call_func()
