@@ -206,9 +206,9 @@ class SubPreJudgeObj:
         
 
     def call_func(self):
-        if not self.compare_obj or not self.compare_method:
+        if not self.compare_method:
             return False
-        obj_value = self.compare_obj.call_func()
+        obj_value = self.compare_obj.call_func() if self.compare_obj else None
         return self.compare_method(obj_value, *[cv.param_value for cv in self.compare_values])
     
     def to_json_dict(self):
@@ -224,7 +224,7 @@ class SubPreJudgeObj:
             id_name = self.id_name,
             compare_gui_name = self.compare_gui_name,
             compare_method = self.compare_method,
-            compare_obj = self.compare_obj.return_copy(), # load时会读json new覆盖
+            compare_obj = self.compare_obj.return_copy() if self.compare_obj else None, # load时会读json new覆盖
             compare_values = [cv.return_copy() for cv in self.compare_values] # load时json读取改变
         )
 
@@ -232,19 +232,21 @@ class SubPreJudgeObj:
         @ui.refreshable
         def sub_pre_judge_area():
             with ui.column():
-                with ui.row():
-                    ui.label("比较对象:")
-                    # 提供修改下层组件的能力
-                    ui.select({k:k for k in action_id2obj}, value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
-                    self.compare_obj.render_gui(dataconfig)
+                if self.compare_obj:
+                    with ui.row():
+                        ui.label("比较对象:")
+                        # 提供修改下层组件的能力
+                        ui.select({k:k for k in action_id2obj}, value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
+                        self.compare_obj.render_gui(dataconfig)
                 # with ui.row():
                 #     # 上级组件提供对下级组件的修改能力，所以这边不能修改这个SubPreJudge的种类，只能更改这SubPreJudge的内部参数
                 #     ui.label(self.compare_gui_name)
-                with ui.row():
-                    ui.label("比较值:")
-                    # 只会更新ParamsObj里的属性值
-                    for cv in self.compare_values:
-                        cv.render_gui(dataconfig)
+                if self.compare_values:
+                    with ui.row():
+                        ui.label("比较值:")
+                        # 只会更新ParamsObj里的属性值
+                        for cv in self.compare_values:
+                            cv.render_gui(dataconfig)
         sub_pre_judge_area()
         
         def change_compare_obj(new_id_name):

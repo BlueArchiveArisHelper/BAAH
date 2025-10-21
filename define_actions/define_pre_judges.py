@@ -64,12 +64,15 @@ _pre_judges = [
         ],
         compare_obj=action_id2obj['get_pixel_color_a'].return_copy()
     ),
-    # 永远为真
+    # 图像匹配
     SubPreJudgeObj(
-        id_name='always_true_p', 
-        compare_gui_name='always_true_p',
-        compare_method=lambda a, b: True,
-        compare_values=[ParamsObj('value', ParamsTypes.STRING, '')],
-        compare_obj=action_id2obj['ocr_pic_a'].return_copy()
-    ),
+        compare_gui_name="img_match_p",
+        id_name='img_match_p',
+        compare_method=lambda _, picpath, thres: match(picpath, thres),
+        compare_values=[
+            ParamsObj('picPath', ParamsTypes.PICPATH, ''),
+            ParamsObj('threshold', ParamsTypes.NUMBER, 0.9)
+        ],
+        compare_obj=None
+    )
 ]

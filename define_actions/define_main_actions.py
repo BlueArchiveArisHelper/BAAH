@@ -6,9 +6,10 @@ _main_actions = [
     SubActionMainObj(
         id_name='click_pic_a',
         action_gui_name='click_pic_a',
-        action_func=lambda pic: click(pic),
+        action_func=lambda pic, thre: click(pic, threshold=thre),
         action_params=[
-            ParamsObj('picPath', ParamsTypes.PICPATH, '')
+            ParamsObj('picPath', ParamsTypes.PICPATH, ''),
+            ParamsObj('threshold', ParamsTypes.NUMBER, 0.9)
         ]
     ),
     SubActionMainObj(
