@@ -463,6 +463,8 @@ class FlowActionGroup:
         def change_flow_item_obj(new_id_name, obj_index):
             # 替换操作对象,更新实例
             new_obj = flowitem_id2obj[new_id_name].return_copy()
+            # 保留id
+            new_obj.id = self.action_list[obj_index].id
             self.action_list[obj_index] = new_obj
             # 刷新GUI
             flow_group_area.refresh()
