@@ -27,6 +27,7 @@ from ..pages.Setting_Oneclick_Raid import set_oneclick_raid
 from modules.AllTask.myAllTask import task_instances_map # 这里导入myAllTask可能会导致其内my_AllTask单例值异常，目前通过在run()里使用前再读取config的任务列表解决此bug
 from modules.configs.MyConfig import MyConfigger
 from ..define import gui_shared_config, injectJSforTabs
+from define_actions.basic_objects import FlowActionGroup
 
 from nicegui import ui, app, run
 from typing import Callable
@@ -56,14 +57,32 @@ class ConfigPanel:
     def set_tab(self, tab: ui.tab):
         self.tab = tab
 
+def parse_obj_in_config(inconfig, obj_dict, backward = False):
+    """
+    将配置中的部分字段解析为实际对象，放入obj_dict
 
-def get_config_list(lst_config: MyConfigger, logArea) -> list:
+    当backward=True时，执行反向操作，将obj_dict中的对象转为json存入配置中
+    """
+    parse_mapping = {
+        "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dictlist(x),
+    }
+    for key, clsa in parse_mapping.items():
+        if not backward:
+            # json转对象，存obj_dict
+            if key in inconfig.userconfigdict:
+                obj_dict[key] = clsa(inconfig.userconfigdict[key])
+        else:
+            # 对象转json，存userconfigdict
+            if key in obj_dict:
+                inconfig.userconfigdict[key] = obj_dict[key].to_json_dict()
+
+def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
     return [
         ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None),
         ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config),
         ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config),
         ConfigPanel("setting_task_order", lambda: set_task_order(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
-        ConfigPanel("setting_vpn", lambda: set_vpn(lst_config), i18n_config=lst_config),
+        ConfigPanel("setting_vpn", lambda: set_vpn(lst_config, parsed_obj_dict), i18n_config=lst_config),
         ConfigPanel("setting_notification", lambda: set_notification(lst_config, gui_shared_config), i18n_config=lst_config),
         ConfigPanel("task_cafe", lambda: set_cafe(lst_config), i18n_config=lst_config),
         ConfigPanel("task_timetable", lambda: set_timetable(lst_config), i18n_config=lst_config),
@@ -87,10 +106,13 @@ def get_config_list(lst_config: MyConfigger, logArea) -> list:
 
 @ui.page('/panel/{json_file_name}')
 def show_json_panel(json_file_name: str):
+    # 部分json配置文件项目的gui是由对象方法渲染的，这里需要先解析出这些对象
+    obj_parsed_dict_of_config = {}
     if get_token() is not None and get_token() != app.storage.user.get("token"):
         return
     curr_config: MyConfigger = MyConfigger()
     curr_config.parse_user_config(json_file_name)
+    parse_obj_in_config(curr_config, obj_parsed_dict_of_config)
 
     # 设置splitter高度使其占满全屏，减去2rem是content这个class的内边距
     with ui.splitter(value=15).classes('w-full h-full').style("height: calc(100vh - 2rem);") as splitter:
@@ -102,7 +124,7 @@ def show_json_panel(json_file_name: str):
                 logArea = ui.log(max_lines=1000).classes('w-full h-full')
 
         # 获取tab列表，传参logArea以支持日志输出
-        config_choose_list: list[ConfigPanel] = get_config_list(curr_config, logArea)
+        config_choose_list: list[ConfigPanel] = get_config_list(curr_config, logArea,obj_parsed_dict_of_config)
 
         with splitter.before:
             ui.button("<-", on_click=lambda: ui.run_javascript('window.history.back()'))
@@ -125,6 +147,7 @@ def show_json_panel(json_file_name: str):
         with ui.column().style(
                 'width: 10vw; overflow: auto; position: fixed; bottom: 40px; right: 20px;min-width: 150px;'):
             def save_and_alert():
+                parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
                 curr_config.save_user_config(json_file_name)
                 curr_config.save_software_config()
                 gui_shared_config.save_software_config()
@@ -133,6 +156,7 @@ def show_json_panel(json_file_name: str):
             ui.button(curr_config.get_text("button_save"), on_click=save_and_alert)
 
             def save_and_alert_and_run_in_terminal():
+                parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
                 curr_config.save_user_config(json_file_name)
                 curr_config.save_software_config()
                 gui_shared_config.save_software_config()
@@ -145,6 +169,7 @@ def show_json_panel(json_file_name: str):
 
             # ======Run in GUI======
             async def save_and_alert_and_run():
+                parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
                 curr_config.save_user_config(json_file_name)
                 curr_config.save_software_config()
                 gui_shared_config.save_software_config()

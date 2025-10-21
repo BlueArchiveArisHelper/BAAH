@@ -305,6 +305,8 @@ defaultUserDict = {
     "NOTI_WHEN_ERROR":{
         "d": False,
     },
+    # 启动加速器操作
+    "OBJ_ACTIONS_VPN_START":{"d":[]},
 }
 
 # 软件的config里的默认值
