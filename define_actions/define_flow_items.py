@@ -54,5 +54,15 @@ _flow_items = [
             prejudge_id2obj["equal_p"].return_copy(), 
         ],
         format_render_str="重复次数 #%0# 运行 #%1# 终止条件 #%2#"
+    ),
+    FlowItemObj(
+        id_name="do_action_f",
+        flowitem_gui_name="do_action_f",
+        id=None,
+        inner_logic_func=lambda action_obj: action_obj.call_func(),
+        inner_func_objs=[
+            action_id2obj["click_xy_a"].return_copy()
+        ],
+        format_render_str="执行操作 #%0#"
     )
 ]
