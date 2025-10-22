@@ -27,7 +27,7 @@ def run_until_action(maxtimes_param, action_obj, condition):
     return logic_run_until(
         action_obj.call_func,
         condition.call_func,
-        maxtimes_param.call_func() # 执行ParamObj获取最大执行次数
+        int(maxtimes_param.call_func()) # 执行ParamObj获取最大执行次数
     )
 
 _flow_items = [

@@ -46,6 +46,7 @@ class ParamsObj:
         param_value: any, 参数值
     """
     def __init__(self, param_gui_name:str=None, param_type:ParamsTypes=None, param_value=None):
+        self.id_name = ParamsTypes(param_type)
         self.param_gui_name = param_gui_name  # 参数名称
         self.param_type = ParamsTypes(param_type)  # 参数类型
         self.param_value = param_value # 参数值
@@ -337,7 +338,10 @@ class FlowItemObj:
             # 找到对应的模板里的inner_func_objs
             target_item = self.inner_func_objs[i]
             # 判断id_name
-            if target_item.id_name in action_id2obj:
+            # TODO: 改成load_paramobj_from_dict
+            if isinstance(target_item, ParamsObj):
+                self.inner_func_objs[i] = self.inner_func_objs[i].load_from_dict(item)
+            elif target_item.id_name in action_id2obj:
                 # ActionMainObj
                 self.inner_func_objs[i] = load_action_main_from_dict(item)
             elif target_item.id_name in prejudge_id2obj:
