@@ -9,10 +9,9 @@ def set_vpn(config, parsed_obj_dict):
 
     # -----------------------------
     # 选择是否定义 开加速器 actions
-    with ui.card():
-        ui.checkbox(config.get_text("vpn_desc")).bind_value(config.userconfigdict, "USE_VPN")
-        group:FlowActionGroup = parsed_obj_dict["OBJ_ACTIONS_VPN_START"]
-        group.render_gui(config)
+    ui.checkbox(config.get_text("vpn_desc")).bind_value(config.userconfigdict, "USE_VPN")
+    group:FlowActionGroup = parsed_obj_dict["OBJ_ACTIONS_VPN_START"]
+    group.render_gui(config)
 
 
     # fag = FlowActionGroup()

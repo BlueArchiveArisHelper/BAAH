@@ -40,6 +40,7 @@ class ParamsObj:
     包含参数名称，参数类型，参数值
 
     Parameters:
+        id_name: id属性
         param_gui_name: str, 参数名称
         param_type: ParamsTypes, 参数类型，GUI根据这个渲染不同的输入框
         param_value: any, 参数值
@@ -350,36 +351,43 @@ class FlowItemObj:
         format_str_list = self.format_render_str.split('#')
         @ui.refreshable
         def flow_item_area():
-            with ui.column():
-                ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
-                line = ui.row()
-                for i,stritem in enumerate(format_str_list):
-                    # 解析格式化字符串每个#分割的部分
-                    with line:
-                        if stritem.startswith("%"):
-                            # %开头则替换为对应下标的内部子组件
-                            # 替换为内部逻辑函数对象 #%0#
-                            index = int(stritem[1:])
-                            if index >= 0 and index < len(self.inner_func_objs):
-                                obj = self.inner_func_objs[index]
-                                if isinstance(obj, SubActionMainObj):
-                                    # ActionMainObj组件
-                                    ui.select({k:k for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
-                                    obj.render_gui(dataconfig)
-                                elif isinstance(obj, SubPreJudgeObj):
-                                    # SubPreJudgeObj组件
-                                    ui.select({k:k for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
-                                    obj.render_gui(dataconfig)
-                                elif isinstance(obj, ParamsObj):
-                                    # ParamsObj组件
-                                    obj.render_gui(dataconfig)
-                            else:
-                                ui.label(f"字符串索引超出范围: {stritem}")
-                            # 组件渲染之后换新行
-                            line = ui.row()
-                        else:
-                            # 文字部分直接label显示
-                            ui.label(stritem)
+            ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
+            item_ptr = 0 # 指向列表对象
+            while(item_ptr < len(format_str_list)):
+                # 迭代item直到遇到非label
+                while(item_ptr < len(format_str_list)):
+                    item = format_str_list[item_ptr]
+                    if not item.startswith("%"):
+                        ui.label(item)
+                        item_ptr += 1
+                    else:
+                        # 遇到非label元素
+                        break
+                # 解析这个非label
+                # %开头则替换为对应下标的内部子组件
+                # 把#%0#替换为内部逻辑函数对象
+                if item_ptr >= len(format_str_list):
+                    # 越界
+                    break
+                item = format_str_list[item_ptr]
+                index = int(item[1:])
+                if index >= 0 and index < len(self.inner_func_objs):
+                    obj = self.inner_func_objs[index]
+                    with ui.row():
+                        if isinstance(obj, SubActionMainObj):
+                            # ActionMainObj组件
+                            ui.select({k:k for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
+                            obj.render_gui(dataconfig)
+                        elif isinstance(obj, SubPreJudgeObj):
+                            # SubPreJudgeObj组件
+                            ui.select({k:k for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
+                            obj.render_gui(dataconfig)
+                        elif isinstance(obj, ParamsObj):
+                            # ParamsObj组件
+                            obj.render_gui(dataconfig)
+                else:
+                    ui.label(f"字符串索引超出范围: {item}")
+                item_ptr += 1
         
         flow_item_area()
         def change_inner_action_func_obj(new_id_name, obj_index):
@@ -450,14 +458,15 @@ class FlowActionGroup:
             # 第一行，添加按钮
             ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
             for i,action in enumerate(self.action_list):
-                with ui.card():
-                    ui.select({k:k for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
-                    action.render_gui(dataconfig)
-                    with ui.row():
-                        # 该行下方添加
-                        ui.button(dataconfig.get_text("button_add"), on_click=lambda x,idx=i:add_flow_item(idx+1))
-                        # 删除该行
-                        ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,idx=i: del_flow_item(idx), color="red")
+                with ui.column():
+                    with ui.card():
+                        ui.select({k:k for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                        action.render_gui(dataconfig)
+                with ui.row():
+                    # 该行下方添加
+                    ui.button(dataconfig.get_text("button_add"), on_click=lambda x,idx=i:add_flow_item(idx+1))
+                    # 删除该行
+                    ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,idx=i: del_flow_item(idx), color="red")
         flow_group_area()
 
         def change_flow_item_obj(new_id_name, obj_index):
@@ -471,11 +480,11 @@ class FlowActionGroup:
         
         def add_flow_item(line_index):
             """
-            添加一个操作对象
+            添加一个操作对象在line_index处，原先index处被往后挤
             """
             # 插入一个默认的操作对象
-            default_flow_item = list(flowitem_id2obj.values())[0].return_copy()
-            self.action_list.insert(line_index+1, default_flow_item)
+            default_flow_item = list(flowitem_id2obj.values())[-1].return_copy()
+            self.action_list.insert(line_index, default_flow_item)
             flow_group_area.refresh()
         
         def del_flow_item(line_index):
