@@ -43,7 +43,7 @@ _flow_items = [
             action_id2obj["click_xy_a"].return_copy(), 
             action_id2obj["click_xy_a"].return_copy()
         ],
-        format_render_str="如果 #%0# 则执行 #%1# 否则执行 #%2#"
+        format_render_str="ifelse_action_f_pattern"
     ),
     FlowItemObj(
         id_name="run_until_f",
@@ -55,7 +55,7 @@ _flow_items = [
             action_id2obj["click_xy_a"].return_copy(), 
             prejudge_id2obj["equal_p"].return_copy(), 
         ],
-        format_render_str="重复次数 #%0# 运行 #%1# 终止条件 #%2#"
+        format_render_str="run_until_f_pattern"
     ),
     FlowItemObj(
         id_name="do_action_f",
@@ -65,6 +65,6 @@ _flow_items = [
         inner_func_objs=[
             action_id2obj["click_xy_a"].return_copy()
         ],
-        format_render_str="执行操作 #%0#"
+        format_render_str="do_action_f_pattern"
     )
 ]

@@ -245,7 +245,7 @@ class SubPreJudgeObj:
                     with ui.row():
                         ui.label("比较对象:")
                         # 提供修改下层组件的能力
-                        ui.select({k:k for k in action_id2obj}, value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
+                        ui.select({k:dataconfig.get_text(k) for k in action_id2obj}, value=self.compare_obj.id_name, on_change=lambda v: change_compare_obj(v.value))
                         self.compare_obj.render_gui(dataconfig)
                 # with ui.row():
                 #     # 上级组件提供对下级组件的修改能力，所以这边不能修改这个SubPreJudge的种类，只能更改这SubPreJudge的内部参数
@@ -359,10 +359,10 @@ class FlowItemObj:
         self.inner_logic_func(*self.inner_func_objs)
 
     def render_gui(self, dataconfig):
-        format_str_list = self.format_render_str.split('#')
+        format_str_list = dataconfig.get_text(self.format_render_str).split('#')
         @ui.refreshable
         def flow_item_area():
-            ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
+            # ui.label(f'操作对象: {self.flowitem_gui_name} (ID: {self.id})')
             item_ptr = 0 # 指向列表对象
             while(item_ptr < len(format_str_list)):
                 # 迭代item直到遇到非label
@@ -387,11 +387,11 @@ class FlowItemObj:
                     with ui.row():
                         if isinstance(obj, SubActionMainObj):
                             # ActionMainObj组件
-                            ui.select({k:k for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
+                            ui.select({k:dataconfig.get_text(k) for k in action_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_action_func_obj(v.value, idx))
                             obj.render_gui(dataconfig)
                         elif isinstance(obj, SubPreJudgeObj):
                             # SubPreJudgeObj组件
-                            ui.select({k:k for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
+                            ui.select({k:dataconfig.get_text(k) for k in prejudge_id2obj}, value=obj.id_name, on_change=lambda v,idx=index: change_inner_prejudge_func_obj(v.value, idx))
                             obj.render_gui(dataconfig)
                         elif isinstance(obj, ParamsObj):
                             # ParamsObj组件
@@ -471,7 +471,7 @@ class FlowActionGroup:
             for i,action in enumerate(self.action_list):
                 with ui.column():
                     with ui.card():
-                        ui.select({k:k for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                        ui.select({k:dataconfig.get_text(k) for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
                         action.render_gui(dataconfig)
                 with ui.row():
                     # 该行下方添加

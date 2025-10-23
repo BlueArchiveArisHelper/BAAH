@@ -67,8 +67,8 @@ _main_actions = [
         ]
     ),
     SubActionMainObj(
-        id_name = "open_apk_package",
-        action_gui_name = "open_apk_package",
+        id_name = "open_apk_package_a",
+        action_gui_name = "open_apk_package_a",
         action_func=lambda strapp: (
             logging.info(f"Opening {strapp}"),
             open_app(strapp),
