@@ -64,6 +64,18 @@ _pre_judges = [
         ],
         compare_obj=action_id2obj['get_pixel_color_a'].return_copy()
     ),
+    # 像素点颜色不近似
+    SubPreJudgeObj(
+        compare_gui_name="pixel_not_similar_p",
+        id_name='pixel_not_similar_p',
+        compare_method=lambda bgr, b, g, r: abs(bgr[0] - b)>=5 or abs(bgr[1] - g)>=5 or abs(bgr[2] - r)>=5,
+        compare_values=[
+            ParamsObj('B', ParamsTypes.NUMBER, 0),
+            ParamsObj('G', ParamsTypes.NUMBER, 0),
+            ParamsObj('R', ParamsTypes.NUMBER, 0)
+        ],
+        compare_obj=action_id2obj['get_pixel_color_a'].return_copy()
+    ),
     # 图像匹配
     SubPreJudgeObj(
         compare_gui_name="img_match_p",
@@ -74,5 +86,16 @@ _pre_judges = [
             ParamsObj('threshold', ParamsTypes.NUMBER, 0.9)
         ],
         compare_obj=None
-    )
+    ),
+    # 图像不匹配
+    SubPreJudgeObj(
+        compare_gui_name="img_not_match_p",
+        id_name='img_not_match_p',
+        compare_method=lambda _, picpath, thres: not match(picpath, thres),
+        compare_values=[
+            ParamsObj('picPath', ParamsTypes.PICPATH, ''),
+            ParamsObj('threshold', ParamsTypes.NUMBER, 0.9)
+        ],
+        compare_obj=None
+    ),
 ]

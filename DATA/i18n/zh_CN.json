@@ -224,7 +224,10 @@
     "include_p": "字符串包含",
     "not_include_p": "字符串不包含",
     "pixel_similar_p": "像素点近似",
+    "pixel_not_similar_p": "像素点不近似",
     "img_match_p": "匹配到图像",
+    "img_not_match_p": "未匹配到图像",
+
 
     "ifelse_action_f": "条件判断是否执行",
     "run_until_f": "循环执行直到终止",
