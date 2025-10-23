@@ -65,6 +65,7 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
     """
     parse_mapping = {
         "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dictlist(x),
+        "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dictlist(x),
     }
     for key, clsa in parse_mapping.items():
         if not backward:

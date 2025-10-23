@@ -138,15 +138,15 @@ defaultUserDict = {
     "ENABLE_MAIL_NOTI":{"d":False},
     "CAFE_TOUCH_WAY_DIFF":{"d":True},
     "USE_VPN":{"d":False},
+    "CLOSE_VPN":{"d":False},
     "VPN_CONFIG":{"d":{
         "VPN_ACTIVITY":"com.github.kr328.clash/com.github.kr328.clash.MainActivity",
         "CLICK_AND_WAIT_LIST":[[[622, 248], 2]],
-    }},
-    "CLOSE_VPN":{"d":False},
+    }}, # deprecated
     "VPN_CLOSE_CONFIG":{"d":{
         "VPN_ACTIVITY":"com.github.kr328.clash/com.github.kr328.clash.MainActivity",
         "CLICK_AND_WAIT_LIST":[[[622, 248], 2]],
-    }},
+    }}, # deprecated
     "AUTO_PUSH_EVENT_QUEST":{"d":True},
     "CAFE_COLLECT":{"d":True},
     "CAFE_TOUCH":{"d":True},
@@ -307,6 +307,8 @@ defaultUserDict = {
     },
     # 启动加速器操作
     "OBJ_ACTIONS_VPN_START":{"d":[]},
+    # 关闭加速器操作
+    "OBJ_ACTIONS_VPN_SHUT":{"d":[]},
 }
 
 # 软件的config里的默认值
