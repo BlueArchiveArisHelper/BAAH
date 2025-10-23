@@ -1,5 +1,5 @@
 from nicegui import ui, run
-from gui.components.cut_screenshot import cut_screenshot
+from gui.components.cut_screenshot import cut_screenshot, test_screencut
 from gui.components.list_edit_area import list_edit_area
 import os
 import subprocess
@@ -105,17 +105,9 @@ def set_other(config, gui_shared_config):
     
     ui.label("Test").style('font-size: x-large')
     
-    async def test_screencut():
-        await cut_screenshot(
-            inconfig=config,
-            left_click=True,
-            right_click=True,
-            quick_return=False
-            )
-    
     # 将截图功能内嵌进GUI
     with ui.row():
-        ui.button("测试截图/screencut test", on_click=test_screencut)
+        ui.button("测试截图/screencut test", on_click=lambda: test_screencut(config))
 
     async def restart_adb_server():
         subprocess.run([config.userconfigdict['ADB_PATH'], "kill-server"])

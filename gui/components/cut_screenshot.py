@@ -44,3 +44,11 @@ async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=T
     finally:
         cut_lock = False
     return result
+
+async def test_screencut(use_config):
+    await cut_screenshot(
+        inconfig=use_config,
+        left_click=True,
+        right_click=True,
+        quick_return=False
+        )
