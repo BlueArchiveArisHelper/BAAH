@@ -5,12 +5,12 @@ def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", bu
     """
     截图，截图文件名，截图按钮
     """
-    with ui.row():
+    with ui.row().style("width:300px; height: 150px"):
         # 图片
-        ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 400px")
+        ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
     
     with ui.row():
-        ui.input(input_text).bind_value(resultdict, resultkey).style("width: 400px")
+        ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")
         ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True))
     
 
