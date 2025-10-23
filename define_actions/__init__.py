@@ -54,6 +54,6 @@ if __name__ == "__main__":
     print(str_group)
     ###
 
-    parse_back_group = FlowActionGroup().load_from_dictlist(str_group)
+    parse_back_group = FlowActionGroup().load_from_dict(str_group)
 
     parse_back_group.run_flow()

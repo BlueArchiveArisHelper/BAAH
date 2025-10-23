@@ -64,8 +64,8 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
     当backward=True时，执行反向操作，将obj_dict中的对象转为json存入配置中
     """
     parse_mapping = {
-        "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dictlist(x),
-        "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dictlist(x),
+        "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dict(x),
+        "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dict(x),
     }
     for key, clsa in parse_mapping.items():
         if not backward:

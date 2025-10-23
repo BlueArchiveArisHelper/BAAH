@@ -450,7 +450,7 @@ class FlowActionGroup:
         self.action_list = action_list if action_list else [] # 操作对象列表
         self.status_dict = status_dict if status_dict else {} # 操作关联的状态字典
 
-    def load_from_dictlist(self, action_group_item:dict):
+    def load_from_dict(self, action_group_item:dict):
         for item in action_group_item.get('a_l', []):
             action_obj = load_flow_item_from_dict(item)
             if action_obj:
@@ -509,6 +509,9 @@ class FlowActionGroup:
         """
         执行整个操作链
         """
-        for ind,action in enumerate(self.action_list):
-            logging.info(f"flow {ind+1}/{len(self.action_list)}")
-            action.call_func()
+        try:
+            for ind,action in enumerate(self.action_list):
+                logging.info(f"flow {ind+1}/{len(self.action_list)}")
+                action.call_func()
+        except:
+            logging.error(traceback.format_exc())
