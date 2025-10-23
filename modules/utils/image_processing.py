@@ -334,6 +334,10 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
         screenshot = cv2.imread("./{}".format(config.userconfigdict['SCREENSHOT_NAME']))
     else:
         screenshot = cv2.imread(img_path)
+    # 判断None
+    if screenshot is None:
+        logging.info("The screen shot picture is None")
+        return quick_return_data
     # 平均最大最小bgr
     bgr_result = [[],[],[]]
     def mouse_callback_s(event, x, y, flags, param):

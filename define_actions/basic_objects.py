@@ -4,6 +4,7 @@ import string
 import enum
 from nicegui import ui
 from gui.components.cut_screenshot import screencut_button
+from gui.components.get_app_entrance import get_app_entrance_button
 from modules.utils import *
 
 # ParamsObj, [SubActionMainObj, SubPreJudgeObj, FlowItemObj], FlowActionGroup
@@ -29,10 +30,12 @@ def generate_secure_random_string(length=5):
 
 # =============参数对象================
 
+# 与ParamsObj的render_gui相关
 class ParamsTypes(enum.Enum):
     NUMBER = 1
     STRING = 2
     PICPATH = 3
+    APKPACKAGE = 4
 
 class ParamsObj:
     """
@@ -91,6 +94,9 @@ class ParamsObj:
         elif self.param_type == ParamsTypes.PICPATH:
             with ui.column():
                 screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value')
+        elif self.param_type == ParamsTypes.APKPACKAGE:
+            with ui.column():
+                get_app_entrance_button(inconfig=dataconfig, resultdict=self, resultkey="param_value")
         else:
             ui.label(f"Unkown param type: {self.param_type}")
     

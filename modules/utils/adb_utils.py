@@ -266,18 +266,6 @@ def install_apk(filepath):
     if status.returncode != 0:
         raise(Exception(istr({"zh_CN": "安装失败", "en_US": "Installation failed"})))
     
-def connect_and_get_now_app(enter_activity = True):
-    """
-    链接并获取当前运行的app
-    """
-    connect_to_device(config)
-    app = ""
-    if enter_activity:
-        app = get_now_running_app_entrance_activity(config)
-    else:
-        app = get_now_running_app(config)
-    return app
-    
 # def install_dir(dir):
 #     command = f"{get_config_adb_path()} -s {getNewestSeialNumber()} install-multiple"
 #     for filename in os.listdir(dir):
