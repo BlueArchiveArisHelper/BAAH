@@ -7,6 +7,7 @@ def ifelse_action(precondition, action_main, action_precond_failed):
     """
     执行该操作对象
     """
+    logging.info("Doing if-else action...")
     screenshot()
     if precondition:
         if precondition.call_func():
@@ -24,6 +25,7 @@ def run_until_action(maxtimes_param, action_obj, condition):
     """
     执行该操作对象直到满足条件或者达到最大执行次数
     """
+    logging.info("Doing run_until action...")
     return logic_run_until(
         action_obj.call_func,
         condition.call_func,

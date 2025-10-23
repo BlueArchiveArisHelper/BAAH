@@ -4,6 +4,7 @@ import string
 import enum
 from nicegui import ui
 from gui.components.cut_screenshot import screencut_button
+from modules.utils import *
 
 # ParamsObj, [SubActionMainObj, SubPreJudgeObj, FlowItemObj], FlowActionGroup
 # 中括号包裹的是有预定义模板的，这些模板使得用户在GUI里能选择预定义的比较/操作
@@ -502,5 +503,6 @@ class FlowActionGroup:
         """
         执行整个操作链
         """
-        for action in self.action_list:
+        for ind,action in enumerate(self.action_list):
+            logging.info(f"flow {ind+1}/{len(self.action_list)}")
             action.call_func()
