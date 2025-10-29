@@ -191,15 +191,14 @@ package_copyfile("./dist/BAAH_UPDATE/BAAH_UPDATE.exe", "./dist/BAAH/BAAH_UPDATE.
 
 time.sleep(2)
 
-
-package_rename("./dist/BAAH", f"./dist/BAAH{config_version}")
+#package_rename("./dist/BAAH", f"./dist/BAAH{config_version}")
 
 print("开始压缩")
 time.sleep(2)
 
 # 压缩./dist/BAAH文件夹为BAAH.zip
 z = zipfile.ZipFile(f'./dist/BAAH{config_version}.zip', 'w', zipfile.ZIP_DEFLATED)
-startdir = f"./dist/BAAH{config_version}"
+startdir = f"./dist/BAAH"
 for dirpath, dirnames, filenames in os.walk(startdir):
     for filename in filenames:
         z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace("/dist",""))
@@ -209,7 +208,7 @@ print(f"压缩包大小为{os.path.getsize(f'./dist/BAAH{config_version}.zip')/1
 
 # 压缩./dist/BAAH文件夹(除了_internal, tools)为BAAH_update.zip
 z = zipfile.ZipFile(f'./dist/BAAH{config_version}_update.zip', 'w', zipfile.ZIP_DEFLATED)
-startdir = f"./dist/BAAH{config_version}"
+startdir = f"./dist/BAAH"
 for dirpath, dirnames, filenames in os.walk(startdir):
     # 历史遗留问题，1.6.6之前打包的版本的实际pyinstaller版本过老.
     # 新版本打更新包需要额外添加_internal/jaraco/text文件夹内lorem文件
