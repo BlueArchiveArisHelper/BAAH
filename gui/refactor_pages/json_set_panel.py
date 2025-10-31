@@ -67,15 +67,18 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
         "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dict(x),
         "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dict(x),
     }
-    for key, clsa in parse_mapping.items():
-        if not backward:
-            # json转对象，存obj_dict
+    reverse_mapping = {
+        "OBJ_ACTIONS_VPN_START": lambda x:x.to_json_dict(),
+        "OBJ_ACTIONS_VPN_SHUT": lambda x:x.to_json_dict(),
+    }
+    if not backward:# json转对象，存obj_dict
+        for key, clsa in parse_mapping.items():
             if key in inconfig.userconfigdict:
                 obj_dict[key] = clsa(inconfig.userconfigdict[key])
-        else:
-            # 对象转json，存userconfigdict
+    else:
+        for key, clsa in reverse_mapping.items(): # 对象转json，存userconfigdict
             if key in obj_dict:
-                inconfig.userconfigdict[key] = obj_dict[key].to_json_dict()
+                inconfig.userconfigdict[key] = clsa(obj_dict[key])
 
 def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
     return [

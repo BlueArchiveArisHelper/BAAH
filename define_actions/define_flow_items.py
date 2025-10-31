@@ -32,6 +32,10 @@ def run_until_action(maxtimes_param, action_obj, condition):
         int(maxtimes_param.call_func()) # 执行ParamObj获取最大执行次数
     )
 
+def do_single_action(action_obj):
+    screenshot()
+    action_obj.call_func()
+
 _flow_items = [
     FlowItemObj(
         id_name="ifelse_action_f",
@@ -61,7 +65,7 @@ _flow_items = [
         id_name="do_action_f",
         flowitem_gui_name="do_action_f",
         id=None,
-        inner_logic_func=lambda action_obj: action_obj.call_func(),
+        inner_logic_func=do_single_action,
         inner_func_objs=[
             action_id2obj["click_xy_a"].return_copy()
         ],
