@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from .myversion import myversion
 from modules.configs.defaultSettings import defaultUserDict, defaultSoftwareDict, defaultSessionDict, defaultStorageDict
 from modules.configs.settingMaps import configname2screenshotname
 # 程序入口先import这个实例，然后调用parse_user_config方法解析该config实例
@@ -19,7 +20,7 @@ class MyConfigger:
     """
     维护config字典，包含软件config，用户任务config，语言包
     """
-    NOWVERSION="1.10.16"
+    NOWVERSION=myversion
     USER_CONFIG_FOLDER="./BAAH_CONFIGS"
     SOFTWARE_CONFIG_FOLDER="./DATA/CONFIGS"
     LANGUAGE_PACKAGE_FOLDER="./DATA/i18n"
