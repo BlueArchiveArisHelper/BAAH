@@ -306,9 +306,21 @@ defaultUserDict = {
         "d": False,
     },
     # 启动加速器操作
-    "OBJ_ACTIONS_VPN_START":{"d":{}},
+    "OBJ_ACTIONS_VPN_START":{
+        "d":{},
+        "m":{
+            "from": "VPN_CONFIG",
+            "map": lambda vjson: old_VPN2action_flow(vjson) 
+        }
+    },
     # 关闭加速器操作
-    "OBJ_ACTIONS_VPN_SHUT":{"d":{}},
+    "OBJ_ACTIONS_VPN_SHUT":{
+        "d":{},
+        "m":{
+            "from": "VPN_CLOSE_CONFIG",
+            "map": lambda vjson: old_VPN2action_flow(vjson) 
+        }
+    },
 }
 
 # 软件的config里的默认值
