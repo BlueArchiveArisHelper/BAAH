@@ -321,6 +321,10 @@ defaultUserDict = {
             "map": lambda vjson: old_VPN2action_flow(vjson) 
         }
     },
+    # 总力战队伍无法出击（无编队，已出击）是否报错
+    "ASSAULT_NO_TEAM_EXCEPT":{
+        "d": True,
+    }
 }
 
 # 软件的config里的默认值

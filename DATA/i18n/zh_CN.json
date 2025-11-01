@@ -187,6 +187,7 @@
     "desc_noti_content_diy":"自定义通知内容格式化字符串，使用 %KEY% 包裹想要的字段。你可以在项目的 modules/configs/defaultSettings 查看可用字段",
     "desc_noti_when_error": "发生错误时是否发送通知",
     "desc_noti_when_success": "任务成功时是否发送通知",
+    "error_if_assault_no_team": "总力战无可出击队伍是否报错",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",

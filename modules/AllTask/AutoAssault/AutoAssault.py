@@ -166,7 +166,24 @@ class AutoAssault(Task):
                 break
         # 如果没有打开确认弹窗，那么没有配队
         if not open_confirm:
-            raise Exception("总力战队伍配置错误，任务结束")
+            if config.userconfigdict["ASSAULT_NO_TEAM_EXCEPT"]:
+                raise Exception(istr({
+                    EN: "No team can be used, finish task!",
+                    CN: "总力战无可用队伍，任务结束!"
+                }))
+            else:
+                logging.warn(istr({
+                    EN: "No team can be used",
+                    CN: "总力战无可用队伍"
+                }))
+                self.run_until(
+                    lambda: click(Page.TOPLEFTBACK),
+                    lambda: Page.is_page(PageName.PAGE_ASSAULT),
+                    times = 3,
+                    sleeptime = 2
+                )
+                self.clear_popup()
+                return "no_team"
         # 确认 - 跳过演出
         self.run_until(
             lambda: (click(button_pic(ButtonName.BUTTON_CONFIRMB)) or
@@ -214,8 +231,8 @@ class AutoAssault(Task):
 
             # =================接管战斗=================
             fightres = self.fight_an_assault(auto_switch_teams=True)
-            if fightres == "no_ticket":
-                return "no_ticket"
+            if fightres in ["no_ticket", "no_team"]:
+                return fightres
             # 如果这次再次进入战斗了，那么还是得继续检查下
             return self.check_if_enter_again(next_ind)
         elif check_is_open:
@@ -286,7 +303,7 @@ class AutoAssault(Task):
         # =============检查是否有继续打============
         # 顺便检查总力战是否开放
         res = self.check_if_enter_again(0, check_is_open=True)
-        if res == "can_not_open" or res == "no_ticket":
+        if res in ["can_not_open", "no_ticket", "no_team"]:
             CollectAssaultReward().run()
             return
         # 检查所需要的下标是否解锁了
@@ -321,11 +338,11 @@ class AutoAssault(Task):
             else:
                 # =================接管战斗=================
                 res = self.fight_an_assault(student_help=config.userconfigdict["IS_AUTO_ASSAULT_STUDENT_HELP"])
-                if res == "no_ticket":
+                if res in ["no_ticket", "no_team"]:
                     break
                 # =============检查是否需要继续打============
                 res = self.check_if_enter_again(next_ind)
-                if res == "can_not_open" or res == "no_ticket":
+                if res in ["can_not_open", "no_ticket", "no_team"]:
                     break
 
             # 根据结果判断是否需要平推还是扫荡
