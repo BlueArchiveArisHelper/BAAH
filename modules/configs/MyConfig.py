@@ -247,7 +247,7 @@ class MyConfigger:
         """
         获取语言包对应id的字符串
         """
-        return self.languagepackagedict.get(text_id, f"%{text_id}%")
+        return self.languagepackagedict.get(text_id, f"[{text_id}]")
     
     def save_user_config(self, file_name):
         file_path = os.path.join(self.current_dir, self.USER_CONFIG_FOLDER, file_name)

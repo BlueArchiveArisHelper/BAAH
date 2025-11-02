@@ -49,95 +49,99 @@ def old_VPN2action_flow(VPN_json):
     """
     把老版本的VPN json变成flow的格式
     """
-    vpn_app = VPN_json["VPN_ACTIVITY"]
-    vpn_list = VPN_json["CLICK_AND_WAIT_LIST"]
-    g_action_open_app = lambda _id,_app: {
-                "f_id_n": "do_action_f",
-                "id": str(_id),
-                "i_f_o": [
-                    {
-                        "a_id_n": "open_apk_package_a",
-                        "a_p": [
-                            {
-                                "p_v": _app
-                            }
-                        ]
-                    }
-                ]
-            }
-    g_action_click_pic=lambda _id, _pic:{
-                "f_id_n": "run_until_f",
-                "id": str(_id),
-                "i_f_o": [
-                    {
-                        "p_v": 3.0
-                    },
-                    {
-                        "a_id_n": "click_pic_a",
-                        "a_p": [
-                            {
-                                "p_v": _pic
-                            },
-                            {
-                                "p_v": 0.9
-                            }
-                        ]
-                    },
-                    {
-                        "c_id_n": "img_not_match_p",
-                        "c_obj": None,
-                        "c_v": [
-                            {
-                                "p_v": _pic
-                            },
-                            {
-                                "p_v": 0.9
-                            }
-                        ]
-                    }
-                ]
-            }
-    g_action_click_xy = lambda _id, x, y:{
-                "f_id_n": "do_action_f",
-                "id": str(_id),
-                "i_f_o": [
-                    {
-                        "a_id_n": "click_xy_a",
-                        "a_p": [
-                            {
-                                "p_v": int(x)
-                            },
-                            {
-                                "p_v": int(y)
-                            }
-                        ]
-                    }
-                ]
-            }
-    g_action_sleep = lambda _id, ti_s:{
-                "f_id_n": "do_action_f",
-                "id": str(_id),
-                "i_f_o": [
-                    {
-                        "a_id_n": "sleep_time_a",
-                        "a_p": [
-                            {
-                                "p_v": ti_s
-                            }
-                        ]
-                    }
-                ]
-            }
-    
-    _id = 10000
-    res_list = [g_action_open_app(_id, vpn_app), g_action_sleep(_id+1, 5)] if vpn_app else []
-    _id += 2
-    for each in vpn_list:
-        if isinstance(each[0], str):
-            res_list.append(g_action_click_pic(_id, each[0]))
-        else:
-            res_list.append(g_action_click_xy(_id, each[0][0], each[0][1]))
-        _id += 1
-        res_list.append(g_action_sleep(_id, each[1]))
-        _id += 1
-    return {"a_l":res_list}
+    try:
+        vpn_app = VPN_json["VPN_ACTIVITY"] if VPN_json["VPN_ACTIVITY"] else ""
+        vpn_list = VPN_json["CLICK_AND_WAIT_LIST"] if VPN_json["CLICK_AND_WAIT_LIST"] else []
+        g_action_open_app = lambda _id,_app: {
+                    "f_id_n": "do_action_f",
+                    "id": str(_id),
+                    "i_f_o": [
+                        {
+                            "a_id_n": "open_apk_package_a",
+                            "a_p": [
+                                {
+                                    "p_v": _app
+                                }
+                            ]
+                        }
+                    ]
+                }
+        g_action_click_pic=lambda _id, _pic:{
+                    "f_id_n": "run_until_f",
+                    "id": str(_id),
+                    "i_f_o": [
+                        {
+                            "p_v": 3.0
+                        },
+                        {
+                            "a_id_n": "click_pic_a",
+                            "a_p": [
+                                {
+                                    "p_v": _pic
+                                },
+                                {
+                                    "p_v": 0.9
+                                }
+                            ]
+                        },
+                        {
+                            "c_id_n": "img_not_match_p",
+                            "c_obj": None,
+                            "c_v": [
+                                {
+                                    "p_v": _pic
+                                },
+                                {
+                                    "p_v": 0.9
+                                }
+                            ]
+                        }
+                    ]
+                }
+        g_action_click_xy = lambda _id, x, y:{
+                    "f_id_n": "do_action_f",
+                    "id": str(_id),
+                    "i_f_o": [
+                        {
+                            "a_id_n": "click_xy_a",
+                            "a_p": [
+                                {
+                                    "p_v": int(x)
+                                },
+                                {
+                                    "p_v": int(y)
+                                }
+                            ]
+                        }
+                    ]
+                }
+        g_action_sleep = lambda _id, ti_s:{
+                    "f_id_n": "do_action_f",
+                    "id": str(_id),
+                    "i_f_o": [
+                        {
+                            "a_id_n": "sleep_time_a",
+                            "a_p": [
+                                {
+                                    "p_v": ti_s
+                                }
+                            ]
+                        }
+                    ]
+                }
+        
+        _id = 10000
+        res_list = [g_action_open_app(_id, vpn_app), g_action_sleep(_id+1, 5)] if vpn_app else []
+        _id += 2
+        for each in vpn_list:
+            if isinstance(each[0], str):
+                res_list.append(g_action_click_pic(_id, each[0]))
+            else:
+                res_list.append(g_action_click_xy(_id, each[0][0], each[0][1]))
+            _id += 1
+            res_list.append(g_action_sleep(_id, each[1]))
+            _id += 1
+        return {"a_l":res_list}
+    except:
+        print("Error when parse old VPN setting into obj workflows")
+        return {}
