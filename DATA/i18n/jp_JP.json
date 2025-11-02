@@ -188,6 +188,7 @@
     "desc_noti_when_error": "エラーが発生した場合に通知を送信するかどうかを選択します",
     "desc_noti_when_success": "タスクが成功した場合に通知を送信するかどうかを選択します",
     "error_if_assault_no_team": "総力戦で出撃可能なチームがいない場合、エラーが報告されますか",
+    "flow_mode": "プロセスモデル",
 
     "config_server_jp": "日本サーバー",
     "config_server_cn": "中国公式サーバー",

@@ -9,6 +9,7 @@ from modules.AllTask.SubTask.ExecCode import ExecCode
 
 from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP
 from modules.utils.log_utils import logging
+from define_actions import FlowActionGroup
 
 class UserTask(Task):
     """
@@ -21,17 +22,36 @@ class UserTask(Task):
     def pre_condition(self) -> bool:
         return True
     
-     
-    def on_run(self) -> None:
+    def _do_exec_def_task(self):
+        """使用exec执行python代码"""
         content = config.userconfigdict["USER_DEF_TASKS"]
         runCode = ExecCode(content)
         runCode.run()
-        if runCode.status == Task.STATUS_SUCCESS:
+        return runCode.status
+
+    def _do_action_def_obj(self):
+        """使用action obj执行对象化任务"""
+        content = config.userconfigdict["OBJ_USER_DEFINE_TASK"]
+        flowaction = FlowActionGroup().load_from_dict(content)
+        success = flowaction.run_flow()
+        return Task.STATUS_SUCCESS if success else Task.STATUS_ERROR
+
+     
+    def on_run(self) -> None:
+        if not config.userconfigdict["USE_OBJ_USER_DEFINE_TASK"]:
+            # 使用exec执行python代码
+            status = self._do_exec_def_task()
+        else:
+            # 使用action obj
+            status = self._do_action_def_obj()
+
+
+        if status == Task.STATUS_SUCCESS:
             logging.info(istr({
                 CN: "自定义任务执行成功",
                 EN: "Defined task success",
             }))
-        elif runCode.status == Task.STATUS_ERROR:
+        elif status == Task.STATUS_ERROR:
             logging.error(istr({
                 CN: "自定义任务执行错误，尝试返回游戏主页",
                 EN: "Defined task error, try to return to the game homepage",

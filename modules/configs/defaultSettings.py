@@ -324,7 +324,15 @@ defaultUserDict = {
     # 总力战队伍无法出击（无编队，已出击）是否报错
     "ASSAULT_NO_TEAM_EXCEPT":{
         "d": True,
-    }
+    },
+    # 自定义任务操作使用action
+    "USE_OBJ_USER_DEFINE_TASK":{
+        "d": False,
+    },
+    # 自定义任务操作action列表
+    "OBJ_USER_DEFINE_TASK":{
+        "d":{}
+    },
 }
 
 # 软件的config里的默认值

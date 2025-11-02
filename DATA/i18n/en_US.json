@@ -188,6 +188,7 @@
     "desc_noti_when_error": "Whether to send notification when an error occurs",
     "desc_noti_when_success": "Whether to send notification when the task is successful",
     "error_if_assault_no_team": "Throw error if no team can fight in assault",
+    "flow_mode": "action flow mode",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",

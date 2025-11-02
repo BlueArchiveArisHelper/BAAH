@@ -507,11 +507,13 @@ class FlowActionGroup:
     
     def run_flow(self):
         """
-        执行整个操作链
+        执行整个操作链，返回是否无报错执行
         """
         try:
             for ind,action in enumerate(self.action_list):
                 logging.info(f"flow {ind+1}/{len(self.action_list)}")
                 action.call_func()
+            return True
         except:
             logging.error(traceback.format_exc())
+        return False

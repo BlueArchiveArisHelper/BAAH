@@ -188,6 +188,7 @@
     "desc_noti_when_error": "发生错误时是否发送通知",
     "desc_noti_when_success": "任务成功时是否发送通知",
     "error_if_assault_no_team": "总力战无可出击队伍是否报错",
+    "flow_mode": "操作流程模式",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
