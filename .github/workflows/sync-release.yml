@@ -1,0 +1,21 @@
+name: On Release Published
+
+on:
+  release:
+    types: [published] # 监听发布事件
+
+jobs:
+  log-release-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync cnb.cool repo
+        run: |
+          curl -X 'POST' \
+            'https://api.cnb.cool/BlockHaity/BAAH-releases/-/build/start' \
+            -H 'accept: application/json' \
+            -H 'Content-Type: application/json' \
+            -H 'Authorization: Bearer 1o12beoqfVfJMYR31Szjg3ECJ5H' \
+            -d '{ "event": "api_trigger" }'
