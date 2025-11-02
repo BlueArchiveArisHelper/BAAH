@@ -52,6 +52,12 @@ jobs:
             Write-Output "Tag $tag does not exist. Proceeding."
         }
 
+    - name: Extract version change log
+      id: get_change_log
+      run: |
+        # 将日志输出到文件，确保UTF-8编码和换行符保留
+        python package.py -c | Out-File -FilePath changelog.md -Encoding utf8
+
     - name: Build package
       run: python package.py  # 执行打包脚本[8](@ref)
 
@@ -69,6 +75,5 @@ jobs:
         prerelease: false
         tag_name: BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
         name: BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
-        body: |
-          # BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
+        body_path: changelog.md  # 关键修改：从文件读取内容
         files: ./dist/*.zip  # 仅上传ZIP格式的制品[10](@ref)
