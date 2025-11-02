@@ -28,6 +28,8 @@ class Loginin(Task):
         self.click_keywords = [ 'google' ]
         # 储存上一次无匹配任何逻辑操作时的截图中心区域cv，判断画面变化
         self.last_screenshot_center = None
+        # 是否已经见过了登录弹窗
+        self.meet_login_page = False
 
      
     def pre_condition(self) -> bool:
@@ -119,6 +121,7 @@ class Loginin(Task):
                 CN: "点击空白处让游戏加载",
                 EN: "Click on a blank area to let the game load"
             }))
+            self.meet_login_page = True
         elif any([click_word in ocr_area([300, 251], [900, 325])[0].strip().lower() for click_word in self.click_keywords]):
             # 识别到一些关键字弹窗后点击空白处关闭这个弹窗
             click((1250, 40))
@@ -127,6 +130,13 @@ class Loginin(Task):
                 EN: "Close useless popup"
             }))
         else:
+            if self.meet_login_page:
+                logging.info(istr({
+                    CN: "点击空白处",
+                    EN: "Click blank point"
+                }))
+                click((1250, 40))
+                return
             this_screenshot_center = cv_data[height//3:height*2//3, width//3:width*2//3]
             if self.last_screenshot_center is not None:
                 # 如果这次中心区域和上次一样，说明画面没有变化，可能卡住了，点击空白处
