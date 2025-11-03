@@ -105,7 +105,7 @@ class Loginin(Task):
                 EN: "Waiting for the Bilibili login banner to disappear"
             }))
             sleep(2)
-        elif ocr_area((30, 662), (63, 691))[0].lower() in ["√", "v", "V"]:
+        elif any([eachv in ocr_area((30, 662), (63, 691))[0].lower() for eachv in ["√", "v"]]):
             # 关闭活动弹窗
             # 判断点击左下角是否有今日不再显示的勾（√）并点掉
             click((65, 676))
