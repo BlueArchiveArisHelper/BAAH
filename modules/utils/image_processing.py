@@ -86,7 +86,7 @@ def check_the_pic_validity(_img, _templ):
         return False
     return True
 
-def match_pattern(sourcepic_mat: MatLike, patternpic: str,threshold: float = 0.9, show_result:bool = False, auto_rotate_if_trans = False) -> Tuple[bool, Tuple[float, float], float]:
+def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: float = 0.9, show_result:bool = False, auto_rotate_if_trans = False) -> Tuple[bool, Tuple[float, float], float]:
     """
     Match the pattern picture in the source picture.
     
@@ -109,11 +109,22 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str,threshold: float = 0.9
             logging.error({"zh_CN": "读取截图文件失败次数过多，退出程序", "en_US":"The number of failed attempts to read the screenshot file is too many, exit the program"})
             raise Exception("由于卡顿或其他原因，截图文件损坏，请尝试清理电脑内存后重启程序")
         return default_response
-    # 检查图片是否存在
-    if not exists(patternpic):
-        logging.error({"zh_CN": "匹配的模板图片 文件不存在: {}".format(patternpic), "en_US":"The pattern picture file does not exist: {}".format(patternpic)})
-        return default_response
-    pattern = cv2.imread(patternpic, cv2.IMREAD_UNCHANGED)  # 读取包含透明通道的模板图像
+    if isinstance(patternpic, str):
+        # 检查图片是否存在
+        if not exists(patternpic):
+            logging.error({"zh_CN": "匹配的模板图片 文件不存在: {}".format(patternpic), "en_US":"The pattern picture file does not exist: {}".format(patternpic)})
+            return default_response
+        pattern = cv2.imread(patternpic, cv2.IMREAD_UNCHANGED)  # 读取包含透明通道的模板图像
+    else:
+        # MatLike类型直接赋值给pattern
+        pattern = patternpic
+        if pattern is None:
+            logging.error({
+                "zh_CN": "匹配的模板图片为空", 
+                "en_US":"The pattern picture is None"
+            })
+            return default_response
+    # 判断透明度通道
     have_alpha=False
     if(pattern.shape[2] == 4 and auto_rotate_if_trans):
         # 有透明度通道且开启了旋转匹配
