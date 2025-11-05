@@ -98,6 +98,11 @@ class Task:
                 click(popup_pic(PopupName.POPUP_LOGIN_FORM), sleeptime=1)
                 can_back_home = True
                 Task.clear_popup()
+            # 有国服反和谐社区弹窗，点关闭按钮
+            if match(popup_pic(PopupName.POPUP_LOGIN_FORM_FANHEXIE)):
+                click(popup_pic(PopupName.POPUP_LOGIN_FORM_FANHEXIE), sleeptime=1)
+                can_back_home = True
+                Task.clear_popup()
             # 如果已经在主页
             if(Page.is_page(PageName.PAGE_HOME)):
                 logging.info({"zh_CN": "返回主页成功", "en_US":"Successfully returned to the home page"})
