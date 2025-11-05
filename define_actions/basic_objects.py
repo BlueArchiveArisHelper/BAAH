@@ -225,6 +225,10 @@ class SubActionMainObj:
             return None
         _id_name = action_items.get('id_n', None)
         if not _id_name or _id_name not in action_id2obj:
+            logging.error(istr({
+                CN: f"无法在action_id2obj中找到 {_id_name}",
+                EN: f"Can not find {_id_name} in action_id2obj"
+            }))
             return None
         _sub_action:SubActionMainObj = action_id2obj[_id_name].return_copy()
         # 读取参数
@@ -336,6 +340,10 @@ class SubPreJudgeObj:
             return None
         _id_name = prejudge_items.get('id_n', None)
         if not _id_name or _id_name not in prejudge_id2obj:
+            logging.error(istr({
+                CN: f"无法在prejudge_id2obj中找到 {_id_name}",
+                EN: f"Can not find {_id_name} in prejudge_id2obj"
+            }))
             return None
         # 使用return_copy()来避免引用问题
         _sub_prejudge:SubPreJudgeObj = prejudge_id2obj[_id_name].return_copy()
@@ -478,6 +486,10 @@ class FlowItemObj:
             return None
         _id_name = flow_items.get('id_n', None)
         if not _id_name or _id_name not in flowitem_id2obj:
+            logging.error(istr({
+                CN: f"无法在flowitem_id2obj中找到 {_id_name}",
+                EN: f"Can not find {_id_name} in flowitem_id2obj"
+            }))
             return None
         # 使用return_copy()来避免引用问题
         _flow_item:FlowItemObj = flowitem_id2obj[_id_name].return_copy()
@@ -505,11 +517,15 @@ class FlowActionGroup:
         self.status_dict = status_dict if status_dict else {} # 操作关联的状态字典
 
     def load_from_dict(self, action_group_item:dict):
-        for item in action_group_item.get('a_l', []):
-            action_obj = FlowItemObj._load_flow_item_from_dict(item)
-            if action_obj:
-                self.action_list.append(action_obj)
-        return self
+        try:
+            for item in action_group_item.get('a_l', []):
+                action_obj = FlowItemObj._load_flow_item_from_dict(item)
+                if action_obj:
+                    self.action_list.append(action_obj)
+            return self
+        except:
+            logging.error(traceback.format_exc())
+            return self
     
     def to_json_dict(self):
         return {
