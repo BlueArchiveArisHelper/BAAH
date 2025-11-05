@@ -11,7 +11,7 @@ from modules.utils import *
 # 中括号包裹的是有预定义模板的，这些模板使得用户在GUI里能选择预定义的比较/操作
 # 无包裹的类都是动态创建的实例类
 
-# 共性：id_name属性, 有to_json_dict函数，return_copy函数, call_func函数, render_gui函数
+# 共性：id_name属性, 有to_json_dict函数，load_from_dict函数，return_copy函数, call_func函数, render_gui函数
 #=======================
 # to_json_dict 必须导出 id_name，以及其他用户会改变的，需要持久化的参数
 # return_copy 时，防止同名实例内参数被引用修改，用户能够修改的那些参数需要深拷贝
@@ -28,13 +28,20 @@ def generate_secure_random_string(length=5):
     secure_random_string = ''.join(secrets.choice(characters) for _ in range(length))
     return secure_random_string
 
-def load_objs_from_list(param_obj_list, param_dict_list):
+def load_objs_from_list(param_obj_list, param_dict_list, match_by_id_name = True):
     """
-    从param_dict_list里读取每个字典格式的值，原地修改或解析param_obj_list中的元素.
+    从param_dict_list里解析param_obj_list中的元素.
     
-    如果list中每项dict都有id_name，则按照id_name匹配
+    - match_by_id_name 为 True时：
 
-    如果list中dict缺少id_name，则按照顺序匹配
+        1. 如果list中每项dict都有id_name，则按照id_name匹配。基于obj模板匹配dict，如果没有对应的dict（找不到id_name）则obj模板保持不变
+
+        2. 如果list中dict缺少id_name，则按照顺序匹配
+
+    - match_by_id_name 为 False时：
+
+        按照顺序匹配
+
     """
     all_has_id_name = True
     for paramd in param_dict_list:
@@ -42,13 +49,18 @@ def load_objs_from_list(param_obj_list, param_dict_list):
             all_has_id_name = False
             break
     # 匹配，基于item_list
-    if all_has_id_name:
+    if all_has_id_name and match_by_id_name:
         # 构造 name:param_dict_list元素映射表
         param_dict_map = {each['id_n']:each for each in param_dict_list}
         for obj in param_obj_list:
             # 如果能找到这个item对应的dict
             if obj.id_name in param_dict_map:
                 obj.load_from_dict(param_dict_map.get(obj.id_name))
+            else:
+                logging.error(istr({
+                    CN: f"未能找到 {obj.id_name} 对应的json元素，模板加载为初始值。现有json keys为 {param_dict_map.keys()}",
+                    EN: f"Can not find json item for {obj.id_name}, instance load as initial value. Keys set is {param_dict_map.keys()}"
+                }))
     else:
         # 按顺序匹配
         for i in range(min(len(param_obj_list), len(param_dict_list))):
@@ -191,23 +203,34 @@ class SubActionMainObj:
         with ui.row():
             for i, param in enumerate(self.action_params):
                 param.render_gui(dataconfig)
+    
+    def load_from_dict(self, action_items:dict):
+        """
+        根据dict里的key，找到对应的模板对象，读取json内数据，覆盖这整个self实例
+        """
+        new_instance = SubActionMainObj._load_action_main_from_dict(action_items)
+        if new_instance is None:
+            return
+        self.__dict__.clear()
+        self.__dict__.update(new_instance.__dict__)
 
-
-# 只有id_name, action_params需要从json文件中读取修改，其他参数使用预定义的实例里的
-def load_action_main_from_dict(action_items:dict):
-    """
-    读取json文件中保存的操作内容，转换成ActionMainObj对象
-    """
-    if not action_items:
-        return None
-    _id_name = action_items.get('id_n', None)
-    if not _id_name or _id_name not in action_id2obj:
-        return None
-    _sub_action:SubActionMainObj = action_id2obj[_id_name].return_copy()
-    # 读取参数
-    _params = action_items.get('a_p', [])
-    load_objs_from_list(_sub_action.action_params, _params)
-    return _sub_action
+    
+    @staticmethod
+    def _load_action_main_from_dict(action_items:dict):
+        """
+        读取json文件中保存的操作内容，转换成ActionMainObj对象
+        """
+        # 只有id_name, action_params需要从json文件中读取修改，其他参数使用预定义的实例里的
+        if not action_items:
+            return None
+        _id_name = action_items.get('id_n', None)
+        if not _id_name or _id_name not in action_id2obj:
+            return None
+        _sub_action:SubActionMainObj = action_id2obj[_id_name].return_copy()
+        # 读取参数
+        _params = action_items.get('a_p', [])
+        load_objs_from_list(_sub_action.action_params, _params)
+        return _sub_action
 
 
 
@@ -293,26 +316,36 @@ class SubPreJudgeObj:
             # 刷新GUI
             sub_pre_judge_area.refresh()
     
+    def load_from_dict(self, prejudge_items:dict):
+        """
+        根据dict里的key，找到对应的模板对象，读取json内数据，覆盖这个self实例
+        """
+        new_instance = SubPreJudgeObj._load_prejudge_from_dict(prejudge_items)
+        if new_instance is None:
+            return
+        self.__dict__.clear()
+        self.__dict__.update(new_instance.__dict__)
 
 
-def load_prejudge_from_dict(action_items:dict):
-    """
-    读取json文件中保存的前置条件，转换成SubPreJudgeObj对象
-    """
-    if not action_items:
-        return None
-    _id_name = action_items.get('id_n', None)
-    if not _id_name or _id_name not in prejudge_id2obj:
-        return None
-    # 使用return_copy()来避免引用问题
-    _sub_prejudge:SubPreJudgeObj = prejudge_id2obj[_id_name].return_copy()
-    # 前置条件的被比较对象
-    _compare_obj_dict = action_items.get('c_obj', None)
-    if _compare_obj_dict:
-        _sub_prejudge.compare_obj = load_action_main_from_dict(_compare_obj_dict)
-    # 前置条件的比较值ParamsObj, 只覆盖值
-    load_objs_from_list(_sub_prejudge.compare_values, action_items.get('c_v', []))
-    return _sub_prejudge
+    @staticmethod
+    def _load_prejudge_from_dict(prejudge_items:dict):
+        """
+        读取json文件中保存的前置条件，转换成SubPreJudgeObj对象
+        """
+        if not prejudge_items:
+            return None
+        _id_name = prejudge_items.get('id_n', None)
+        if not _id_name or _id_name not in prejudge_id2obj:
+            return None
+        # 使用return_copy()来避免引用问题
+        _sub_prejudge:SubPreJudgeObj = prejudge_id2obj[_id_name].return_copy()
+        # 前置条件的被比较对象
+        _compare_obj_dict = prejudge_items.get('c_obj', None)
+        if _compare_obj_dict:
+            _sub_prejudge.compare_obj.load_from_dict(_compare_obj_dict)
+        # 前置条件的比较值ParamsObj, 只覆盖值
+        load_objs_from_list(_sub_prejudge.compare_values, prejudge_items.get('c_v', []))
+        return _sub_prejudge
 
 
 # ============操作对象================
@@ -364,22 +397,6 @@ class FlowItemObj:
             # 内部逻辑函数不保存
             'i_f_o': [obj.to_json_dict() for obj in self.inner_func_objs] if self.inner_func_objs else []
         }
-
-    def load_func_objs_from_dictlist(self, objs_json_list):
-        # 从json列表里读取内部对象
-        for i,item in enumerate(objs_json_list):
-            # 找到对应的模板里的inner_func_objs
-            target_item = self.inner_func_objs[i]
-            # 判断id_name
-            # TODO: 改成load_paramobj_from_dict
-            if isinstance(target_item, ParamsObj):
-                self.inner_func_objs[i] = self.inner_func_objs[i].load_from_dict(item)
-            elif target_item.id_name in action_id2obj:
-                # ActionMainObj
-                self.inner_func_objs[i] = load_action_main_from_dict(item)
-            elif target_item.id_name in prejudge_id2obj:
-                # SubPreJudgeObj
-                self.inner_func_objs[i] = load_prejudge_from_dict(item)
             
     def call_func(self):
         self.inner_logic_func(*self.inner_func_objs)
@@ -440,27 +457,38 @@ class FlowItemObj:
             self.inner_func_objs[obj_index] = new_obj
             # 刷新GUI
             flow_item_area.refresh()
+    
+    def load_from_dict(self, flow_items:dict):
+        """
+        根据dict里的key，找到对应的模板对象，读取json内数据，覆盖这个self实例
+        """
+        new_instance = FlowItemObj._load_flow_item_from_dict(flow_items)
+        if new_instance is None:
+            return
+        self.__dict__.clear()
+        self.__dict__.update(new_instance.__dict__)
 
 
-
-def load_flow_item_from_dict(action_item:dict):
-    """
-    读取json文件中保存的操作对象，转换成FlowItemObj对象
-    """
-    if not action_item:
-        return None
-    _id_name = action_item.get('id_n', None)
-    if not _id_name or _id_name not in flowitem_id2obj:
-        return None
-    # 使用return_copy()来避免引用问题
-    _flow_item:FlowItemObj = flowitem_id2obj[_id_name].return_copy()
-    # 读取id
-    _flow_item.id = action_item.get('id', None)
-    # 读取内部逻辑函数对象列表
-    _inner_func_objs_dictlist = action_item.get('i_f_o', [])
-    if _inner_func_objs_dictlist:
-        _flow_item.load_func_objs_from_dictlist(_inner_func_objs_dictlist)
-    return _flow_item
+    @staticmethod
+    def _load_flow_item_from_dict(flow_items:dict):
+        """
+        读取json文件中保存的操作对象，转换成FlowItemObj对象
+        """
+        if not flow_items:
+            return None
+        _id_name = flow_items.get('id_n', None)
+        if not _id_name or _id_name not in flowitem_id2obj:
+            return None
+        # 使用return_copy()来避免引用问题
+        _flow_item:FlowItemObj = flowitem_id2obj[_id_name].return_copy()
+        # 读取id
+        _flow_item.id = flow_items.get('id', None)
+        # 读取内部逻辑函数对象列表
+        _inner_func_objs_dictlist = flow_items.get('i_f_o', [])
+        if _inner_func_objs_dictlist:
+            # FlowItem内具体执行什么操作是在json内保存的（用户可以改变某个inner_func_objs的种类）。不能根据模板内id_name去匹配json内id_n，会由于找不到对应json key直接跳过并重置成模板初始参数。直接按顺序加载所有json格式的inner_func_objs进实例即可， match_by_id_name = False
+            load_objs_from_list(_flow_item.inner_func_objs, _inner_func_objs_dictlist, match_by_id_name = False)
+        return _flow_item
 
 # ============操作组对象================
 
@@ -478,7 +506,7 @@ class FlowActionGroup:
 
     def load_from_dict(self, action_group_item:dict):
         for item in action_group_item.get('a_l', []):
-            action_obj = load_flow_item_from_dict(item)
+            action_obj = FlowItemObj._load_flow_item_from_dict(item)
             if action_obj:
                 self.action_list.append(action_obj)
         return self
