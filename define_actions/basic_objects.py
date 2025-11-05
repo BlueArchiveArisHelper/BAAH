@@ -28,6 +28,34 @@ def generate_secure_random_string(length=5):
     secure_random_string = ''.join(secrets.choice(characters) for _ in range(length))
     return secure_random_string
 
+def load_objs_from_list(param_obj_list, param_dict_list):
+    """
+    从param_dict_list里读取每个字典格式的值，原地修改或解析param_obj_list中的元素.
+    
+    如果list中每项dict都有id_name，则按照id_name匹配
+
+    如果list中dict缺少id_name，则按照顺序匹配
+    """
+    all_has_id_name = True
+    for paramd in param_dict_list:
+        if 'id_n' not in paramd:
+            all_has_id_name = False
+            break
+    # 匹配，基于item_list
+    if all_has_id_name:
+        # 构造 name:param_dict_list元素映射表
+        param_dict_map = {each['id_n']:each for each in param_dict_list}
+        for obj in param_obj_list:
+            # 如果能找到这个item对应的dict
+            if obj.id_name in param_dict_map:
+                obj.load_from_dict(param_dict_map.get(obj.id_name))
+    else:
+        # 按顺序匹配
+        for i in range(min(len(param_obj_list), len(param_dict_list))):
+            # 只把参数值覆盖到模板参数对象里，其他参数保持预定义的
+            param_obj_list[i].load_from_dict(param_dict_list[i])
+    return param_obj_list
+
 # =============参数对象================
 
 # 与ParamsObj的render_gui相关
@@ -44,21 +72,22 @@ class ParamsObj:
     包含参数名称，参数类型，参数值
 
     Parameters:
-        id_name: id属性
+        id_name: id属性,需要json与模板保持一致，用以读取json
         param_gui_name: str, 参数名称
         param_type: ParamsTypes, 参数类型，GUI根据这个渲染不同的输入框
         param_value: any, 参数值
     """
-    def __init__(self, param_gui_name:str=None, param_type:ParamsTypes=None, param_value=None):
-        self.id_name = ParamsTypes(param_type)
-        self.param_gui_name = param_gui_name  # 参数名称
+    def __init__(self, id_name:str, gui_name=None, param_type:ParamsTypes=None, param_value=None):
+        self.id_name = id_name # 参数名称，与参数的读取与解析有关，不要轻易改变
+        self.param_gui_name = gui_name if gui_name else id_name  # 参数gui名称
         self.param_type = ParamsTypes(param_type)  # 参数类型
         self.param_value = param_value # 参数值
     
     def return_copy(self):
-        return ParamsObj(self.param_gui_name, self.param_type, self.param_value)
+        return ParamsObj(self.id_name, self.param_gui_name, self.param_type, self.param_value)
 
     def load_from_dict(self, param_items:dict):
+        """从dict里读取param value值，不会验证id_name"""
         if not param_items:
             return self
         # gui_name不应当依赖于读取json文件存储，只应当依赖于已有对象
@@ -72,6 +101,7 @@ class ParamsObj:
         转换成json可保存的字典格式
         """
         return {
+            'id_n': self.id_name,
             # 'param_gui_name': self.param_gui_name,
             # 'param_type': self.param_type.value if self.param_type else None,
             'p_v': self.param_value
@@ -139,7 +169,7 @@ class SubActionMainObj:
         转换成json可保存的字典格式
         """
         return {
-            'a_id_n': self.id_name,
+            'id_n': self.id_name,
             # 'action_gui_name': self.action_gui_name,
             'a_p': [param.to_json_dict() for param in self.action_params]
         }
@@ -170,15 +200,13 @@ def load_action_main_from_dict(action_items:dict):
     """
     if not action_items:
         return None
-    _id_name = action_items.get('a_id_n', None)
+    _id_name = action_items.get('id_n', None)
     if not _id_name or _id_name not in action_id2obj:
         return None
     _sub_action:SubActionMainObj = action_id2obj[_id_name].return_copy()
     # 读取参数
     _params = action_items.get('a_p', [])
-    for i in range(min(len(_params), len(_sub_action.action_params))):
-        # 只把参数值覆盖到模板参数对象里，其他参数保持预定义的
-        _sub_action.action_params[i].load_from_dict(_params[i])
+    load_objs_from_list(_sub_action.action_params, _params)
     return _sub_action
 
 
@@ -222,7 +250,7 @@ class SubPreJudgeObj:
     
     def to_json_dict(self):
         return {
-            'c_id_n': self.id_name,
+            'id_n': self.id_name,
             # 'compare_gui_name': self.compare_gui_name,
             'c_obj': self.compare_obj.to_json_dict() if self.compare_obj else None,
             'c_v': [cv.to_json_dict() for cv in self.compare_values] if self.compare_values else [],
@@ -273,7 +301,7 @@ def load_prejudge_from_dict(action_items:dict):
     """
     if not action_items:
         return None
-    _id_name = action_items.get('c_id_n', None)
+    _id_name = action_items.get('id_n', None)
     if not _id_name or _id_name not in prejudge_id2obj:
         return None
     # 使用return_copy()来避免引用问题
@@ -283,9 +311,7 @@ def load_prejudge_from_dict(action_items:dict):
     if _compare_obj_dict:
         _sub_prejudge.compare_obj = load_action_main_from_dict(_compare_obj_dict)
     # 前置条件的比较值ParamsObj, 只覆盖值
-    for i, cv in enumerate(_sub_prejudge.compare_values):
-        # 循环实例，load from json [i]
-        cv.load_from_dict(action_items.get('c_v', [])[i])
+    load_objs_from_list(_sub_prejudge.compare_values, action_items.get('c_v', []))
     return _sub_prejudge
 
 
@@ -333,7 +359,7 @@ class FlowItemObj:
         转换成json可保存的字典格式
         """
         return {
-            'f_id_n': self.id_name,
+            'id_n': self.id_name,
             'id': self.id,
             # 内部逻辑函数不保存
             'i_f_o': [obj.to_json_dict() for obj in self.inner_func_objs] if self.inner_func_objs else []
@@ -423,7 +449,7 @@ def load_flow_item_from_dict(action_item:dict):
     """
     if not action_item:
         return None
-    _id_name = action_item.get('f_id_n', None)
+    _id_name = action_item.get('id_n', None)
     if not _id_name or _id_name not in flowitem_id2obj:
         return None
     # 使用return_copy()来避免引用问题

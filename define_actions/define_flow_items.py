@@ -55,7 +55,7 @@ _flow_items = [
         id=None,
         inner_logic_func=run_until_action,
         inner_func_objs=[
-            ParamsObj("maxtimes", ParamsTypes.NUMBER, 5), 
+            ParamsObj("maxtimes", "maxtimes", ParamsTypes.NUMBER, 5), 
             action_id2obj["click_xy_a"].return_copy(), 
             prejudge_id2obj["equal_p"].return_copy(), 
         ],

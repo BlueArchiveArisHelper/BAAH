@@ -49,15 +49,16 @@ def old_VPN2action_flow(VPN_json):
     """
     把老版本的VPN json变成flow的格式
     """
+    # 由于这边是底层依赖，不能 import 任何项目组件，所有东西用json表示
     try:
         vpn_app = VPN_json["VPN_ACTIVITY"] if VPN_json["VPN_ACTIVITY"] else ""
         vpn_list = VPN_json["CLICK_AND_WAIT_LIST"] if VPN_json["CLICK_AND_WAIT_LIST"] else []
         g_action_open_app = lambda _id,_app: {
-                    "f_id_n": "do_action_f",
+                    "id_n": "do_action_f",
                     "id": str(_id),
                     "i_f_o": [
                         {
-                            "a_id_n": "open_apk_package_a",
+                            "id_n": "open_apk_package_a",
                             "a_p": [
                                 {
                                     "p_v": _app
@@ -67,14 +68,14 @@ def old_VPN2action_flow(VPN_json):
                     ]
                 }
         g_action_click_pic=lambda _id, _pic:{
-                    "f_id_n": "run_until_f",
+                    "id_n": "run_until_f",
                     "id": str(_id),
                     "i_f_o": [
                         {
                             "p_v": 3.0
                         },
                         {
-                            "a_id_n": "click_pic_a",
+                            "id_n": "click_pic_a",
                             "a_p": [
                                 {
                                     "p_v": _pic
@@ -85,7 +86,7 @@ def old_VPN2action_flow(VPN_json):
                             ]
                         },
                         {
-                            "c_id_n": "img_not_match_p",
+                            "id_n": "img_not_match_p",
                             "c_obj": None,
                             "c_v": [
                                 {
@@ -99,11 +100,11 @@ def old_VPN2action_flow(VPN_json):
                     ]
                 }
         g_action_click_xy = lambda _id, x, y:{
-                    "f_id_n": "do_action_f",
+                    "id_n": "do_action_f",
                     "id": str(_id),
                     "i_f_o": [
                         {
-                            "a_id_n": "click_xy_a",
+                            "id_n": "click_xy_a",
                             "a_p": [
                                 {
                                     "p_v": int(x)
@@ -116,11 +117,11 @@ def old_VPN2action_flow(VPN_json):
                     ]
                 }
         g_action_sleep = lambda _id, ti_s:{
-                    "f_id_n": "do_action_f",
+                    "id_n": "do_action_f",
                     "id": str(_id),
                     "i_f_o": [
                         {
-                            "a_id_n": "sleep_time_a",
+                            "id_n": "sleep_time_a",
                             "a_p": [
                                 {
                                     "p_v": ti_s

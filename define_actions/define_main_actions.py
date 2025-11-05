@@ -11,8 +11,8 @@ _main_actions = [
             click(pic, threshold=thre)
         )[-1],
         action_params=[
-            ParamsObj('picPath', ParamsTypes.PICPATH, ''),
-            ParamsObj('threshold', ParamsTypes.NUMBER, 0.9)
+            ParamsObj('picPath', 'picPath', ParamsTypes.PICPATH, ''),
+            ParamsObj('threshold', 'threshold', ParamsTypes.NUMBER, 0.9)
         ]
     ),
     SubActionMainObj(
@@ -23,8 +23,8 @@ _main_actions = [
             click((int(x), int(y)))
         )[-1],
         action_params=[
-            ParamsObj('x', ParamsTypes.NUMBER, 0),
-            ParamsObj('y', ParamsTypes.NUMBER, 0)
+            ParamsObj('x', 'x', ParamsTypes.NUMBER, 0),
+            ParamsObj('y', 'y', ParamsTypes.NUMBER, 0)
         ]
     ),
     SubActionMainObj(
@@ -36,10 +36,10 @@ _main_actions = [
             ocr_text
         )[-1],
         action_params=[
-            ParamsObj('left_up_x', ParamsTypes.NUMBER, 0),
-            ParamsObj('left_up_y', ParamsTypes.NUMBER, 0),
-            ParamsObj('right_down_x', ParamsTypes.NUMBER, 100),
-            ParamsObj('right_down_y', ParamsTypes.NUMBER, 100),
+            ParamsObj('left_up_x', 'left_up_x', ParamsTypes.NUMBER, 0),
+            ParamsObj('left_up_y', 'left_up_y', ParamsTypes.NUMBER, 0),
+            ParamsObj('right_down_x', 'right_down_x', ParamsTypes.NUMBER, 100),
+            ParamsObj('right_down_y', 'right_down_y', ParamsTypes.NUMBER, 100),
         ]
     ),
     SubActionMainObj(
@@ -50,7 +50,7 @@ _main_actions = [
             sleep(float(t))
         )[-1],
         action_params=[
-            ParamsObj('time_seconds', ParamsTypes.NUMBER, 1)
+            ParamsObj('time_seconds', 'time_seconds', ParamsTypes.NUMBER, 1)
         ]
     ),
     SubActionMainObj(
@@ -62,8 +62,8 @@ _main_actions = [
             pixel_BGR
         )[-1],
         action_params=[
-            ParamsObj('x', ParamsTypes.NUMBER, 0),
-            ParamsObj('y', ParamsTypes.NUMBER, 0)
+            ParamsObj('x', 'x', ParamsTypes.NUMBER, 0),
+            ParamsObj('y', 'y', ParamsTypes.NUMBER, 0)
         ]
     ),
     SubActionMainObj(
@@ -74,7 +74,7 @@ _main_actions = [
             open_app(strapp),
         )[-1],
         action_params=[
-            ParamsObj("package", ParamsTypes.APKPACKAGE, "")
+            ParamsObj("package", "package", ParamsTypes.APKPACKAGE, "")
         ]
     ),
 ]
