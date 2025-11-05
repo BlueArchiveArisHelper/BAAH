@@ -61,6 +61,7 @@ def old_VPN2action_flow(VPN_json):
                             "id_n": "open_apk_package_a",
                             "a_p": [
                                 {
+                                    "id_n": "package",
                                     "p_v": _app
                                 }
                             ]
@@ -72,15 +73,18 @@ def old_VPN2action_flow(VPN_json):
                     "id": str(_id),
                     "i_f_o": [
                         {
+                            "id_n": "maxtimes",
                             "p_v": 3.0
                         },
                         {
                             "id_n": "click_pic_a",
                             "a_p": [
                                 {
+                                    "id_n": "picPath",
                                     "p_v": _pic
                                 },
                                 {
+                                    "id_n": "threshold",
                                     "p_v": 0.9
                                 }
                             ]
@@ -90,9 +94,11 @@ def old_VPN2action_flow(VPN_json):
                             "c_obj": None,
                             "c_v": [
                                 {
+                                    "id_n": "picPath",
                                     "p_v": _pic
                                 },
                                 {
+                                    "id_n": "threshold",
                                     "p_v": 0.9
                                 }
                             ]
@@ -107,9 +113,11 @@ def old_VPN2action_flow(VPN_json):
                             "id_n": "click_xy_a",
                             "a_p": [
                                 {
+                                    "id_n": "x",
                                     "p_v": int(x)
                                 },
                                 {
+                                    "id_n": "y",
                                     "p_v": int(y)
                                 }
                             ]
@@ -124,6 +132,7 @@ def old_VPN2action_flow(VPN_json):
                             "id_n": "sleep_time_a",
                             "a_p": [
                                 {
+                                    "id_n": "time_seconds",
                                     "p_v": ti_s
                                 }
                             ]
