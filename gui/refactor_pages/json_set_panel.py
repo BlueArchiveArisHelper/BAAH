@@ -133,9 +133,9 @@ def show_json_panel(json_file_name: str):
         config_choose_list: list[ConfigPanel] = get_config_list(curr_config, logArea,obj_parsed_dict_of_config)
 
         with splitter.before:
-            ui.button("<-", on_click=lambda: ui.run_javascript('window.history.back()'))
+            ui.button("<-", on_click=lambda: ui.run_javascript('window.history.back()')).style("position: fixed; left:10px; top:10px; z-index: 999")
             # 便于js查找tabs
-            with ui.tabs().props('vertical').classes('w-full loctabs') as tabs:
+            with ui.tabs().props('vertical').classes('w-full h-full loctabs') as tabs:
                 for i, config_cls in enumerate(config_choose_list):
                     config_choose_list[i].set_tab(ui.tab(config_cls.name))
 
