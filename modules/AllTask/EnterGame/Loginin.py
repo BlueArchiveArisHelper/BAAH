@@ -190,10 +190,10 @@ class Loginin(Task):
         self.task_start_time = time.time()
         # 循环进行条件判断点击操作
         self.run_until(self.try_jump_useless_pages, 
-                      lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_FANHEXIE)) or Page.is_page(PageName.PAGE_HOME), 
+                      lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME), 
                       times = 200,
                       sleeptime = self.sleep_between_detect)
 
      
     def post_condition(self) -> bool:
-        return match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_FANHEXIE)) or Page.is_page(PageName.PAGE_HOME)
+        return match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME)

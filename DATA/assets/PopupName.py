@@ -2,10 +2,6 @@ class PopupName:
     POPUP_CONTEST_TARGET = "POPUP_CONTEST_TARGET"
     POPUP_FIGHT_RESULT = "POPUP_FIGHT_RESULT"
     POPUP_LOGIN_FORM = "POPUP_LOGIN_FORM"
-    """
-    注意考虑国服登录资讯弹窗反和谐
-    """
-    POPUP_LOGIN_FORM_FANHEXIE = "POPUP_LOGIN_FORM_FANHEXIE"
     POPUP_TASK_INFO = "POPUP_TASK_INFO"
     """
     注意考虑国服活动任务资讯“开始扫荡“反和谐
