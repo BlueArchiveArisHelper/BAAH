@@ -288,6 +288,12 @@ defaultUserDict = {
     "EXAM_ALLOW_FALLBACK":{
         "d":True
     },
+    # 综合战术考试 使用助战学生
+    "IS_EXAM_STUDENT_HELP":{"d":False},
+    # 综合战术考试 助战学生后排
+    "EXAM_HELP_STUDENT_IS_SUPPORT":{"d":False},
+    # 综合战术考试 助战学生
+    "EXAM_HELP_STUDENT":{"d":""},
     # ARIA2配置
     "ARIA2_PATH":{"d":"./tools/aria2/aria2c.exe"},
     "ARIA2_THREADS":{"d":16},
