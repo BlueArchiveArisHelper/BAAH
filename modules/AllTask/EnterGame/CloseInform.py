@@ -17,7 +17,7 @@ class CloseInform(Task):
     def pre_condition(self) -> bool:
         sleep(1)
         screenshot()
-        if not (match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_FANHEXIE))):
+        if not match(popup_pic(PopupName.POPUP_LOGIN_FORM)):
             return False
         return True
     
