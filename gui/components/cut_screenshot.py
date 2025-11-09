@@ -15,7 +15,7 @@ def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", bu
     
 
 cut_lock = False
-async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=True, right_click=False, quick_return=True):
+async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=True, right_click=False, quick_return=True, callback = None, **kwargs):
     """
     截取截图的一部分，返回截图文件名
     """
@@ -35,7 +35,8 @@ async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=T
             left_click=left_click,
             right_click=right_click,
             img_path=screenshotname,
-            quick_return=quick_return
+            quick_return=quick_return,
+            **kwargs
         )
         if resultdict is not None and resultkey is not None:
             resultdict[resultkey] = result
@@ -43,6 +44,8 @@ async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=T
         print(e)
     finally:
         cut_lock = False
+    if callback:
+        callback(result)
     return result
 
 async def test_screencut(use_config):

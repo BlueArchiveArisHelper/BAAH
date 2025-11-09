@@ -13,7 +13,9 @@ _main_actions = [
         action_params=[
             ParamsObj('picPath', 'picPath', ParamsTypes.PICPATH, ''),
             ParamsObj('threshold', 'threshold', ParamsTypes.NUMBER, 0.9)
-        ]
+        ],
+        line_edit_type=None,
+        edit_value_map=None
     ),
     SubActionMainObj(
         id_name='click_xy_a',
@@ -25,7 +27,12 @@ _main_actions = [
         action_params=[
             ParamsObj('x', 'x', ParamsTypes.NUMBER, 0),
             ParamsObj('y', 'y', ParamsTypes.NUMBER, 0)
-        ]
+        ],
+        line_edit_type=LineQuickEditType.POINT_XY,
+        edit_value_map={
+            'x':'x',
+            'y':'y'
+        }
     ),
     SubActionMainObj(
         id_name='ocr_pic_a',
@@ -40,7 +47,14 @@ _main_actions = [
             ParamsObj('left_up_y', 'left_up_y', ParamsTypes.NUMBER, 0),
             ParamsObj('right_down_x', 'right_down_x', ParamsTypes.NUMBER, 100),
             ParamsObj('right_down_y', 'right_down_y', ParamsTypes.NUMBER, 100),
-        ]
+        ],
+        line_edit_type=LineQuickEditType.REGION_XYXY,
+        edit_value_map={
+            'imgx1':'left_up_x',
+            'imgy1':'left_up_y',
+            'imgx2':'right_down_x',
+            'imgy2':'right_down_y'
+        }
     ),
     SubActionMainObj(
         id_name="sleep_time_a",
@@ -51,7 +65,9 @@ _main_actions = [
         )[-1],
         action_params=[
             ParamsObj('time_seconds', 'time_seconds', ParamsTypes.NUMBER, 1)
-        ]
+        ],
+        line_edit_type=None,
+        edit_value_map=None
     ),
     SubActionMainObj(
         id_name="get_pixel_color_a",
@@ -64,7 +80,12 @@ _main_actions = [
         action_params=[
             ParamsObj('x', 'x', ParamsTypes.NUMBER, 0),
             ParamsObj('y', 'y', ParamsTypes.NUMBER, 0)
-        ]
+        ],
+        line_edit_type=LineQuickEditType.POINT_XY,
+        edit_value_map={
+            'x':'x',
+            'y':'y'
+        }
     ),
     SubActionMainObj(
         id_name = "open_apk_package_a",
@@ -75,6 +96,8 @@ _main_actions = [
         )[-1],
         action_params=[
             ParamsObj("package", "package", ParamsTypes.APKPACKAGE, "")
-        ]
+        ],
+        line_edit_type=None,
+        edit_value_map=None
     ),
 ]

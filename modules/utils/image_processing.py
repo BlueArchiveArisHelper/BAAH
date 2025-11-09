@@ -320,7 +320,20 @@ def compare_diff(img1, img2, xfocus, yfocus):
 drawing = False  # 检查是否正在绘制
 start_x, start_y = -1, -1
 quick_return_data = None
-def screencut_tool(left_click = True, right_click = True, img_path = None, quick_return = False):
+quick_return_full_data = None
+quick_return_full_data_blueprint = {
+    'x':-1,
+    'y':-1,
+    'b':-1,
+    'g':-1,
+    'r':-1,
+    'imgname':"",
+    'imgx1':-1,
+    'imgy1':-1,
+    'imgx2':-1,
+    'imgy2':-1
+}
+def screencut_tool(left_click = True, right_click = True, img_path = None, quick_return = False, quick_return_full = False, save_cut_img = True):
     """
     截图工具
     
@@ -334,12 +347,15 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
         要截取的图片路径
     quick_return : bool
         是否开启快速返回, 如果开启，点击右键后会返回坐标
+    quick_return_full: bool
+        快速返回后返回完整的json信息
     """
     window_name = 'Screenshot'
-    global start_x, start_y, drawing, quick_return_data
+    global start_x, start_y, drawing, quick_return_data, quick_return_full_data, quick_return_full_data_blueprint
     drawing = False  # 检查是否正在绘制
     start_x, start_y = -1, -1
     quick_return_data = None
+    quick_return_full_data = quick_return_full_data_blueprint.copy()
     # 读取透明度层
     if not img_path:
         screenshot = cv2.imread("./{}".format(config.userconfigdict['SCREENSHOT_NAME']))
@@ -353,7 +369,7 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
     bgr_result = [[],[],[]]
     def mouse_callback_s(event, x, y, flags, param):
         # 截图
-        global start_x, start_y, drawing, quick_return_data
+        global start_x, start_y, drawing, quick_return_data, quick_return_full_data
         if right_click and event == cv2.EVENT_RBUTTONDOWN:  # 检查是否是鼠标右键键点击事件
             print(f"click: [{x}, {y}]", f"BGR: {[p for p in screenshot[y, x]]}")
             bgr_result[0].append(screenshot[y, x][0])
@@ -363,6 +379,12 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
             
             if quick_return:
                 quick_return_data = [x, y]
+                # ---
+                quick_return_full_data['x'] = x
+                quick_return_full_data['y'] = y
+                quick_return_full_data['b'] = bgr_result[0]
+                quick_return_full_data['g'] = bgr_result[1]
+                quick_return_full_data['r'] = bgr_result[2]
                 cv2.destroyAllWindows()
             
         if left_click and event == cv2.EVENT_LBUTTONDOWN:  # 检查是否是鼠标左键按下事件
@@ -383,13 +405,20 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
             selected_region = screenshot[min(start_y,end_y):max(start_y,end_y), min(start_x,end_x):max(start_x,end_x)]
             nowstr = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
             filename = "selected_"+nowstr+".png"
-            cv2.imwrite(filename, selected_region)
+            if save_cut_img:
+                cv2.imwrite(filename, selected_region)
+                print(f"选定区域已被保存为/Saved as {filename}")
             print(f"坐标点为起点[{start_x}, {start_y}] 终点[{end_x}, {end_y}]")
             print(f"cut code = [{start_y}:{end_y}, {start_x}:{end_x}]")
-            print(f"选定区域已被保存为/Saved as {filename}")
 
             if quick_return:
                 quick_return_data = filename
+                # -----
+                quick_return_full_data['imgname'] = filename
+                quick_return_full_data['imgx1'] = start_x
+                quick_return_full_data['imgy1'] = start_y
+                quick_return_full_data['imgx2'] = end_x
+                quick_return_full_data['imgy2'] = end_y
                 cv2.destroyAllWindows()
     
     # window can change size
@@ -403,7 +432,10 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
     cv2.destroyAllWindows()
     
     if quick_return:
-        return quick_return_data
+        if quick_return_full:
+            return quick_return_full_data
+        else:
+            return quick_return_data
     
 
 

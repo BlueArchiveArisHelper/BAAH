@@ -3,7 +3,7 @@ import secrets
 import string
 import enum
 from nicegui import ui
-from gui.components.cut_screenshot import screencut_button
+from gui.components.cut_screenshot import screencut_button, cut_screenshot
 from gui.components.get_app_entrance import get_app_entrance_button
 from modules.utils import *
 
@@ -147,6 +147,56 @@ class ParamsObj:
 # 用户勾选选择添加新的操作内容：默认显示action_id2obj里所有的GUI key作为头，当用户选择某个GUI key后，找到对应的SubActionMainObj实例，调用return_copy()返回一个新的对象，在GUI里进行修改
 # GUI从json文件中读取配置文件里保存的操作内容：使用load_action_main_from_dictlist函数读取，根据GUI key在action_id2obj找到对应实例，return_copy()返回一个ActionMainObj对象，并把读取的参数值覆盖
 
+class LineQuickEditType(enum.Enum):
+    POINT_XY = 1
+    BGR_VALUES = 2
+    REGION_XYXY = 3
+    # REGION_PICPATH = 4 # PICPATH 在 ParamObj gui层面就能通过按钮快速编辑了
+
+def quick_edit_button(quick_edit_type, inconfig, params_list:list[ParamsObj], edit_value_map):
+    left_click = False
+    right_click = False
+    # ======
+    if (quick_edit_type in [LineQuickEditType.POINT_XY, LineQuickEditType.BGR_VALUES]):
+        right_click = True
+    if (quick_edit_type in [LineQuickEditType.REGION_XYXY]):
+        left_click = True
+    # =====
+    def call_back_func(_full_pick_result,  _params_list:list[ParamsObj], _edit_value_map):
+        # 对于 edit_value_map 里的每个key:name，找到其key对应的full_pick_result值，填到对应name的ParamObj里
+        for key in _edit_value_map:
+            if key not in _full_pick_result:
+                print(f"No key {key} in full_pick_result")
+                continue
+            # 找到对应的值
+            val = _full_pick_result[key]
+            name = _edit_value_map[key]
+            # 找到name的ParamObj
+            _f = False
+            for param in _params_list:
+                if param.id_name == name:
+                    param.param_value = val
+                    _f = True
+                    break
+            if not _f:
+                print(f"Can not find ParamsObj named: {name}")
+    # 按钮
+    ui.button(
+        "EDIT",
+        on_click=lambda _params_list=params_list, _edit_value_map = edit_value_map: cut_screenshot(
+            inconfig=inconfig,
+            resultdict=None,
+            resultkey=None,
+            left_click=left_click,
+            right_click=right_click,
+            quick_return=True,
+            callback=lambda fullres, __params_list=_params_list, __edit_value_map=_edit_value_map: call_back_func(fullres, __params_list, __edit_value_map),
+            quick_return_full = True,
+            save_cut_img = False
+        )
+    )
+    
+
 class SubActionMainObj:
     """
     操作内容对象的基类
@@ -156,14 +206,18 @@ class SubActionMainObj:
         操作名称（GUI显示）
         操作函数
         操作参数列表（默认为对应参数数量的空值）
+        按钮快速截图编辑种类类型
+
     
     执行后可能需要返回出来一个变量
     """
-    def __init__(self, id_name:str, action_gui_name:str, action_func, action_params:list[ParamsObj]):
+    def __init__(self, id_name:str, action_gui_name:str, action_func, action_params:list[ParamsObj], line_edit_type: LineQuickEditType, edit_value_map):
         self.id_name = id_name  # 操作标识符
         self.action_gui_name = action_gui_name  # 操作名称
         self.action_func = action_func # 操作函数
         self.action_params = action_params # 操作参数列表
+        self.line_edit_type = line_edit_type # 按钮快速截图编辑种类类型
+        self.edit_value_map = edit_value_map # 快速截图编辑结果映射
     
     def return_copy(self):
         """
@@ -173,7 +227,9 @@ class SubActionMainObj:
             self.id_name,
             self.action_gui_name,
             self.action_func,
-            [param.return_copy() for param in self.action_params] # json读取覆盖ParamsObj值
+            [param.return_copy() for param in self.action_params], # json读取覆盖ParamsObj值
+            self.line_edit_type,
+            self.edit_value_map # 不会修改这变量
         )
 
     def to_json_dict(self):
@@ -203,6 +259,13 @@ class SubActionMainObj:
         with ui.row():
             for i, param in enumerate(self.action_params):
                 param.render_gui(dataconfig)
+            if self.line_edit_type:
+                quick_edit_button(
+                    quick_edit_type=self.line_edit_type,
+                    inconfig = dataconfig,
+                    params_list = self.action_params,
+                    edit_value_map = self.edit_value_map
+                )
     
     def load_from_dict(self, action_items:dict):
         """
