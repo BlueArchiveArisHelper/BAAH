@@ -5,9 +5,9 @@ mychangelog = """
 
 修复国服反和谐后会卡在登录社区弹窗三十秒的问题
 
-修复竞技场助战选择学生失败的问题
+修复总力战助战选择学生失败的问题
 
-Fix Contest can not select help student
+Fix Assault can not select help student
 
 ## Feat
 
@@ -16,6 +16,10 @@ Fix Contest can not select help student
 新增GUI操作流实现 更易上手，更高自由度，更稳定 的开启加速器和自定义任务流程
 
 More flexible user define tasks
+
+考试也可以选择助战学生了
+
+Can select helper student in Exam
 
 ## Update
 
