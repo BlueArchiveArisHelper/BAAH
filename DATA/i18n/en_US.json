@@ -215,6 +215,33 @@
     "big_update_type_direct_get": "Direct Get",
     "big_update_type_direct_get_tips": "This method relies on the server to update the URL file, and there may be a delay in server updates. Please refer to https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk for details",
     
+    "click_pic_a": "Click Image",
+    "click_xy_a": "Click Coordinates",
+    "ocr_pic_a": "OCR English Recognition",
+    "sleep_time_a": "Wait",
+    "get_pixel_color_a": "Get Pixel Color",
+    "open_apk_package_a": "Open App",
 
+    "num_greater_p": "Number Greater Than",
+    "num_less_p": "Number Less Than",
+    "equal_p": "Equal",
+    "not_equal_p": "Not Equal",
+    "include_p": "String Contains",
+    "not_include_p": "String Does Not Contain",
+    "pixel_similar_p": "Pixel Similar",
+    "pixel_not_similar_p": "Pixel Not Similar",
+    "img_match_p": "Image Matched",
+    "img_not_match_p": "Image Not Matched",
+
+
+    "ifelse_action_f": "Conditional Judgment",
+    "run_until_f": "Run Until Completed",
+    "do_action_f": "Execute",
+
+    "ifelse_action_f_pattern": "If #%0# then execute #%1# otherwise execute #%2#",
+    "run_until_f_pattern": "Repeat count #%0# run #%1# termination condition #%2#",
+    "do_action_f_pattern": "Execute action #%0#",
+
+    
     "status_finish": "All Tasks Completed"
 }
