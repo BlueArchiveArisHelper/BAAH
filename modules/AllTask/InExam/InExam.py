@@ -34,6 +34,51 @@ class InExam(Task):
     def pre_condition(self) -> bool:
         return self.back_to_home()
     
+    def select_target_helper(self) -> None:
+        """选择助战的学生"""
+        logging.info({"zh_CN": "选择助战学生", "en_US": "choose helper students"})
+        self.run_until(
+            lambda: click((1197, 166)),
+            lambda: not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE),
+            sleeptime=2
+        )
+        # 弹出调整编队弹窗后，点击助力者按钮
+        click((1197, 166))
+        click((1197, 166))
+        # 点击支援按钮
+        if config.userconfigdict["EXAM_HELP_STUDENT_IS_SUPPORT"]:
+            click((750, 211))
+            click((750, 211))
+        # 选择要挑选的助战学生
+        screenshot()
+        helper_stu = match(config.userconfigdict["EXAM_HELP_STUDENT"], returnpos=True)
+        if helper_stu[0]:
+            clickpos = helper_stu[1]
+            # 点击助战学生
+            logging.info({"zh_CN": "点击助战学生", "en_US": "Tap the assisting student"})
+            click(clickpos)
+            sleep(1)
+            # 点击右下角确认按钮
+            # 点击蓝色确认按钮直到清除弹窗
+            select_helper = self.run_until(
+                lambda: click(button_pic(ButtonName.BUTTON_CONFIRMB)) or click((1143, 592)),
+                lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE),
+                sleeptime=1.5
+            )
+            if select_helper:
+                logging.info({"zh_CN": "选择助战学生成功", "en_US": "Successfully selected a helper student"})
+            else:
+                logging.warn({"zh_CN": "选择助战学生失败，将不会选择助战学生",
+                              "en_US": "Failed to select a helper student, no helper student will be selected"})
+                click(Page.MAGICPOINT)
+                screenshot()
+        else:
+            logging.warn({"zh_CN": "未找到助战学生，将不会选择助战学生",
+                          "en_US": "Did not find a helper student, no helper student will be selected"})
+            click(Page.MAGICPOINT)
+            screenshot()
+
+    
     def do_a_new_exam(self) -> bool:
         """开始新的一次考试，返回是否存在至少一个队伍成功"""
         all_lose = True
@@ -49,6 +94,7 @@ class InExam(Task):
         target_team_number = int(config.userconfigdict["EXAM_TEAM_COUNT"])
         target_level = int(config.userconfigdict["EXAM_TARGET_LEVEL"])
         try_lower_level = bool(config.userconfigdict["EXAM_ALLOW_FALLBACK"])
+        use_student_help = bool(config.userconfigdict["IS_EXAM_STUDENT_HELP"])
         for t in range(target_team_number):
             current_level = target_level
             while current_level >= 1:
@@ -74,8 +120,18 @@ class InExam(Task):
                     lambda: click(Page.LEFT_FOUR_TEAMS_POSITIONS[t]),
                     lambda: match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[t], Page.COLOR_SELECTED_LEFT_FOUR_TEAM)
                 )
+                # 选择助战学生
+                if use_student_help:
+                    self.select_target_helper()
+                    use_student_help = False # 只选一次助战学生
                 # 出击打架
-                team_fight = FightQuest(backtopic=lambda: Page.is_page(PageName.PAGE_EXAM))
+                self.run_until(
+                    lambda: (click(button_pic(ButtonName.BUTTON_CONFIRMY), threshold=0.8) or click((1106, 657))),
+                    lambda: not Page.is_page(PageName.PAGE_EXAM),
+                    sleeptime=2
+                )
+                team_fight = FightQuest(backtopic=lambda: Page.is_page(PageName.PAGE_EXAM),
+                                        start_from_editpage=False)
                 team_fight.run()
                 self.clear_popup()
                 if not team_fight.win_fight_flag:

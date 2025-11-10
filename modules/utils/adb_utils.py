@@ -177,7 +177,7 @@ def get_now_running_app_entrance_activity(use_config=None):
     return entrance_activity
 
 
-def check_app_running(activity_path: str) -> bool:
+def check_app_running(activity_path: str, printit = True) -> bool:
     """
     检查app是否在运行，不校验app的activity,只校验app的名字
     """
@@ -188,7 +188,8 @@ def check_app_running(activity_path: str) -> bool:
         return False
     # 获取当前运行的app
     output = get_now_running_app()
-    logging.info({"zh_CN": "运行中...当前运行的app是：{}".format(output),
+    if printit:
+        logging.info({"zh_CN": "运行中...当前运行的app是：{}".format(output),
                   "en_US": "Running...The currently running app is: {}".format(output)})
     if app_name in output:
         return True

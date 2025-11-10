@@ -6,6 +6,13 @@ g_token: str = ""
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    # 添加位置参数（可选）：用于接收配置文件路径
+    parser.add_argument(
+        "config", 
+        nargs="?",  # "?"表示该参数可选（提供0次或1次）
+        help="config file name",
+        default=None  # 未提供时为None
+    )
     parser.add_argument(
         "--host", help="host address", default=os.environ.get("HOST", "127.0.0.1")
     )

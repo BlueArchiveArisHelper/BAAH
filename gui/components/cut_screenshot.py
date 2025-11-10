@@ -5,17 +5,17 @@ def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", bu
     """
     截图，截图文件名，截图按钮
     """
-    with ui.row():
+    with ui.row().style("width:300px; height: 150px"):
         # 图片
-        ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 400px")
+        ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
     
     with ui.row():
-        ui.input(input_text).bind_value(resultdict, resultkey).style("width: 400px")
+        ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")
         ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True))
     
 
 cut_lock = False
-async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=True, right_click=False, quick_return=True):
+async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=True, right_click=False, quick_return=True, callback = None, **kwargs):
     """
     截取截图的一部分，返回截图文件名
     """
@@ -35,7 +35,8 @@ async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=T
             left_click=left_click,
             right_click=right_click,
             img_path=screenshotname,
-            quick_return=quick_return
+            quick_return=quick_return,
+            **kwargs
         )
         if resultdict is not None and resultkey is not None:
             resultdict[resultkey] = result
@@ -43,4 +44,14 @@ async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=T
         print(e)
     finally:
         cut_lock = False
+    if callback:
+        callback(result)
     return result
+
+async def test_screencut(use_config):
+    await cut_screenshot(
+        inconfig=use_config,
+        left_click=True,
+        right_click=True,
+        quick_return=False
+        )

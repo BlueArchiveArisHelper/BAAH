@@ -4,7 +4,7 @@ from DATA.assets.PopupName import PopupName
 from DATA.assets.ButtonName import ButtonName
 
 
-from modules.utils import click, swipe, match, page_pic, match_pixel, button_pic, popup_pic, sleep, screenshot, config, istr, CN, EN, ocr_area
+from modules.utils import click, swipe, match, page_pic, match_pixel, button_pic, popup_pic, sleep, screenshot, config, istr, CN, EN, ocr_area, logic_run_until
 
 from modules.utils.adb_utils import check_app_running, open_app
 from modules.utils.baah_exceptions import EmulatorBlockError
@@ -137,47 +137,10 @@ class Task:
             click(Page.MAGICPOINT, sleeptime)
         else:
             sleep(sleeptime)
-    
-    @staticmethod
-    def global_screenshot_check():
-        """
-        全局的截图元素检查，是否有卡顿弹窗等
-        """
-        if "NGS" in ocr_area([444, 307], [829, 355])[0]:
-            raise EmulatorBlockError(istr({
-                CN: "匹配到NGS，触发模拟器卡顿异常",
-                EN: "Match NGS, trigger emulator lag error"
-            }))
 
     @staticmethod
     def run_until(func1, func2, times=None, sleeptime = None) -> bool:
-        """
-        重复执行func1，至多times次或直到func2成立
-        
-        func1内部应当只产生有效操作一次或内部调用截图函数, func2判断前会先触发截图
-        
-        每次执行完func1后,等待sleeptime秒
-
-        如果func2成立退出，返回true，否则返回false
-        """
-        # 设置times，如果传进来是None，就用config里的值
-        if(times == None):
-            times = config.userconfigdict["RUN_UNTIL_TRY_TIMES"]
-        # 设置sleeptime，如果传进来是None，就用config里的值
-        if(sleeptime == None):
-            sleeptime = config.userconfigdict["RUN_UNTIL_WAIT_TIME"]
-        for i in range(times):
-            screenshot()
-            if(func2()):
-                return True
-            func1()
-            sleep(sleeptime)
-            Task.global_screenshot_check()
-        screenshot()
-        if(func2()):
-            return True
-        logging.warning("run_until exceeded max times")
-        return False
+        return logic_run_until(func1, func2, times, sleeptime)
 
     @staticmethod
     def scroll_right_up(scrollx=928, times=3):

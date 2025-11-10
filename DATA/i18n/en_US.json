@@ -145,6 +145,9 @@
     "config_need_assault_helper":"Whether need assault helper",
     "config_assault_helper_is_support":"Whether assault helper is support role",
     "config_assault_helper_student":"Assault helper student",
+    "config_need_exam_helper":"Whether need exam helper",
+    "config_exam_helper_is_support":"Whether exam helper is support role",
+    "config_exam_helper_student":"Exam helper student",
     "config_api_noti":"API Notification",
     "config_api_noti_url":"API Notification URL",
     "config_api_noti_token":"API Notification Token",
@@ -187,6 +190,8 @@
     "desc_noti_content_diy":"Customize the email content formatting string by wrapping desired fields with %KEY%. You can view available fields in the project's modules/configs/defaultSettings.",
     "desc_noti_when_error": "Whether to send notification when an error occurs",
     "desc_noti_when_success": "Whether to send notification when the task is successful",
+    "error_if_assault_no_team": "Throw error if no team can fight in assault",
+    "flow_mode": "action flow mode",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",
@@ -210,6 +215,33 @@
     "big_update_type_direct_get": "Direct Get",
     "big_update_type_direct_get_tips": "This method relies on the server to update the URL file, and there may be a delay in server updates. Please refer to https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk for details",
     
+    "click_pic_a": "Click Image",
+    "click_xy_a": "Click Coordinates",
+    "ocr_pic_a": "OCR English Recognition",
+    "sleep_time_a": "Wait",
+    "get_pixel_color_a": "Get Pixel Color",
+    "open_apk_package_a": "Open App",
 
+    "num_greater_p": "Number Greater Than",
+    "num_less_p": "Number Less Than",
+    "equal_p": "Equal",
+    "not_equal_p": "Not Equal",
+    "include_p": "String Contains",
+    "not_include_p": "String Does Not Contain",
+    "pixel_similar_p": "Pixel Similar",
+    "pixel_not_similar_p": "Pixel Not Similar",
+    "img_match_p": "Image Matched",
+    "img_not_match_p": "Image Not Matched",
+
+
+    "ifelse_action_f": "Conditional Judgment",
+    "run_until_f": "Run Until Completed",
+    "do_action_f": "Execute",
+
+    "ifelse_action_f_pattern": "If #%0# then execute #%1# otherwise execute #%2#",
+    "run_until_f_pattern": "Repeat count #%0# run #%1# termination condition #%2#",
+    "do_action_f_pattern": "Execute action #%0#",
+
+    
     "status_finish": "All Tasks Completed"
 }

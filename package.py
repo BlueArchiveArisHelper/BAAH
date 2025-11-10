@@ -1,7 +1,17 @@
+from modules.configs.myversion import myversion, mychangelog
+import sys
+# 检查命令行参数
+if len(sys.argv) > 1:
+    if sys.argv[1] == "-v":
+        # 当使用-v参数时，打印版本号并退出
+        print(myversion)
+    if sys.argv[1] == "-c":
+        # -c, 打印changelog
+        print(mychangelog)
+    sys.exit(0)
 import zipfile
 import shutil
 import os
-from modules.configs.MyConfig import config
 import subprocess
 from pathlib import Path
 import nicegui
@@ -122,7 +132,7 @@ def package_remove_folder(path):
 
 # ====================开始====================
 
-config_version = config.NOWVERSION
+config_version = myversion
 
 # mainly for windows, download adb
 package_download_adb(platformstr="Windows")
@@ -132,24 +142,15 @@ package_download_aria2(platformstr="Windows")
 
 package_remove_folder("./dist")
 
-# 打包main.py，名字为BAAH
-baahcmd = [
-    'pyinstaller',
-    'main.py',
-    '-n', 'BAAH',
-    '--icon', './DATA/icons/kei.ico',
-    '--add-data', f'{Path(pponnxcr.__file__).parent}{os.pathsep}pponnxcr',
-    '-y'
-]
-subprocess.call(baahcmd)
 
 # 打包GUI
 guicmd = [
     'pyinstaller',
     'jsoneditor.py',
-    '-n', 'BAAH_GUI',
+    '-n', 'BAAH',  # 1.11.0 GUI包含了script内容，把GUI打包为BAAH.exe
     # '--windowed', # prevent console appearing, only use with ui.run(native=True, ...)
     '--add-data', f'{Path(nicegui.__file__).parent}{os.pathsep}nicegui',
+    '--add-data', f'{Path(pponnxcr.__file__).parent}{os.pathsep}pponnxcr',
     '--icon', './DATA/icons/aris.ico',
     '-y'
 ]
@@ -171,15 +172,6 @@ workdir = os.getcwd()
 
 print("开始封装")
 
-
-# 遍历./dist/BAAH_GUI/_internal里的所有文件夹和文件，将它们拷贝到./dist/BAAH/_internal，如果已存在则跳过
-for dirpath, dirnames, filenames in os.walk(os.path.join('./dist', 'BAAH_GUI', '_internal')):
-    for filename in filenames:
-        package_copyfile(os.path.join(dirpath, filename), os.path.join('./dist/BAAH/_internal', filename))
-    for dirname in dirnames:
-        package_copyfolder(os.path.join(dirpath, dirname), os.path.join('./dist/BAAH/_internal', dirname))
-    # 走一层就终止
-    break
 
 package_copyfolder('./tools/adb', './dist/BAAH/tools/adb')
 package_copyfolder('./tools/aria2', './dist/BAAH/tools/aria2')
@@ -205,17 +197,12 @@ package_copyfolder("./DATA/assets_cn", "./dist/BAAH/DATA/assets_cn")
 package_copyfolder("./DATA/assets_global_en", "./dist/BAAH/DATA/assets_global_en")
 package_copyfolder("./DATA/grid_solution", "./dist/BAAH/DATA/grid_solution")
 package_copyfile("./DATA/touch.zip", "./dist/BAAH/DATA/touch.zip")
-package_copyfile("./dist/BAAH_GUI/BAAH_GUI.exe", "./dist/BAAH/BAAH_GUI.exe")
 package_copyfile("./dist/BAAH_UPDATE/BAAH_UPDATE.exe", "./dist/BAAH/BAAH_UPDATE.exe")
 
 time.sleep(2)
 
-# package_rename("./dist/BAAH/BAAH.exe", f"./dist/BAAH/BAAH{config_version}.exe")
-package_rename("./dist/BAAH", f"./dist/BAAH{config_version}")
 
-# gui已经脱离BAAH.exe，不需要了
-# package_remove_file("./BAAH.exe")
-# package_copyfile(f"./dist/BAAH{config_version}/BAAH.exe", "./BAAH.exe")
+package_rename("./dist/BAAH", f"./dist/BAAH{config_version}")
 
 print("开始压缩")
 time.sleep(2)

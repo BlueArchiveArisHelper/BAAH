@@ -28,9 +28,9 @@ class InFreeAward(Task):
             lambda: click([968, 38]),
             lambda: self.has_popup(),
             times = 3,
-            sleeptime = 2
+            sleeptime = 4
         )
-        if not open_shop or not match_pixel([1030, 153], self.COLOR_RED_POINT):
+        if not open_shop or not match_pixel([1030, 153], self.COLOR_RED_POINT, printit=True):
             logging.error(istr({
                 CN: "无弹窗或无商店免费奖励红点，结束任务",
                 EN: "No popup or no free award red point in shop, end task",

@@ -30,7 +30,28 @@ class Loginin(Task):
         self.last_screenshot_center = None
         # 是否已经见过了登录弹窗
         self.meet_login_page = False
+        # 每轮检测中间休息间隔
+        self.sleep_between_detect = 3
 
+    def detect_loading_bar(self):
+        """检测底部下载进度条，返回0-100进度，0表示无进度条"""
+        left_point = (43, 658)
+        right_point = (1239, 658)
+        hy = int((left_point[1] + right_point[1]) / 2)
+        blue_bgr = ([245, 195, 67], [255, 205, 77])
+        sample_resolution = 100
+        x_list = np.linspace(left_point[0], right_point[0], num=sample_resolution, dtype=int)
+        # 检测每个点
+        blue_points = 0
+        for i,x in enumerate(x_list):
+            if match_pixel((x, hy), blue_bgr):
+                blue_points += 1
+            else:
+                # 遇到不是蓝色的就break
+                break
+        # 检测是否存在进度条，靠break时右侧的像素点灰度值判断（小于150
+        return blue_points
+        
      
     def pre_condition(self) -> bool:
         if(self.post_condition()):
@@ -39,8 +60,21 @@ class Loginin(Task):
     
 
     def try_jump_useless_pages(self):
+        # ====== 全局使用信息 ======
         cv_data = get_screenshot_cv_data()
         height, width = cv_data.shape[0:2]
+        
+        # ======
+        # 打印下当前app
+        check_app_running(config.userconfigdict['ACTIVITY_PATH'], printit=True)
+        # 如果有进度条(条进度大于20），宽恕一定时间(5成检测间隔)
+        if self.detect_loading_bar() > 20:
+            bar_percent = self.detect_loading_bar()
+            self.task_start_time += 0.5 * self.sleep_between_detect
+            logging.info(istr({
+                CN: f"检测到进度条：{bar_percent}",
+                EN: f"Detect loading bar: {bar_percent}"
+            }))
         # 判断超时
         if time.time() - self.task_start_time > config.userconfigdict["GAME_LOGIN_TIMEOUT"]:
             if config.sessiondict["RESTART_EMULATOR_TIMES"] >= config.userconfigdict["MAX_RESTART_EMULATOR_TIMES"]:
@@ -55,8 +89,9 @@ class Loginin(Task):
                     CN: "模拟器卡顿，重启模拟器",
                     EN: "Emulator blocked, try to restart emulator"
                 }))
+        # ======== 判断流 ========
         # 如果进入安装器页面
-        if any([check_app_running(ins_act) for ins_act in self.installer_activities]):
+        if any([check_app_running(ins_act, printit=False) for ins_act in self.installer_activities]):
             # 中心区域识别所有安装字样点击
             ocr_list = ocr_area((312, 250), (967, 719), multi_lines=True, ocr_lang=OCR_LANG.ZHS)
             ocr_list = list(filter(lambda text: any([ins_text == text[0] for ins_text in self.installer_texts]), ocr_list))
@@ -66,7 +101,7 @@ class Loginin(Task):
                 click(((filter_item_box[0][0] + filter_item_box[1][0]) // 2, (filter_item_box[0][1] + filter_item_box[1][1]) // 2),
                     sleeptime=5)
         # 确认处在游戏界面
-        elif not check_app_running(config.userconfigdict['ACTIVITY_PATH']):
+        elif not check_app_running(config.userconfigdict['ACTIVITY_PATH'], printit=False):
             open_app(config.userconfigdict['ACTIVITY_PATH'])
             logging.warn({"zh_CN": "游戏未在前台，尝试打开游戏", "en_US":"The game is not in the foreground, try to open the game"})
             sleep(2)
@@ -105,7 +140,7 @@ class Loginin(Task):
                 EN: "Waiting for the Bilibili login banner to disappear"
             }))
             sleep(2)
-        elif ocr_area((30, 662), (63, 691))[0].lower() in ["√", "v", "V"]:
+        elif any([eachv in ocr_area((30, 662), (63, 691))[0].lower() for eachv in ["√", "v"]]):
             # 关闭活动弹窗
             # 判断点击左下角是否有今日不再显示的勾（√）并点掉
             click((65, 676))
@@ -157,7 +192,7 @@ class Loginin(Task):
         self.run_until(self.try_jump_useless_pages, 
                       lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME), 
                       times = 200,
-                      sleeptime = 3)
+                      sleeptime = self.sleep_between_detect)
 
      
     def post_condition(self) -> bool:

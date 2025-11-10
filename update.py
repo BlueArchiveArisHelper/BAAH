@@ -9,8 +9,9 @@ import zipfile
 import time
 import sys
 
-updater_version = "0.4.0"
+updater_version = "0.4.1"
 print(f"This Updator Version: {updater_version}")
+auto_close_window = True # 执行之后时候自动关闭窗口
 
 def copy_to_temp_and_run():
     """
@@ -188,6 +189,7 @@ def check_and_update():
     if not version_info.has_new_version:
         print("No new version available.")
         print(version_info.msg)
+        auto_close_window = False
         return
     # 根据update.zip结尾的url下载文件
     target_url = version_info.update_zip_url
@@ -297,6 +299,7 @@ def main():
             # 如果是update本体，直接退出，让temp执行
             return
     except Exception as e:
+        auto_close_window = False
         traceback.print_exc()
         print("========== [ERROR!] =========")
         if "BAAH_UPDATE.exe" in str(e) and "Permission denied" in str(e):
@@ -312,7 +315,12 @@ def main():
         except Exception as e:
             print(f"Failed to start BAAH_GUI.exe: {e}")
 
-    input("Press Enter to exit: ")
+    # 没问题就直接退出
+    if auto_close_window:
+        time.sleep(3)
+        input("Done! Auto close in 3 seconds...")
+    else:
+        input("Press Enter to exit: ")
 
 
 if __name__ == "__main__":

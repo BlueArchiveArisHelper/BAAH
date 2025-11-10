@@ -138,15 +138,15 @@ defaultUserDict = {
     "ENABLE_MAIL_NOTI":{"d":False},
     "CAFE_TOUCH_WAY_DIFF":{"d":True},
     "USE_VPN":{"d":False},
+    "CLOSE_VPN":{"d":False},
     "VPN_CONFIG":{"d":{
         "VPN_ACTIVITY":"com.github.kr328.clash/com.github.kr328.clash.MainActivity",
         "CLICK_AND_WAIT_LIST":[[[622, 248], 2]],
-    }},
-    "CLOSE_VPN":{"d":False},
+    }}, # deprecated
     "VPN_CLOSE_CONFIG":{"d":{
         "VPN_ACTIVITY":"com.github.kr328.clash/com.github.kr328.clash.MainActivity",
         "CLICK_AND_WAIT_LIST":[[[622, 248], 2]],
-    }},
+    }}, # deprecated
     "AUTO_PUSH_EVENT_QUEST":{"d":True},
     "CAFE_COLLECT":{"d":True},
     "CAFE_TOUCH":{"d":True},
@@ -288,6 +288,12 @@ defaultUserDict = {
     "EXAM_ALLOW_FALLBACK":{
         "d":True
     },
+    # 综合战术考试 使用助战学生
+    "IS_EXAM_STUDENT_HELP":{"d":False},
+    # 综合战术考试 助战学生后排
+    "EXAM_HELP_STUDENT_IS_SUPPORT":{"d":False},
+    # 综合战术考试 助战学生
+    "EXAM_HELP_STUDENT":{"d":""},
     # ARIA2配置
     "ARIA2_PATH":{"d":"./tools/aria2/aria2c.exe"},
     "ARIA2_THREADS":{"d":16},
@@ -304,6 +310,34 @@ defaultUserDict = {
     # 错误时是否邮件通知
     "NOTI_WHEN_ERROR":{
         "d": False,
+    },
+    # 启动加速器操作
+    "OBJ_ACTIONS_VPN_START":{
+        "d":{},
+        "m":{
+            "from": "VPN_CONFIG",
+            "map": lambda vjson: old_VPN2action_flow(vjson) 
+        }
+    },
+    # 关闭加速器操作
+    "OBJ_ACTIONS_VPN_SHUT":{
+        "d":{},
+        "m":{
+            "from": "VPN_CLOSE_CONFIG",
+            "map": lambda vjson: old_VPN2action_flow(vjson) 
+        }
+    },
+    # 总力战队伍无法出击（无编队，已出击）是否报错
+    "ASSAULT_NO_TEAM_EXCEPT":{
+        "d": True,
+    },
+    # 自定义任务操作使用action
+    "USE_OBJ_USER_DEFINE_TASK":{
+        "d": False,
+    },
+    # 自定义任务操作action列表
+    "OBJ_USER_DEFINE_TASK":{
+        "d":{}
     },
 }
 

@@ -16,6 +16,8 @@ def set_assault(config):
         step=1
     ).bind_value(config.userconfigdict, "AUTO_ASSAULT_LEVEL", forward=lambda x: int(x)).style("width: 100px")
     
+    ui.checkbox(config.get_text("error_if_assault_no_team")).bind_value(config.userconfigdict, "ASSAULT_NO_TEAM_EXCEPT")
+
     # 是否自动配队
     # ui.checkbox(config.get_text("config_auto_team")).bind_value(config.userconfigdict, "IS_AUTO_ASSAULT_AUTO_TEAM")
     

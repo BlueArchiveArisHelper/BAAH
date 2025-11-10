@@ -1,4 +1,5 @@
 from nicegui import ui
+from gui.components.cut_screenshot import cut_screenshot, screencut_button
 
 def set_exam(config):
 
@@ -20,3 +21,11 @@ def set_exam(config):
                   ).style('width: 200px')
     # 如果考试失败则尝试挑战上一关卡
     ui.checkbox(config.get_text("desc_exam_allow_fallback")).bind_value(config.userconfigdict, "EXAM_ALLOW_FALLBACK")
+
+    # 使用助战学生
+    ui.checkbox(config.get_text("config_need_exam_helper")).bind_value(config.userconfigdict, "IS_EXAM_STUDENT_HELP")
+    with ui.column().bind_visibility_from(config.userconfigdict, "IS_EXAM_STUDENT_HELP"):
+        # 助战是否后排
+        ui.checkbox(config.get_text("config_exam_helper_is_support")).bind_value(config.userconfigdict, "EXAM_HELP_STUDENT_IS_SUPPORT")
+        # 助战学生截图按钮
+        screencut_button(inconfig=config, resultdict=config.userconfigdict, resultkey="EXAM_HELP_STUDENT", input_text=config.get_text("config_exam_helper_student"), button_text=config.get_text("config_exam_helper_student"))
