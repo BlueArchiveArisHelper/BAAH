@@ -1,4 +1,4 @@
-name: On Release Published
+name: Sync releases to cnb.cool
 
 on:
   release:
