@@ -17,7 +17,8 @@
             {
                 "name": "B",
                 "type": "blue",
-                "position": "down"
+                "position": "down",
+                "click": [582, 648]
             }
         ],
         "fight_plan": [
