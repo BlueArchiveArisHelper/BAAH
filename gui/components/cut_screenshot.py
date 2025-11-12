@@ -18,6 +18,12 @@ cut_lock = False
 async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=True, right_click=False, quick_return=True, callback = None, **kwargs):
     """
     截取截图的一部分，返回截图文件名
+
+    kwargs:
+    
+    - quick_return_full: 快速返回是否返回完整json信息
+    
+    - save_cut_img: 截图操作后是否保存img图像
     """
     
     global cut_lock

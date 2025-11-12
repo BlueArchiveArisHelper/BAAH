@@ -339,6 +339,14 @@ defaultUserDict = {
     "OBJ_USER_DEFINE_TASK":{
         "d":{}
     },
+    # 是否在登录页面执行用户脚本
+    "USE_OBJ_FLOW_WHEN_LOGIN":{
+        "d": False,
+    },
+    # 在登录页面执行的用户脚本（账号切换)
+    "OBJ_FLOW_WHEN_LOGIN":{
+        "d":{}
+    },
 }
 
 # 软件的config里的默认值

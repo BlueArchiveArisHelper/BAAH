@@ -192,6 +192,7 @@
     "desc_noti_when_success": "Whether to send notification when the task is successful",
     "error_if_assault_no_team": "Throw error if no team can fight in assault",
     "flow_mode": "action flow mode",
+    "desc_flow_when_login_game": "Execute the following custom actions on the account login page",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",
