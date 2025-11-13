@@ -23,7 +23,8 @@
             {
                 "name": "C",
                 "type": "red",
-                "position": "right"
+                "position": "right",
+                "click": [1273, 349]
             }
         ],
         "fight_plan": [
