@@ -222,6 +222,7 @@
     "sleep_time_a": "等待",
     "get_pixel_color_a": "获取像素颜色",
     "open_apk_package_a": "打开应用",
+    "scroll_xyxy_a": "滑动",
 
     "num_greater_p": "数字大于",
     "num_less_p": "数字小于",

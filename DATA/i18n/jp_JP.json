@@ -222,6 +222,7 @@
     "sleep_time_a": "待機",
     "get_pixel_color_a": "ピクセル色を取得",
     "open_apk_package_a": "アプリを開く",
+    "scroll_xyxy_a": "スクロール",
 
     "num_greater_p": "数値が大きい",
     "num_less_p": "数値が小さい",
