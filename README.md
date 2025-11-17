@@ -14,16 +14,6 @@ BAAH can help you finish daily tasks of BlueArchive (Global server, Japan server
 
 ---
 
-[项目文档 | Project Document](./README.md) <-- You are here | 你在这里
-
-如何使用请见使用文档 / Get to know how to use BAAH by reading usage documents
-
-[中文使用文档](./docs/README_cn.md) | [English Usage Document](./docs/README_en.md)
-
-[中文开发文档](./docs/README_dev.md) | [English Dev Document](./docs/README_dev_en.md)
-
----
-
 <img src="./docs/static/GUI_CN.png" />
 <img src="./docs/static/GUI_EN.png" />
 <img src="./docs/static/GUI_JP.png" />
