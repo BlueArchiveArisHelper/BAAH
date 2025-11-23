@@ -1,4 +1,4 @@
-name: Sync releases to cnb.cool
+name: Sync releases
 
 on:
   release:
@@ -19,3 +19,24 @@ jobs:
             -H 'Content-Type: application/json' \
             -H 'Authorization: Bearer ${{ secrets.CNBTOKEN }}' \
             -d '{ "event": "api_trigger" }'
+
+      - name: Create Release on Gitee
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEETOKEN }}
+          GITEE_OWNER: "your_gitee_username"  # 替换为您的 Gitee 用户名
+          GITEE_REPO: "your_gitee_repo"       # 替换为您的 Gitee 仓库名
+        run: |
+          # 直接使用 GitHub event 数据调用 Gitee API
+          curl -X POST \
+            "https://gitee.com/api/v5/repos/$GITEE_OWNER/$GITEE_REPO/releases" \
+            -H "Authorization: token $GITEE_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "tag_name": "${{ github.event.release.tag_name }}",
+              "name": "${{ github.event.release.name }}",
+              "body": "${{ github.event.release.body }}",
+              "target_commitish": "${{ github.event.release.target_commitish }}"
+            }'
+              exit 1
+            fi
+          fi
