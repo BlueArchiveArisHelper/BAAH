@@ -13,6 +13,7 @@ from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, 
 
 from modules.AllTask.EnterGame.GameUpdate import GameUpdate
 
+from define_actions import FlowActionGroup
 # =====
 
 class Loginin(Task):
@@ -157,6 +158,16 @@ class Loginin(Task):
                 EN: "Click on a blank area to let the game load"
             }))
             self.meet_login_page = True
+            # 执行用户定义的登录界面执行流程
+            if config.userconfigdict["USE_OBJ_FLOW_WHEN_LOGIN"]:
+                action_flow_on_login = config.userconfigdict.get("OBJ_FLOW_WHEN_LOGIN")
+                if action_flow_on_login:
+                    action_flow_on_login = FlowActionGroup().load_from_dict(action_flow_on_login)
+                    record_start_time = time.time()
+                    action_flow_on_login.run_flow()
+                    record_end_time = time.time()
+                    # 减免执行此action_flow_on_login流程所用时间
+                    self.task_start_time += (record_end_time - record_start_time)
         elif any([click_word in ocr_area([300, 251], [900, 325])[0].strip().lower() for click_word in self.click_keywords]):
             # 识别到一些关键字弹窗后点击空白处关闭这个弹窗
             click((1250, 40))

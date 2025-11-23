@@ -192,6 +192,7 @@
     "desc_noti_when_success": "任务成功时是否发送通知",
     "error_if_assault_no_team": "总力战无可出击队伍是否报错",
     "flow_mode": "操作流程模式",
+    "desc_flow_when_login_game": "账号登录页面执行以下自定义任务",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
@@ -221,6 +222,7 @@
     "sleep_time_a": "等待",
     "get_pixel_color_a": "获取像素颜色",
     "open_apk_package_a": "打开应用",
+    "scroll_xyxy_a": "滑动",
 
     "num_greater_p": "数字大于",
     "num_less_p": "数字小于",

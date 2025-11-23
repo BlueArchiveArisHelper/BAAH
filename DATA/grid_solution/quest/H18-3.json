@@ -17,12 +17,14 @@
             {
                 "name": "B",
                 "type": "blue",
-                "position": "center"
+                "position": "center",
+                "click": [623, 185]
             },
             {
                 "name": "C",
                 "type": "red",
-                "position": "right"
+                "position": "right",
+                "click": [1273, 349]
             }
         ],
         "fight_plan": [

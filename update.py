@@ -9,9 +9,10 @@ import zipfile
 import time
 import sys
 
-updater_version = "0.4.1"
+updater_version = "0.4.2"
 print(f"This Updator Version: {updater_version}")
 auto_close_window = True # 执行之后时候自动关闭窗口
+open_GUI_again = False # 执行完毕后是否重新打开 GUI.exe
 
 def copy_to_temp_and_run():
     """
@@ -179,6 +180,7 @@ def whether_has_new_version():
     return vi
         
 def check_and_update():
+    global auto_close_window, open_GUI_again
     # 判断路径下是否有BAAH.exe，如果没有说明运行目录不对
     if not os.path.exists("BAAH.exe"):
         print("Please run this script in the same directory as BAAH.exe.")
@@ -235,7 +237,6 @@ def check_and_update():
             # but thats fine, maybe it is not running
             print(f"Failed to terminate process {process}: {e}")
     # 之后重新启动GUI
-    global open_GUI_again
     open_GUI_again = True
     # Extract the downloaded ZIP file
     # 解压下载下来的zip文件
@@ -286,9 +287,8 @@ def check_and_update():
     os.remove(targetfilename)
     print(f"Deleted the downloaded ZIP file: {targetfilename}.")
 
-open_GUI_again = False
-
 def main():
+    global auto_close_window, open_GUI_again
     try:
         is_update_file = copy_to_temp_and_run()
         if not is_update_file:
@@ -299,26 +299,28 @@ def main():
             # 如果是update本体，直接退出，让temp执行
             return
     except Exception as e:
+        # 即使赋值语句位于except块内且可能不会执行，不加global的话Python仍在编译阶段将auto_close_window标记为局部变量
         auto_close_window = False
         traceback.print_exc()
         print("========== [ERROR!] =========")
         if "BAAH_UPDATE.exe" in str(e) and "Permission denied" in str(e):
             print(">>> You can not use this script to replace itself. Please unpack the zip manually. <<<")
     
-    # 重新启动BAAH_GUI.exe
-    # 注意这里CREATE_NEW_CONSOLE即使把本文件命令行窗口关了，也不会影响BAAH_GUI.exe的运行
+    # 重新启动BAAH.exe
+    # 注意这里CREATE_NEW_CONSOLE即使把本文件命令行窗口关了，也不会影响BAAH.exe的运行
     if open_GUI_again:
         try:
             # Windows only
-            subprocess.Popen(["BAAH_GUI.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
-            print("BAAH_GUI.exe started.")
+            subprocess.Popen(["BAAH.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
+            print("BAAH.exe started.")
         except Exception as e:
-            print(f"Failed to start BAAH_GUI.exe: {e}")
+            print(f"Failed to start BAAH.exe: {e}")
 
     # 没问题就直接退出
     if auto_close_window:
-        time.sleep(3)
-        input("Done! Auto close in 3 seconds...")
+        print("Done! Auto close in 5 seconds...")
+        time.sleep(5)
+        
     else:
         input("Press Enter to exit: ")
 

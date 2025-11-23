@@ -54,9 +54,10 @@ class NormalQuest(Task):
             # 如果匹配到弹窗，看看是不是扫荡的弹窗，
             has_easy_tab = quest_has_easy_tab()
             if has_easy_tab:
-                # 适配简易攻略
+                # 适配简易攻略，全部服都适配了
                 click((385, 183))
             else:
+                # 略
                 screenshot()
                 if not (match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))):
                     # 匹配弹窗失败

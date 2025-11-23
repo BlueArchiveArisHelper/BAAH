@@ -4,7 +4,7 @@ class PopupName:
     POPUP_LOGIN_FORM = "POPUP_LOGIN_FORM"
     POPUP_TASK_INFO = "POPUP_TASK_INFO"
     """
-    注意考虑国服活动任务资讯“开始扫荡“反和谐
+    学园交流会，活动等关卡弹窗（无简易作战），注意考虑国服活动任务资讯“开始扫荡”反和谐
     """
     POPUP_TASK_INFO_FANHEXIE = "POPUP_TASK_INFO_FANHEXIE"
     POPUP_TIMETABLE_ALL = "POPUP_TIMETABLE_ALL"

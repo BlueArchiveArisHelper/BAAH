@@ -599,18 +599,21 @@ class FlowActionGroup:
     def render_gui(self, dataconfig):
         @ui.refreshable
         def flow_group_area():
-            # 第一行，添加按钮
-            ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
-            for i,action in enumerate(self.action_list):
-                with ui.column():
-                    with ui.card():
-                        ui.select({k:dataconfig.get_text(k) for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
-                        action.render_gui(dataconfig)
+            with ui.column():
+                # 第一行，添加按钮
                 with ui.row():
-                    # 该行下方添加
-                    ui.button(dataconfig.get_text("button_add"), on_click=lambda x,idx=i:add_flow_item(idx+1))
-                    # 删除该行
-                    ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,idx=i: del_flow_item(idx), color="red")
+                    ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
+                for i,action in enumerate(self.action_list):
+                    with ui.card():
+                        with ui.row():
+                            with ui.column():
+                                ui.select({k:dataconfig.get_text(k) for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                                action.render_gui(dataconfig)
+                        with ui.row():
+                            # 该行下方添加
+                            ui.button(dataconfig.get_text("button_add"), on_click=lambda x,idx=i:add_flow_item(idx+1))
+                            # 删除该行
+                            ui.button(dataconfig.get_text("button_delete"), on_click=lambda x,idx=i: del_flow_item(idx), color="red")
         flow_group_area()
 
         def change_flow_item_obj(new_id_name, obj_index):

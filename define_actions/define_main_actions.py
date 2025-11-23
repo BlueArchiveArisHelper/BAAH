@@ -35,6 +35,27 @@ _main_actions = [
         }
     ),
     SubActionMainObj(
+        id_name='scroll_xyxy_a',
+        action_gui_name='scroll_xyxy_a',
+        action_func=lambda x1, y1, x2, y2: (
+            logging.info(f"swipe from {x1}, {y1} to {x2}, {y2}"),
+            swipe((x1, y1), (x2, y2))
+        )[-1],
+        action_params=[
+            ParamsObj('from_x', 'from_x', ParamsTypes.NUMBER, 0),
+            ParamsObj('from_y', 'from_y', ParamsTypes.NUMBER, 0),
+            ParamsObj('to_x', 'to_x', ParamsTypes.NUMBER, 0),
+            ParamsObj('to_y', 'to_y', ParamsTypes.NUMBER, 0),
+        ],
+        line_edit_type=LineQuickEditType.REGION_XYXY,
+        edit_value_map={
+            'imgx1':'from_x',
+            'imgy1':'from_y',
+            'imgx2':'to_x',
+            'imgy2':'to_y'
+        }
+    ),
+    SubActionMainObj(
         id_name='ocr_pic_a',
         action_gui_name='ocr_pic_a',
         action_func=lambda x1, y1, x2, y2: (

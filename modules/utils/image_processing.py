@@ -354,7 +354,7 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
     global start_x, start_y, drawing, quick_return_data, quick_return_full_data, quick_return_full_data_blueprint
     drawing = False  # 检查是否正在绘制
     start_x, start_y = -1, -1
-    quick_return_data = None
+    quick_return_data = ""
     quick_return_full_data = quick_return_full_data_blueprint.copy()
     # 读取透明度层
     if not img_path:
@@ -364,7 +364,7 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
     # 判断None
     if screenshot is None:
         logging.info("The screen shot picture is None")
-        return quick_return_data
+        return "" if not quick_return_full else {}
     # 平均最大最小bgr
     bgr_result = [[],[],[]]
     def mouse_callback_s(event, x, y, flags, param):

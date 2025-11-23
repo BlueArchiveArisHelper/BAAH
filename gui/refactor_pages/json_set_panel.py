@@ -4,6 +4,7 @@ from ..components.running_task_pool import RunningBAAHProcess_instance
 from ..pages.Setting_BAAH import set_BAAH
 from ..pages.Setting_Craft import set_craft
 from ..pages.Setting_cafe import set_cafe
+from ..pages.Setting_Login import set_login
 from ..pages.Setting_emulator import set_emulator
 from ..pages.Setting_event import set_event
 from ..pages.Setting_exchange import set_exchange
@@ -67,11 +68,13 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
         "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dict(x),
         "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dict(x),
         "OBJ_USER_DEFINE_TASK": lambda x: FlowActionGroup().load_from_dict(x),
+        "OBJ_FLOW_WHEN_LOGIN": lambda x: FlowActionGroup().load_from_dict(x),
     }
     reverse_mapping = {
         "OBJ_ACTIONS_VPN_START": lambda x:x.to_json_dict(),
         "OBJ_ACTIONS_VPN_SHUT": lambda x:x.to_json_dict(),
         "OBJ_USER_DEFINE_TASK": lambda x:x.to_json_dict(),
+        "OBJ_FLOW_WHEN_LOGIN": lambda x:x.to_json_dict(),
     }
     if not backward:# json转对象，存obj_dict
         for key, clsa in parse_mapping.items():
@@ -90,6 +93,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel("setting_task_order", lambda: set_task_order(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
         ConfigPanel("setting_vpn", lambda: set_vpn(lst_config, parsed_obj_dict), i18n_config=lst_config),
         ConfigPanel("setting_notification", lambda: set_notification(lst_config, gui_shared_config), i18n_config=lst_config),
+        ConfigPanel("task_login_game", lambda: set_login(lst_config, parsed_obj_dict), i18n_config=lst_config),
         ConfigPanel("task_cafe", lambda: set_cafe(lst_config), i18n_config=lst_config),
         ConfigPanel("task_timetable", lambda: set_timetable(lst_config), i18n_config=lst_config),
         ConfigPanel("task_craft", lambda: set_craft(lst_config), i18n_config=lst_config),

@@ -22,11 +22,26 @@ jobs:
       with:
         ref: main  # 明确检出main分支[5](@ref)
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.10.x'  # 使用最新的稳定3.10.x版本[3](@ref)
-        cache: 'pip'
+        miniconda-version: "latest"
+        python-version: "3.10.14"
+        auto-update-conda: true
+        activate-environment: "baah"
+
+    - name: Check conda env list
+      run: |
+        conda env list
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      if: startsWith(runner.os, 'Windows')
+      with:
+        path: ~\AppData\Local\pip\Cache
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Upgrade pip and install dependencies
       run: |
