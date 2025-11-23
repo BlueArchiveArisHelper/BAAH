@@ -2,7 +2,7 @@ name: Sync releases to cnb.cool
 
 on:
   release:
-    types: [published] # 监听发布事件
+    types: [created] # 当 Release 被创建（即使是草稿）时触发 [citation:1]
 
 jobs:
   log-release-info:
@@ -17,5 +17,5 @@ jobs:
             'https://api.cnb.cool/BlockHaity/BAAH-releases/-/build/start' \
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
-            -H 'Authorization: Bearer ${{ secrets.CNB_TOKEN }}' \
+            -H 'Authorization: Bearer ${{ secrets.CNBTOKEN }}' \
             -d '{ "event": "api_trigger" }'
