@@ -1,4 +1,4 @@
-myversion = "1.11.4"
+myversion = "1.11.5"
 mychangelog = """
 
 > BAAH_GUI.exe 已合并至 BAAH.exe, 请点击 BAAH.exe 打开程序 <
@@ -11,8 +11,6 @@ mychangelog = """
 
 Fix H9-2, H14-1 Quest Explore
 
-
-
 修复 更新器 完成更新检查后会直接关闭不会停留的问题
 
 Fix updater closing immediately after checking updates
@@ -21,13 +19,9 @@ Fix updater closing immediately after checking updates
 
 （由于是实验性功能，有问题请到q群反馈985729020）
 
-
-
 操作流新增滑动操作
 
 Add scroll action in operation flow
-
-
 
 在账号登录页面可以执行自定义操作流
 

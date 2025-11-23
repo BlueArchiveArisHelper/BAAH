@@ -150,13 +150,7 @@ class Loginin(Task):
                 EN: "Close event popup"
             }))
         elif ocr_area([36, 626], [94, 652], ocr_lang = OCR_LANG.ZHS)[0].strip() == "菜单" or ocr_area([36, 626], [94, 652])[0].strip().lower() == "menu":
-            # 第一次点击让游戏开始加载
             # 检测游戏加载前左下角的菜单字样
-            click((1250, 40))
-            logging.info(istr({
-                CN: "点击空白处让游戏加载",
-                EN: "Click on a blank area to let the game load"
-            }))
             self.meet_login_page = True
             # 执行用户定义的登录界面执行流程
             if config.userconfigdict["USE_OBJ_FLOW_WHEN_LOGIN"]:
@@ -168,6 +162,12 @@ class Loginin(Task):
                     record_end_time = time.time()
                     # 减免执行此action_flow_on_login流程所用时间
                     self.task_start_time += (record_end_time - record_start_time)
+            # 第一次点击让游戏开始加载
+            click((1250, 40))
+            logging.info(istr({
+                CN: "点击空白处让游戏加载",
+                EN: "Click on a blank area to let the game load"
+            }))
         elif any([click_word in ocr_area([300, 251], [900, 325])[0].strip().lower() for click_word in self.click_keywords]):
             # 识别到一些关键字弹窗后点击空白处关闭这个弹窗
             click((1250, 40))
