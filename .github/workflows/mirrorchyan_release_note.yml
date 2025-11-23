@@ -2,8 +2,12 @@ name: mirrorchyan_release_note
 
 on:
   workflow_dispatch:
+    inputs:
+        tag:
+            default: ''
+            required: false
   release:
-    types: [edited, released]
+    types: [edited]
 
 jobs:
   mirrorchyan:
@@ -14,7 +18,8 @@ jobs:
         uses: MirrorChyan/release-note-action@v1
         with:
           mirrorchyan_rid: BAAH
-          
+          version_name: ${{ inputs.tag }}
+
           owner: sanmusen214
           repo: BAAH
           upload_token: ${{ secrets.MirrorChyanUploadToken }}
