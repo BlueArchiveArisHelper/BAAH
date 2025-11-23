@@ -11,13 +11,21 @@ from .Loginin import Loginin
 from .CloseInform import CloseInform
 
 class EnterGame(Task):
-    def __init__(self, name="EnterGame" , pre_times = 1, post_times = 10) -> None:
+    """
+    确保游戏打开并处在ba主页的任务
+
+    当 strict_mode 为False，不会记录资源，不会切换页面一次来检查是否要重新登录
+    """
+    def __init__(self, strict_mode=True, name="EnterGame" , pre_times = 1, post_times = 10) -> None:
         super().__init__(name, pre_times, post_times)
+        self.strict_mode = strict_mode
     
     def record_resources(self):
         """
         记录主页中的资源
         """
+        if not self.strict_mode:
+            return
         # 记录主页中的资源
         power_num = ocr_area((483, 17), (582, 56))[0]
         # print("体力: ", power_num)
@@ -48,6 +56,9 @@ class EnterGame(Task):
                 self.record_resources()
                 has_recorded = True
         if has_recorded:
+            if not self.strict_mode:
+                # 非严格模式下，确保回到主页即可
+                return
             # 如果已经在游戏主页，判断是否服务器刷新需要重新登录
             logging.info(istr({
                 CN: "检查是否需要重新登录",
@@ -66,6 +77,7 @@ class EnterGame(Task):
                 # 如果可以进入日常任务页，说明已经在主页
                 self.back_to_home()
                 return
+        # 如果第一步骤无法回到主页或识别主页icon
         # 登录流程
         Loginin().run()
         CloseInform().run()
