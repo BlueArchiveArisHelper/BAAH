@@ -2,8 +2,12 @@ name: mirrorchyan
 
 on:
   workflow_dispatch:
-  release:
-    types: [released]
+    inputs:
+        tag:
+            default: ''
+            required: false
+#   release:
+#     types: [released]
 
 jobs:
   mirrorchyan:
@@ -22,6 +26,7 @@ jobs:
         with:
           filetype: latest-release
           filename: '${{ steps.latest-release.outputs.release }}.zip'
+          tag: ${{ inputs.tag }}
           mirrorchyan_rid: BAAH
 
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -37,6 +42,7 @@ jobs:
         with:
           filetype: latest-release
           filename: '*_update.zip'
+          tag: ${{ inputs.tag }}
           mirrorchyan_rid: BAAH
 
           github_token: ${{ secrets.GITHUB_TOKEN }}

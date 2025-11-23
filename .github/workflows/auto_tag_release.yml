@@ -92,3 +92,11 @@ jobs:
         name: BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
         body_path: changelog.md  # 关键修改：从文件读取内容
         files: ./dist/*.zip  # 仅上传ZIP格式的制品[10](@ref)
+
+    - name: Trigger MirrorChyanUploading
+      shell: bash
+      run: |
+        gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release -f tag=BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
+        gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note -f tag=BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
+      env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
