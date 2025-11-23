@@ -1,34 +1,36 @@
-myversion = "1.11.3"
+myversion = "1.11.4"
 mychangelog = """
+
+> BAAH_GUI.exe 已合并至 BAAH.exe, 请点击 BAAH.exe 打开程序 <
+
+> 参考视频教程 BV1ZxfGYSEVr 里的 使用快捷方式 来快速执行某个配置 <
 
 ## Fix
 
-修复国服反和谐后会卡在登录社区弹窗三十秒的问题
+修复 H9-2, H14-1 推图
 
-修复总力战助战选择学生失败的问题
+Fix H9-2, H14-1 Quest Explore
 
-Fix Assault can not select help student
+
+
+修复 更新器 完成更新检查后会直接关闭不会停留的问题
+
+Fix updater closing immediately after checking updates
 
 ## Feat
 
 （由于是实验性功能，有问题请到q群反馈985729020）
 
-新增GUI操作流实现 更易上手，更高自由度，更稳定 的开启加速器和自定义任务流程
 
-More flexible user define tasks
 
-考试也可以选择助战学生了
+操作流新增滑动操作
 
-Can select helper student in Exam
+Add scroll action in operation flow
 
-## Update
 
-以前的开启加速器流程迁移至新的操作流。按理说自动迁移应该没什么问题，建议各位sensei更新后观察下开启和关闭加速器流程是否正常
 
-## Build
+在账号登录页面可以执行自定义操作流
 
-使用github自动构建并发布release
-
-Auto-release in github action
+Can do custom actions flow in account login page
 
 """
