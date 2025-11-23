@@ -86,7 +86,8 @@
             {
                 "name": "B",
                 "type": "any",
-                "position": "down"
+                "position": "down",
+                "click": [523, 639]
             }
         ],
         "fight_plan": [
