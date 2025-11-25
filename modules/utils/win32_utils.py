@@ -7,6 +7,7 @@ from PIL import ImageGrab
 import time
 import numpy as np
 import cv2
+import pythoncom
 
 def _get_hwnd(window_title):
     # 使用win32gui获取更精确的客户端区域
@@ -27,10 +28,11 @@ def _wrap_activate_window(func):
         foreground_hwnd = win32gui.GetForegroundWindow()
         if foreground_hwnd != hwnd:
             # 3. 将窗口设置为前景窗口（激活）
+            pythoncom.CoInitialize()
             win32gui.SetForegroundWindow(hwnd)
             print(f"窗口已激活")
             time.sleep(0.5)
-        
+            pythoncom.CoUninitialize()
         result = func(*args, **kwargs)
         return result
     return wrapper
@@ -114,6 +116,17 @@ def click_program_window_precise(x, y):
     client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
     print(client_x, client_y)
     _click_in_multiple_screens(client_x+x, client_y+y)
+
+def check_esc_is_pressed():
+    """
+    检测Esc键是否被按下
+    """
+    # 使用win32api检测Esc键状态
+    esc_state = win32api.GetAsyncKeyState(win32con.VK_ESCAPE)
+    # 如果高位字节为1，表示按键被按下
+    if esc_state & 0x8000:
+        return True
+    return False
 
 if __name__ == "__main__":
     click_program_window_precise(900, 600)
