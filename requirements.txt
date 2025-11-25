@@ -35,6 +35,7 @@ opencv-python==4.8.1.78
 orjson==3.9.10
 packaging==23.1
 pefile==2023.2.7
+pillow==12.0.0
 pipx==1.2.0
 pponnxcr==2.0
 protobuf==4.25.0
@@ -54,6 +55,7 @@ python-multipart==0.0.6
 python-socketio==5.10.0
 pythonnet==3.0.3
 pywebview==4.4.1
+pywin32==311
 pywin32-ctypes==0.2.2
 PyYAML==6.0.1
 requests==2.31.0
