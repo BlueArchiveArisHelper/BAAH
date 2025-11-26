@@ -29,24 +29,28 @@ def check_esc_is_pressed():
 
 def _wrap_activate_window(func):
     def wrapper(*args, **kwargs):
-        window_title = "Blue Archive"
-        hwnd = _get_hwnd(window_title)
+        # 窗口不存在的异常交由里层func处理
+        try:
+            window_title = "Blue Archive"
+            hwnd = _get_hwnd(window_title)
 
-        # 2. 恢复窗口（如果它被最小化）
-        if win32gui.IsIconic(hwnd):
-            win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-            print(f"窗口已恢复")
-            time.sleep(0.5)
-        
-        foreground_hwnd = win32gui.GetForegroundWindow()
-        if foreground_hwnd != hwnd:
-            # 3. 将窗口设置为前景窗口（激活）
-            pythoncom.CoInitialize()
-            # win32gui.SetForegroundWindow(hwnd)
-            win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOSIZE | win32con.SWP_NOMOVE)
-            print(f"窗口已激活")
-            time.sleep(0.5)
-            pythoncom.CoUninitialize()
+            # 2. 恢复窗口（如果它被最小化）
+            if win32gui.IsIconic(hwnd):
+                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                print(f"窗口已恢复")
+                time.sleep(0.5)
+            
+            foreground_hwnd = win32gui.GetForegroundWindow()
+            if foreground_hwnd != hwnd:
+                # 3. 将窗口设置为前景窗口（激活）
+                pythoncom.CoInitialize()
+                # win32gui.SetForegroundWindow(hwnd)
+                win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOSIZE | win32con.SWP_NOMOVE)
+                print(f"窗口已激活")
+                time.sleep(0.5)
+                pythoncom.CoUninitialize()
+        except Exception as e:
+            print(f"wrap Exception: {str(e)}")
         result = func(*args, **kwargs)
         return result
     return wrapper
@@ -58,27 +62,6 @@ def _get_window_client_pos(window_title):
     client_width = right - left
     client_height = bottom - top
     return  client_x, client_y, client_width, client_height
-
-@_wrap_activate_window
-def capture_program_window_precise():
-    """
-    精确截取程序窗口的客户端区域（不含标题栏和边框）
-    """
-    try:
-        window_title = "Blue Archive"
-
-        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
-        # 使用PIL的ImageGrab截取指定区域
-        bbox = (client_x, client_y, client_x + client_width, client_y + client_height)
-        screenshot = ImageGrab.grab(bbox)
-        # print(screenshot.size)
-        image_array = np.asarray(screenshot)
-        # 将 RGB 转换为 OpenCV 默认的 BGR 格式以供 cv2 使用
-        image_array_bgr = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
-        return image_array_bgr
-        
-    except Exception as e:
-        print(f"错误: {str(e)}")
 
 def _parse_normalized_coordinates(target_x, target_y):
     """给定全局坐标，转换为归一化全局坐标"""
@@ -162,24 +145,51 @@ def _scroll_in_multiple_screens(x1, y1, x2, y2, duration_ms):
     win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_VIRTUALDESK | win32con.MOUSEEVENTF_LEFTUP, normalized_x2, normalized_y2, 0, 0)
 
 @_wrap_activate_window
+def capture_program_window_precise():
+    """
+    精确截取程序窗口的客户端区域（不含标题栏和边框）
+    """
+    try:
+        window_title = "Blue Archive"
+
+        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
+        # 使用PIL的ImageGrab截取指定区域
+        bbox = (client_x, client_y, client_x + client_width, client_y + client_height)
+        screenshot = ImageGrab.grab(bbox)
+        # print(screenshot.size)
+        image_array = np.asarray(screenshot)
+        # 将 RGB 转换为 OpenCV 默认的 BGR 格式以供 cv2 使用
+        image_array_bgr = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
+        return image_array_bgr
+    except Exception as e:
+        print(f"错误: {str(e)}")
+        return None
+
+@_wrap_activate_window
 def click_program_window_precise(x, y):
     """
     点击clientWindow相对位置
     """
     if check_esc_is_pressed():
         raise KeyboardInterrupt("Esc key pressed, program terminated")
-    window_title = "Blue Archive"
-    client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
-    print(client_x, client_y)
-    _click_in_multiple_screens(client_x+x, client_y+y)
+    try:
+        window_title = "Blue Archive"
+        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
+        print(client_x, client_y)
+        _click_in_multiple_screens(client_x+x, client_y+y)
+    except Exception as e:
+        print(str(e))
 
 @_wrap_activate_window
 def scroll_program_window_precise(x1, y1, x2, y2, duration_ms):
     if check_esc_is_pressed():
         raise KeyboardInterrupt("Esc key pressed, program terminated")
-    window_title = "Blue Archive"
-    client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
-    _scroll_in_multiple_screens(client_x+x1, client_y+y1, client_x+x2, client_y+y2, duration_ms)
+    try:
+        window_title = "Blue Archive"
+        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
+        _scroll_in_multiple_screens(client_x+x1, client_y+y1, client_x+x2, client_y+y2, duration_ms)
+    except Exception as e:
+        print(str(e))
 
 
 if __name__ == "__main__":
