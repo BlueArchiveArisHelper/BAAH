@@ -8,6 +8,7 @@ import time
 import numpy as np
 import cv2
 import platform
+from .win32_utils import *
 
 
 def getNewestSeialNumber(use_config=None):
@@ -40,31 +41,43 @@ def get_config_adb_path(use_config=None):
 # 判断是否有TARGET_PORT这个配置项
 def disconnect_this_device():
     """Disconnect this device."""
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     subprocess_run([get_config_adb_path(), "disconnect", getNewestSeialNumber()])
 
 def reconnect_offline():
     """Reconnect to the device that was disconnected, or remove the offline status of the device."""
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     subprocess_run([get_config_adb_path(), "reconnect", "offline"])
 
 def kill_adb_server():
     """Kill the adb server."""
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     subprocess_run([get_config_adb_path(), "kill-server"])
 
 
 def connect_to_device(use_config=None):
     """Connect to a device with the given device port."""
-    if use_config:
-        subprocess_run([get_config_adb_path(use_config), "connect", getNewestSeialNumber(use_config)])
-    else:
-        subprocess_run([get_config_adb_path(), "connect", getNewestSeialNumber()])
+    target_config = config if not use_config else use_config
+    if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
+    subprocess_run([get_config_adb_path(target_config), "connect", getNewestSeialNumber(target_config)])
 
 
 def click_on_screen(x, y):
     """Click on the given coordinates."""
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        click_program_window_precise(x, y)
+        return
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "tap", str(int(x)), str(int(y))])
 
 def swipe_on_screen(x1, y1, x2, y2, ms):
     """Swipe from the given coordinates to the other given coordinates."""
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        scroll_program_window_precise(x1, y1, x2, y2, ms)
+        return
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "swipe", str(int(x1)), str(int(y1)), str(int(x2)), str(int(y2)), str(int(ms))])
 
 def convert_img(path):
@@ -91,29 +104,37 @@ def screen_shot_to_global(use_config=None, output_png=False):
     if not whether_pipe:
         # 方法一，重定向输出到文件
         filename = target_config.userconfigdict['SCREENSHOT_NAME']
-        with open("./{}".format(filename),"wb") as out:
-            subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), "shell", "screencap", "-p"], stdout=out)
+        if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+            img_array = capture_program_window_precise()
+            cv2.imwrite("./{}".format(filename), img_array)
+        else:
+            with open("./{}".format(filename),"wb") as out:
+                subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), "shell", "screencap", "-p"], stdout=out)
         #adb 命令有时直接截图保存到电脑出错的解决办法-加下面一段即可
-        if (platform.system() != "Linux"):
+        if (platform.system() not in ["Linux", "Darwin"]):
             convert_img("./{}".format(filename))
     else:
         # 方法二，使用cv2提取PIPE管道中的数据
         # 使用subprocess的Popen调用adb shell命令，并将结果保存到PIPE管道中
-        process = subprocess.run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), "shell", "screencap", "-p"], stdout=subprocess.PIPE)
-        # 读取管道中的数据
-        screenshot = process.stdout
-        # 将读取的字节流数据的回车换行替换成'\n'
-        if platform.system() not in ["Linux", "Darwin"]:
-            binary_screenshot = screenshot.replace(b'\r\n', b'\n')
+        if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+            img_array = capture_program_window_precise()
+            img_screenshot = img_array
         else:
-            # Linux和Macos系统不需要替换
-            binary_screenshot = screenshot
-        # 使用numpy和imdecode将二进制数据转换成cv2的mat图片格式
-        if (binary_screenshot == b''):
-            logging.error({"zh_CN": "pipe截图失败", "en_US": "Failed to take pipe screenshot"})
-            target_config.sessiondict["SCREENSHOT_DATA"] = None
-            return
-        img_screenshot = cv2.imdecode(np.frombuffer(binary_screenshot, np.uint8), cv2.IMREAD_COLOR)
+            process = subprocess.run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), "shell", "screencap", "-p"], stdout=subprocess.PIPE)
+            # 读取管道中的数据
+            screenshot = process.stdout
+            # 将读取的字节流数据的回车换行替换成'\n'
+            if platform.system() not in ["Linux", "Darwin"]:
+                binary_screenshot = screenshot.replace(b'\r\n', b'\n')
+            else:
+                # Linux和Macos系统不需要替换
+                binary_screenshot = screenshot
+            # 使用numpy和imdecode将二进制数据转换成cv2的mat图片格式
+            if (binary_screenshot == b''):
+                logging.error({"zh_CN": "pipe截图失败", "en_US": "Failed to take pipe screenshot"})
+                target_config.sessiondict["SCREENSHOT_DATA"] = None
+                return
+            img_screenshot = cv2.imdecode(np.frombuffer(binary_screenshot, np.uint8), cv2.IMREAD_COLOR)
         target_config.sessiondict["SCREENSHOT_DATA"] = img_screenshot
         if output_png:
             cv2.imwrite("./{}".format(target_config.userconfigdict['SCREENSHOT_NAME']), img_screenshot)
@@ -123,10 +144,10 @@ def get_now_running_app(use_config=None):
     """
     获取当前运行的app的前台activity
     """
-    if use_config:
-        output = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), 'shell', 'dumpsys', 'window']).stdout
-    else:
-        output = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), 'shell', 'dumpsys', 'window']).stdout
+    target_config = config if not use_config else use_config
+    if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return ""
+    output = subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), 'shell', 'dumpsys', 'window']).stdout
     # adb shell "dumpsys window | grep mCurrentFocus"
     # 有时候启动器排前，应用排后，这里逆序排序
     for sentence in output.split("\n")[::-1]:
@@ -157,16 +178,16 @@ def get_now_running_app_entrance_activity(use_config=None):
 
     https://stackoverflow.com/questions/12698814/get-launchable-activity-name-of-package-from-adb/41325792#41325792
     """
+    target_config = config if not use_config else use_config
+    if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return ""
     # 先获取当前运行的app的前台activity
-    front_activity = get_now_running_app(use_config)
+    front_activity = get_now_running_app(target_config)
     logging.info({"zh_CN": "当前运行的app的前台activity是：{}".format(front_activity),
                   "en_US": "The foreground activity of the currently running app is: {}" .format (front_activity)})
     # 提取出包名
     package_name = front_activity.split("/")[0]
-    if use_config:
-        output = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), 'shell', 'cmd', 'package', 'resolve-activity', '--brief', package_name]).stdout
-    else:
-        output = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(),  'shell', 'cmd', 'package', 'resolve-activity', '--brief', package_name]).stdout
+    output = subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), 'shell', 'cmd', 'package', 'resolve-activity', '--brief', package_name]).stdout
     # 提取出入口activity
     strlist = output.split()
     entrance_activity = strlist[-1]
@@ -181,6 +202,8 @@ def check_app_running(activity_path: str, printit = True) -> bool:
     """
     检查app是否在运行，不校验app的activity,只校验app的名字
     """
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return True
     try:
         app_name = activity_path.split("/")[0]
     except Exception as e:
@@ -201,6 +224,8 @@ def open_app(activity_path: str):
     """
     使用adb打开app
     """
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     brand_waydroid = False
     try:
         # https://github.com/MaaXYZ/MaaFramework/issues/548
@@ -228,6 +253,8 @@ def close_app(activity_path: str):
     """
     使用adb关闭app
     """
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return True
     appname = activity_path.split("/")[0]
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), 'shell', 'am', 'force-stop', appname], isasync=True)
 
@@ -237,6 +264,8 @@ def get_wm_size(use_config=None):
     """
     if not use_config:
         use_config = config
+    if use_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return "Physical size: 720x1280"
     # only focus on last line
     wmres = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "size"]).stdout.strip().split("\n")[-1]
     return wmres
@@ -247,6 +276,8 @@ def get_dpi(use_config=None):
     """
     if not use_config:
         use_config = config
+    if use_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return "Physical density: 240"
     # only focus on last line (Physical density, Override density)
     dpires = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density"]).stdout.strip().split("\n")[-1]
     return dpires
@@ -257,11 +288,15 @@ def set_dpi(target_dpi, use_config=None):
     """
     if not use_config:
         use_config = config
+    if use_config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     if isinstance(target_dpi, float):
         target_dpi = int(target_dpi)
     subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density", str(target_dpi)], isasync=True)
     
 def install_apk(filepath):
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     status = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "install", filepath])
     logging.debug(status.stdout)
     if status.returncode != 0:
@@ -277,6 +312,8 @@ def install_apk(filepath):
 #         raise(Exception(istr({"zh_CN": "安装失败", "en_US": "Installation failed"})))
 
 def install_dir(dir):
+    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        return
     command = [get_config_adb_path(), "-s", getNewestSeialNumber(), "install-multiple"]
     for filename in os.listdir(dir):
         if filename.endswith(".apk"):
