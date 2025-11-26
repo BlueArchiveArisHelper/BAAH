@@ -70,6 +70,7 @@ class MyConfigger:
         # 强制设置截图文件名为配置名
         # USER_STORAGE_FILE_NAME 依赖于哈希后的 SCREENSHOT_NAME 来 mapping，这里在 _checkj_user_config 前就要设置好SCREENSHOT_NAME
         self.userconfigdict["SCREENSHOT_NAME"] = configname2screenshotname(file_name)
+        self.userconfigdict["USER_STORAGE_FILE_NAME"] = configname2screenshotname(file_name).replace(".png", ".json")
         # 检查缺失的配置
         self._check_user_config()
         self.nowuserconfigname = file_name
