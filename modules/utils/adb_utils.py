@@ -9,6 +9,7 @@ import numpy as np
 import cv2
 import platform
 from .win32_utils import *
+from .win32_utils import _get_hwnd
 
 
 def getNewestSeialNumber(use_config=None):
@@ -146,7 +147,13 @@ def get_now_running_app(use_config=None):
     """
     target_config = config if not use_config else use_config
     if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
-        return ""
+        # 如果已经启动 STEAM ba 窗口，返回"Blue Archive/Blue Archive"
+        window_title = "Blue Archive"
+        hwnd = _get_hwnd(window_title)
+        if hwnd != 0:
+            return "Blue Archive/Blue Archive"
+        else:
+            return ""
     output = subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), 'shell', 'dumpsys', 'window']).stdout
     # adb shell "dumpsys window | grep mCurrentFocus"
     # 有时候启动器排前，应用排后，这里逆序排序
@@ -202,8 +209,9 @@ def check_app_running(activity_path: str, printit = True) -> bool:
     """
     检查app是否在运行，不校验app的activity,只校验app的名字
     """
-    if config.userconfigdict["SERVER_TYPE"] == "STEAM":
-        return True
+    # 靠 get_now_running_app 来识别有没有打开 STEAM ba
+    # if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+    #     return True
     try:
         app_name = activity_path.split("/")[0]
     except Exception as e:
@@ -225,6 +233,7 @@ def open_app(activity_path: str):
     使用adb打开app
     """
     if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+        # STEAM端打开游戏交给 打开模拟器 那一步操作
         return
     brand_waydroid = False
     try:

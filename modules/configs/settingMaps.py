@@ -17,7 +17,7 @@ server2activity = {
     "GLOBAL":"com.nexon.bluearchive/.MxUnityPlayerActivity",
     "CN":"com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
     "CN_BILI":"com.RoamingStar.BlueArchive.bilibili/com.yostar.supersdk.activity.YoStarSplashActivity",
-    "STEAM":"Blue Archive"  # 占位符，steam版不需要包名
+    "STEAM":"Blue Archive/Blue Archive"  # 占位符，steam版不需要包名
 }
 
 
