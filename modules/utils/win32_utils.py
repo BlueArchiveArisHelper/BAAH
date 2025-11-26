@@ -71,7 +71,7 @@ def capture_program_window_precise():
         # 使用PIL的ImageGrab截取指定区域
         bbox = (client_x, client_y, client_x + client_width, client_y + client_height)
         screenshot = ImageGrab.grab(bbox)
-        print(screenshot.size)
+        # print(screenshot.size)
         image_array = np.asarray(screenshot)
         # 将 RGB 转换为 OpenCV 默认的 BGR 格式以供 cv2 使用
         image_array_bgr = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
@@ -91,7 +91,7 @@ def _parse_normalized_coordinates(target_x, target_y):
     virtual_desktop_right = virtual_desktop_left + virtual_desktop_width
     virtual_desktop_bottom = virtual_desktop_top + virtual_desktop_height
 
-    print(f"虚拟桌面范围: 左上({virtual_desktop_left}, {virtual_desktop_top}), 右下({virtual_desktop_right}, {virtual_desktop_bottom})")
+    # print(f"虚拟桌面范围: 左上({virtual_desktop_left}, {virtual_desktop_top}), 右下({virtual_desktop_right}, {virtual_desktop_bottom})")
 
     # 计算归一化绝对坐标（范围0-65535）
     # 公式： normalized_x = (target_x - virtual_desktop_left) * 65535 / virtual_desktop_width[6,7](@ref)
