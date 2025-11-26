@@ -34,6 +34,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
     # ============= Import =============
 
     import os
+    import psutil
     from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
@@ -114,6 +115,13 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             try:
                 # 以列表形式传命令行参数
                 logging.info({"zh_CN": "启动模拟器", "en_US": "Starting the emulator"})
+                if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+                    # 如果Steam版本ba，使用psutil判断是否已有 "BlueArchive.exe" 进程在运行
+                    for proc in psutil.process_iter(['pid', 'name']):
+                        if proc.info['name'] == "BlueArchive.exe":
+                            logging.info({"zh_CN": "检测到Steam版BA已经在运行，跳过启动模拟器",
+                                        "en_US": "Detected that Steam BA is already running, skip starting the emulator"})
+                            return
                 # 不能用shell，否则得到的是shell的pid
                 emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
                 logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),

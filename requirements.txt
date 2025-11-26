@@ -41,6 +41,7 @@ pponnxcr==2.0
 protobuf==4.25.0
 proxy_tools==0.1.0
 pscript==0.7.7
+psutil==7.1.3
 pyclipper==1.3.0.post5
 pycparser==2.21
 pydantic==2.5.2
