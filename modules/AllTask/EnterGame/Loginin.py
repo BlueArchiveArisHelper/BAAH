@@ -149,6 +149,14 @@ class Loginin(Task):
                 CN: "关闭活动弹窗",
                 EN: "Close event popup"
             }))
+        elif config.userconfigdict["SERVER_TYPE"] == "STEAM" and any([eachv in ocr_area((254, 524), (280, 551))[0].lower() for eachv in ["√", "v"]]):
+            # 关闭Steam活动弹窗
+            # 判断点击左下角是否有今日不再显示的勾（√）并点掉
+            click((269, 534))
+            logging.info(istr({
+                CN: "关闭Steam活动弹窗",
+                EN: "Close Steam event popup"
+            }))
         elif ocr_area([36, 626], [94, 652], ocr_lang = OCR_LANG.ZHS)[0].strip() == "菜单" or ocr_area([36, 626], [94, 652])[0].strip().lower() == "menu":
             # 检测游戏加载前左下角的菜单字样
             self.meet_login_page = True
@@ -201,10 +209,10 @@ class Loginin(Task):
         self.task_start_time = time.time()
         # 循环进行条件判断点击操作
         self.run_until(self.try_jump_useless_pages, 
-                      lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME), 
+                      lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)) or Page.is_page(PageName.PAGE_HOME), 
                       times = 200,
                       sleeptime = self.sleep_between_detect)
 
      
     def post_condition(self) -> bool:
-        return match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME)
+        return match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)) or Page.is_page(PageName.PAGE_HOME)

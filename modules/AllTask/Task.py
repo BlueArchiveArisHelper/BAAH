@@ -94,8 +94,8 @@ class Task:
                 can_back_home = True
                 Task.clear_popup()
             # 有社区弹窗，点关闭按钮
-            if match(popup_pic(PopupName.POPUP_LOGIN_FORM)):
-                click(popup_pic(PopupName.POPUP_LOGIN_FORM), sleeptime=1)
+            if match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
+                click(popup_pic(PopupName.POPUP_LOGIN_FORM), sleeptime=1) or click(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM), sleeptime=1)
                 can_back_home = True
                 Task.clear_popup()
             # 如果已经在主页
@@ -201,6 +201,12 @@ class Task:
         """
         清除弹窗
         """
+        def _close():
+            if config.userconfigdict["SERVER_TYPE"] == "STEAM" and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
+                # 如果是STEAM且识别到社区弹窗，STEAM 关闭社区弹窗
+                click((1123, 114))
+            else:
+                click(Page.MAGICPOINT)
         res = Task.run_until(
             lambda: click(Page.MAGICPOINT),
             lambda: not Task.has_popup(),
