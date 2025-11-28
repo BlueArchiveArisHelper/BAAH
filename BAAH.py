@@ -35,7 +35,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -111,29 +111,38 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         启动模拟器
         """
-        if config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != "":
+        if config.userconfigdict["SERVER_TYPE"] == "STEAM" or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
             try:
                 # 以列表形式传命令行参数
                 logging.info({"zh_CN": "启动模拟器", "en_US": "Starting the emulator"})
+                executor_pid = None
                 if config.userconfigdict["SERVER_TYPE"] == "STEAM":
                     # 如果Steam版本ba，使用psutil判断是否已有 "BlueArchive.exe" 进程在运行
-                    for proc in psutil.process_iter(['pid', 'name']):
-                        if proc.info['name'] == "BlueArchive.exe":
-                            logging.info({"zh_CN": "检测到Steam版BA已经在运行，跳过启动模拟器",
-                                        "en_US": "Detected that Steam BA is already running, skip starting the emulator"})
-                            return
-                # 不能用shell，否则得到的是shell的pid
-                emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
-                logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
-                            "en_US": "The emulator pid: " + str(emulator_process.pid)})
+                    ba_process_list = check_if_process_exist("name", "BlueArchive.exe")
+                    if len(ba_process_list) > 0:
+                        executor_pid = ba_process_list[0].info['pid']
+                        logging.info({"zh_CN": "检测到Steam版BA已经在运行，跳过启动模拟器",
+                                    "en_US": "Detected that Steam BA is already running, skip starting the emulator"})
+                    else:
+                        # 使用Steam协议启动游戏
+                        subprocess.run("start steam://rungameid/3557620", shell=True)
+                        time.sleep(5)
+                        ba_process_list = check_if_process_exist("name", "BlueArchive.exe")
+                        executor_pid = ba_process_list[0].info['pid'] if len(ba_process_list) > 0 else None
+                else:
+                    # 不能用shell，否则得到的是shell的pid
+                    emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
+                    logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
+                                "en_US": "The emulator pid: " + str(emulator_process.pid)})
+                    executor_pid = emulator_process.pid
                 time.sleep(5)
                 # 检查pid是否存在
-                if not _check_process_exist(emulator_process.pid):
+                if not _check_process_exist(executor_pid):
                     logging.warn({"zh_CN": "模拟器启动进程已结束，可能是启动失败，或者是模拟器已经在运行",
                                 "en_US": "The emulator startup process has ended, may be startup failed, or the emulator is already running"})
                 else:
                     # 存进session，这样最后根据需要按照这个pid杀掉模拟器
-                    config.sessiondict["EMULATOR_PROCESS_PID"] = emulator_process.pid
+                    config.sessiondict["EMULATOR_PROCESS_PID"] = executor_pid
             except Exception as e:
                 logging.error({"zh_CN": "启动模拟器失败, 可能是没有以管理员模式运行 或 配置的模拟器路径有误",
                             "en_US": "Failed to start the emulator, maybe not run as administrator or the emulator path is wrong"})
