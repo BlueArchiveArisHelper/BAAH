@@ -67,12 +67,12 @@ class MyConfigger:
             # 清空sessiondict
             self.sessiondict = {}
             self._check_session_config()
+        # 强制设置截图文件名为配置名
+        # USER_STORAGE_FILE_NAME 依赖于哈希后的 SCREENSHOT_NAME 来 mapping，这里在 _checkj_user_config 前就要设置好SCREENSHOT_NAME
+        self.userconfigdict["SCREENSHOT_NAME"] = configname2screenshotname(file_name)
         # 检查缺失的配置
         self._check_user_config()
         self.nowuserconfigname = file_name
-        # 强制设置截图文件名为配置名
-        self.userconfigdict["SCREENSHOT_NAME"] = configname2screenshotname(file_name)
-
         # ====读取userstoragedict========
         storage_path = os.path.join(self.current_dir, self.USER_STORAGE_FOLDER, self.userconfigdict["USER_STORAGE_FILE_NAME"])
         self.userstoragedict = self._read_config_file(storage_path)
@@ -160,12 +160,12 @@ class MyConfigger:
             postparse = defaultmap[key]["p"]
             selfmap[key] = postparse(selfmap[key], selfmap)
 
-    def _fill_by_map_or_default(self, defaultmap, selfmap, key, print_warn = True):
+    def _fill_by_map_or_default(self, defaultmap, selfmap, key, enable_map = True, print_warn = True):
         """
         尝试用defaultmap里的map和default值填充某个key
         """
         # 使用对应关系查找
-        if "m" in defaultmap[key]:
+        if "m" in defaultmap[key] and enable_map:
             mapdict = defaultmap[key]["m"]
             fromkey = mapdict["from"]
             mapfunc = mapdict["map"]
@@ -199,10 +199,15 @@ class MyConfigger:
                 self.userconfigdict["SERVER_TYPE"] = mapfunc(self.userconfigdict[fromkey])
             else:
                 self.userconfigdict["SERVER_TYPE"] = defaultUserDict["SERVER_TYPE"]["d"]
+        empty_keys = set()
         for shouldKey in defaultUserDict:
             # 如果用户的config里没有这个值
             if shouldKey not in self.userconfigdict:
-                self._fill_by_map_or_default(defaultUserDict, self.userconfigdict, shouldKey)
+                empty_keys.add(shouldKey)
+                self._fill_by_map_or_default(defaultUserDict, self.userconfigdict, shouldKey, enable_map = False)
+        # 对于缺失值，过完default后，过一遍 mapping
+        for shouldKey in empty_keys:
+            self._fill_by_map_or_default(defaultUserDict, self.userconfigdict, shouldKey, enable_map = True)
         for shouldKey in defaultUserDict:
             # 确保值存在后，执行post parse action
             self._do_post_parse_action(defaultUserDict, self.userconfigdict, shouldKey)
@@ -211,10 +216,15 @@ class MyConfigger:
         """
         检查用户的存储config内的值是否有缺少，如果有，按照对应关系查找，如果没有，就用默认值
         """
+        empty_keys = set()
         for shouldKey in defaultStorageDict:
             # 如果用户的config里没有这个值
             if shouldKey not in self.userstoragedict:
-                self._fill_by_map_or_default(defaultStorageDict, self.userstoragedict, shouldKey)
+                empty_keys.add(shouldKey)
+                self._fill_by_map_or_default(defaultStorageDict, self.userstoragedict, shouldKey, enable_map = False)
+        # 过完default，缺失值过mapping
+        for shouldKey in empty_keys:
+            self._fill_by_map_or_default(defaultStorageDict, self.userstoragedict, shouldKey, enable_map = True)
         for shouldKey in defaultStorageDict:
             # 确保值存在后，执行post parse action
             self._do_post_parse_action(defaultStorageDict, self.userstoragedict, shouldKey)
@@ -223,10 +233,14 @@ class MyConfigger:
         """
         检查软件的config内的值是否有缺少，如果有，按照对应关系查找，如果没有，就用默认值
         """
+        empty_keys = set()
         for shouldKey in defaultSoftwareDict:
             # 如果用户的config里没有这个值
             if shouldKey not in self.softwareconfigdict:
-                self._fill_by_map_or_default(defaultSoftwareDict, self.softwareconfigdict, shouldKey)
+                empty_keys.add(shouldKey)
+                self._fill_by_map_or_default(defaultSoftwareDict, self.softwareconfigdict, shouldKey, enable_map = False)
+        for shouldKey in empty_keys:
+            self._fill_by_map_or_default(defaultSoftwareDict, self.softwareconfigdict, shouldKey, enable_map = True)
         for shouldKey in defaultSoftwareDict:
             # 确保值存在后，执行post parse action
             self._do_post_parse_action(defaultSoftwareDict, self.softwareconfigdict, shouldKey)
@@ -235,10 +249,14 @@ class MyConfigger:
         """
         session内的值设置默认值，sessiondict的值会在运行时被修改
         """
+        empty_keys = set()
         for shouldKey in defaultSessionDict:
             # 如果没有这个值
             if shouldKey not in self.sessiondict:
-                self._fill_by_map_or_default(defaultSessionDict, self.sessiondict, shouldKey, print_warn=False)
+                empty_keys.add(shouldKey)
+                self._fill_by_map_or_default(defaultSessionDict, self.sessiondict, shouldKey, enable_map = False, print_warn = False)
+        for shouldKey in empty_keys:
+            self._fill_by_map_or_default(defaultSessionDict, self.sessiondict, shouldKey, enable_map = True, print_warn = False)
         for shouldKey in defaultSessionDict:
             # 确保值存在后，执行post parse action
             self._do_post_parse_action(defaultSessionDict, self.sessiondict, shouldKey)
