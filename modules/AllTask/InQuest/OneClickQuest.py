@@ -137,7 +137,7 @@ class OneClickQuest(Task):
                 EN: f"Start one-click raid index {i} task {task} times {ocr_str_times}"
             }))
             self.run_until(
-                lambda: click([947, 595]),
+                lambda: click([1119, 595]),
                 lambda: match(button_pic(ButtonName.BUTTON_CONFIRMY))
             )
             self.run_until(
