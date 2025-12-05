@@ -107,7 +107,9 @@ class GridQuest(Task):
             "CN_BILI": [(1121, 551), (1080, 606)],
             "JP": [(1088, 550), (952, 604)],
             "GLOBAL": [(1116, 550), (1055, 605)],
-            "GLOBAL_EN": [(1096, 550), (1045, 604)]
+            "GLOBAL_EN": [(1096, 550), (1045, 604)],
+            "STEAM": [(1116, 550), (1055, 605)],
+            "STEAM_EN": [(1096, 550), (1045, 604)]
         }
         server = config.userconfigdict["SERVER_TYPE"]
         # 自动战斗和PHASE自动结束的位置
@@ -212,7 +214,7 @@ class GridQuest(Task):
         # 识别左下角切换队伍的按钮文字
         # 国际服繁中不偏移，其他服往右偏移45
         offsetx = 45
-        if config.userconfigdict["SERVER_TYPE"] == "GLOBAL":
+        if config.userconfigdict["SERVER_TYPE"] in ["GLOBAL", "STEAM"]:
             offsetx = 0
         now_team_str, loss = ocr_area((72 + offsetx, 544), (91 + offsetx, 569), multi_lines=False)
         logging.info({"zh_CN": "ocr结果: " + str(now_team_str), "en_US": "ocr result: " + str(now_team_str)})
