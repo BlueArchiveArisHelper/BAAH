@@ -9,6 +9,7 @@ import time
 import numpy as np
 import cv2
 import pythoncom
+from modules.utils.log_utils import logging, istr, CN, EN
 
 def _get_hwnd(window_title):
     # 使用win32gui获取更精确的客户端区域
@@ -27,6 +28,41 @@ def check_esc_is_pressed():
         return True
     return False
 
+
+def _get_window_client_pos(window_title):
+    hwnd = _get_hwnd(window_title)
+    left, top, right, bottom = win32gui.GetClientRect(hwnd)
+    client_x, client_y = win32gui.ClientToScreen(hwnd, (left, top))
+    client_width = right - left
+    client_height = bottom - top
+    return  client_x, client_y, client_width, client_height
+
+def _change_window_client_size(window_title):
+    """将给定的窗口内的client区域设置为1280x720，返回设置是否成功"""
+    hwnd = _get_hwnd(window_title)
+    _, _, cw, ch = _get_window_client_pos(window_title)
+    if cw!=1280 or ch!=720:
+        # 获取当前窗口的客户区大小和整个窗口大小
+        client_rect = win32gui.GetClientRect(hwnd)
+        window_rect = win32gui.GetWindowRect(hwnd)
+        # 计算非客户区（边框、标题栏等）的宽度和高度
+        non_client_width = (window_rect[2] - window_rect[0]) - client_rect[2]
+        non_client_height = (window_rect[3] - window_rect[1]) - client_rect[3]
+        # 计算需要的整个窗口大小（客户区大小 + 非客户区大小）
+        target_width = 1280 + non_client_width
+        target_height = 720 + non_client_height
+        
+        # 设置窗口大小（保持当前位置）
+        win32gui.SetWindowPos(hwnd, 0, 0, 0, target_width, target_height, 
+                            win32con.SWP_NOMOVE | win32con.SWP_NOZORDER)
+        
+        time.sleep(1)
+
+        _, _, cw, ch = _get_window_client_pos(window_title)
+        if not cw or not ch:
+            return False
+    return cw == 1280 and ch == 720
+
 def _wrap_activate_window(func):
     def wrapper(*args, **kwargs):
         # 窗口不存在的异常交由里层func处理
@@ -37,7 +73,11 @@ def _wrap_activate_window(func):
             # 2. 恢复窗口（如果它被最小化）
             if win32gui.IsIconic(hwnd):
                 win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
-                print(f"窗口已恢复")
+                # print(f"窗口已恢复")
+                logging.info(istr({
+                    CN: "窗口已恢复",
+                    EN: "Window is recover"
+                }))
                 time.sleep(0.5)
             
             foreground_hwnd = win32gui.GetForegroundWindow()
@@ -46,22 +86,28 @@ def _wrap_activate_window(func):
                 pythoncom.CoInitialize()
                 # win32gui.SetForegroundWindow(hwnd)
                 win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOSIZE | win32con.SWP_NOMOVE)
-                print(f"窗口已激活")
+                # print(f"窗口已激活")
+                logging.info(istr({
+                    CN: "窗口已激活",
+                    EN: "Window is activate"
+                }))
                 time.sleep(0.5)
                 pythoncom.CoUninitialize()
+            
+            # 设置1280*720
+            _, _, cwidth, cheight = _get_window_client_pos(window_title)
+            if cwidth != 1280 or cheight != 720:
+                logging.info(istr({
+                    CN: "调整分辨率为 1280*720",
+                    EN: "Change resolution to 1280*720"
+                }))
+                _change_window_client_size(window_title)
         except Exception as e:
             print(f"wrap Exception: {str(e)}")
         result = func(*args, **kwargs)
         return result
     return wrapper
 
-def _get_window_client_pos(window_title):
-    hwnd = _get_hwnd(window_title)
-    left, top, right, bottom = win32gui.GetClientRect(hwnd)
-    client_x, client_y = win32gui.ClientToScreen(hwnd, (left, top))
-    client_width = right - left
-    client_height = bottom - top
-    return  client_x, client_y, client_width, client_height
 
 def _parse_normalized_coordinates(target_x, target_y):
     """给定全局坐标，转换为归一化全局坐标"""
@@ -175,7 +221,7 @@ def click_program_window_precise(x, y):
     try:
         window_title = "Blue Archive"
         client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
-        print(client_x, client_y)
+        # print(client_x, client_y)
         _click_in_multiple_screens(client_x+x, client_y+y)
     except Exception as e:
         print(str(e))
