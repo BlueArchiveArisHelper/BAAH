@@ -187,7 +187,7 @@ def get_now_running_app_entrance_activity(use_config=None):
     """
     target_config = config if not use_config else use_config
     if target_config.userconfigdict["SERVER_TYPE"] == "STEAM":
-        return ""
+        return "Blue Archive/Blue Archive"
     # 先获取当前运行的app的前台activity
     front_activity = get_now_running_app(target_config)
     logging.info({"zh_CN": "当前运行的app的前台activity是：{}".format(front_activity),
