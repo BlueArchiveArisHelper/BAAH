@@ -3,6 +3,7 @@ name: Sync releases to cnb.cool
 on:
   release:
     types: [published] # 监听发布事件
+  workflow_dispatch: # 添加手动触发
 
 jobs:
   log-release-info:
