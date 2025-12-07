@@ -97,14 +97,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-release
     steps:
-      - name: Trigger MirrorChyanUploading
+      - name: Get latest release tag
+        id: get_release_tag
         shell: bash
         run: |
-          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml -f tag=BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
-          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml -f tag=BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}
+          tag=$(gh release view --repo $GITHUB_REPOSITORY --json tagName -q '.tagName')
+          echo "TAG=$tag" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Trigger MirrorChyanUploading
+        shell: bash
+        run: |
+          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml -f tag=${{ steps.get_release_tag.outputs.TAG }}
+          gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml -f tag=${{ steps.get_release_tag.outputs.TAG }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
   SyncCNBCool:
     runs-on: ubuntu-latest
     needs: build-and-release
