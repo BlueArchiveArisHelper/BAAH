@@ -1,5 +1,5 @@
 from nicegui import ui, run
-from modules.utils import check_connect, connect_to_device
+from modules.utils import check_connect, connect_to_device, _is_steam_app
 
 
 def set_emulator(config):
@@ -48,8 +48,11 @@ def set_emulator(config):
     #         with ui.row():
     #             ui.label(istr({CN:"修复后请直接重开模拟器", EN:"Please restart the emulator directly after fixing", JP:"修正後、直接エミュレータを再起動してください"}))
     #             ui.label(istr({CN:"请勿再次更改上面设置, 否则修复失效", EN:"Do not change the above settings again, or fix will be disabled", JP:"上記の設定を再度変更しないでください。さもないと修正が無効になります"})).style('color: red')
-
-    with ui.row():
+        
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: _is_steam_app(v)):
+        ui.label("STEAM")
+    
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_steam_app(v)):
         # IP+端口
         ui.number(config.get_text("config_emulator_port"),
                 step=1,
@@ -62,12 +65,12 @@ def set_emulator(config):
         ui.checkbox(config.get_text("adb_direct_use_serial")).bind_value(config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')
         
     
-    with ui.row():
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_steam_app(v)):
         kill_port = ui.checkbox(config.get_text("config_kill_port")).bind_value(config.userconfigdict, "KILL_PORT_IF_EXIST")
         kill_port.set_value(False)
         kill_port.set_enabled(False)
     
-    with ui.row():    
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_steam_app(v)):    
         ui.input(config.get_text("config_emulator_path"),
                     ).bind_value(config.userconfigdict, 'TARGET_EMULATOR_PATH',forward=lambda v: v.replace("\\", "/").replace('"','').replace('nx_main/MuMuNxMain.exe','nx_device/12.0/shell/MuMuNxDevice.exe')).style('width: 400px')
     
