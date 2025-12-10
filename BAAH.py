@@ -35,7 +35,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_steam_app
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -111,12 +111,12 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         启动模拟器
         """
-        if config.userconfigdict["SERVER_TYPE"] == "STEAM" or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
+        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
             try:
                 # 以列表形式传命令行参数
                 logging.info({"zh_CN": "启动模拟器", "en_US": "Starting the emulator"})
                 executor_pid = None
-                if config.userconfigdict["SERVER_TYPE"] == "STEAM":
+                if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
                     # 如果Steam版本ba，使用psutil判断是否已有 "BlueArchive.exe" 进程在运行
                     ba_process_list = check_if_process_exist("name", "BlueArchive.exe")
                     if len(ba_process_list) > 0:

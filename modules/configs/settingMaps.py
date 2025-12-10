@@ -8,7 +8,8 @@ server2pic = {
     "GLOBAL_EN":"./DATA/assets_global_en",
     "CN":"./DATA/assets_cn",
     "CN_BILI":"./DATA/assets_cn",
-    "STEAM":"./DATA/assets"
+    "STEAM":"./DATA/assets",
+    "STEAM_EN":"./DATA/assets_global_en",
 }
 
 server2activity = {
@@ -17,7 +18,8 @@ server2activity = {
     "GLOBAL":"com.nexon.bluearchive/.MxUnityPlayerActivity",
     "CN":"com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
     "CN_BILI":"com.RoamingStar.BlueArchive.bilibili/com.yostar.supersdk.activity.YoStarSplashActivity",
-    "STEAM":"Blue Archive/Blue Archive"  # 占位符，steam版不需要包名
+    "STEAM":"Blue Archive/Blue Archive",  # 占位符，steam版不需要包名
+    "STEAM_EN":"Blue Archive/Blue Archive",  # 占位符，steam版不需要包名
 }
 
 
@@ -30,7 +32,8 @@ server2respond = {
     "GLOBAL_EN":40,
     "CN":40,
     "CN_BILI":40,
-    "STEAM": 20
+    "STEAM": 20,
+    "STEAM_EN": 20,
 }
 
 def configname2screenshotname(configfilename):

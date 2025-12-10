@@ -10,6 +10,7 @@ from .data_utils import *
 from .I18nstr import *
 from .baah_exceptions import *
 from .win32_utils import _change_window_client_size
+from .adb_utils import _is_steam_app
 
 from modules.utils.log_utils import logging
 import time
