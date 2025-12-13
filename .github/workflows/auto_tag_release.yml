@@ -101,8 +101,9 @@ jobs:
         id: get_release_tag
         shell: bash
         run: |
-          git fetch --tags
-          tag=$(git describe --tags --abbrev=0)
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/latest)
+          tag=$(echo "$response" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
           echo "TAG=$tag" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
