@@ -1,3 +1,14 @@
+import ctypes
+# 尝试将进程设置为系统DPI感知
+try:
+    # 使用 SetProcessDpiAwareness 更现代的方法
+    # 可选值: 0 (不感知), 1 (系统级感知), 2 (每显示器感知)
+    awareness = ctypes.c_int(2) # 或 2 用于多显示器环境
+    ctypes.windll.shcore.SetProcessDpiAwareness(awareness)
+except Exception: # 如果失败（如旧版Windows），回退到旧API
+    print("SetProcessDpiAwareness failed, trying SetProcessDPIAware")
+    ctypes.windll.user32.SetProcessDPIAware()
+
 # pywin32
 import win32gui
 import win32con
@@ -16,6 +27,15 @@ def _get_hwnd(window_title):
     hwnd = win32gui.FindWindow(None, window_title)
     return hwnd
 
+def _get_dpi(window_title):
+    # ((46, 35, 1280, 720), (38, 4, 1296, 759)) 100% 96DPI
+    # ((57, 51, 1274, 703), (46, 6, 1296, 759)) 150% 144DPI
+    try:
+        screen_dpi = ctypes.windll.shcore.GetDpiForSystem()
+    except:
+        screen_dpi = ctypes.windll.user32.GetDpiForSystem()
+    print(f"System DPI: {screen_dpi}")
+    return screen_dpi
 
 def check_esc_is_pressed():
     """
@@ -31,34 +51,38 @@ def check_esc_is_pressed():
 
 def _get_window_client_pos(window_title):
     hwnd = _get_hwnd(window_title)
-    left, top, right, bottom = win32gui.GetClientRect(hwnd)
-    client_x, client_y = win32gui.ClientToScreen(hwnd, (left, top))
-    client_width = right - left
-    client_height = bottom - top
-    return  client_x, client_y, client_width, client_height
+    cleft, ctop, cright, cbottom = win32gui.GetClientRect(hwnd)
+    client_x, client_y = win32gui.ClientToScreen(hwnd, (cleft, ctop))
+    window_x, window_y, gright, gbottom = win32gui.GetWindowRect(hwnd)
+    client_width = cright - cleft
+    client_height = cbottom - ctop
+    window_width = gright - window_x
+    window_height = gbottom - window_y
+    # print(((client_x, client_y, client_width, client_height), (window_x, window_y, window_width, window_height)))
+    # print(f"DPI: {_get_dpi(window_title)}")
+    return  ((client_x, client_y, client_width, client_height), (window_x, window_y, window_width, window_height))
 
 def _change_window_client_size(window_title):
     """将给定的窗口内的client区域设置为1280x720，返回设置是否成功"""
     hwnd = _get_hwnd(window_title)
-    _, _, cw, ch = _get_window_client_pos(window_title)
+    client_window_info = _get_window_client_pos(window_title)
+    cx, cy, cw, ch = client_window_info[0]
+    wx, wy, ww, wh = client_window_info[1]
     if cw!=1280 or ch!=720:
-        # 获取当前窗口的客户区大小和整个窗口大小
-        client_rect = win32gui.GetClientRect(hwnd)
-        window_rect = win32gui.GetWindowRect(hwnd)
-        # 计算非客户区（边框、标题栏等）的宽度和高度
-        non_client_width = (window_rect[2] - window_rect[0]) - client_rect[2]
-        non_client_height = (window_rect[3] - window_rect[1]) - client_rect[3]
-        # 计算需要的整个窗口大小（客户区大小 + 非客户区大小）
-        target_width = 1280 + non_client_width
-        target_height = 720 + non_client_height
-        
+        # 计算宽度与高度和1280 720 差多少
+        differ_width = 1280 - cw
+        differ_height = 720 - ch
+        # 现在窗口宽高
+        target_window_width = ww + differ_width
+        target_windo_height = wh + differ_height
         # 设置窗口大小（保持当前位置）
-        win32gui.SetWindowPos(hwnd, 0, 0, 0, target_width, target_height, 
+        win32gui.SetWindowPos(hwnd, 0, 0, 0, target_window_width, target_windo_height, 
                             win32con.SWP_NOMOVE | win32con.SWP_NOZORDER)
         
         time.sleep(1)
 
-        _, _, cw, ch = _get_window_client_pos(window_title)
+        client_window_info = _get_window_client_pos(window_title)
+        cx, cy, cw, ch = client_window_info[0]
         if not cw or not ch:
             return False
     return cw == 1280 and ch == 720
@@ -95,8 +119,9 @@ def _wrap_activate_window(func):
                 pythoncom.CoUninitialize()
             
             # 设置1280*720
-            _, _, cwidth, cheight = _get_window_client_pos(window_title)
-            if cwidth != 1280 or cheight != 720:
+            client_window_info = _get_window_client_pos(window_title)
+            cx, cy, cw, ch = client_window_info[0]
+            if cw != 1280 or ch != 720:
                 logging.info(istr({
                     CN: "调整分辨率为 1280*720",
                     EN: "Change resolution to 1280*720"
@@ -198,9 +223,11 @@ def capture_program_window_precise():
     try:
         window_title = "Blue Archive"
 
-        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
+        client_window_info = _get_window_client_pos(window_title)
+        cx, cy, cw, ch = client_window_info[0]
+        wx, wy, ww, wh = client_window_info[1]
         # 使用PIL的ImageGrab截取指定区域
-        bbox = (client_x, client_y, client_x + client_width, client_y + client_height)
+        bbox = (cx, cy, cx + cw, cy + ch)
         screenshot = ImageGrab.grab(bbox)
         # print(screenshot.size)
         image_array = np.asarray(screenshot)
@@ -220,9 +247,10 @@ def click_program_window_precise(x, y):
         raise KeyboardInterrupt("Esc key pressed, program terminated")
     try:
         window_title = "Blue Archive"
-        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
+        client_window_info = _get_window_client_pos(window_title)
+        cx, cy, cw, ch = client_window_info[0]
         # print(client_x, client_y)
-        _click_in_multiple_screens(client_x+x, client_y+y)
+        _click_in_multiple_screens(cx+x, cy+y)
     except Exception as e:
         print(str(e))
 
@@ -232,8 +260,9 @@ def scroll_program_window_precise(x1, y1, x2, y2, duration_ms):
         raise KeyboardInterrupt("Esc key pressed, program terminated")
     try:
         window_title = "Blue Archive"
-        client_x, client_y, client_width, client_height = _get_window_client_pos(window_title)
-        _scroll_in_multiple_screens(client_x+x1, client_y+y1, client_x+x2, client_y+y2, duration_ms)
+        client_window_info = _get_window_client_pos(window_title)
+        cx, cy, cw, ch = client_window_info[0]
+        _scroll_in_multiple_screens(cx+x1, cy+y1, cx+x2, cy+y2, duration_ms)
     except Exception as e:
         print(str(e))
 
