@@ -25,7 +25,7 @@ def create_shortcut_file(config_name, link_name, run_path, save_path):
         shortcut.TargetPath = os.path.join(run_path, "BAAH.exe")
         shortcut.WorkingDirectory = run_path  # 设置工作目录（启动位置）
         shortcut.IconLocation = os.path.join(run_path, "DATA/icons/aris.ico")  # 设置图标
-        # shortcut.Arguments = "--start-maximized"  # 可以设置启动参数（可选）
+        shortcut.Arguments = config_name  # 设置启动参数
 
         # 保存快捷方式
         shortcut.save()
