@@ -72,6 +72,7 @@
     "button_copy":"复制",
     "button_rename":"重命名",
     "button_kill_adb_server":"重启ADB服务",
+    "button_link_to_desktop":"创建桌面快捷方式",
 
     "config_cafe_attention":"请将咖啡馆视角拉到最高，把互动家具的开关关闭",
     "config_camera_full":"进入咖啡馆时视角为最高",
