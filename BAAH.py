@@ -270,7 +270,11 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         杀掉模拟器进程
         """
-        if (config.userconfigdict["TARGET_EMULATOR_PATH"] and 
+        if ((config.userconfigdict["TARGET_EMULATOR_PATH"]
+             or
+             _is_steam_app(config.userconfigdict["SERVER_TYPE"])
+            )
+            and 
             ((not meet_error and config.userconfigdict["CLOSE_EMULATOR_FINISH"]) 
              or 
              must_do
