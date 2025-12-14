@@ -91,6 +91,12 @@ class Loginin(Task):
                     EN: "Emulator blocked, try to restart emulator"
                 }))
         # 判断关键区域
+        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+            event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
+            logging.info(f"Steam event button ocr: {event_button_text}")
+        else:
+            event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
+            logging.info(f"App event button ocr: {event_button_text}")
         # ======== 判断流 ========
         # 如果进入安装器页面
         if any([check_app_running(ins_act, printit=False) for ins_act in self.installer_activities]):
@@ -142,15 +148,15 @@ class Loginin(Task):
                 EN: "Waiting for the Bilibili login banner to disappear"
             }))
             sleep(2)
-        elif any([eachv in ocr_area((30, 662), (63, 691))[0].lower() for eachv in ["√", "v"]]):
-            # 关闭活动弹窗
+        elif not _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
+            # 关闭手机ba活动弹窗
             # 判断点击左下角是否有今日不再显示的勾（√）并点掉
             click((65, 676))
             logging.info(istr({
                 CN: "关闭活动弹窗",
                 EN: "Close event popup"
             }))
-        elif _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and any([eachv in ocr_area((254, 524), (280, 551))[0].lower() for eachv in ["√", "v"]]):
+        elif _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
             # 关闭Steam活动弹窗
             # 判断点击左下角是否有今日不再显示的勾（√）并点掉
             click((269, 534))
