@@ -291,8 +291,9 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 emulator_exe = os.path.basename(full_path).split(".exe")[0] + ".exe"
                 subprocess_run(["taskkill", "/T", "/F", "/PID", str(config.sessiondict["EMULATOR_PROCESS_PID"])],
                             encoding=None)
-                # 杀掉模拟器可见窗口进程后，可能残留后台进程，这里根据adb端口再杀一次
-                BAAH_release_adb_port(justDoIt=True)
+                if not _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+                    # 杀掉模拟器可见窗口进程后，可能残留后台进程，这里根据adb端口再杀一次
+                    BAAH_release_adb_port(justDoIt=True)
             except Exception as e:
                 logging.error({"zh_CN": "关闭模拟器失败, 可能是没有以管理员模式运行 或 配置的模拟器路径有误",
                             "en_US": "Failed to close the emulator, "
