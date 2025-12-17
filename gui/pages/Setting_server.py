@@ -24,6 +24,11 @@ def set_server(config):
         if config.userconfigdict["LOCK_SERVER_TO_RESPOND_Y"]:
             config.userconfigdict["RESPOND_Y"] = server2respond[servername]
     
+    # Steam端ba 提醒 esc 退出
+    with ui.row():
+        ui.label("STEAM: "+config.get_text("notice_steam_esc_break")).style('font-size: large')
+        
+        
     #  大更新配置
     #  BlockHaity:没写逻辑，先隐藏
     ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
