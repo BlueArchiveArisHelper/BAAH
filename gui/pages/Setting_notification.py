@@ -7,7 +7,7 @@ def set_notification(config, shared_softwareconfig):
         ui.label(config.get_text("setting_notification")).style('font-size: x-large')
     
     with ui.card():
-        ui.checkbox(config.get_text("desc_noti_when_success"), value=True).set_enabled(False)
+        ui.checkbox(config.get_text("desc_noti_when_success")).bind_value(config.userconfigdict, "NOTI_WHEN_SUCCESS")
         ui.checkbox(config.get_text("desc_noti_when_error")).bind_value(config.userconfigdict, "NOTI_WHEN_ERROR")
 
     with ui.row():

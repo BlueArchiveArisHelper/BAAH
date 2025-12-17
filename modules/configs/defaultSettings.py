@@ -307,6 +307,10 @@ defaultUserDict = {
                                         "s": "xiaofeiRAN"},
     # 通知内容格式化字符串，%KEY%
     "CUSTOM_EMAIL":{"d":""},
+    # 正常运行结束是否通知
+    "NOTI_WHEN_SUCCESS":{
+        "d": True,
+    },
     # 错误时是否邮件通知
     "NOTI_WHEN_ERROR":{
         "d": False,

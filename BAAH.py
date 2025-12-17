@@ -307,6 +307,9 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         发送邮件
         """
+        if not config.userconfigdict["NOTI_WHEN_SUCCESS"]:
+            logging.info({"zh_CN": "未开启成功运行结束时通知，跳过发送通知", "en_US": "Normal notification is not enabled, skip sending notification"})
+            return
         logging.info({"zh_CN": "尝试发送通知", "en_US": "Trying to send notification"})
         try:
             # 构造通知对象
