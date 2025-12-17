@@ -9,7 +9,7 @@ import zipfile
 import time
 import sys
 
-updater_version = "0.4.2"
+updater_version = "0.5.0"
 print(f"This Updator Version: {updater_version}")
 auto_close_window = True # 执行之后时候自动关闭窗口
 open_GUI_again = False # 执行完毕后是否重新打开 GUI.exe
@@ -226,7 +226,7 @@ def check_and_update():
     
     # Check and terminate BAAH.exe and BAAH_GUI.exe processes
     # 中断已有的BAAH进程
-    processes_to_terminate = ["BAAH.exe", "BAAH_GUI.exe"]
+    processes_to_terminate = ["BAAH.exe"]
     for process in processes_to_terminate:
         try:
             #! only for Windows now
@@ -254,30 +254,27 @@ def check_and_update():
                 if file.endswith("/"):
                     # 文件夹不作为文件处理
                     continue
-                if file.startswith(f"BAAH{version_info.version_str}/"):
-                    # 去除第一层文件夹
-                    relative_path = os.path.relpath(file, f"BAAH{version_info.version_str}/")
-                    # 如果有深层文件夹，创建深层文件夹
-                    os.makedirs(os.path.dirname(relative_path), exist_ok=True) if os.path.dirname(relative_path) else None
-                    # 判断文件是否存在
-                    if os.path.exists(relative_path):
-                        # 如果存在，检查hash是否一致
-                        src_hash = zip_file_checksum(zip_ref, file)
-                        dst_hash = file_checksum(relative_path)
-                        # print(f"src_hash: {src_hash}, dst_hash: {dst_hash}")
-                        if src_hash == dst_hash:
-                            continue
-                        else:
-                            print(f"detected file change: {relative_path}")
+                # 处理每个文件
+                relative_path = file
+                # 如果有深层文件夹，创建深层文件夹
+                os.makedirs(os.path.dirname(relative_path), exist_ok=True) if os.path.dirname(relative_path) else None
+                # 判断文件是否存在
+                if os.path.exists(relative_path):
+                    # 如果存在，检查hash是否一致
+                    src_hash = zip_file_checksum(zip_ref, file)
+                    dst_hash = file_checksum(relative_path)
+                    # print(f"src_hash: {src_hash}, dst_hash: {dst_hash}")
+                    if src_hash == dst_hash:
+                        continue
                     else:
-                        print(f"file not exists: {relative_path}, write it.")
-                    print(f"    Extracting {file} to {relative_path}")
-                    # 解压文件到relative_path，覆盖
-                    with zip_ref.open(file) as zf, open(relative_path, "wb") as f:
-                        shutil.copyfileobj(zf, f)
-                        total_sub_files_extracted += 1
+                        print(f"detected file change: {relative_path}")
                 else:
-                    print(f"Skipped {file}, this is not start with BAAH{version_info.version_str}/ in zip")
+                    print(f"file not exists: {relative_path}, write it.")
+                print(f"    Extracting {file} to {relative_path}")
+                # 解压文件到relative_path，覆盖
+                with zip_ref.open(file) as zf, open(relative_path, "wb") as f:
+                    shutil.copyfileobj(zf, f)
+                    total_sub_files_extracted += 1
         print(f"\nUpdate successful, {total_sub_files_extracted} files extracted.\n")
     except zipfile.BadZipFile:
         raise Exception("Failed to extract the ZIP file. Bad ZIP file.")
