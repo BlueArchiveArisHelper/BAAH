@@ -26,7 +26,7 @@ def set_BAAH(config, shared_softwareconfig):
 
         # kei的教程
         ui.link("BV1ZxfGYSEVr", "https://www.bilibili.com/video/BV1ZxfGYSEVr/", new_tab=True).style('font-size: large')
-        ui.html('<iframe  src="//www.bilibili.com/blackboard/html5mobileplayer.html?aid=113877383648785&bvid=BV1ZxfGYSEVr&cid=28301724347&p=1" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>')
+        ui.html('<iframe  src="//www.bilibili.com/blackboard/html5mobileplayer.html?aid=113877383648785&bvid=BV1ZxfGYSEVr&cid=28301724347&p=1" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>', sanitize=False)
 
         # ui.link("BV1ZxfGYSEVr", "https://www.bilibili.com/video/BV1pi4y1W7QB/", new_tab=True)
-        # ui.html('<iframe  src="//www.bilibili.com/blackboard/html5mobileplayer.html?aid=539065954&bvid=BV1pi4y1W7QB&cid=1413492023&p=1" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>')
+        # ui.html('<iframe  src="//www.bilibili.com/blackboard/html5mobileplayer.html?aid=539065954&bvid=BV1pi4y1W7QB&cid=1413492023&p=1" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>', sanitize=False)

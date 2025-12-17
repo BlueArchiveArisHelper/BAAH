@@ -35,7 +35,7 @@ def set_notification(config, shared_softwareconfig):
                 ui.input(config.get_text("config_email_smtp")).bind_value(config.userconfigdict, "MAIL_HOST").style("width: 300px")
 
             ui.label(config.get_text("get_email_pwd"))
-            ui.html('<iframe src="//player.bilibili.com/player.html?aid=583874363&bvid=BV16z4y1D74s&cid=211611094&p=1&autoplay=0" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>')
+            ui.html('<iframe src="//player.bilibili.com/player.html?aid=583874363&bvid=BV16z4y1D74s&cid=211611094&p=1&autoplay=0" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>', sanitize=False)
         
         with ui.card():
             ui.checkbox(config.get_text("config_api_noti")).bind_value(config.userconfigdict, "ENABLE_HTTP_NOTI")
