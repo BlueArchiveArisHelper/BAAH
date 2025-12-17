@@ -1,5 +1,6 @@
 from nicegui import ui
 from modules.configs.settingMaps import server2pic, server2activity, server2respond
+from modules.utils import _is_steam_app
 
 def set_server(config):
     with ui.row():
@@ -25,7 +26,7 @@ def set_server(config):
             config.userconfigdict["RESPOND_Y"] = server2respond[servername]
     
     # Steam端ba 提醒 esc 退出
-    with ui.row():
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda x: _is_steam_app(x)):
         ui.label("STEAM: "+config.get_text("notice_steam_esc_break")).style('font-size: large')
         
         
