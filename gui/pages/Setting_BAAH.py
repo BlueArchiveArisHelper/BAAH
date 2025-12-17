@@ -1,5 +1,7 @@
 from nicegui import ui
 
+from gui.components.plot_source_line import create_line_chart
+
 
 def set_BAAH(config, shared_softwareconfig):
     
@@ -30,3 +32,6 @@ def set_BAAH(config, shared_softwareconfig):
 
         # ui.link("BV1ZxfGYSEVr", "https://www.bilibili.com/video/BV1pi4y1W7QB/", new_tab=True)
         # ui.html('<iframe  src="//www.bilibili.com/blackboard/html5mobileplayer.html?aid=539065954&bvid=BV1pi4y1W7QB&cid=1413492023&p=1" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>', sanitize=False)
+
+        # 记录的折线图
+        create_line_chart(config.userstoragedict.get("HISTORY_MONEY_DIAMOND_LIST", []))
