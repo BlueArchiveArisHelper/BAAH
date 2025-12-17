@@ -179,8 +179,7 @@ package_copyfolder('./tools/aria2', './dist/BAAH/tools/aria2')
 # pytinstall的时候已经把pponnxcr和nicegui文件拷贝进去了
 # package_copyfolder('./tools/pponnxcr', './dist/BAAH/_internal/pponnxcr')
 
-# 挪i18n进去创建下DATA文件夹
-package_copyfolder("./DATA/i18n", "./dist/BAAH/DATA/i18n")
+# 创建下DATA文件夹
 
 package_create_folder("./dist/BAAH/DATA/CONFIGS")
 # 将LICENSE挪进去占位, 不放software.config, 防止覆盖掉用户的
@@ -191,6 +190,8 @@ package_copyfile("./LICENSE", "./dist/BAAH/DATA/CONFIGS/LICENSE")
 package_create_folder("./dist/BAAH/BAAH_CONFIGS")
 package_copyfile("./BAAH_CONFIGS/example.json", "./dist/BAAH/BAAH_CONFIGS/example.json")
 
+package_copyfolder("./DATA/i18n", "./dist/BAAH/DATA/i18n")
+package_copyfolder("./DATA/icons", "./dist/BAAH/DATA/icons")
 package_copyfolder("./DATA/assets", "./dist/BAAH/DATA/assets")
 package_copyfolder("./DATA/assets_jp", "./dist/BAAH/DATA/assets_jp")
 package_copyfolder("./DATA/assets_cn", "./dist/BAAH/DATA/assets_cn")

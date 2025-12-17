@@ -2,6 +2,7 @@ import subprocess
 import sys
 import os
 import logging
+import psutil
 from typing import Tuple
 
 logging.getLogger("subprocess").setLevel(logging.WARNING)
@@ -29,4 +30,10 @@ def subprocess_run(cmd: Tuple[str]|str, isasync=False, stdout=subprocess.PIPE, s
         # 同步阻塞执行
         return subprocess.run(cmd, stdout=stdout, stderr=stderr, stdin=stdin, encoding=encoding, shell=shell, **kwargs)
     
-    
+def check_if_process_exist(key_name, key_value):
+    """ 检查是否有 key_name 包含 key_value 的进程们 """
+    result_list = []
+    for proc in psutil.process_iter(['pid', 'name']):
+        if key_value in proc.info[key_name]:
+            result_list.append(proc)
+    return result_list

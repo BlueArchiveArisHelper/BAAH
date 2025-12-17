@@ -148,9 +148,9 @@ def show_json_panel(json_file_name: str):
             with ui.tab_panels(tabs, value=config_choose_list[0].tab).props('vertical').classes('w-full h-full locscroll'):
                 for cls in config_choose_list:
                     with ui.tab_panel(cls.tab):
-                        ui.html("<div style='width: 1px;height: 20px'></div>")
+                        ui.html("<div style='width: 1px;height: 20px'></div>", sanitize=False)
                         cls.func()
-                        ui.html("<div style='width: 1px;height: 200px'></div>")
+                        ui.html("<div style='width: 1px;height: 200px'></div>", sanitize=False)
 
         ui.add_head_html(injectJSforTabs)
 

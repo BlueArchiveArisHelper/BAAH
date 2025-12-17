@@ -72,6 +72,7 @@
     "button_copy":"复制",
     "button_rename":"重命名",
     "button_kill_adb_server":"重启ADB服务",
+    "button_link_to_desktop":"创建桌面快捷方式",
 
     "config_cafe_attention":"请将咖啡馆视角拉到最高，把互动家具的开关关闭",
     "config_camera_full":"进入咖啡馆时视角为最高",
@@ -203,7 +204,7 @@
 
     "config_event_status": "是否只在活动开启状态下执行",
     "notice_QA":"如何使用以及常见问题",
-    "mirror_desc":"你可以通过添加已有的Mirror酱密钥来加快更新包的下载速度/稳定性",
+    "mirror_desc":"添加Mirror酱密钥加快更新下载速度/稳定性",
 
     "aria2_path":"Aria2路径",
     "aria2_thread":"Aria2下载线程数",

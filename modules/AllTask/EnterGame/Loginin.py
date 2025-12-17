@@ -9,7 +9,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils.log_utils import logging
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, OCR_LANG, ocr_area, get_screenshot_cv_data
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, OCR_LANG, ocr_area, get_screenshot_cv_data, _is_steam_app
 
 from modules.AllTask.EnterGame.GameUpdate import GameUpdate
 
@@ -90,6 +90,13 @@ class Loginin(Task):
                     CN: "模拟器卡顿，重启模拟器",
                     EN: "Emulator blocked, try to restart emulator"
                 }))
+        # 判断关键区域
+        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+            event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
+            logging.info(f"Steam event button ocr: {event_button_text}")
+        else:
+            event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
+            logging.info(f"App event button ocr: {event_button_text}")
         # ======== 判断流 ========
         # 如果进入安装器页面
         if any([check_app_running(ins_act, printit=False) for ins_act in self.installer_activities]):
@@ -141,13 +148,21 @@ class Loginin(Task):
                 EN: "Waiting for the Bilibili login banner to disappear"
             }))
             sleep(2)
-        elif any([eachv in ocr_area((30, 662), (63, 691))[0].lower() for eachv in ["√", "v"]]):
-            # 关闭活动弹窗
+        elif not _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
+            # 关闭手机ba活动弹窗
             # 判断点击左下角是否有今日不再显示的勾（√）并点掉
             click((65, 676))
             logging.info(istr({
                 CN: "关闭活动弹窗",
                 EN: "Close event popup"
+            }))
+        elif _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
+            # 关闭Steam活动弹窗
+            # 判断点击左下角是否有今日不再显示的勾（√）并点掉
+            click((269, 534))
+            logging.info(istr({
+                CN: "关闭Steam活动弹窗",
+                EN: "Close Steam event popup"
             }))
         elif ocr_area([36, 626], [94, 652], ocr_lang = OCR_LANG.ZHS)[0].strip() == "菜单" or ocr_area([36, 626], [94, 652])[0].strip().lower() == "menu":
             # 检测游戏加载前左下角的菜单字样
@@ -201,10 +216,10 @@ class Loginin(Task):
         self.task_start_time = time.time()
         # 循环进行条件判断点击操作
         self.run_until(self.try_jump_useless_pages, 
-                      lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME), 
+                      lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)) or Page.is_page(PageName.PAGE_HOME), 
                       times = 200,
                       sleeptime = self.sleep_between_detect)
 
      
     def post_condition(self) -> bool:
-        return match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or Page.is_page(PageName.PAGE_HOME)
+        return match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)) or Page.is_page(PageName.PAGE_HOME)
