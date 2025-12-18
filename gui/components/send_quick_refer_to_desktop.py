@@ -1,6 +1,5 @@
 import os
 import os
-import win32com.client
 
 # 打印当前程序运行路径
 print("os.getcwd: ", os.getcwd())
@@ -17,6 +16,7 @@ def create_shortcut_file(config_name, link_name, run_path, save_path):
     :param save_path: 快捷方式保存文件夹路径
     """
     try:
+        import win32com.client
         # 创建 Shell 对象
         shell = win32com.client.Dispatch("WScript.Shell")
         shortcut = shell.CreateShortcut(os.path.join(save_path, link_name))

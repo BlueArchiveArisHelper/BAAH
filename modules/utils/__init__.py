@@ -9,7 +9,6 @@ from .notification import *
 from .data_utils import *
 from .I18nstr import *
 from .baah_exceptions import *
-from .win32_utils import _change_window_client_size
 from .adb_utils import _is_steam_app
 
 from modules.utils.log_utils import logging
@@ -268,8 +267,10 @@ def check_connect():
                 return False
             return True
         else:
-            if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and _change_window_client_size("Blue Archive"):
-                return True
+            if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+                from .win32_utils import _change_window_client_size
+                if _change_window_client_size("Blue Archive"):
+                    return True
             logging.error({"zh_CN": "图片分辨率不为1280*720，请设置模拟器分辨率为1280*720（当前{}*{}）".format(wm_width, wm_height), "en_US":"The resolution is not 1280*720, please set the resolution to 1280*720 (current {}*{})".format(wm_width, wm_height)})
             raise Exception("图片分辨率不为1280*720，请设置模拟器分辨率为1280*720（当前{}*{}）".format(wm_width, wm_height))
     logging.error({"zh_CN": "模拟器adb或ba程序连接失败", "en_US":"Failed to connect to the emulator or ba program"})
