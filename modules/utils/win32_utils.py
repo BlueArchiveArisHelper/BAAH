@@ -1,3 +1,13 @@
+from modules.utils.log_utils import logging, istr, CN, EN
+import platform
+if platform.system() != "Windows":
+    mention_str = istr({
+        CN: "win32_utils 只能在 Windows 系统上使用",
+        EN: "win32_utils can only be used on Windows systems"
+    })
+    logging.error(mention_str)
+    raise ImportError(mention_str)
+
 import ctypes
 # 尝试将进程设置为系统DPI感知
 try:
@@ -20,7 +30,6 @@ import time
 import numpy as np
 import cv2
 import pythoncom
-from modules.utils.log_utils import logging, istr, CN, EN
 
 def _get_hwnd(window_title):
     # 使用win32gui获取更精确的客户端区域

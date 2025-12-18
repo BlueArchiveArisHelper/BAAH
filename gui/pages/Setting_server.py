@@ -13,8 +13,8 @@ def set_server(config):
         "GLOBAL_EN":config.get_text("config_server_global_en"),
         "CN":config.get_text("config_server_cn"),
         "CN_BILI":config.get_text("config_server_cn_b"),
-        "STEAM":"STEAM",
-        "STEAM_EN":"STEAM_EN"
+        "STEAM":"STEAM (Windows)",
+        "STEAM_EN":"STEAM_EN (Windows)"
         },
                       value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
     

@@ -8,8 +8,8 @@ import time
 import numpy as np
 import cv2
 import platform
-from .win32_utils import *
-from .win32_utils import _get_hwnd
+if platform.system() == "Windows":
+    from .win32_utils import _get_hwnd, check_esc_is_pressed, capture_program_window_precise, click_program_window_precise, scroll_program_window_precise
 
 def _is_steam_app(server_type):
     return "STEAM" in server_type.upper()

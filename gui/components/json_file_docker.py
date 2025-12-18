@@ -13,6 +13,7 @@ def get_json_list():
         a list that all json file name from BAAH_CONFIGS dir
     """
     arr = [i for i in os.listdir(MyConfigger.USER_CONFIG_FOLDER) if i.endswith(".json")]
+    arr.sort()
     if len(arr) == 0:
         with open(os.path.join(MyConfigger.USER_CONFIG_FOLDER, DEFAULT_CONFIG_JSON_NAME), 'w', encoding="utf8") as f:
             f.write("{}")

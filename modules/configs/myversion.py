@@ -1,7 +1,6 @@
-myversion = "2.0.3"
+myversion = "2.0.4"
 mychangelog = """
-
->> 2.0.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
+>> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
 
 >> 下载Download: https://baah.sanmusen.top/zh_CN/download.html <<
 
@@ -9,7 +8,7 @@ mychangelog = """
 
 >> Keep configs: Retract zip into old version folder or Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
 
-# 更新
+# Update
 
 支持 Steam 上的碧蓝档案
 
@@ -19,5 +18,11 @@ Support Steam Blue Archive
 升级 ui 库版本
 
 Upgrade ui library version
+
+# Fix
+
+修复国际服推图识别队伍号问题
+
+Fix explore team ocr in Global server
 
 """
