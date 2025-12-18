@@ -23,7 +23,7 @@ class InExchange(Task):
                 (config.userconfigdict['EXCHANGE_HIGHEST_LEVEL']) == 0:
             logging.warn({"zh_CN": "没有配置学院交流会的level", "en_US":"Didn't set the level of exchange meeting"})
             return False
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
 
     def on_run(self) -> None:
         # 得到今天是几号
@@ -87,4 +87,4 @@ class InExchange(Task):
         self.back_to_home()
 
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()

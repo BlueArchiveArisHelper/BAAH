@@ -17,7 +17,7 @@ class CollectDailyRewards(Task):
 
      
     def pre_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
     
      
     def on_run(self) -> None:
@@ -47,6 +47,6 @@ class CollectDailyRewards(Task):
      
     def post_condition(self) -> bool:
         if self.need_back_home:
-            return Page.is_page(PageName.PAGE_HOME)
+            return self.back_to_home()
         else:
             return Page.is_page(PageName.PAGE_TASK_CENTER)

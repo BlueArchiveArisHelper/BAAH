@@ -22,7 +22,7 @@ class InWanted(Task):
         if len(config.userconfigdict['WANTED_HIGHEST_LEVEL']) == 0:
             logging.warn({"zh_CN": "没有配置悬赏通缉的level", "en_US" :"There is no level of wanted"})
             return False
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
 
 
     def on_run(self) -> None:
@@ -88,4 +88,4 @@ class InWanted(Task):
         self.back_to_home()
 
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()

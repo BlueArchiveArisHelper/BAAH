@@ -18,7 +18,7 @@ class InTimeTable(Task):
         super().__init__(name)
 
     def pre_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
 
     def on_run(self) -> None:
         self.run_until(
@@ -43,4 +43,4 @@ class InTimeTable(Task):
         self.back_to_home()
 
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
