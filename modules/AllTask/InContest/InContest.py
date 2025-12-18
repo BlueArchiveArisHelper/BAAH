@@ -163,4 +163,4 @@ class InContest(Task):
         self.clear_popup()
 
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()

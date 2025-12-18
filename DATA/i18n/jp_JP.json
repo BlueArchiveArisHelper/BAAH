@@ -72,6 +72,7 @@
     "button_copy":"コピー",
     "button_rename":"名前を変更",
     "button_kill_adb_server":"ADBサーバーを再起動",
+    "button_link_to_desktop":"デスクトップショートカットを作成",
 
     "config_cafe_attention": "カフェの視点を最大にしてください。インタラクティブな家具のスイッチをオフにしてください",
     "config_camera_full": "カフェに入るときに視点が最大になる",
@@ -204,6 +205,7 @@
     "config_event_status": "イベントがアクティブな状態のときにのみ実行する",
     "notice_QA":"使用方法とよくある質問",
     "mirror_desc": "既存のMirror酱キーを追加して、アップデートパッケージのダウンロード速度と安定性を向上させることができます",
+    "notice_steam_esc_break": "長押し esc でスクリプトの実行を中断する",
 
     "aria2_path": "Aria2のパス",
     "aria2_thread":"Aria2のダウンロードスレッド数",

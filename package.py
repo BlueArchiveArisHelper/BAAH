@@ -179,8 +179,7 @@ package_copyfolder('./tools/aria2', './dist/BAAH/tools/aria2')
 # pytinstall的时候已经把pponnxcr和nicegui文件拷贝进去了
 # package_copyfolder('./tools/pponnxcr', './dist/BAAH/_internal/pponnxcr')
 
-# 挪i18n进去创建下DATA文件夹
-package_copyfolder("./DATA/i18n", "./dist/BAAH/DATA/i18n")
+# 创建下DATA文件夹
 
 package_create_folder("./dist/BAAH/DATA/CONFIGS")
 # 将LICENSE挪进去占位, 不放software.config, 防止覆盖掉用户的
@@ -191,6 +190,8 @@ package_copyfile("./LICENSE", "./dist/BAAH/DATA/CONFIGS/LICENSE")
 package_create_folder("./dist/BAAH/BAAH_CONFIGS")
 package_copyfile("./BAAH_CONFIGS/example.json", "./dist/BAAH/BAAH_CONFIGS/example.json")
 
+package_copyfolder("./DATA/i18n", "./dist/BAAH/DATA/i18n")
+package_copyfolder("./DATA/icons", "./dist/BAAH/DATA/icons")
 package_copyfolder("./DATA/assets", "./dist/BAAH/DATA/assets")
 package_copyfolder("./DATA/assets_jp", "./dist/BAAH/DATA/assets_jp")
 package_copyfolder("./DATA/assets_cn", "./dist/BAAH/DATA/assets_cn")
@@ -202,34 +203,34 @@ package_copyfile("./dist/BAAH_UPDATE/BAAH_UPDATE.exe", "./dist/BAAH/BAAH_UPDATE.
 time.sleep(2)
 
 
-package_rename("./dist/BAAH", f"./dist/BAAH{config_version}")
+package_rename("./dist/BAAH", f"./dist/BAAH")
 
 print("开始压缩")
 time.sleep(2)
 
 # 压缩./dist/BAAH文件夹为BAAH.zip
 z = zipfile.ZipFile(f'./dist/BAAH{config_version}.zip', 'w', zipfile.ZIP_DEFLATED)
-startdir = f"./dist/BAAH{config_version}"
+startdir = f"./dist/BAAH"
 for dirpath, dirnames, filenames in os.walk(startdir):
     for filename in filenames:
-        z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace("/dist",""))
+        z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace(startdir.strip("."),""))
 
 print(f"完成，压缩包./dist/BAAH{config_version}.zip已生成")
 print(f"压缩包大小为{os.path.getsize(f'./dist/BAAH{config_version}.zip')/1024/1024:.2f}MB")
 
 # 压缩./dist/BAAH文件夹(除了_internal, tools)为BAAH_update.zip
 z = zipfile.ZipFile(f'./dist/BAAH{config_version}_update.zip', 'w', zipfile.ZIP_DEFLATED)
-startdir = f"./dist/BAAH{config_version}"
+startdir = f"./dist/BAAH"
 for dirpath, dirnames, filenames in os.walk(startdir):
     # 历史遗留问题，1.6.6之前打包的版本的实际pyinstaller版本过老.
     # 新版本打更新包需要额外添加_internal/jaraco/text文件夹内lorem文件
-    if "_internal" in dirpath and "jaraco" in dirpath and "text" in dirpath:
-        for filename in filenames:
-            z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace("/dist",""))
+    # if "_internal" in dirpath and "jaraco" in dirpath and "text" in dirpath:
+    #     for filename in filenames:
+    #         z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace(startdir.strip("."),""))
     if "_internal" in dirpath or "tools" in dirpath or "BAAH_CONFIGS" in dirpath:
         continue
     for filename in filenames:
-        z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace("/dist",""))
+        z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace(startdir.strip("."),""))
 
 print(f"完成，压缩包./dist/BAAH{config_version}_update.zip已生成")
 print(f"压缩包大小为{os.path.getsize(f'./dist/BAAH{config_version}_update.zip')/1024/1024:.2f}MB")

@@ -71,8 +71,8 @@ class TaskInstanceMap:
                 TaskInstance(
                     task_config_name = TaskName.LOGIN_GAME,
                     i18n_key_name = "task_login_game",
-                    task_module = Task, # !EnterGame任务现在被config直接控制并添加在taskpool开头，忽略配置文件里的登录游戏任务，为了防止后面解析任务列表实例时缺少key导致exception，这里以空module Task代替
-                    task_params = {}
+                    task_module = EnterGame,
+                    task_params = {'strict_mode': False}, # 用户手动添加的登录任务不记录资源和检查重新登录
                 ),
             TaskName.MOMOTALK: TaskInstance(
                     task_config_name = TaskName.MOMOTALK,

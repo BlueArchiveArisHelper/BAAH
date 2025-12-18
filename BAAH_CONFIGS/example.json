@@ -132,7 +132,6 @@
     ],
     "INFO8": "任务的执行顺序",
     "TASK_ORDER": [
-        "登录游戏",
         "清momotalk",
         "普通推图",
         "困难推图",
@@ -170,7 +169,6 @@
     ],
     "SHOP_CONTEST": [],
     "TASK_ACTIVATE": [
-        true,
         false,
         false,
         false,
@@ -314,7 +312,7 @@
     "DO_ONE_CLICK_RAID_ONLY_DURING_EVENT": false,
     "DO_ONE_CLICK_RAID_ONLY_DURING_NORMAL_TRIPLE": false,
     "DO_ONE_CLICK_RAID_ONLY_DURING_HARD_TRIPLE": false,
-    "USER_STORAGE_FILE_NAME": "e2419474.json",
+    "USER_STORAGE_FILE_NAME": "STORAGEe2419474.json",
     "EXAM_TARGET_LEVEL": 2,
     "EXAM_TEAM_COUNT": 3,
     "ARIA2_PATH": "./tools/aria2/aria2c.exe",
@@ -322,5 +320,170 @@
     "ARIA2_MAX_TRIES": 5,
     "ARIA2_FAILURED_WAIT_TIME": 0.5,
     "BIG_UPDATE": false,
-    "BIG_UPDATE_TYPE": "API"
+    "BIG_UPDATE_TYPE": "API",
+    "CLOSE_EMULATOR_ERROR": false,
+    "CLOSE_GAME_ERROR": false,
+    "CLOSE_BAAH_ERROR": false,
+    "CLOSE_VPN": false,
+    "VPN_CLOSE_CONFIG": {
+        "VPN_ACTIVITY": "com.github.kr328.clash/com.github.kr328.clash.MainActivity",
+        "CLICK_AND_WAIT_LIST": [
+            [
+                [
+                    622,
+                    248
+                ],
+                2
+            ]
+        ]
+    },
+    "EXAM_ALLOW_FALLBACK": true,
+    "IS_EXAM_STUDENT_HELP": false,
+    "EXAM_HELP_STUDENT_IS_SUPPORT": false,
+    "EXAM_HELP_STUDENT": "",
+    "BIG_UPDATE_API": "xiaofeiRAN",
+    "CUSTOM_EMAIL": "",
+    "NOTI_WHEN_SUCCESS": true,
+    "NOTI_WHEN_ERROR": false,
+    "OBJ_ACTIONS_VPN_START": {
+        "a_l": [
+            {
+                "id_n": "do_action_f",
+                "id": "10000",
+                "i_f_o": [
+                    {
+                        "id_n": "open_apk_package_a",
+                        "a_p": [
+                            {
+                                "id_n": "package",
+                                "p_v": "com.github.kr328.clash/com.github.kr328.clash.MainActivity"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id_n": "do_action_f",
+                "id": "10001",
+                "i_f_o": [
+                    {
+                        "id_n": "sleep_time_a",
+                        "a_p": [
+                            {
+                                "id_n": "time_seconds",
+                                "p_v": 5
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id_n": "do_action_f",
+                "id": "10002",
+                "i_f_o": [
+                    {
+                        "id_n": "click_xy_a",
+                        "a_p": [
+                            {
+                                "id_n": "x",
+                                "p_v": 623
+                            },
+                            {
+                                "id_n": "y",
+                                "p_v": 249
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id_n": "do_action_f",
+                "id": "10003",
+                "i_f_o": [
+                    {
+                        "id_n": "sleep_time_a",
+                        "a_p": [
+                            {
+                                "id_n": "time_seconds",
+                                "p_v": 3
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "OBJ_ACTIONS_VPN_SHUT": {
+        "a_l": [
+            {
+                "id_n": "do_action_f",
+                "id": "10000",
+                "i_f_o": [
+                    {
+                        "id_n": "open_apk_package_a",
+                        "a_p": [
+                            {
+                                "id_n": "package",
+                                "p_v": "com.github.kr328.clash/com.github.kr328.clash.MainActivity"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id_n": "do_action_f",
+                "id": "10001",
+                "i_f_o": [
+                    {
+                        "id_n": "sleep_time_a",
+                        "a_p": [
+                            {
+                                "id_n": "time_seconds",
+                                "p_v": 5
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id_n": "do_action_f",
+                "id": "10002",
+                "i_f_o": [
+                    {
+                        "id_n": "click_xy_a",
+                        "a_p": [
+                            {
+                                "id_n": "x",
+                                "p_v": 622
+                            },
+                            {
+                                "id_n": "y",
+                                "p_v": 248
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id_n": "do_action_f",
+                "id": "10003",
+                "i_f_o": [
+                    {
+                        "id_n": "sleep_time_a",
+                        "a_p": [
+                            {
+                                "id_n": "time_seconds",
+                                "p_v": 2
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "ASSAULT_NO_TEAM_EXCEPT": true,
+    "USE_OBJ_USER_DEFINE_TASK": false,
+    "OBJ_USER_DEFINE_TASK": {},
+    "USE_OBJ_FLOW_WHEN_LOGIN": false,
+    "OBJ_FLOW_WHEN_LOGIN": {}
 }

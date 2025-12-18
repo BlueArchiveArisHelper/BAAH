@@ -45,8 +45,8 @@ class EnterGame(Task):
         click(Page.MAGICPOINT)
         screenshot()
         has_recorded = False
-        if Page.is_page(PageName.PAGE_HOME):
-            # 直接就在主页，直接记录资源
+        if not self.has_popup() and Page.is_page(PageName.PAGE_HOME):  
+            # 没有社区弹窗，而且直接就在主页的话，直接记录资源  
             self.record_resources()
             has_recorded = True
         if match(button_pic(ButtonName.BUTTON_HOME_ICON)):
@@ -86,4 +86,4 @@ class EnterGame(Task):
         
     
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()

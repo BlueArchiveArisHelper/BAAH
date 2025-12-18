@@ -23,7 +23,7 @@ class InSpecial(Task):
         if not config.userconfigdict['SPECIAL_HIGHTEST_LEVEL'] or len(config.userconfigdict['SPECIAL_HIGHTEST_LEVEL'])==0:
             logging.warn({"zh_CN": "未配置特殊关卡", "en_US":"Didn't set the special level"})
             return False
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
 
 
     def on_run(self) -> None:
@@ -86,4 +86,4 @@ class InSpecial(Task):
 
 
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()

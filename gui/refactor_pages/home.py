@@ -5,6 +5,7 @@ from nicegui import ui, app, run
 
 from ..components.check_update import only_check_version
 from ..components.exec_arg_parse import check_token_dialog
+from ..components.send_quick_refer_to_desktop import send_quick_call_to_desktop
 from modules.utils.data_utils import encrypt_data, decrypt_data
 from ..define import gui_shared_config
 
@@ -66,12 +67,12 @@ def render_json_list():
                         resultVI = await run.io_bound(only_check_version)
                         with release_area:
                             ui.label(resultVI.msg).style(f'font-size: x-large;{"color: red" if resultVI.has_new_version else "color: black"}')
-                            ui.html(f'<div style="white-space: pre-line;font-size: large">{resultVI.update_body_text}</div>')
+                            ui.html(f'<div style="white-space: pre-line;font-size: large">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
                                 # 一键更新按钮
                                 ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance)
                     # TODO: 改成服务器启动时检查更新
-                    ui.timer(0.1, show_release, once=True)
+                    ui.timer(0.5, show_release, once=True)
                     
                     # 一键更新，唤起更新程序，结束gui进程
                     def update_advance():
@@ -119,6 +120,8 @@ def render_json_list():
                                         ui.label(config_name).style("font-size: large;")
                                 # 复制按钮
                                 ui.button(gui_shared_config.get_text("button_copy"), on_click=lambda e, c=config_name:[copy_related_params.update({"old_name":c, "new_name":""}), dialog.open()])
+                                # 快捷方式按钮
+                                ui.button(gui_shared_config.get_text("button_link_to_desktop"), on_click=lambda e, c=config_name:send_quick_call_to_desktop(c) and ui.notify(gui_shared_config.get_text("notice_success")))
 
                     # 添加配置
                     user_config_name = {"val":""}

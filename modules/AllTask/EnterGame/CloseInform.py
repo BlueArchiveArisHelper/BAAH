@@ -7,7 +7,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, screenshot
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, screenshot, config, _is_steam_app
 
 class CloseInform(Task):
     def __init__(self, name="CloseInform", pre_times = 3, post_times = 3) -> None:
@@ -17,16 +17,20 @@ class CloseInform(Task):
     def pre_condition(self) -> bool:
         sleep(1)
         screenshot()
-        if not match(popup_pic(PopupName.POPUP_LOGIN_FORM)):
+        if not match(popup_pic(PopupName.POPUP_LOGIN_FORM)) and not match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
             return False
         return True
     
      
     def on_run(self) -> None:
         click(Page.MAGICPOINT)
-        click((1226, 56))
+        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+            # STEAM 关闭社区弹窗
+            click((1123, 114))
+        else:
+            click((1226, 56))
         click(Page.MAGICPOINT)
 
      
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()

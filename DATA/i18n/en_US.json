@@ -72,6 +72,7 @@
     "button_copy":"Copy",
     "button_rename":"Rename",
     "button_kill_adb_server":"Restart ADB Server",
+    "button_link_to_desktop":"Create Desktop Shortcut",
 
     "config_cafe_attention": "Please zoom out the cafe camera, and turn off the interactive furniture",
     "config_camera_full": "Enter Cafe with Maximum Camera View",
@@ -204,6 +205,7 @@
     "config_event_status": "Execute only when the event is active",
     "notice_QA":"How to use and FAQ",
     "mirror_desc": "You can add an existing Mirror key to speed up the download of update packages and improve stability",
+    "notice_steam_esc_break": "Long press esc to interrupt script execution",
 
     "aria2_path" : "Aria2 path",
     "aria2_thread": "The number of Aria2 download threads",

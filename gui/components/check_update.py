@@ -17,7 +17,7 @@ def only_check_version():
     global g_result, g_datetime
     datetime_now = datetime.now().strftime("%Y-%m-%d %H")
     # 缓存判断日期，如果日期相同就不用再次请求
-    if datetime_now == g_datetime:
+    if datetime_now == g_datetime and g_result is not None:
         print(f"Use cached release info: {datetime_now}")
         return g_result
     # 缓存判断后

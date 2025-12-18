@@ -1,14 +1,23 @@
-myversion = "1.11.6"
+myversion = "2.0.3"
 mychangelog = """
 
-> BAAH_GUI.exe 已合并至 BAAH.exe, 请点击 BAAH.exe 打开程序 <
+>> 2.0.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
 
-> 参考视频教程 BV1ZxfGYSEVr 里的 使用快捷方式 来快速执行某个配置 <
+>> 下载Download: https://baah.sanmusen.top/zh_CN/download.html <<
 
-## Fix
+>> 迁移配置文件: 将2.0.0版本解压至旧版本目录覆盖 或 手动迁移旧版本的 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
 
-修复日服一件扫荡点击保存问题
+>> Keep configs: Retract zip into old version folder or Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
 
-Fix JP server one-click sweep issue
+# 更新
+
+支持 Steam 上的碧蓝档案
+
+Support Steam Blue Archive
+
+
+升级 ui 库版本
+
+Upgrade ui library version
 
 """

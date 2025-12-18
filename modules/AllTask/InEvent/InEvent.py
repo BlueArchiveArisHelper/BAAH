@@ -42,7 +42,7 @@ class InEvent(Task):
         #         logging.warn({"zh_CN": "不存在国际服活动", "en_US": "There are no international dress events"})
         #         self.try_enter_times = 0
         #         return False
-        return Page.is_page(PageName.PAGE_HOME)
+        return self.back_to_home()
 
     def try_goto_event(self):
         """

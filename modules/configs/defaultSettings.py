@@ -40,7 +40,7 @@ defaultUserDict = {
     # new config in 1.2.x
     "SERVER_TYPE":{
         "d":"GLOBAL",
-        "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI"],
+        "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI", "STEAM", "STEAM_EN"],
         "m": {
             "from": "ACTIVITY_PATH",
             "map": lambda x: activity2server[x] if x in activity2server else "GLOBAL"
@@ -307,6 +307,10 @@ defaultUserDict = {
                                         "s": "xiaofeiRAN"},
     # 通知内容格式化字符串，%KEY%
     "CUSTOM_EMAIL":{"d":""},
+    # 正常运行结束是否通知
+    "NOTI_WHEN_SUCCESS":{
+        "d": True,
+    },
     # 错误时是否邮件通知
     "NOTI_WHEN_ERROR":{
         "d": False,

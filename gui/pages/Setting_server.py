@@ -1,5 +1,6 @@
 from nicegui import ui
 from modules.configs.settingMaps import server2pic, server2activity, server2respond
+from modules.utils import _is_steam_app
 
 def set_server(config):
     with ui.row():
@@ -11,7 +12,10 @@ def set_server(config):
         "GLOBAL":config.get_text("config_server_global"), 
         "GLOBAL_EN":config.get_text("config_server_global_en"),
         "CN":config.get_text("config_server_cn"),
-        "CN_BILI":config.get_text("config_server_cn_b")},
+        "CN_BILI":config.get_text("config_server_cn_b"),
+        "STEAM":"STEAM",
+        "STEAM_EN":"STEAM_EN"
+        },
                       value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
     
     def set_server_info(servername):
@@ -21,6 +25,11 @@ def set_server(config):
         if config.userconfigdict["LOCK_SERVER_TO_RESPOND_Y"]:
             config.userconfigdict["RESPOND_Y"] = server2respond[servername]
     
+    # Steam端ba 提醒 esc 退出
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda x: _is_steam_app(x)):
+        ui.label("STEAM: "+config.get_text("notice_steam_esc_break")).style('font-size: large')
+        
+        
     #  大更新配置
     #  BlockHaity:没写逻辑，先隐藏
     ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
