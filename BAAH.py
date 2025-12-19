@@ -123,19 +123,21 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                         executor_pid = ba_process_list[0].info['pid']
                         logging.info({"zh_CN": "检测到Steam版BA已经在运行，跳过启动模拟器",
                                     "en_US": "Detected that Steam BA is already running, skip starting the emulator"})
+                        time.sleep(0.5)
                     else:
                         # 使用Steam协议启动游戏
                         subprocess.run("start steam://rungameid/3557620", shell=True)
                         time.sleep(5)
                         ba_process_list = check_if_process_exist("name", "BlueArchive.exe")
                         executor_pid = ba_process_list[0].info['pid'] if len(ba_process_list) > 0 else None
+                        time.sleep(0.5)
                 else:
                     # 不能用shell，否则得到的是shell的pid
                     emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
                     logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
                                 "en_US": "The emulator pid: " + str(emulator_process.pid)})
                     executor_pid = emulator_process.pid
-                time.sleep(5)
+                    time.sleep(5)
                 # 检查pid是否存在
                 if not _check_process_exist(executor_pid):
                     logging.warn({"zh_CN": "模拟器启动进程已结束，可能是启动失败，或者是模拟器已经在运行",

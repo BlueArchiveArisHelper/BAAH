@@ -17,6 +17,18 @@ from modules.utils import *
 # return_copy 时，防止同名实例内参数被引用修改，用户能够修改的那些参数需要深拷贝
 #=======================
 
+# 定义跳转异常，靠异常捕获实现行号跳转
+class FlowInterruptException(Exception):
+    def __init__(self, message, target_id):
+        super().__init__(message)
+        self.target_id = target_id
+    
+    def __str__(self):
+        return f"FlowInterruptException: {self.args[0]}"
+
+def raise_flowinterrupt(target_id):
+    raise FlowInterruptException(f"Jump to flow item id: {target_id}", target_id)
+
 # 映射集合
 action_id2obj = {}
 prejudge_id2obj = {}
@@ -605,9 +617,12 @@ class FlowActionGroup:
                     ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
                 for i,action in enumerate(self.action_list):
                     with ui.card():
+                        # 每个 action block
                         with ui.row():
                             with ui.column():
-                                ui.select({k:dataconfig.get_text(k) for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                                with ui.row().style("align-items: center;"):
+                                    ui.select({k:dataconfig.get_text(k) for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
+                                    ui.label(f"ID: {action.id}")
                                 action.render_gui(dataconfig)
                         with ui.row():
                             # 该行下方添加
@@ -640,16 +655,37 @@ class FlowActionGroup:
             """
             self.action_list.pop(line_index)
             flow_group_area.refresh()
+
+    def _find_corresponding_flow_item_index_by_id(self, target_id):
+        """
+        通过id查找对应的flow item index
+        """
+        for ind,action in enumerate(self.action_list):
+            if action.id == target_id:
+                return ind
+        return -1
     
     def run_flow(self):
         """
         执行整个操作链，返回是否无报错执行
         """
         try:
-            for ind,action in enumerate(self.action_list):
-                logging.info(f"flow {ind+1}/{len(self.action_list)}")
-                action.call_func()
+            ind = 0
+            while(ind < len(self.action_list)):
+                try:
+                    action = self.action_list[ind]
+                    logging.info(f"flow {ind+1}/{len(self.action_list)}, id: {action.id}")
+                    action.call_func()
+                except FlowInterruptException as fie:
+                    target_index = self._find_corresponding_flow_item_index_by_id(fie.target_id)
+                    logging.info(f"Flow interrupted, jump to id: {fie.target_id}, index: {target_index}")
+                    if target_index == -1:
+                        logging.error(f"Can not find flow item with id: {fie.target_id}, stop execution")
+                        return False
+                    else:
+                        ind = target_index - 1 # -1是因为for循环会+1
+                ind += 1
             return True
-        except:
+        except: # 内部如果发生FlowInterruptException以外的异常
             logging.error(traceback.format_exc())
         return False
