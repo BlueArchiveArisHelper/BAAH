@@ -67,7 +67,7 @@ python-multipart==0.0.20
 python-socketio==5.15.1
 pythonnet==3.0.3
 pywebview==4.4.1
-pywin32==311
+pywin32==311;sys_platform=='win32'
 pywin32-ctypes==0.2.2
 PyYAML==6.0.1
 requests==2.31.0
