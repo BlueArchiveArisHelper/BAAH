@@ -225,6 +225,7 @@
     "get_pixel_color_a": "Get Pixel Color",
     "open_apk_package_a": "Open App",
     "scroll_xyxy_a": "Scroll",
+    "jump_flow_item_id_a": "Jump to Flow Item",
 
     "num_greater_p": "Number Greater Than",
     "num_less_p": "Number Less Than",

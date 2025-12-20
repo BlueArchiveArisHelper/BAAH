@@ -225,6 +225,7 @@
     "get_pixel_color_a": "ピクセル色を取得",
     "open_apk_package_a": "アプリを開く",
     "scroll_xyxy_a": "スクロール",
+    "jump_flow_item_id_a": "フローアイテムにジャンプ",
 
     "num_greater_p": "数値が大きい",
     "num_less_p": "数値が小さい",

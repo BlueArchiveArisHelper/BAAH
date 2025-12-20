@@ -122,8 +122,8 @@ _main_actions = [
         edit_value_map=None
     ),
     SubActionMainObj(
-        id_name="jump_flow_item_id",
-        action_gui_name="jump_flow_item_id",
+        id_name="jump_flow_item_id_a",
+        action_gui_name="jump_flow_item_id_a",
         action_func=lambda flow_id: raise_flowinterrupt(flow_id.strip()),
         action_params=[
             ParamsObj('id', 'id', ParamsTypes.STRING, '')

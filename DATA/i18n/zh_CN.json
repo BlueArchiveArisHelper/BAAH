@@ -205,7 +205,7 @@
     "config_event_status": "是否只在活动开启状态下执行",
     "notice_QA":"如何使用以及常见问题",
     "mirror_desc":"添加Mirror酱密钥加快更新下载速度/稳定性",
-    "notice_steam_esc_break": "长按 esc 中断脚本运行",
+    "notice_steam_esc_break": "游戏需关闭键盘按键ui提示，长按 esc 中断脚本运行",
 
     "aria2_path":"Aria2路径",
     "aria2_thread":"Aria2下载线程数",
@@ -225,6 +225,7 @@
     "get_pixel_color_a": "获取像素颜色",
     "open_apk_package_a": "打开应用",
     "scroll_xyxy_a": "滑动",
+    "jump_flow_item_id_a": "跳转流程节点",
 
     "num_greater_p": "数字大于",
     "num_less_p": "数字小于",
