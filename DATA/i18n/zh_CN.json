@@ -194,6 +194,8 @@
     "error_if_assault_no_team": "总力战无可出击队伍是否报错",
     "flow_mode": "操作流程模式",
     "desc_flow_when_login_game": "账号登录页面执行以下自定义任务",
+    "desc_rerun_when_script_error": "脚本发生错误时重新执行当前配置文件的次数",
+    "desc_rerun_start_from_lastpoint": "重新执行时从上次中断的任务节点开始",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",

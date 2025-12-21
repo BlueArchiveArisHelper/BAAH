@@ -67,6 +67,13 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
         
     # ui.input(config.get_text("config_next_config")).bind_value(config.userconfigdict, 'NEXT_CONFIG',forward=lambda v: v.replace("\\", "/")).style('width: 400px')
 
+    
+    # 脚本运行报错自动重启脚本
+    with ui.row():
+        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).style("width: 400px")
+        ui.checkbox(config.get_text("desc_rerun_start_from_lastpoint")).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR_FROM_LAST_TASK").bind_visibility_from(config.userconfigdict, "RETRY_WHEN_ERROR", backward=lambda x:x>0)
+
+
     # 快速调用任务
     show_fast_run_task_buttons([
         TaskName.MOMOTALK, 

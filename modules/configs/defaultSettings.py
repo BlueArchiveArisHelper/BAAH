@@ -351,6 +351,14 @@ defaultUserDict = {
     "OBJ_FLOW_WHEN_LOGIN":{
         "d":{}
     },
+    # 脚本运行报错后，自动重新运行脚本次数
+    "RETRY_WHEN_ERROR":{
+        "d": 0,
+    },
+    # 脚本运行报错如果重新运行脚本是否从之前的中断处继续运行
+    "RETRY_WHEN_ERROR_FROM_LAST_TASK":{
+        "d": False,
+    }
 }
 
 # 软件的config里的默认值
@@ -401,11 +409,13 @@ defaultSessionDict = {
     # 截图文件读取失败的次数
     "SCREENSHOT_READ_FAIL_TIMES":{"d":0},
     # 当前尝试重启模拟器次数
-    "RESTART_EMULATOR_TIMES":{"d":0},
+    "RESTART_EMULATOR_TIMES":{"d":0}, # 跨运行生命周期
     # 截图数据，当SCREENSHOT_METHOD为pipe时使用
     "SCREENSHOT_DATA":{"d":None},
     # 记录这次运行执行到第几个任务了，任务开始时更新此项。-1表示之前没有执行任何任务
     "CURRENT_PERIOD_TASK_INDEX":{"d":-1},
+    # 当前脚本重新执行过的次数
+    "CURRENT_RETRY_TIMES":{"d":0}, # 跨运行生命周期
 }
 
 # storagedict存储与某一个配置文件对应的游戏实例的持久性存储信息（如钻石历史变化曲线），其生命周期与userconfig相同，但是在脚本运行时是随用随写的

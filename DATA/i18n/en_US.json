@@ -194,6 +194,8 @@
     "error_if_assault_no_team": "Throw error if no team can fight in assault",
     "flow_mode": "action flow mode",
     "desc_flow_when_login_game": "Execute the following custom actions on the account login page",
+    "desc_rerun_when_script_error": "Number of times to rerun the current config file when script error occurs",
+    "desc_rerun_start_from_lastpoint": "Whether to start from the last interrupted task node when rerunning",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",
