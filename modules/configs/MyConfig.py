@@ -174,16 +174,16 @@ class MyConfigger:
                 # 能用对应关系就用对应关系
                 selfmap[key] = mapfunc(selfmap[fromkey])
                 if print_warn:
-                    print("缺少{}配置，根据{}配置自动填充为{}".format(key, fromkey, selfmap[key]))
+                    print("No {}, map from {} fill as {}".format(key, fromkey, selfmap[key]))
             else:
                 # 对应关系的键不在，那就只能用默认值
                 if print_warn:
-                    print("缺少{}配置，使用默认值{}".format(key, defaultmap[key]["d"]))
+                    print("No {}, set {}".format(key, defaultmap[key]["d"]))
                 selfmap[key] = defaultmap[key]["d"]
         else:
             # 没有对应关系就只能默认值
             if print_warn:
-                print("缺少{}配置，使用默认值{}".format(key, defaultmap[key]["d"]))
+                print("No {}, set {}".format(key, defaultmap[key]["d"]))
             selfmap[key] = defaultmap[key]["d"]
 
     def _check_user_config(self):

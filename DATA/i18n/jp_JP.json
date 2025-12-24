@@ -194,6 +194,8 @@
     "error_if_assault_no_team": "総力戦で出撃可能なチームがいない場合、エラーが報告されますか",
     "flow_mode": "プロセスモデル",
     "desc_flow_when_login_game": "アカウントログインページで以下のカスタムタスクを実行します",
+    "desc_rerun_when_script_error": "スクリプトエラーが発生した場合に現在の構成ファイルを再実行する回数",
+    "desc_rerun_start_from_lastpoint": "再実行時に前回中断したタスクノードから開始するかどうか",
 
     "config_server_jp": "日本サーバー",
     "config_server_cn": "中国公式サーバー",
@@ -225,6 +227,7 @@
     "get_pixel_color_a": "ピクセル色を取得",
     "open_apk_package_a": "アプリを開く",
     "scroll_xyxy_a": "スクロール",
+    "jump_flow_item_id_a": "フローアイテムにジャンプ",
 
     "num_greater_p": "数値が大きい",
     "num_less_p": "数値が小さい",

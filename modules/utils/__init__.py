@@ -31,7 +31,14 @@ def get_screenshot_cv_data():
     if config.userconfigdict["SCREENSHOT_METHOD"] == "pipe":
         return config.sessiondict["SCREENSHOT_DATA"]
     else:
-        return cv2.imread(get_config_screenshot_name())
+        try:
+            return cv2.imread(get_config_screenshot_name())
+        except Exception as e: 
+            logging.error(istr({
+                CN: f"读取图片文件出错，{e}",
+                EN: f"Error when reading pic file, {e}"
+            }))
+            return None
 
 def click(item:Union[str, Tuple[float, float]], sleeptime = -1, threshold=0.9) -> bool:
     """

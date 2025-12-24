@@ -95,7 +95,10 @@ class Task:
                 Task.clear_popup()
             # 有社区弹窗，点关闭按钮
             if match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
-                click(popup_pic(PopupName.POPUP_LOGIN_FORM), sleeptime=1) or click(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM), sleeptime=1)
+                if(match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM))):
+                    click((1123, 114), sleeptime=1)
+                else:
+                    click((1226, 56), sleeptime=1)
                 can_back_home = True
                 Task.clear_popup()
             # 如果已经在主页
