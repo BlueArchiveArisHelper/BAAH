@@ -1,4 +1,4 @@
-myversion = "2.0.4"
+myversion = "2.0.5"
 mychangelog = """
 >> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
 
@@ -14,15 +14,10 @@ mychangelog = """
 
 Support Steam Blue Archive
 
-
-升级 ui 库版本
-
-Upgrade ui library version
-
 # Fix
 
-修复国际服推图识别队伍号问题
+修复Steam BA使用png截图失败问题
 
-Fix explore team ocr in Global server
+Fix sreenshot by using png mode on Steam BA
 
 """
