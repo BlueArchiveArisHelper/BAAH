@@ -67,7 +67,12 @@ class SolveChallenge(Task):
                 break
             blue_button_pos = scroll_task.wantclick_pos
             click((blue_button_pos[0] + 36, blue_button_pos[1] - 80), sleeptime=3)
-            screenshot()
+            # 等待黑屏跳转,直到魔法点不是黑色像素
+            self.run_until(
+                lambda: sleep(0.1),
+                lambda: not match_pixel(Page.MAGICPOINT, ((0,0,0), (10,10,10))),
+                sleeptime=2
+            )
             # 通过识别弹窗后右侧像素颜色判断是困难还是普通
             pixel_r = match_pixel((1181,159), ((0,0,50), (30, 30, 80)))
             push_task = PushQuest("hard" if pixel_r else "normal", -1, -1) # 章节和关卡数让PushQuest自己识别弹窗里的
