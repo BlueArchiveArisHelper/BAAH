@@ -34,7 +34,7 @@ RUN pip --default-timeout=100 --no-cache-dir --disable-pip-version-check --retri
 
 RUN mkdir -p ~/.ssh && echo -e "Host *\n    StrictHostKeyChecking accept-new" >> ~/.ssh/config
 
-RUN cp /app/BAAH/docker_shart.sh /app/start.sh && \
+RUN cp /app/BAAH/docker_start.sh /app/start.sh && \
     chmod +x /app/start.sh
 
 EXPOSE 8000
