@@ -1,10 +1,11 @@
-FROM python:3.10-slim
+FROM ubuntu:22.04
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y libgl1 adb libglib2.0-0 git && apt-get clean
+RUN apt-get update && apt-get install -y libgl1 adb aria2 libglib2.0-0 git python3-pip && apt-get clean
 
-RUN git clone https://github.com/sanmusen214/BAAH -b dev --depth=1
+# RUN git clone https://github.com/BlueArchiveArisHelper/BAAH.git -b dev --depth=1
+RUN git clone https://github.com/BlockHaity/BAAH.git -b Feat-crossplatfrom --depth=1
 
 COPY requirements.txt .
 
@@ -31,10 +32,7 @@ RUN pip --default-timeout=100 --no-cache-dir --disable-pip-version-check --retri
 
 RUN mkdir -p ~/.ssh && echo -e "Host *\n    StrictHostKeyChecking accept-new" >> ~/.ssh/config
 
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'cd /app/BAAH' >> /app/start.sh && \
-    echo 'git pull' >> /app/start.sh && \
-    echo 'python jsoneditor.py --no-show' >> /app/start.sh && \
+RUN cp /app/BAAH/docker_shart.sh /app/start.sh && \
     chmod +x /app/start.sh
 
 EXPOSE 8000
