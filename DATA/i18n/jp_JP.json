@@ -142,6 +142,7 @@
     "config_run_until_try_times":"循環試行回数",
     "adb_direct_use_serial":"ADB直接使用シリアル番号",
     "adb_serial":"シリアル番号，(emulator-5554)",
+    "adb_not_disconnect": "このオプションをチェックすると、デバイス／エミュレーター接続を検出する際に接続を維持します。USBホストマシンおよびShizukuに適しています。",
     "config_auto_team":"自動マッチングを使用するかどうか",
     "config_need_assault_helper":"総力戦助戦が必要です",
     "config_assault_helper_is_support":"助戦生徒がサポートされています",

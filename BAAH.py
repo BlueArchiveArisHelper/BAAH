@@ -159,7 +159,8 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         检查adb连接
         """
         # 检查adb连接
-        disconnect_this_device()
+        if config.userconfigdict["NOT_DISCONNECT"] is False:
+            disconnect_this_device()
         for i in range(1, 10):
             sleep(i)
             if check_connect():

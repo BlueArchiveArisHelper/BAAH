@@ -64,6 +64,8 @@ def set_emulator(config):
         # 切换使用序列号还是IP+端口
         ui.checkbox(config.get_text("adb_direct_use_serial")).bind_value(config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')
         
+        # 取消链接时断联，用于USB实体机或shizuku
+        ui.checkbox(config.get_text("adb_not_disconnect")).bind_value(config.userconfigdict, 'NOT_DISCONNECT')    
     
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_steam_app(v)):
         kill_port = ui.checkbox(config.get_text("config_kill_port")).bind_value(config.userconfigdict, "KILL_PORT_IF_EXIST")
