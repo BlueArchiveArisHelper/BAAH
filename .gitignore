@@ -180,3 +180,6 @@ cython_debug/
 BAAH_CONFIGS/
 !BAAH_CONFIGS/example.json
 .nicegui
+
+# requirforyou.py generated files
+requirforyou.txt
