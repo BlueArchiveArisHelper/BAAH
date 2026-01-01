@@ -24,7 +24,7 @@ if sys.implementation.name != 'cpython':
     raise Exception("Only CPython is supported.")
 
 if __name__ == '__main__':
-    if sys.version_info[:2] != (3, 12):
+    if sys.version_info[:2] == (3, 12):
         for core_list_item in core_list:
             if "onnxruntime" in core_list_item:
                 del core_list[core_list.index(core_list_item)]
