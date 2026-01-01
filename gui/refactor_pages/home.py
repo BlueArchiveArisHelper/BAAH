@@ -91,7 +91,7 @@ def render_json_list():
                     # 一键更新，唤起更新程序，结束gui进程
                     def update_advance():
                         # 不同发行包，不同更新模式
-                        if sys.platform == "win32":
+                        if PAKCAGED_TYPE == "exe":
                             try:
                                 subprocess.Popen(["BAAH_UPDATE.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
                                 # app.shutdown()
@@ -110,7 +110,7 @@ def render_json_list():
                         
                     
                     # mirror酱密钥
-                    if sys.platform == "win32":
+                    if PAKCAGED_TYPE == "exe":
                         with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
                             ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
                                      on_change = gui_shared_config.save_software_config
