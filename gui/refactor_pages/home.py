@@ -45,8 +45,8 @@ def render_json_list():
                     # 运行环境信息
                     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
                         ui.label(r"Official Release Build")
-                    elif os.path.exists("/.dockerenv"):
-                        ui.label("Docker Container Environment")
+                    elif os.path.exists("/.dockerenv") or os.path.exists("/.containerenv"):
+                        ui.label("Container Environment")
                     
                     # 项目链接
                     with ui.row():
