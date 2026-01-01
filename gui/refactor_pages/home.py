@@ -1,3 +1,5 @@
+import os
+import sys
 import subprocess
 from ..components.json_file_docker import get_json_list, add_new_config, copy_and_rename_config
 
@@ -39,6 +41,12 @@ def render_json_list():
             with splitter.before:
                 with ui.column().style("padding: 10px"):
                     ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").style('font-size: xx-large')
+                    
+                    # 运行环境信息
+                    if sys.frozen:
+                        ui.label(r"Official Release Build")
+                    elif os.path.exists("/.dockerenv"):
+                        ui.label("Docker Container Environment")
                     
                     # 项目链接
                     with ui.row():
