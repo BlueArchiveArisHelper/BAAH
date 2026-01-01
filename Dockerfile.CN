@@ -12,7 +12,7 @@ RUN pip install uv -i https://pypi.mirrors.ustc.edu.cn/simple --trusted-host pyp
 
 RUN python3 BAAH/requirforyou.py --core && cp BAAH/requirforyou.txt .
 
-RUN uv pip install -r requirforyou.txt \
+RUN uv pip install -r requirforyou.txt --system \
     -i https://pypi.mirrors.ustc.edu.cn/simple --trusted-host pypi.mirrors.ustc.edu.cn
 
 RUN mkdir -p ~/.ssh && echo -e "Host *\n    StrictHostKeyChecking accept-new" >> ~/.ssh/config

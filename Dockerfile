@@ -13,7 +13,7 @@ RUN pip install uv
 
 RUN python3 BAAH/requirforyou.py --core && cp BAAH/requirforyou.txt .
 
-RUN uv pip install -r requirforyou.txt
+RUN uv pip install -r requirforyou.txt --system
 
 RUN mkdir -p ~/.ssh && echo -e "Host *\n    StrictHostKeyChecking accept-new" >> ~/.ssh/config
 
