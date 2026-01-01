@@ -2,6 +2,8 @@ FROM ubuntu:22.04
 
 WORKDIR /app
 
+ENV BAAH_DOCKER_ENV=1
+
 RUN apt-get update && apt-get install -y libgl1 adb aria2 libglib2.0-0 git python3-pip && apt-get clean
 
 # RUN git clone https://github.com/BlueArchiveArisHelper/BAAH.git --depth=1
