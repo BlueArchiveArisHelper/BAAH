@@ -110,14 +110,15 @@ def render_json_list():
                         
                     
                     # mirror酱密钥
-                    with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
-                        ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
-                                 on_change = gui_shared_config.save_software_config
-                                ).bind_value(gui_shared_config.softwareconfigdict, "SEC_KEY_M", 
-                                            forward=lambda val: encrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"]),
-                                            backward=lambda val: decrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"])
-                            ).style("width: 450px")
-                        ui.link(text="Mirror", target = "https://mirrorchyan.com/zh/get-start", new_tab=True)
+                    if sys.platform == "win32":
+                        with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
+                            ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
+                                     on_change = gui_shared_config.save_software_config
+                                    ).bind_value(gui_shared_config.softwareconfigdict, "SEC_KEY_M", 
+                                                forward=lambda val: encrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"]),
+                                                backward=lambda val: decrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"])
+                                ).style("width: 450px")
+                            ui.link(text="Mirror", target = "https://mirrorchyan.com/zh/get-start", new_tab=True)
                             
 
             with splitter.after:
