@@ -43,7 +43,7 @@ def render_json_list():
                     ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").style('font-size: xx-large')
                     
                     # 运行环境信息
-                    if sys.frozen:
+                    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
                         ui.label(r"Official Release Build")
                     elif os.path.exists("/.dockerenv"):
                         ui.label("Docker Container Environment")
