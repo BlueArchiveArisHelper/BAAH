@@ -7,8 +7,8 @@ ENV BAAH_DOCKER_ENV=1
 RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list && \
     apt-get update && apt-get install -y libgl1 adb aria2 libglib2.0-0 git python3-pip && apt-get clean
 
-# RUN git clone https://v6.gh-proxy.com/https://github.com/BlueArchiveArisHelper/BAAH.git --depth=1
-RUN git clone https://v6.gh-proxy.com/https://github.com/BlockHaity/BAAH.git -b Feat-crossplatfrom --depth=1
+RUN git clone https://v6.gh-proxy.com/https://github.com/BlueArchiveArisHelper/BAAH.git --depth=1
+# RUN git clone https://v6.gh-proxy.com/https://github.com/BlockHaity/BAAH.git -b Feat-crossplatfrom --depth=1
 
 RUN pip install uv -i https://pypi.mirrors.ustc.edu.cn/simple --trusted-host pypi.mirrors.ustc.edu.cn
 

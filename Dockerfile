@@ -6,10 +6,8 @@ ENV BAAH_DOCKER_ENV=1
 
 RUN apt-get update && apt-get install -y libgl1 adb aria2 libglib2.0-0 git python3-pip && apt-get clean
 
-# RUN git clone https://github.com/BlueArchiveArisHelper/BAAH.git --depth=1
-RUN git clone https://github.com/BlockHaity/BAAH.git -b Feat-crossplatfrom --depth=1
-
-COPY requirements.txt .
+RUN git clone https://github.com/BlueArchiveArisHelper/BAAH.git --depth=1
+# RUN git clone https://github.com/BlockHaity/BAAH.git -b Feat-crossplatfrom --depth=1
 
 RUN pip install uv
 
