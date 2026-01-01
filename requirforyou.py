@@ -1,8 +1,11 @@
 import sys
 import os
 
+# 获取当前脚本所在目录
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # 生成列表
-with open('requirements.txt', 'r') as file:
+with open(os.path.join(SCRIPT_DIR, 'requirements.txt'), 'r') as file:
     lines = file.readlines()
     core_list = lines[lines.index('###CORE###\n') + 1:lines.index('###CORE_END###\n') - 1]
     build_list = lines[lines.index('###BUILD###\n') + 1:lines.index('###BUILD_END###\n') - 1]
@@ -35,11 +38,11 @@ if __name__ == '__main__':
         print("You are currently running in a Docker container. Please ensure you have installed libgl1 or related dependencies to support onnxruntime.")
     if "--core" in sys.argv:
         print("生成核心依赖列表 requirforyou.txt for core dependencies.")
-        with open('requirforyou.txt', 'w') as f:
+        with open(os.path.join(SCRIPT_DIR, 'requirforyou.txt'), 'w') as f:
             f.writelines(core_list)
     elif "--build" in sys.argv:
         print("生成构建依赖列表 requirforyou.txt for build dependencies.")
-        with open('requirforyou.txt', 'w') as f:
+        with open(os.path.join(SCRIPT_DIR, 'requirforyou.txt'), 'w') as f:
             f.writelines(build_list)
     else:
         print("请使用 --core 或 --build 生成依赖列表。")
