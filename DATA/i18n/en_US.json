@@ -142,6 +142,7 @@
     "config_run_until_try_times":"Try times in loops",
     "adb_direct_use_serial":"Whether use adb serial to connect the emulator",
     "adb_serial":"emulator serial, like emulator-5554",
+    "adb_not_disconnect":"Check this option to prevent disconnection when detecting devices/emulators; applicable to USB physical devices and Shizuku.",
     "config_auto_team":"Whether to use automatic matching",
     "config_need_assault_helper":"Whether need assault helper",
     "config_assault_helper_is_support":"Whether assault helper is support role",
