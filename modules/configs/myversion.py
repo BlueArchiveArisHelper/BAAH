@@ -1,23 +1,17 @@
-myversion = "2.0.5"
+myversion = "2.0.6"
 mychangelog = """
 >> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
 
 >> 下载Download: https://baah.sanmusen.top/zh_CN/download.html <<
 
->> 迁移配置文件: 将2.0.0版本解压至旧版本目录覆盖 或 手动迁移旧版本的 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
+>> 迁移配置文件: （覆盖貌似会显示异常）请手动迁移的 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
 
->> Keep configs: Retract zip into old version folder or Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
-
-# Update
-
-支持 Steam 上的碧蓝档案
-
-Support Steam Blue Archive
+>> Keep configs: Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
 
 # Fix
 
-修复Steam BA使用png截图失败问题
+修复png截图模式无法在gui内进行截图问题
 
-Fix sreenshot by using png mode on Steam BA
+Fix can not sreenshot in GUI if screenshot mode "png"
 
 """

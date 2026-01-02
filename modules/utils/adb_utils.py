@@ -120,7 +120,7 @@ def screen_shot_to_global(use_config=None, output_png=False):
             with open("./{}".format(filename),"wb") as out:
                 subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), "shell", "screencap", "-p"], stdout=out)
         #adb 命令有时直接截图保存到电脑出错的解决办法-加下面一段即可
-        if not _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and platform.system() not in ["Linux", "Darwin"]:
+        if not _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]) and platform.system() not in ["Linux", "Darwin"]:
             convert_img("./{}".format(filename))
     else:
         # 方法二，使用cv2提取PIPE管道中的数据
