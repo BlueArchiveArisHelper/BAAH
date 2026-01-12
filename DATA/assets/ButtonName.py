@@ -65,3 +65,6 @@ class ButtonName:
 
     # 商店免费10体力
     BUTTON_FREE_SHOP_BUY = "BUTTON_FREE_SHOP_BUY"
+
+    # 网络异常重新连接按钮
+    BUTTON_RECONNECT = "BUTTON_RECONNECT"
