@@ -46,11 +46,11 @@ def render_json_list():
                     
                     # 运行环境信息
                     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-                        ui.label(r"Official Release Build")
-                        PAKCAGED_TYPE = "exe"
+                        ui.label(r"Pyinstaller Mode")
+                        PACKAGED_TYPE = "exe"
                     elif os.getenv("BAAH_DOCKER_ENV") == "1":
-                        ui.label("Official Release Build (Container)")
-                        PAKCAGED_TYPE = "docker"
+                        ui.label("Container Mode")
+                        PACKAGED_TYPE = "docker"
                     else:
                         ui.label("Source Code Mode")
                     
@@ -91,26 +91,26 @@ def render_json_list():
                     # 一键更新，唤起更新程序，结束gui进程
                     def update_advance():
                         # 不同发行包，不同更新模式
-                        if PAKCAGED_TYPE == "exe":
+                        if PACKAGED_TYPE == "exe":
                             try:
                                 subprocess.Popen(["BAAH_UPDATE.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
                                 # app.shutdown()
                             except Exception as e:
                                 ui.notify(f"Failed to start BAAH_UPDATE.exe: {e}", type="warning")
-                        elif PAKCAGED_TYPE == "docker":
+                        elif PACKAGED_TYPE == "docker":
                             try:
                                 ui.notify("Update start")
-                                subprocess_run(['git', 'fetch'], check=True)
-                                subprocess_run(['git', 'pull'], check=True)
-                                subprocess_run(['python3', 'requirforyou.py', '--core'], check=True)
-                                subprocess_run(['uv', 'pip', 'install', '-r', 'requirforyou.txt', '--system'], check=True)
+                                subprocess.run(['git', 'fetch'], check=True)
+                                subprocess.run(['git', 'pull'], check=True)
+                                subprocess.run(['python3', 'requirforyou.py', '--core'], check=True)
+                                subprocess.run(['uv', 'pip', 'install', '-r', 'requirforyou.txt', '--system'], check=True)
                                 ui.notify("Update completed, please restart the container to apply the update")
                             except subprocess.CalledProcessError:
                                 ui.notify("Update failed, please check the container logs for details", type="warning")
                         
                     
                     # mirror酱密钥
-                    if PAKCAGED_TYPE == "exe":
+                    if PACKAGED_TYPE == "exe":
                         with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
                             ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
                                      on_change = gui_shared_config.save_software_config
