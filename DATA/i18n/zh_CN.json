@@ -142,6 +142,7 @@
     "config_run_until_try_times":"循环尝试次数",
     "adb_direct_use_serial":"直接使用序列号连接模拟器",
     "adb_serial":"模拟器序列号，如emulator-5554",
+    "adb_not_disconnect":  "勾选此项，在检测设备/模拟器连接时不会断开连接，适用于USB物理机和shizuku",
     "config_auto_team":"是否使用自动配队",
     "config_need_assault_helper":"总力战1号队是否选择助战",
     "config_assault_helper_is_support":"总力战助战学生是否是后排角色",
