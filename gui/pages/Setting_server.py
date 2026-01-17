@@ -9,26 +9,22 @@ def set_server(config):
         ui.label(config.get_text("setting_server")).style('font-size: x-large')
     
     # 非windows系统隐藏steam选项
-    if sys.platform == "win32":
-        server = ui.radio({
-            "JP":config.get_text("config_server_jp"), 
-            "GLOBAL":config.get_text("config_server_global"), 
-            "GLOBAL_EN":config.get_text("config_server_global_en"),
-            "CN":config.get_text("config_server_cn"),
-            "CN_BILI":config.get_text("config_server_cn_b"),
-            "STEAM":"STEAM (Windows)",
-            "STEAM_EN":"STEAM_EN (Windows)"
-            },
-                          value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
-    else:
-        server = ui.radio({
-            "JP":config.get_text("config_server_jp"), 
-            "GLOBAL":config.get_text("config_server_global"), 
-            "GLOBAL_EN":config.get_text("config_server_global_en"),
-            "CN":config.get_text("config_server_cn"),
-            "CN_BILI":config.get_text("config_server_cn_b")
-            },
-                          value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
+    server_options = {  
+        "JP": config.get_text("config_server_jp"),  
+        "GLOBAL": config.get_text("config_server_global"),  
+        "GLOBAL_EN": config.get_text("config_server_global_en"),  
+        "CN": config.get_text("config_server_cn"),  
+        "CN_BILI": config.get_text("config_server_cn_b"),  
+    }  
+    if sys.platform == "win32":  
+        server_options.update({  
+            "STEAM": "STEAM (Windows)",  
+            "STEAM_EN": "STEAM_EN (Windows)",  
+        })  
+    
+    server = ui.radio(server_options,
+                          value=config.userconfigdict['SERVER_TYPE'], 
+                          on_change=lambda a:set_server_info(a.value)).props('inline')
     
     def set_server_info(servername):
         config.userconfigdict['SERVER_TYPE'] = servername
