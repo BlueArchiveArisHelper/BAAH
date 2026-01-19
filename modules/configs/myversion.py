@@ -1,17 +1,17 @@
-myversion = "2.0.6"
+myversion = "2.0.7"
 mychangelog = """
 >> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
 
->> 下载Download: https://baah.sanmusen.top/zh_CN/download.html <<
+>> Download: https://baah.sanmusen.top/zh_CN/download.html <<
 
->> 迁移配置文件: （覆盖貌似会显示异常）请手动迁移的 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
+>> 迁移配置: （解压覆盖貌似会导致页面显示异常）请手动迁移 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
 
 >> Keep configs: Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
 
-# Fix
+# Feat
 
-修复png截图模式无法在gui内进行截图问题
+30 章推图 | Chapter 30 Story Mode
 
-Fix can not sreenshot in GUI if screenshot mode "png"
+咖啡馆购买邀请卷 | Cafe Buy Invite Ticket
 
 """

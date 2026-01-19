@@ -213,7 +213,7 @@ class Task:
         res = Task.run_until(
             lambda: _close(),
             lambda: not Task.has_popup(),
-            times=15,
+            times=10,
             sleeptime=0.5
         )
         if not res:

@@ -1,5 +1,6 @@
 # 针对于单个BAAH任务实例的工具方法，默认截图内容为当前BAAH任务实例的模拟器截图
 import json
+from DATA.assets.ButtonName import ButtonName
 from typing import Tuple, Union
 from .adb_utils import *
 from .image_processing import *
@@ -225,6 +226,7 @@ def screenshot(output_png = False):
     """
     # start = time.time()
     screen_shot_to_global(output_png = output_png)
+    _global_screenshot_check()
     # end = time.time()
     # 输出截图耗时小数点后两位
     # logging.debug("截图耗时{:.2f}秒".format(end-start))
@@ -300,6 +302,12 @@ def _global_screenshot_check():
             CN: "匹配到NGS，触发模拟器卡顿异常",
             EN: "Match NGS, trigger emulator lag error"
         }))
+    if match(button_pic(ButtonName.BUTTON_RECONNECT)):
+        click(button_pic(ButtonName.BUTTON_RECONNECT))
+        logging.warn(istr({
+            CN: "检测到网络异常弹窗，点击重连按钮",
+            EN: "Network exception popup detected, reconnect button clicked"
+        }))
 
 def logic_run_until(func1, func2, times=None, sleeptime = None) -> bool:
     """
@@ -323,7 +331,6 @@ def logic_run_until(func1, func2, times=None, sleeptime = None) -> bool:
             return True
         func1()
         sleep(sleeptime)
-        _global_screenshot_check()
     screenshot()
     if(func2()):
         return True

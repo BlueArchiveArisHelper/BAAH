@@ -16,9 +16,21 @@ class InviteStudent(Task):
     stuind 从0开始，邀请的学生的下标
     """
 
-    def __init__(self, stuind, name="InviteStudent") -> None:
+    def __init__(self, stuind, invite_button_pos = None, buy_ticket_used = False, name="InviteStudent") -> None:
         super().__init__(name)
-        self.stuind = stuind
+        self.stuind = abs(stuind)
+        # 初始status为失败，只有成功邀请后才改为成功
+        self.status = self.STATUS_ERROR
+        if invite_button_pos is None:
+            self.invite_button_pos = (850, 652)
+        else:
+            self.invite_button_pos = invite_button_pos
+        # 花钱购买了票卷的邀请的话，邀请弹窗确认按钮是黄色
+        self.buy_ticket_used = buy_ticket_used
+        if self.buy_ticket_used:
+            self.confirm_invite_button_pic = ButtonName.BUTTON_CONFIRMY
+        else:
+            self.confirm_invite_button_pic = ButtonName.BUTTON_CONFIRMB
 
     def pre_condition(self) -> bool:
         return Page.is_page(PageName.PAGE_CAFE)
@@ -27,7 +39,7 @@ class InviteStudent(Task):
         while(1):
             # 打开邀请界面
             open_momo = self.run_until(
-                lambda: click((850, 652)),
+                lambda: click(self.invite_button_pos),
                 lambda: match(popup_pic(PopupName.POPUP_MOMOTALK)) or match(popup_pic(PopupName.POPUP_MOMOTALK_FANHEXIE)),
                 times=3
             )
@@ -42,7 +54,7 @@ class InviteStudent(Task):
                 EN: f"Invite the index {self.stuind}th student"
             }))
             # 邀请 直到出现确认按钮
-            select_stu = ScrollSelect(abs(self.stuind), 186, 264, 576, clickx = 787, hasexpectimage=lambda: match(button_pic(ButtonName.BUTTON_CONFIRMB)))
+            select_stu = ScrollSelect(abs(self.stuind), 186, 264, 576, clickx = 787, hasexpectimage=lambda: match(button_pic(self.confirm_invite_button_pic)))
             select_stu.run()
             if not select_stu.hasexpectimage():
                 logging.error(istr({
@@ -72,10 +84,10 @@ class InviteStudent(Task):
             break
         # 确认，直到看不见通知确认按钮
         self.run_until(
-            lambda: click(button_pic(ButtonName.BUTTON_CONFIRMB)),
-            lambda: not match(button_pic(ButtonName.BUTTON_CONFIRMB))
+            lambda: click(button_pic(self.confirm_invite_button_pic)),
+            lambda: not match(button_pic(self.confirm_invite_button_pic))
         )
-        config.sessiondict["CAFE_HAD_INVITED"] = True
+        self.status = self.STATUS_SUCCESS
 
     def post_condition(self) -> bool:
         self.clear_popup()
