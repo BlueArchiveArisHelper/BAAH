@@ -250,6 +250,12 @@ defaultUserDict = {
     # 要邀请的学生在momotalk中的序号，从1开始
     "CAFE1_INVITE_SEQ":{"d":1},
     "CAFE2_INVITE_SEQ":{"d":2},
+    # 是否购买咖啡馆邀请券
+    "CAFE1_BUY_INVITE_TICKET":{"d":False},
+    "CAFE2_BUY_INVITE_TICKET":{"d":False},
+    # 购买后邀请的学生
+    "CAFE1_BUY_INVITE_SEQ":{"d":3},
+    "CAFE2_BUY_INVITE_SEQ":{"d":4},
     # 咖啡馆邀请发生同名时是否向后顺延邀请序号
     "CAFE_INVITE_SAME_NAME_DELAY":{"d":False},
     # 咖啡馆邀请顺延时是否逆向（向前一位顺延）
@@ -398,7 +404,6 @@ defaultSessionDict = {
     "EMULATOR_PROCESS_PID":{"d":None},
     "GUI_OPEN_IN_WEB":{"d":True},
     "LAST_TEAM_SET":{"d":[]},
-    "CAFE_HAD_INVITED":{"d":True},
     "TIMETABLE_NO_TICKET":{"d":False},
     "BAAH_START_TIME":{"d":""},
     "BEFORE_BAAH_SOURCES":{"d":{"power":0, "credit":0, "diamond":0}},
