@@ -1,4 +1,4 @@
-myversion = "2.0.7"
+myversion = "2.0.8"
 mychangelog = """
 >> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
 
