@@ -16,17 +16,19 @@ class InviteStudent(Task):
     stuind 从0开始，邀请的学生的下标
     """
 
-    def __init__(self, stuind, invite_button_pos = None, buy_ticket_used = False, name="InviteStudent") -> None:
+    def __init__(self, stuind, buy_ticket_used = False, name="InviteStudent") -> None:
         super().__init__(name)
         self.stuind = abs(stuind)
         # 初始status为失败，只有成功邀请后才改为成功
         self.status = self.STATUS_ERROR
-        if invite_button_pos is None:
-            self.invite_button_pos = (850, 652)
-        else:
-            self.invite_button_pos = invite_button_pos
-        # 花钱购买了票卷的邀请的话，邀请弹窗确认按钮是黄色
         self.buy_ticket_used = buy_ticket_used
+
+        if buy_ticket_used:
+            # 买的邀请卷的按钮
+            self.invite_button_pos = (743, 656)
+        else:
+            self.invite_button_pos = (850, 652)
+        # 花钱购买了票卷的邀请的话，邀请弹窗确认按钮是黄色
         if self.buy_ticket_used:
             self.confirm_invite_button_pic = ButtonName.BUTTON_CONFIRMY
         else:
