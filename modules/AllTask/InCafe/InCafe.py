@@ -20,7 +20,6 @@ class InCafe(Task):
         super().__init__(name, pre_times, post_times)
         self.collect = config.userconfigdict["CAFE_COLLECT"]
         self.touch = config.userconfigdict["CAFE_TOUCH"]
-        self.invite = config.userconfigdict["CAFE_INVITE"]
 
     def pre_condition(self) -> bool:
         return self.back_to_home()
@@ -28,58 +27,70 @@ class InCafe(Task):
     def cafe_process(self, invite_seq, is_buy_ticket, invite_seq_buy):
         """一处咖啡馆除了领取体力之外的所有流程"""
         # 摸头  -> 邀请学生 --> 摸头 --> 买邀请卷 --> 邀请学生 --> 摸头
-        #    |-x-> 结束  |-x-> 结束  |        |-x->结束 |    e-> 结束
-        #                |-e->-------        |-e-------|
+        #    |-x-> 结束             |        |-x->结束 |    e-> 结束
+        #                |-e->------|        |-e-------|
         # x: 设置为否
         # e: 操作失败
         if not self.touch:
             logging.info(istr({
-                CN: "设置的咖啡馆不摸头，跳过后面环节",
-                EN: "the setup file sets the cafe without touching head, skip the next part"
+                CN: "设置的咖啡馆不摸头，结束",
+                EN: "the setup file sets the cafe without touching head, ending"
             }))
             return
         # 摸头
         TouchHead().run()
-        if not self.invite:
-            logging.info(istr({
-                CN: "设置的咖啡馆不邀请学生，跳过后面环节",
-                EN: "the setup file sets the cafe without inviting students, skip the next part"
-            }))
-            return
         # 邀请学生+摸头
-        invite_cafe1 = InviteStudent(invite_seq-1)
-        invite_cafe1.run()
-        if invite_cafe1.status != Task.STATUS_SUCCESS:
-            logging.warn(istr({
-                CN: "邀请学生失败，跳过第二次摸头",
-                EN: "Failed to invite student, skip the second touch head"
-            }))
+        if invite_seq != 0:
+            invite_cafe1 = InviteStudent(invite_seq-1)
+            invite_cafe1.run()
+            if invite_cafe1.status != Task.STATUS_SUCCESS:
+                logging.warn(istr({
+                    CN: "邀请学生失败，跳过第二次摸头",
+                    EN: "Failed to invite student, skip the second touch head"
+                }))
+            else:
+                TouchHead(try_touch_epoch=1).run()
         else:
-            TouchHead(try_touch_epoch=1).run()
+            logging.info(istr({
+                CN: "设置的普通邀请卷不邀请学生，判断是否购买邀请卷",
+                EN: "the setup file sets the cafe without inviting student, check whether to buy invite ticket"
+            }))
         
         # 买邀请卷+邀请学生+摸头
         if not is_buy_ticket:
             logging.info(istr({
-                CN: "设置的咖啡馆不购买邀请券，跳过第三次摸头",
-                EN: "the setup file sets the cafe without buying invite ticket, skip the third touch head"
+                CN: "设置的咖啡馆不购买邀请券，结束",
+                EN: "the setup file sets the cafe without buying invite ticket, ending"
             }))
             return
+        logging.info(istr({
+            CN: "开始购买邀请券",
+            EN: "Start to buy invite ticket"
+        }))
         buy_ticket = BuyTicket()
         buy_ticket.run()
         if buy_ticket.status != Task.STATUS_SUCCESS:
             logging.warn(istr({
-                CN: "购买邀请券失败",
-                EN: "Failed to buy invite ticket"
+                CN: "购买邀请券失败，尝试直接使用",
+                EN: "Failed to buy invite ticket， try to use directly"
             }))
-        invite_cafe1_buy = InviteStudent(invite_seq_buy-1, invite_button_pos=[743, 656], buy_ticket_used=True)
-        invite_cafe1_buy.run()
-        if invite_cafe1_buy.status != Task.STATUS_SUCCESS:
-            logging.warn(istr({
-                CN: "邀请学生失败，跳过第三次摸头",
-                EN: "Failed to invite student, skip the third touch head"
+        if invite_seq_buy != 0:
+            invite_cafe1_buy = InviteStudent(invite_seq_buy-1, buy_ticket_used=True)
+            invite_cafe1_buy.run()
+            if invite_cafe1_buy.status != Task.STATUS_SUCCESS:
+                logging.warn(istr({
+                    CN: "邀请学生失败，结束",
+                    EN: "Failed to invite student, 结束"
+                }))
+                return
+            else:
+                TouchHead(try_touch_epoch=1).run()
+        else:
+            logging.info(istr({
+                CN: f"设置的购买邀请卷不邀请学生，结束",
+                EN: f"The setup file sets the cafe without inviting student with bought invite ticket, ending"
             }))
-            return
-        TouchHead(try_touch_epoch=1).run()
+
 
 
 
