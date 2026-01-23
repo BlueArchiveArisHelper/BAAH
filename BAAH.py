@@ -93,6 +93,8 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         检查进程是否存在
         """
         try:
+            if pid is None:
+                return False
             # encoding使用None，使用text指定获取str结果
             tasks = subprocess_run(["tasklist"], encoding=None, text=True).stdout
             tasklist = tasks.split("\n")
@@ -116,28 +118,37 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 # 以列表形式传命令行参数
                 logging.info({"zh_CN": "启动模拟器", "en_US": "Starting the emulator"})
                 executor_pid = None
+                need_start_by_baah = True
                 if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
-                    # 如果Steam版本ba，使用psutil判断是否已有 "BlueArchive.exe" 进程在运行
-                    ba_process_list = check_if_process_exist("name", "BlueArchive.exe")
+                    # 如果Steam版本ba，使用psutil判断是否已有 ba进程在运行
+                    activity_name = config.userconfigdict['ACTIVITY_PATH']
+                    process_name = activity_name.split("/")[1]
+                    ba_process_list = check_if_process_exist("name", process_name)
                     if len(ba_process_list) > 0:
                         executor_pid = ba_process_list[0].info['pid']
-                        logging.info({"zh_CN": "检测到Steam版BA已经在运行，跳过启动模拟器",
-                                    "en_US": "Detected that Steam BA is already running, skip starting the emulator"})
+                        logging.info({"zh_CN": "检测到PC版BA已经在运行，跳过启动",
+                                    "en_US": "Detected that PC BA is already running, skip starting the emulator"})
                         time.sleep(0.5)
+                        need_start_by_baah = False
                     else:
+                        need_start_by_baah = True
+                
+                if need_start_by_baah:
+                    if "STEAM" in config.userconfigdict["SERVER_TYPE"]:
                         # 使用Steam协议启动游戏
                         subprocess.run("start steam://rungameid/3557620", shell=True)
                         time.sleep(5)
-                        ba_process_list = check_if_process_exist("name", "BlueArchive.exe")
+                        ba_process_list = check_if_process_exist("name", process_name)
                         executor_pid = ba_process_list[0].info['pid'] if len(ba_process_list) > 0 else None
                         time.sleep(0.5)
-                else:
-                    # 不能用shell，否则得到的是shell的pid
-                    emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
-                    logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
-                                "en_US": "The emulator pid: " + str(emulator_process.pid)})
-                    executor_pid = emulator_process.pid
-                    time.sleep(5)
+                    elif config.userconfigdict['TARGET_EMULATOR_PATH']:
+                        # 用模拟器路径启动模拟器
+                        # 不能用shell，否则得到的是shell的pid
+                        emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
+                        logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
+                                    "en_US": "The emulator pid: " + str(emulator_process.pid)})
+                        executor_pid = emulator_process.pid
+                        time.sleep(5)
                 # 检查pid是否存在
                 if not _check_process_exist(executor_pid):
                     logging.warn({"zh_CN": "模拟器启动进程已结束，可能是启动失败，或者是模拟器已经在运行",
@@ -150,7 +161,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                             "en_US": "Failed to start the emulator, maybe not run as administrator or the emulator path is wrong"})
                 logging.error(e)
         else:
-            logging.info({"zh_CN": "未配置模拟器路径，跳过启动模拟器",
+            logging.info({"zh_CN": "未配置模拟器或游戏路径，跳过启动",
                         "en_US": "No emulator path configured, skip starting the emulator"})
 
 

@@ -60,14 +60,14 @@ class Loginin(Task):
         # 判断关键区域
         if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
             event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
-            logging.info(f"Steam event button ocr: {event_button_text}")
+            logging.info(f"PC event button ocr: {event_button_text}")
         else:
             event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
             logging.info(f"App event button ocr: {event_button_text}")
         if any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
             if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
                 # 判断点击左下角是否有今日不再显示的勾（√）并点掉
-                # Steam
+                # PC
                 click((269, 534))
             else:
                 # 关闭手机ba活动弹窗
@@ -115,7 +115,7 @@ class Loginin(Task):
         # 判断关键区域
         if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
             event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
-            logging.info(f"Steam event button ocr: {event_button_text}")
+            logging.info(f"PC event button ocr: {event_button_text}")
         else:
             event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
             logging.info(f"App event button ocr: {event_button_text}")

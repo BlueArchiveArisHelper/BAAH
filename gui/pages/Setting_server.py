@@ -13,8 +13,9 @@ def set_server(config):
         "GLOBAL_EN":config.get_text("config_server_global_en"),
         "CN":config.get_text("config_server_cn"),
         "CN_BILI":config.get_text("config_server_cn_b"),
-        "STEAM":"STEAM (Windows)",
-        "STEAM_EN":"STEAM_EN (Windows)"
+        "PC_STEAM":"STEAM (Windows)",
+        "PC_STEAM_EN":"STEAM_EN (Windows)",
+        "PC_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
         },
                       value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
     
@@ -25,9 +26,9 @@ def set_server(config):
         if config.userconfigdict["LOCK_SERVER_TO_RESPOND_Y"]:
             config.userconfigdict["RESPOND_Y"] = server2respond[servername]
     
-    # Steam端ba 提醒 esc 退出
+    # PC端ba 提醒 esc 退出
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda x: _is_steam_app(x)):
-        ui.label("STEAM: "+config.get_text("notice_steam_esc_break")).style('font-size: large')
+        ui.label(config.get_text("notice_steam_esc_break")).style('font-size: large')
         
         
     #  大更新配置

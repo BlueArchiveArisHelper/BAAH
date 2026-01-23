@@ -8,8 +8,9 @@ server2pic = {
     "GLOBAL_EN":"./DATA/assets_global_en",
     "CN":"./DATA/assets_cn",
     "CN_BILI":"./DATA/assets_cn",
-    "STEAM":"./DATA/assets",
-    "STEAM_EN":"./DATA/assets_global_en",
+    "PC_STEAM":"./DATA/assets",
+    "PC_STEAM_EN":"./DATA/assets_global_en",
+    "PC_JP":"./DATA/assets_jp"
 }
 
 server2activity = {
@@ -18,8 +19,9 @@ server2activity = {
     "GLOBAL":"com.nexon.bluearchive/.MxUnityPlayerActivity",
     "CN":"com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
     "CN_BILI":"com.RoamingStar.BlueArchive.bilibili/com.yostar.supersdk.activity.YoStarSplashActivity",
-    "STEAM":"Blue Archive/Blue Archive",  # 占位符，steam版不需要包名
-    "STEAM_EN":"Blue Archive/Blue Archive",  # 占位符，steam版不需要包名
+    "PC_STEAM":"Blue Archive/BlueArchive.exe",  # 包名为窗口名/进程名
+    "PC_STEAM_EN":"Blue Archive/BlueArchive.exe",  # 包名为窗口名/进程名
+    "PC_JP":"ブルーアーカイブ/Blue Archive.exe",  # 包名为窗口名/进程名
 }
 
 
@@ -32,8 +34,9 @@ server2respond = {
     "GLOBAL_EN":40,
     "CN":40,
     "CN_BILI":40,
-    "STEAM": 20,
-    "STEAM_EN": 20,
+    "PC_STEAM": 20,
+    "PC_STEAM_EN": 20,
+    "PC_JP": 10,
 }
 
 def configname2screenshotname(configfilename):

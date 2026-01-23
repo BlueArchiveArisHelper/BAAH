@@ -48,9 +48,6 @@ def set_emulator(config):
     #         with ui.row():
     #             ui.label(istr({CN:"修复后请直接重开模拟器", EN:"Please restart the emulator directly after fixing", JP:"修正後、直接エミュレータを再起動してください"}))
     #             ui.label(istr({CN:"请勿再次更改上面设置, 否则修复失效", EN:"Do not change the above settings again, or fix will be disabled", JP:"上記の設定を再度変更しないでください。さもないと修正が無効になります"})).style('color: red')
-        
-    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: _is_steam_app(v)):
-        ui.label("STEAM")
     
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_steam_app(v)):
         # IP+端口
@@ -70,7 +67,7 @@ def set_emulator(config):
         kill_port.set_value(False)
         kill_port.set_enabled(False)
     
-    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_steam_app(v)):    
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not "STEAM" in v):    
         ui.input(config.get_text("config_emulator_path"),
                     ).bind_value(config.userconfigdict, 'TARGET_EMULATOR_PATH',forward=lambda v: v.replace("\\", "/").replace('"','').replace('nx_main/MuMuNxMain.exe','nx_device/12.0/shell/MuMuNxDevice.exe')).style('width: 400px')
     

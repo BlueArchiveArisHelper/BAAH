@@ -25,7 +25,7 @@ def set_BAAH(config, shared_softwareconfig):
             ui.link("Bilibili", web_url["bilibili"], new_tab=True)
             ui.input("Bilibili").bind_value_from(web_url, "bilibili").style('width: 400px')
 
-        ui.label(config.get_text("BAAH_attention") + f'  STEAM: {config.get_text("notice_steam_esc_break")}' if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) else "" ).style('color: red; font-size: x-large')
+        ui.label(config.get_text("BAAH_attention") + f'  {config.get_text("notice_steam_esc_break")}' if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) else "" ).style('color: red; font-size: x-large')
 
         # kei的教程
         ui.link("BV1ZxfGYSEVr", "https://www.bilibili.com/video/BV1ZxfGYSEVr/", new_tab=True).style('font-size: large')
