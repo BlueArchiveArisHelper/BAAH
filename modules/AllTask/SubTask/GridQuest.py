@@ -213,9 +213,9 @@ class GridQuest(Task):
             lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
         )
         # 识别左下角切换队伍的按钮文字
-        # 国际服和Steam繁中不偏移，其他服往右偏移45
+        # 国际服和Steam不偏移，其他服往右偏移45
         offsetx = 45
-        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) or config.userconfigdict["SERVER_TYPE"] == "GLOBAL":
+        if (_is_steam_app(config.userconfigdict["SERVER_TYPE"]) and "STEAM" in config.userconfigdict["SERVER_TYPE"]) or config.userconfigdict["SERVER_TYPE"] == "GLOBAL":
             offsetx = 0
         now_team_str, loss = ocr_area((72 + offsetx, 544), (91 + offsetx, 569), multi_lines=False)
         logging.info({"zh_CN": "ocr结果: " + str(now_team_str), "en_US": "ocr result: " + str(now_team_str)})

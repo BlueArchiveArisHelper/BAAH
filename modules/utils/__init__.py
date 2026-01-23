@@ -278,7 +278,8 @@ def check_connect():
         else:
             if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
                 from .win32_utils import _change_window_client_size
-                if _change_window_client_size("Blue Archive"):
+                window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+                if _change_window_client_size(window_title):
                     return True
             logging.error({"zh_CN": "图片分辨率不为1280*720，请设置模拟器分辨率为1280*720（当前{}*{}）".format(wm_width, wm_height), "en_US":"The resolution is not 1280*720, please set the resolution to 1280*720 (current {}*{})".format(wm_width, wm_height)})
             raise Exception("图片分辨率不为1280*720，请设置模拟器分辨率为1280*720（当前{}*{}）".format(wm_width, wm_height))
