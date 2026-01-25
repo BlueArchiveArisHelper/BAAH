@@ -456,6 +456,101 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         else:
             logging.info({"zh_CN": "未开启通知或未设定通知配置", "en_US": "Notification is not enabled or not configured"})
 
+    def BAAH_generate_crash_report(e):
+        """
+        生成错误报告
+        保存内容：
+        - 配置文件名称,时间 --> 对应的文件夹名称
+        - 系统信息 --> system.json
+        - 错误信息 --> error.log
+        - 最后一步的截图(从PIPE或PNG获取) --> final_step.png
+        - 当前屏幕截图 --> now.png
+        - 完整日志（如果有) --> full_log.log
+        - 配置文件 --> config.json
+        """
+        if config.userconfigdict["ENABLE_CRASH_REPORT"]:
+            import platform
+            import sys
+            import os
+            import psutil
+            import json
+            logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
+            os.makedirs("DATA/CRASH_REPORT", exist_ok=True)
+            report_path = f"DATA/CRASH_REPORT/{config.nowuserconfigname}-{time.strftime('%Y-%m-%d_%H-%M-%S')}"
+            os.makedirs(report_path, exist_ok=True)
+            # 保存系统信息
+            with open(f"{report_path}/system.json", "w", encoding="utf-8") as f:
+                sys_info = {}
+                if platform.system() == "Windows":
+                        sys_info["OS"] = platform.system()
+                        sys_info["Windows"] = {
+                            "Release": platform.release(),
+                            "Version": platform.version(),
+                            "machine": platform.machine()
+                        }
+                        sys_info["Python"] = {
+                            "Python": sys.version_info,
+                            "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode"))
+                        }
+                        sys_info["hardware"] = {
+                            "CPU": {
+                                "Name": platform.processor(),
+                                "Cores": psutil.cpu_count(logical=False),
+                                "Logical_Cores": psutil.cpu_count(logical=True)
+                            },
+                            "Memory": {
+                                "Total": psutil.virtual_memory().total / 1073741824,
+                                "SWAP": psutil.swap_memory().total / 1073741824
+                            }
+                        }
+                elif platform.system() == "Linux":
+                        sys_info["OS"] = platform.system()
+                        sys_info["Linux"] = {
+                            "Name": platform.freedesktop_os_release()["NAME"],
+                            "Version": platform.freedesktop_os_release()["BUILD_ID"],
+                            "Kernel": platform.uname()["release"],
+                            "environment": "container" if os.path.exists("/.dockerenv") or os.getenv("container") == "podman" else "host"
+                        }
+                        sys_info["Python"] = {
+                            "Python": sys.version_info,
+                            "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode"))
+                        }
+                        sys_info["hardware"] = {
+                            "CPU": {
+                                "Name": platform.processor(),
+                                "Cores": psutil.cpu_count(logical=False),
+                                "Logical_Cores": psutil.cpu_count(logical=True)
+                            },
+                            "Memory": {
+                                "Total": psutil.virtual_memory().total / 1073741824,
+                                "SWAP": psutil.swap_memory().total / 1073741824
+                            }
+                        }
+                elif platform.system() == "Darwin":
+                        sys_info["OS"] = platform.system()
+                        sys_info["Darwin"] = {
+                            "Release": platform.release(),
+                            "Version": platform.version(),
+                            "machine": platform.machine()
+                        }
+                        sys_info["Python"] = {
+                            "Python": sys.version_info,
+                            "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode"))
+                        }
+                        sys_info["hardware"] = {
+                            "CPU": {
+                                "Name": platform.processor(),
+                                "Cores": psutil.cpu_count(logical=False),
+                                "Logical_Cores": psutil.cpu_count(logical=True)
+                            },
+                            "Memory": {
+                                "Total": psutil.virtual_memory().total / 1073741824,
+                                "SWAP": psutil.swap_memory().total / 1073741824
+                            }
+                        }
+                f.write(json.dumps(sys_info, indent=4, ensure_ascii=False))
+
+                    
     def BAAH_main(run_precommand = True):
         """
         执行BAAH主程序, 在此之前config应该已经被单独import然后解析为用户指定的配置文件->随后再导入my_AllTask以及其他依赖config的模块
