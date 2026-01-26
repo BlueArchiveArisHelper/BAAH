@@ -289,6 +289,12 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         关闭游戏
         """
+        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+            logging.info(istr({
+                CN: "PC版本跳过关闭游戏",
+                EN: "PC version skip closing game"
+            }))
+            return False
         if ((not meet_error and config.userconfigdict["CLOSE_GAME_FINISH"]) or must_do or (meet_error and config.userconfigdict["CLOSE_GAME_ERROR"])):
             if not check_app_running(config.userconfigdict['ACTIVITY_PATH']):
                 logging.info({"zh_CN": "检测到游戏已关闭", "en_US": "Detected that the game is already killing"})
