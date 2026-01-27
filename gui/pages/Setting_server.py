@@ -15,7 +15,7 @@ def set_server(config):
         "CN_BILI":config.get_text("config_server_cn_b"),
         "PC_STEAM":"STEAM (Windows)",
         "PC_STEAM_EN":"STEAM_EN (Windows)",
-        "PC_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
+        "PC_EXE_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
         },
                       value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
     

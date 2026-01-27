@@ -110,7 +110,7 @@ class GridQuest(Task):
             "GLOBAL_EN": [(1096, 550), (1045, 604)],
             "PC_STEAM": [(1116, 550), (1055, 605)],
             "PC_STEAM_EN": [(1096, 550), (1045, 604)],
-            "PC_JP": [(1088, 550), (952, 604)]
+            "PC_EXE_JP": [(1088, 550), (952, 604)]
         }
         server = config.userconfigdict["SERVER_TYPE"]
         # 自动战斗和PHASE自动结束的位置
