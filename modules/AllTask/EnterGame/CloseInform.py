@@ -25,7 +25,7 @@ class CloseInform(Task):
     def on_run(self) -> None:
         click(Page.MAGICPOINT)
         if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
-            # STEAM 关闭社区弹窗
+            # PC 关闭社区弹窗
             click((1123, 114))
         else:
             click((1226, 56))

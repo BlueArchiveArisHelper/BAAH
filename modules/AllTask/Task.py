@@ -206,7 +206,7 @@ class Task:
         """
         def _close():
             if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
-                # 如果是STEAM且识别到社区弹窗，STEAM 关闭社区弹窗
+                # 如果是PC且识别到社区弹窗，PC 关闭社区弹窗
                 click((1123, 114))
             else:
                 click(Page.MAGICPOINT)

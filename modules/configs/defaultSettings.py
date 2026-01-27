@@ -40,11 +40,12 @@ defaultUserDict = {
     # new config in 1.2.x
     "SERVER_TYPE":{
         "d":"GLOBAL",
-        "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI", "STEAM", "STEAM_EN"],
+        "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI", "PC_STEAM", "PC_STEAM_EN", "PC_EXE_JP"],
         "m": {
             "from": "ACTIVITY_PATH",
             "map": lambda x: activity2server[x] if x in activity2server else "GLOBAL"
-        }
+        },
+        "p": lambda val, parsedjson: "PC_"+val if val.startswith("STEAM") else val # 2.0.10 兼容 STEAM 到 PC_STEAM 的改名
     },
     "TARGET_EMULATOR_PATH":{"d":""},
     "CLOSE_EMULATOR_BAAH":{"d":False}, # deprecate

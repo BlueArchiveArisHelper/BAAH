@@ -208,7 +208,7 @@
     "config_event_status": "Execute only when the event is active",
     "notice_QA":"How to use and FAQ",
     "mirror_desc": "You can add an existing Mirror key to speed up the download of update packages and improve stability",
-    "notice_steam_esc_break": "Long press esc to interrupt script execution",
+    "notice_steam_esc_break": "Close the button mention, Long press esc to interrupt script execution",
 
     "aria2_path" : "Aria2 path",
     "aria2_thread": "The number of Aria2 download threads",

@@ -1,4 +1,5 @@
 from modules.utils.log_utils import logging, istr, CN, EN
+from modules.configs.MyConfig import config
 import platform
 if platform.system() != "Windows":
     mention_str = istr({
@@ -100,7 +101,7 @@ def _wrap_activate_window(func):
     def wrapper(*args, **kwargs):
         # 窗口不存在的异常交由里层func处理
         try:
-            window_title = "Blue Archive"
+            window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
             hwnd = _get_hwnd(window_title)
 
             # 2. 恢复窗口（如果它被最小化）
@@ -230,7 +231,7 @@ def capture_program_window_precise():
     精确截取程序窗口的客户端区域（不含标题栏和边框）
     """
     try:
-        window_title = "Blue Archive"
+        window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
 
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
@@ -255,7 +256,7 @@ def click_program_window_precise(x, y):
     if check_esc_is_pressed():
         raise KeyboardInterrupt("Esc key pressed, program terminated")
     try:
-        window_title = "Blue Archive"
+        window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
         # print(client_x, client_y)
@@ -268,7 +269,7 @@ def scroll_program_window_precise(x1, y1, x2, y2, duration_ms):
     if check_esc_is_pressed():
         raise KeyboardInterrupt("Esc key pressed, program terminated")
     try:
-        window_title = "Blue Archive"
+        window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
         _scroll_in_multiple_screens(cx+x1, cy+y1, cx+x2, cy+y2, duration_ms)

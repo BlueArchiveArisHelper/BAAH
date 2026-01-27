@@ -17,7 +17,10 @@ class InEventRecap(Task):
     def __init__(self, name="InEventRecap") -> None:
         super().__init__(name)
         self.first_trigger = True
-        self.event_recap_button = [149, 136]
+        if "JP" in config.userconfigdict["SERVER_TYPE"]:
+            self.event_recap_button = [149, 220] # 日服活动一览放到第二个按钮
+        else:
+            self.event_recap_button = [149, 136]
         self.COLOR_DARK_BLUE = ([89, 60, 35], [109, 80, 55])
      
     def pre_condition(self) -> bool:
