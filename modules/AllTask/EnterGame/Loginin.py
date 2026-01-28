@@ -34,7 +34,7 @@ class Loginin(Task):
         # 每轮检测中间休息间隔
         self.sleep_between_detect = 3
         # 进入游戏后还会蹦出来活动弹窗,这里让run_until能多跑几轮
-        self.extra_run_times = 5
+        self.extra_run_times = 2
 
     def detect_loading_bar(self):
         """检测底部下载进度条，返回0-100进度，0表示无进度条"""
@@ -227,6 +227,11 @@ class Loginin(Task):
                       lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)) or Page.is_page(PageName.PAGE_HOME), 
                       times = 200,
                       sleeptime = self.sleep_between_detect)
+        logging.info(istr({
+            CN: "等待5s可能的延迟活动弹窗……",
+            EN: "Waiting for possible delayed event pop-ups 5s..."
+        }))
+        sleep(3)
         # 额外的运行次数，用于关闭进入游戏后弹出的活动窗口
         self.run_until(self.try_jump_useless_pages, 
                       lambda: False, 
