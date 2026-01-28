@@ -45,13 +45,19 @@ class InContest(Task):
         
         return [int(each) for each in res_list]
         
-
+    def collect_reward(self):
+        self.run_until(
+            self.click_collect_and_magic,
+            lambda: match(button_pic(ButtonName.BUTTON_CONTEST_COLLECT_BOTH_GRAY)),
+            times=4
+        )
 
     def on_run(self) -> None:
         if config.sessiondict["CONTEST_NO_TICKET"]:
             logging.info({"zh_CN": "上次进入竞技场已经无票卷，本次不再进入竞技场",
                           "en_US": "There are no tickets for the last time you entered the arena, "
                                    "you will not enter the arena this time"})
+            self.collect_reward()
             self.back_to_home()
             return
 
@@ -146,18 +152,14 @@ class InContest(Task):
             self.clear_popup()
         if self.collect:
             # receive the reward
-            self.run_until(
-                self.collect_and_magic,
-                lambda: match(button_pic(ButtonName.BUTTON_CONTEST_COLLECT_BOTH_GRAY)),
-                times=4
-            )
+            self.collect_reward()
         else:
             logging.info({"zh_CN": "设置的该次执行战术大赛不收集奖励, 直接返回主页",
                           "en_US": "The set execution tactical contest does not collect rewards, "
                                    "directly return to the homepage"})
         self.back_to_home()
 
-    def collect_and_magic(self):
+    def click_collect_and_magic(self):
         click((352, 388))
         click((354, 467))
         self.clear_popup()
