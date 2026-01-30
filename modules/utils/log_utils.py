@@ -82,6 +82,35 @@ class MyLogger:
                 import traceback
                 traceback.print_exc()
 
+    def save_custom_log_file_for_crash_report(self, path, now_timestr):
+        """
+        保存发生了错误的全量custom日志到文件,为崩溃报告专用
+        """
+        if self.custom_log_list:
+            try:
+                file_short_name = f"custom_log_{now_timestr}.txt"
+                file_full_path = os.path.join(config.LOG_FOLDER, file_short_name)
+                with open(file_full_path, "w", encoding="utf-8") as f:
+                    for line in self.custom_log_list:
+                        f.write(line + "\n")
+                #  导出一份到错误报告目录下
+                with open(path + "/error.log", "w", encoding="utf-8") as f:
+                    for line in self.custom_log_list:
+                        f.write(line + "\n")
+                logging.info("↓↓↓↓↓↓↓↓↓↓")
+                logging.info(self.get_i18n_sentence({
+                    CN: f"保存全量异常日志到文件: {file_full_path}和错误报告目录下",
+                    EN: f"Save full custom log to file: {file_full_path}"
+                }))
+                logging.info("↑↑↑↑↑↑↑↑↑↑")
+            except Exception as e:
+                logging.error(self.get_i18n_sentence({
+                    CN: f"保存全量异常日志到文件失败: {e}",
+                    EN: f"Save full custom log to file failed: {e}"
+                }))
+                import traceback
+                traceback.print_exc()
+
     # 析构函数
     def __del__(self):
         if self.logfile:

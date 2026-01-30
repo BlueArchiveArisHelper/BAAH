@@ -463,23 +463,21 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         - 配置文件名称,时间 --> 对应的文件夹名称
         - 系统信息 --> system.json
         - 错误信息 --> error.log
-        - 最后一步的截图(从PIPE或PNG获取) --> final_step.png
+        - 最后一步的截图(从PIPE或PNG获取) --> final_step.png TODO:(难以实现，PIPE保存下来的截图在常规运行时检测步骤后就销毁了，很难实现再次提取)
         - 当前屏幕截图 --> now.png
         - 完整日志（如果有) --> full_log.log
         - 配置文件 --> config.json
         """
-        if config.userconfigdict["ENABLE_CRASH_REPORT"]:
-            import platform
-            import sys
-            import os
-            import psutil
-            import json
-            logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
-            os.makedirs("DATA/CRASH_REPORT", exist_ok=True)
-            report_path = f"DATA/CRASH_REPORT/{config.nowuserconfigname}-{time.strftime('%Y-%m-%d_%H-%M-%S')}"
-            os.makedirs(report_path, exist_ok=True)
-            # 保存系统信息
-            with open(f"{report_path}/system.json", "w", encoding="utf-8") as f:
+        import platform
+        import sys
+        import os
+        import psutil
+        import json
+        logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
+        now_timestr = time.strftime('%Y-%m-%d_%H-%M-%S')
+        report_path = config.CRASH_REPORT_FOLDER+"/"+config.nowuserconfigname+"-"+now_timestr
+        # 保存系统信息
+        with open(f"{report_path}/system.json", "w", encoding="utf-8") as f:
                 sys_info = {}
                 if platform.system() == "Windows":
                         sys_info["OS"] = platform.system()
@@ -487,21 +485,6 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                             "Release": platform.release(),
                             "Version": platform.version(),
                             "machine": platform.machine()
-                        }
-                        sys_info["Python"] = {
-                            "Python": sys.version_info,
-                            "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode"))
-                        }
-                        sys_info["hardware"] = {
-                            "CPU": {
-                                "Name": platform.processor(),
-                                "Cores": psutil.cpu_count(logical=False),
-                                "Logical_Cores": psutil.cpu_count(logical=True)
-                            },
-                            "Memory": {
-                                "Total": psutil.virtual_memory().total / 1073741824,
-                                "SWAP": psutil.swap_memory().total / 1073741824
-                            }
                         }
                 elif platform.system() == "Linux":
                         sys_info["OS"] = platform.system()
@@ -511,21 +494,6 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                             "Kernel": platform.uname()["release"],
                             "environment": "container" if os.path.exists("/.dockerenv") or os.getenv("container") == "podman" else "host"
                         }
-                        sys_info["Python"] = {
-                            "Python": sys.version_info,
-                            "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode"))
-                        }
-                        sys_info["hardware"] = {
-                            "CPU": {
-                                "Name": platform.processor(),
-                                "Cores": psutil.cpu_count(logical=False),
-                                "Logical_Cores": psutil.cpu_count(logical=True)
-                            },
-                            "Memory": {
-                                "Total": psutil.virtual_memory().total / 1073741824,
-                                "SWAP": psutil.swap_memory().total / 1073741824
-                            }
-                        }
                 elif platform.system() == "Darwin":
                         sys_info["OS"] = platform.system()
                         sys_info["Darwin"] = {
@@ -533,23 +501,28 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                             "Version": platform.version(),
                             "machine": platform.machine()
                         }
-                        sys_info["Python"] = {
-                            "Python": sys.version_info,
-                            "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode"))
-                        }
-                        sys_info["hardware"] = {
-                            "CPU": {
-                                "Name": platform.processor(),
-                                "Cores": psutil.cpu_count(logical=False),
-                                "Logical_Cores": psutil.cpu_count(logical=True)
-                            },
-                            "Memory": {
-                                "Total": psutil.virtual_memory().total / 1073741824,
-                                "SWAP": psutil.swap_memory().total / 1073741824
-                            }
-                        }
+                sys_info["Python"] = {
+                    "Python": sys.version_info,
+                    "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode")),
+                    "BAAH_Version": config.softwareconfigdict['NOWVERSION']
+                }
+                sys_info["hardware"] = {
+                    "CPU": {
+                        "Name": platform.processor(),
+                        "Cores": psutil.cpu_count(logical=False),
+                        "Logical_Cores": psutil.cpu_count(logical=True)
+                    },
+                    "Memory": {
+                        "Total": psutil.virtual_memory().total / 1073741824,
+                        "SWAP": psutil.swap_memory().total / 1073741824
+                    }
+                }
                 f.write(json.dumps(sys_info, indent=4, ensure_ascii=False))
-
+        # 保存错误信息
+        handle_error_mention(str(e), logging.warn)
+        logging.save_custom_log_file_for_crash_report(path=report_path, now_timestr=now_timestr)
+            
+                
                     
     def BAAH_main(run_precommand = True):
         """
