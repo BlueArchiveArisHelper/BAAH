@@ -148,6 +148,32 @@ def screen_shot_to_global(use_config=None, output_png=False):
         if output_png:
             cv2.imwrite("./{}".format(target_config.userconfigdict['SCREENSHOT_NAME']), img_screenshot)
 
+def save_screenshot_to_file(filepath, use_config=None):
+    """
+    保存截图到指定文件
+    
+    支持 PNG 和 pipe 两种截图模式：
+    - PNG 模式：直接从截图文件复制到目标路径
+    - pipe 模式：从 SCREENSHOT_DATA 保存到目标路径
+    """
+    target_config = config if not use_config else use_config
+    screen_shot_to_global(target_config)
+    
+    if target_config.userconfigdict["SCREENSHOT_METHOD"] == "pipe":
+        # pipe 模式：从 SCREENSHOT_DATA 保存
+        img_screenshot = target_config.sessiondict["SCREENSHOT_DATA"]
+        if img_screenshot is not None:
+            cv2.imwrite(filepath, img_screenshot)
+        else:
+            logging.error({"zh_CN": "截图数据为空，无法保存", "en_US": "Screenshot data is empty, cannot save."})
+    else:
+        # PNG 模式：直接从截图文件复制
+        source_file = "./{}".format(target_config.userconfigdict['SCREENSHOT_NAME'])
+        try:
+            import shutil
+            shutil.copy(source_file, filepath)
+        except Exception as e:
+            logging.error({"zh_CN": f"复制截图文件失败：{e}", "en_US": f"Failed to copy screenshot file: {e}"})
 
 def get_now_running_app(use_config=None):
     """
