@@ -4,7 +4,7 @@ from DATA.assets.PopupName import PopupName
 from DATA.assets.ButtonName import ButtonName
 
 
-from modules.utils import click, swipe, match, page_pic, match_pixel, button_pic, popup_pic, sleep, screenshot, config, istr, CN, EN, ocr_area, logic_run_until, _is_PC_app
+from modules.utils import click, swipe, match, page_pic, match_pixel, button_pic, popup_pic, sleep, screenshot, config, istr, CN, EN, ocr_area, logic_run_until, _is_PC_app, _is_STEAM_app
 
 from modules.utils.adb_utils import check_app_running, open_app
 from modules.utils.baah_exceptions import EmulatorBlockError
@@ -205,8 +205,8 @@ class Task:
         清除弹窗
         """
         def _close():
-            if _is_PC_app(config.userconfigdict["SERVER_TYPE"]) and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
-                # 如果是PC且识别到社区弹窗，PC 关闭社区弹窗
+            if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]) and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
+                # 如果是STEAM且识别到社区弹窗，关闭社区弹窗(STEAM社区弹窗比小)
                 click((1123, 114))
             else:
                 click(Page.MAGICPOINT)

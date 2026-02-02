@@ -13,7 +13,7 @@ from modules.AllTask.Task import Task
 import json
 
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
-                           get_screenshot_cv_data, match_pixel, istr, CN, EN, _is_PC_app)
+                           get_screenshot_cv_data, match_pixel, istr, CN, EN, _is_STEAM_app)
 
 from modules.utils.grid_analyze import GridAnalyzer
 
@@ -215,7 +215,7 @@ class GridQuest(Task):
         # 识别左下角切换队伍的按钮文字
         # 国际服和Steam不偏移，其他服往右偏移45
         offsetx = 45
-        if (_is_PC_app(config.userconfigdict["SERVER_TYPE"]) and "STEAM" in config.userconfigdict["SERVER_TYPE"]) or config.userconfigdict["SERVER_TYPE"] == "GLOBAL":
+        if config.userconfigdict["SERVER_TYPE"] in ["GLOBAL", "PC_STEAM"]:
             offsetx = 0
         now_team_str, loss = ocr_area((72 + offsetx, 544), (91 + offsetx, 569), multi_lines=False)
         logging.info({"zh_CN": "ocr结果: " + str(now_team_str), "en_US": "ocr result: " + str(now_team_str)})
