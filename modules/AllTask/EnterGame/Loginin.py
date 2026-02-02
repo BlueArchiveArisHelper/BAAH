@@ -9,7 +9,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils.log_utils import logging
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, OCR_LANG, ocr_area, get_screenshot_cv_data, _is_steam_app
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, OCR_LANG, ocr_area, get_screenshot_cv_data, _is_PC_app
 
 from modules.AllTask.EnterGame.GameUpdate import GameUpdate
 
@@ -58,14 +58,14 @@ class Loginin(Task):
     def close_activity_event_popup(self):
         """关闭登陆时的活动弹窗"""
         # 判断关键区域
-        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
             event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
             logging.info(f"PC event button ocr: {event_button_text}")
         else:
             event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
             logging.info(f"App event button ocr: {event_button_text}")
         if any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
-            if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+            if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
                 # 判断点击左下角是否有今日不再显示的勾（√）并点掉
                 # PC
                 click((269, 534))
@@ -113,7 +113,7 @@ class Loginin(Task):
                     EN: "Emulator blocked, try to restart emulator"
                 }))
         # 判断关键区域
-        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
             event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
             logging.info(f"PC event button ocr: {event_button_text}")
         else:

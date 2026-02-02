@@ -11,8 +11,11 @@ import platform
 if platform.system() == "Windows":
     from .win32_utils import _get_hwnd, check_esc_is_pressed, capture_program_window_precise, click_program_window_precise, scroll_program_window_precise
 
-def _is_steam_app(server_type):
+def _is_PC_app(server_type):
     return "PC" in server_type.upper()
+
+def _is_STEAM_app(server_type):
+    return "STEAM" in server_type.upper()
 
 def getNewestSeialNumber(use_config=None):
     # 如果传入指定的配置文件，就使用指定的配置文件
@@ -44,19 +47,19 @@ def get_config_adb_path(use_config=None):
 # 判断是否有TARGET_PORT这个配置项
 def disconnect_this_device():
     """Disconnect this device."""
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         return
     subprocess_run([get_config_adb_path(), "disconnect", getNewestSeialNumber()])
 
 def reconnect_offline():
     """Reconnect to the device that was disconnected, or remove the offline status of the device."""
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         return
     subprocess_run([get_config_adb_path(), "reconnect", "offline"])
 
 def kill_adb_server():
     """Kill the adb server."""
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         return
     subprocess_run([get_config_adb_path(), "kill-server"])
 
@@ -64,21 +67,21 @@ def kill_adb_server():
 def connect_to_device(use_config=None):
     """Connect to a device with the given device port."""
     target_config = config if not use_config else use_config
-    if _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
         return
     subprocess_run([get_config_adb_path(target_config), "connect", getNewestSeialNumber(target_config)])
 
 
 def click_on_screen(x, y):
     """Click on the given coordinates."""
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         click_program_window_precise(x, y)
         return
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "tap", str(int(x)), str(int(y))])
 
 def swipe_on_screen(x1, y1, x2, y2, ms):
     """Swipe from the given coordinates to the other given coordinates."""
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         scroll_program_window_precise(x1, y1, x2, y2, ms)
         return
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "swipe", str(int(x1)), str(int(y1)), str(int(x2)), str(int(y2)), str(int(ms))])
@@ -107,7 +110,7 @@ def screen_shot_to_global(use_config=None, output_png=False):
     if not whether_pipe:
         # 方法一，重定向输出到文件
         filename = target_config.userconfigdict['SCREENSHOT_NAME']
-        if _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]):
+        if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
             img_array = capture_program_window_precise()
             try:
                 cv2.imwrite("./{}".format(filename), img_array)
@@ -120,12 +123,12 @@ def screen_shot_to_global(use_config=None, output_png=False):
             with open("./{}".format(filename),"wb") as out:
                 subprocess_run([get_config_adb_path(target_config), "-s", getNewestSeialNumber(target_config), "shell", "screencap", "-p"], stdout=out)
         #adb 命令有时直接截图保存到电脑出错的解决办法-加下面一段即可
-        if not _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]) and platform.system() not in ["Linux", "Darwin"]:
+        if not _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]) and platform.system() not in ["Linux", "Darwin"]:
             convert_img("./{}".format(filename))
     else:
         # 方法二，使用cv2提取PIPE管道中的数据
         # 使用subprocess的Popen调用adb shell命令，并将结果保存到PIPE管道中
-        if _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]):
+        if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
             img_array = capture_program_window_precise()
             img_screenshot = img_array
         else:
@@ -154,7 +157,7 @@ def get_now_running_app(use_config=None):
     获取当前运行的app的前台activity
     """
     target_config = config if not use_config else use_config
-    if _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
         # 如果已经启动 PC ba 窗口，返回包名
         window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         hwnd = _get_hwnd(window_title)
@@ -194,7 +197,7 @@ def get_now_running_app_entrance_activity(use_config=None):
     https://stackoverflow.com/questions/12698814/get-launchable-activity-name-of-package-from-adb/41325792#41325792
     """
     target_config = config if not use_config else use_config
-    if _is_steam_app(target_config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
         return "Blue Archive/Blue Archive"
     # 先获取当前运行的app的前台activity
     front_activity = get_now_running_app(target_config)
@@ -238,7 +241,7 @@ def open_app(activity_path: str):
     """
     使用adb打开app
     """
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         # PC端打开游戏交给 打开模拟器 那一步操作
         return
     brand_waydroid = False
@@ -268,7 +271,7 @@ def close_app(activity_path: str):
     """
     使用adb关闭app
     """
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         return True
     appname = activity_path.split("/")[0]
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), 'shell', 'am', 'force-stop', appname], isasync=True)
@@ -279,7 +282,7 @@ def get_wm_size(use_config=None):
     """
     if not use_config:
         use_config = config
-    if _is_steam_app(use_config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(use_config.userconfigdict["SERVER_TYPE"]):
         return "Physical size: 720x1280"
     # only focus on last line
     wmres = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "size"]).stdout.strip().split("\n")[-1]
@@ -291,7 +294,7 @@ def get_dpi(use_config=None):
     """
     if not use_config:
         use_config = config
-    if _is_steam_app(use_config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(use_config.userconfigdict["SERVER_TYPE"]):
         return "Physical density: 240"
     # only focus on last line (Physical density, Override density)
     dpires = subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density"]).stdout.strip().split("\n")[-1]
@@ -303,14 +306,14 @@ def set_dpi(target_dpi, use_config=None):
     """
     if not use_config:
         use_config = config
-    if _is_steam_app(use_config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(use_config.userconfigdict["SERVER_TYPE"]):
         return
     if isinstance(target_dpi, float):
         target_dpi = int(target_dpi)
     subprocess_run([get_config_adb_path(use_config), "-s", getNewestSeialNumber(use_config), "shell", "wm", "density", str(target_dpi)], isasync=True)
     
 def install_apk(filepath):
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         return
     status = subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "install", filepath])
     logging.debug(status.stdout)
@@ -327,7 +330,7 @@ def install_apk(filepath):
 #         raise(Exception(istr({"zh_CN": "安装失败", "en_US": "Installation failed"})))
 
 def install_dir(dir):
-    if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+    if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         return
     command = [get_config_adb_path(), "-s", getNewestSeialNumber(), "install-multiple"]
     for filename in os.listdir(dir):
