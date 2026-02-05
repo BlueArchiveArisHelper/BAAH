@@ -64,8 +64,8 @@ def try_to_solve_new_section(need_to_wait_more = False, new_button_threshold = 0
                     # 序幕考虑等久一点
                     Task.run_until(
                         lambda: click(Page.MAGICPOINT, sleeptime=1),
-                        lambda: skip_story.pre_condition(),
-                        times=30
+                        lambda: skip_story.pre_condition(), # 这里面有十次判断
+                        times=3
                     )
                 skip_story.run()
                 # 多重剧情
