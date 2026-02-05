@@ -96,7 +96,7 @@ class SolveMain(Task):
                         sleeptime=1
                     )
                     # 尝试处理完当前黄点篇章所有可点的New小节
-                    try_to_solve_new_section(need_to_wait_more=True)
+                    try_to_solve_new_section()
                     screenshot()
             # 全部章节都处理完了
             logging.info({"zh_CN": f"篇章下标{i}所有章节处理完毕", "en_US": f"Eposide index {i} All chapters have been processed"})

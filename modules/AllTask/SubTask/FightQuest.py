@@ -48,12 +48,10 @@ class FightQuest(Task):
         """判断是否在编辑部队页面"""
         # 队伍选择界面被选中的队伍的颜色范围
         COLOR_TEAM_SELECT_DARK = ([90, 60, 35], [110, 80, 55])
-        count = 0
         for i in range(len(Page.LEFT_FOUR_TEAMS_POSITIONS)):
-            if (match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[i], COLOR_TEAM_SELECT_DARK) or 
-                    match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[i], Page.COLOR_BUTTON_WHITE)):
-                count += 1
-        return count == 4
+            if match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[i], COLOR_TEAM_SELECT_DARK):
+                return True
+        return False
     
     def solve_in_edit_team_page(self):
         """处理在编辑部队页面的逻辑"""
@@ -68,7 +66,7 @@ class FightQuest(Task):
         # 用竞技场的匹配按钮精度不够，点击固定位置即可
         self.run_until(
             lambda: click((1106, 657)) and click(Page.MAGICPOINT),
-            lambda: not Page.is_page(PageName.PAGE_EDIT_QUEST_TEAM) and not self.in_edit_team_page(),
+            lambda: not Page.is_page(PageName.PAGE_EDIT_QUEST_TEAM) and not self.judge_whether_in_edit_team_page(),
             sleeptime=2
         )
 
@@ -101,17 +99,18 @@ class FightQuest(Task):
                 EN: "Failed to toggle Auto"
             }))
         # 点魔法点直到战斗结束
-        acc_confirm = 0 # 蓝色能量条可能刚好用光，这边确认连续3次匹配不到能量条就结束战斗
+        acc_confirm = 0 # 蓝色能量条可能刚好用光，这边确认连续5次匹配不到能量条就结束战斗
+        total_confirms = 5
         for i in range(90):
             screenshot()
-            if acc_confirm >= 3:
+            if acc_confirm >= total_confirms:
                 break
             if self.judge_whether_in_fight():
                 acc_confirm = 0
                 click(Page.MAGICPOINT)
             else:
                 acc_confirm += 1
-            sleep(2)
+            sleep(1)
         logging.info(istr({
             CN: "战斗结束，等待结算页面出现",
             EN: "Battle ended, waiting for the settlement page to appear"
