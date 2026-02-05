@@ -208,7 +208,7 @@
     "config_event_status": "是否只在活动开启状态下执行",
     "notice_QA":"如何使用以及常见问题",
     "mirror_desc":"添加Mirror酱密钥加快更新下载速度/稳定性",
-    "notice_steam_esc_break": "PC游戏需关闭键盘按键ui提示，游戏使用16:9窗口化运行，PC日服需要在模拟器路径处填写游戏exe文件路径。长按 esc 中断脚本运行",
+    "notice_steam_esc_break": "PC游戏需关闭键盘按键ui提示，游戏使用16:9窗口化运行。BAAH需以管理员运行。PC日服需要在模拟器路径处填写游戏exe文件路径。长按 esc 中断脚本运行",
 
     "aria2_path":"Aria2路径",
     "aria2_thread":"Aria2下载线程数",

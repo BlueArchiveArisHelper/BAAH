@@ -11,6 +11,9 @@ def handle_error_mention(e, print_method):
         if "EOF" in e:
             print_method("错误提示(EOF): 如果手动出击队伍的话，请使用终端执行推走格子图任务！")
             print_method("Error Mention(EOF): If you wanna manually select teams, please use terminal to run the grid quest explore task!")
+        if "(5," in e:
+            print_method("错误提示(pywintypes.error): 请以管理员模式运行BAAH！")
+            print_method("Error Mention(pywintypes.error): Please make sure to run BAAH as administrator!")
     except Exception as newe:
         print("Error when mention error msg: " + str(newe))
 
