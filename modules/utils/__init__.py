@@ -10,7 +10,7 @@ from .notification import *
 from .data_utils import *
 from .I18nstr import *
 from .baah_exceptions import *
-from .adb_utils import _is_steam_app
+from .adb_utils import _is_PC_app, _is_STEAM_app
 
 from modules.utils.log_utils import logging
 import time
@@ -276,7 +276,7 @@ def check_connect():
                 return False
             return True
         else:
-            if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+            if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
                 from .win32_utils import _change_window_client_size
                 window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
                 if _change_window_client_size(window_title):
@@ -290,7 +290,7 @@ def check_connect():
         }))
     logging.error({"zh_CN": "模拟器adb或ba程序连接失败", "en_US":"Failed to connect to the emulator or ba program"})
     logging.warn({"zh_CN": "模拟器请检查adb与模拟器连接端口号是否正确，PC端请检查游戏是否在更新", "en_US":"Please check if the adb and emulator connection port number is correct or PC ba is updating"})
-    if not _is_steam_app(config.userconfigdict["SERVER_TYPE"]) and "127.0.0.1" in getNewestSeialNumber():
+    if not _is_PC_app(config.userconfigdict["SERVER_TYPE"]) and "127.0.0.1" in getNewestSeialNumber():
         logging.warn({"zh_CN": "请确保关闭模拟器网络桥接", "en_US":"Please check if the emulator network bridging is turned off"})
     return False
 

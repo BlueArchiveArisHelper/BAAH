@@ -11,6 +11,9 @@ def handle_error_mention(e, print_method):
         if "EOF" in e:
             print_method("错误提示(EOF): 如果手动出击队伍的话，请使用终端执行推走格子图任务！")
             print_method("Error Mention(EOF): If you wanna manually select teams, please use terminal to run the grid quest explore task!")
+        if "(5," in e:
+            print_method("错误提示(pywintypes.error): 请以管理员模式运行BAAH！")
+            print_method("Error Mention(pywintypes.error): Please make sure to run BAAH as administrator!")
     except Exception as newe:
         print("Error when mention error msg: " + str(newe))
 
@@ -35,7 +38,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_steam_app
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -113,14 +116,14 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         启动模拟器
         """
-        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]) or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
             try:
                 # 以列表形式传命令行参数
                 logging.info({"zh_CN": "启动模拟器", "en_US": "Starting the emulator"})
                 executor_pid = None
                 need_start_by_baah = True
-                if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
-                    # 如果Steam版本ba，使用psutil判断是否已有 ba进程在运行
+                if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+                    # 如果PC版本ba，使用psutil判断是否已有 ba进程在运行
                     activity_name = config.userconfigdict['ACTIVITY_PATH']
                     process_name = activity_name.split("/")[1]
                     ba_process_list = check_if_process_exist("name", process_name)
@@ -289,7 +292,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         关闭游戏
         """
-        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
             logging.info(istr({
                 CN: "PC版本跳过关闭游戏",
                 EN: "PC version skip closing game"
@@ -325,7 +328,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         if ((config.userconfigdict["TARGET_EMULATOR_PATH"]
              or
-             _is_steam_app(config.userconfigdict["SERVER_TYPE"])
+             _is_PC_app(config.userconfigdict["SERVER_TYPE"])
             )
             and 
             ((not meet_error and config.userconfigdict["CLOSE_EMULATOR_FINISH"]) 
@@ -344,7 +347,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 emulator_exe = os.path.basename(full_path).split(".exe")[0] + ".exe"
                 subprocess_run(["taskkill", "/T", "/F", "/PID", str(config.sessiondict["EMULATOR_PROCESS_PID"])],
                             encoding=None)
-                if not _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+                if not _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
                     # 杀掉模拟器可见窗口进程后，可能残留后台进程，这里根据adb端口再杀一次
                     BAAH_release_adb_port(justDoIt=True)
             except Exception as e:
