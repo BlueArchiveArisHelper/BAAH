@@ -1,15 +1,13 @@
-myversion = "2.0.10"
+myversion = "2.1.0"
 mychangelog = """
->> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
+>> BAAH2: https://baah.sanmusen.top/zh_CN/download.html <<
 
->> Download: https://baah.sanmusen.top/zh_CN/download.html <<
+>> 迁移配置: 请手动迁移 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 | Move files in BAAH_CONFIGS and DATA/CONFIGS folder to keep configs <<
 
->> 迁移配置: （解压覆盖老版本貌似会导致页面异常）请手动迁移 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
+# Update
 
->> Keep configs: Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
+更新了 小人战斗 的脚本任务逻辑 | Updated the task logic of Little People Fighting part
 
-# Feat
-
-适配日服PC端 | Adapted for JP PC version
+添加了PC端运行指引文字 | Added instructions for running on PC
 
 """
