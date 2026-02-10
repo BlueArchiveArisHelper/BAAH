@@ -9,6 +9,8 @@ git pull
 # 检测Docker网络模式,同时兼容端口映射和host模式
 if ip link show docker0 &>/dev/null; then
     python3 jsoneditor.py --host $CONTAINER_IP --no-show
+elif ip link show podman0 &>/dev/null; then
+    python3 jsoneditor.py --host $CONTAINER_IP --no-show
 else
     python3 jsoneditor.py --no-show
 fi
