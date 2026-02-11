@@ -1,3 +1,6 @@
+from modules.utils import get_screenshot_cv_data
+
+
 def handle_error_mention(e, print_method):
     """
     根据各种奇妙的异常字符串，给出异常解决提示
@@ -472,6 +475,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         import os
         import psutil
         import json
+        import cv2
         logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
         now_timestr = time.strftime('%Y-%m-%d_%H-%M-%S')
         report_path = config.CRASH_REPORT_FOLDER+"/"+config.nowuserconfigname+"-"+now_timestr
@@ -517,16 +521,17 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 }
             }
             f.write(json.dumps(sys_info, indent=4, ensure_ascii=False))
-        # 保存错误信息
+        # 保存完整日志
         handle_error_mention(str(e), logging.warn)
-        logging.save_custom_log_file(path=report_path, name="error.log")
+        logging.save_custom_log_file(path=report_path, name="full.log")
         # 获取截图
-        save_screenshot_to_file(f"{report_path}/final_step.png")
-        screenshot(f"{report_path}/now.png")
-        # 保存完整日志 好像错误日志里已经包含了完整日志了，这个就先注释掉了
-        # with open(f"{report_path}/full_log.log", "w", encoding="utf-8") as f:
-        #     f.write(logging.custom_log_list)
-        # 保存配置文件
+        cv2.imwrite(f"{report_path}/final_step.png", get_screenshot_cv_data())
+        screenshot()
+        cv2.imwrite(f"{report_path}/now.png", get_screenshot_cv_data())
+        with open(f"{report_path}/error.log", "w", encoding="utf-8") as f:
+            logs = logging.custom_log_list[len(logging.custom_log_list)-20:len(logging.custom_log_list)]
+            log = "\n".join(logs)
+            f.write(log)
         with open(f"{report_path}/userconfig.json", "w", encoding="utf-8") as f:
             f.write(json.dumps(config.userconfigdict, indent=4, ensure_ascii=False))
         logging.info({"zh_CN": "错误报告生成完成", "en_US": "Crash report generated"})
