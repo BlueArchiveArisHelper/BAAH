@@ -1,15 +1,9 @@
-myversion = "2.0.9"
+myversion = "2.1.1"
 mychangelog = """
->> 2.0 版本需要重新下载，无法由1.x版本升级 | Must download full BAAH 2.0.0 <<
+>> BAAH2: https://baah.sanmusen.top/zh_CN/download.html <<
 
->> Download: https://baah.sanmusen.top/zh_CN/download.html <<
+修复PC端活动页面错误问题 | Fix Bugs in Event Page for PC
 
->> 迁移配置: （解压覆盖老版本貌似会导致页面异常）请手动迁移 BAAH_CONFIGS 和 DATA/CONFIGS 文件夹 <<
-
->> Keep configs: Move files in BAAH_CONFIGS and DATA/CONFIGS folder <<
-
-# Fix
-
-修复咖啡馆会默认进行邀请问题 | Fix the issue that cafe would invite students by default
+修复国服战斗页面识别失效问题 | Fix known issue
 
 """

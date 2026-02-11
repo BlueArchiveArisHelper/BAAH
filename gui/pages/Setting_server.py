@@ -1,6 +1,6 @@
 from nicegui import ui
 from modules.configs.settingMaps import server2pic, server2activity, server2respond
-from modules.utils import _is_steam_app
+from modules.utils import _is_PC_app
 
 def set_server(config):
     with ui.row():
@@ -15,7 +15,7 @@ def set_server(config):
         "CN_BILI":config.get_text("config_server_cn_b"),
         "PC_STEAM":"STEAM (Windows)",
         "PC_STEAM_EN":"STEAM_EN (Windows)",
-        "PC_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
+        "PC_EXE_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
         },
                       value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
     
@@ -27,7 +27,7 @@ def set_server(config):
             config.userconfigdict["RESPOND_Y"] = server2respond[servername]
     
     # PC端ba 提醒 esc 退出
-    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda x: _is_steam_app(x)):
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda x: _is_PC_app(x)):
         ui.label(config.get_text("notice_steam_esc_break")).style('font-size: large')
         
         

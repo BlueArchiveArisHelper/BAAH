@@ -1,4 +1,4 @@
-# 用户的config里值之间的对应关系
+# 用户的config里值之间的对应关系 
 # 对应关系应当写进defaultSettings.py里
 import hashlib
 
@@ -10,7 +10,7 @@ server2pic = {
     "CN_BILI":"./DATA/assets_cn",
     "PC_STEAM":"./DATA/assets",
     "PC_STEAM_EN":"./DATA/assets_global_en",
-    "PC_JP":"./DATA/assets_jp"
+    "PC_EXE_JP":"./DATA/assets_jp"
 }
 
 server2activity = {
@@ -21,7 +21,7 @@ server2activity = {
     "CN_BILI":"com.RoamingStar.BlueArchive.bilibili/com.yostar.supersdk.activity.YoStarSplashActivity",
     "PC_STEAM":"Blue Archive/BlueArchive.exe",  # 包名为窗口名/进程名
     "PC_STEAM_EN":"Blue Archive/BlueArchive.exe",  # 包名为窗口名/进程名
-    "PC_JP":"ブルーアーカイブ/Blue Archive.exe",  # 包名为窗口名/进程名
+    "PC_EXE_JP":"ブルーアーカイブ/BlueArchive.exe",  # 包名为窗口名/进程名
 }
 
 
@@ -36,7 +36,7 @@ server2respond = {
     "CN_BILI":40,
     "PC_STEAM": 20,
     "PC_STEAM_EN": 20,
-    "PC_JP": 10,
+    "PC_EXE_JP": 10,
 }
 
 def configname2screenshotname(configfilename):

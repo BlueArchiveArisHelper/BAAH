@@ -40,7 +40,7 @@ defaultUserDict = {
     # new config in 1.2.x
     "SERVER_TYPE":{
         "d":"GLOBAL",
-        "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI", "PC_STEAM", "PC_STEAM_EN", "PC_JP"],
+        "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI", "PC_STEAM", "PC_STEAM_EN", "PC_EXE_JP"],
         "m": {
             "from": "ACTIVITY_PATH",
             "map": lambda x: activity2server[x] if x in activity2server else "GLOBAL"

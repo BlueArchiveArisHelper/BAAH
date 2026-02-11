@@ -13,7 +13,7 @@ from modules.AllTask.Task import Task
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
                            match_pixel, istr, CN, EN)
 
-def try_to_solve_new_section(need_to_wait_more = False, new_button_threshold = 0.9):
+def try_to_solve_new_section(new_button_threshold = 0.9):
         """
         尝试处理完当前章节所有可点的New小节，此操作会退出小节选择页面返回上级
         """
@@ -55,54 +55,7 @@ def try_to_solve_new_section(need_to_wait_more = False, new_button_threshold = 0
                     lambda: not match(popup_pic(PopupName.POPUP_CHAPTER_INFO)),
                 )
                 # 进入章节后先剧情（可能会有双重剧情），然后可能有战斗
-                skip_story = SkipStory()
-                logging.info(istr({
-                    CN: "等待跳过剧情",
-                    EN: "Waiting to skip the story"
-                }))
-                if need_to_wait_more:
-                    # 序幕考虑等久一点
-                    Task.run_until(
-                        lambda: click(Page.MAGICPOINT, sleeptime=1),
-                        lambda: skip_story.pre_condition(),
-                        times=30
-                    )
-                skip_story.run()
-                # 多重剧情
-                for i in range(5):
-                    sleep(2)
-                    skip_story_again = SkipStory()
-                    if skip_story_again.pre_condition():
-                        logging.info(istr({
-                            CN: "检测到多重剧情，开始跳过",
-                            EN: "Multiple stories detected, start skipping"
-                        }))
-                        skip_story_again.run()
-                    else:
-                        break
-                logging.info(istr({
-                    CN: "剧情部分结束",
-                    EN: "The story is over"
-                }))
-                # 尝试回到选择小节页面，后面战斗完也要考虑这个，不过那里写在FightQuest里面了
-                back_to_select = Task.run_until(
-                    lambda: click(Page.MAGICPOINT),
-                    lambda: match(page_pic(PageName.PAGE_STORY_SELECT_SECTION)) and match_pixel(Page.MAGICPOINT,
-                                                                                                Page.COLOR_WHITE),
-                    times=4
-                )
-                if not back_to_select:
-                    # 如果跳过剧情后没有回到小节选择页面，那么就是有战斗，这里传入in_main_story_mode=True让FightQuest知道不需要检测最后的奖励页面
-                    # 如果走格子，就报错，目前不支持
-                    if Page.is_page(PageName.PAGE_GRID_FIGHT):
-                        raise Exception("不支持走格子战斗")
-                    logging.info({"zh_CN": "检测到战斗，开始战斗", "en_US": "Battle detected and battle started"})
-                    # 编辑部队这里左上角页面名字不一样
-                    # 点击右下角开始战斗按钮
-                    click((1158, 662))
-                    click((1158, 662))
-                    # 直接开始战斗，然后直接到AUTO切换阶段，最后不用领取奖励判断
-                    FightQuest(backtopic=lambda: match(page_pic(PageName.PAGE_STORY_SELECT_SECTION)),
+                FightQuest(backtopic=lambda: match(page_pic(PageName.PAGE_STORY_SELECT_SECTION)),
                                start_from_editpage=False, in_main_story_mode=True).run()
             else:
                 raise Exception("未匹配到章节资讯弹窗，该剧情可能要解锁主线关卡")

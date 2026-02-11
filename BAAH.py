@@ -14,6 +14,9 @@ def handle_error_mention(e, print_method):
         if "EOF" in e:
             print_method("错误提示(EOF): 如果手动出击队伍的话，请使用终端执行推走格子图任务！")
             print_method("Error Mention(EOF): If you wanna manually select teams, please use terminal to run the grid quest explore task!")
+        if "(5," in e:
+            print_method("错误提示(pywintypes.error): 请以管理员模式运行BAAH！")
+            print_method("Error Mention(pywintypes.error): Please make sure to run BAAH as administrator!")
     except Exception as newe:
         print("Error when mention error msg: " + str(newe))
 
@@ -38,7 +41,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_steam_app, save_screenshot_to_file
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -116,14 +119,14 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         启动模拟器
         """
-        if _is_steam_app(config.userconfigdict["SERVER_TYPE"]) or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]) or (config.userconfigdict["TARGET_EMULATOR_PATH"] and config.userconfigdict["TARGET_EMULATOR_PATH"] != ""):
             try:
                 # 以列表形式传命令行参数
                 logging.info({"zh_CN": "启动模拟器", "en_US": "Starting the emulator"})
                 executor_pid = None
                 need_start_by_baah = True
-                if _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
-                    # 如果Steam版本ba，使用psutil判断是否已有 ba进程在运行
+                if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+                    # 如果PC版本ba，使用psutil判断是否已有 ba进程在运行
                     activity_name = config.userconfigdict['ACTIVITY_PATH']
                     process_name = activity_name.split("/")[1]
                     ba_process_list = check_if_process_exist("name", process_name)
@@ -145,13 +148,47 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                         executor_pid = ba_process_list[0].info['pid'] if len(ba_process_list) > 0 else None
                         time.sleep(0.5)
                     elif config.userconfigdict['TARGET_EMULATOR_PATH']:
-                        # 用模拟器路径启动模拟器
-                        # 不能用shell，否则得到的是shell的pid
-                        emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
-                        logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
-                                    "en_US": "The emulator pid: " + str(emulator_process.pid)})
-                        executor_pid = emulator_process.pid
-                        time.sleep(5)
+                        if config.userconfigdict['SERVER_TYPE'] == "PC_EXE_JP":
+                            launcher_exe_name = "xldr_BlueArchiveOnline_JP_loader_x64.exe"
+                            game_exe_name = "BlueArchive.exe"
+                            # exe路径启动
+                            user_input_path = config.userconfigdict['TARGET_EMULATOR_PATH']
+                            # 提取文件夹
+                            bagame_path = os.path.dirname(user_input_path)
+                            # 遍历文件夹内所有exe文件，打印该exe文件名
+                            exe_files = [f for f in os.listdir(bagame_path) if f.endswith('.exe')]
+                            found_launcher = False
+                            for exe_file in exe_files:
+                                if exe_file == launcher_exe_name:
+                                    found_launcher = True
+                                    break
+                            if not found_launcher:
+                                logging.error(istr({
+                                    CN: "未找到启动器 xldr_BlueArchiveOnline_JP_loader_x64.exe，请检查路径是否正确",
+                                    EN: "Could not find xldr_BlueArchiveOnline_JP_loader_x64.exe, please check the path is correct"
+                                }))
+                            else:
+                                # 拼接启动器路径 qidongqi_path 和 游戏路径 game_path
+                                qidongqi_path = os.path.join(bagame_path, launcher_exe_name)
+                                game_path = os.path.join(bagame_path, game_exe_name)
+                                logging.info(istr({
+                                    CN: f"启动器路径: {qidongqi_path}, 游戏路径: {game_path}",
+                                    EN: f"Launcher path: {qidongqi_path}, Game path: {game_path}"
+                                }))
+                                # exe启动游戏
+                                emulator_process = subprocess_run([qidongqi_path, game_path], isasync=True)
+                                logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
+                                            "en_US": "The emulator pid: " + str(emulator_process.pid)})
+                                executor_pid = emulator_process.pid
+                                time.sleep(5)
+                        else:
+                            # 用模拟器路径启动模拟器
+                            # 不能用shell，否则得到的是shell的pid
+                            emulator_process = subprocess_run(config.userconfigdict['TARGET_EMULATOR_PATH'], isasync=True)
+                            logging.info({"zh_CN": "模拟器pid: " + str(emulator_process.pid),
+                                        "en_US": "The emulator pid: " + str(emulator_process.pid)})
+                            executor_pid = emulator_process.pid
+                            time.sleep(5)
                 # 检查pid是否存在
                 if not _check_process_exist(executor_pid):
                     logging.warn({"zh_CN": "模拟器启动进程已结束，可能是启动失败，或者是模拟器已经在运行",
@@ -258,6 +295,12 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         关闭游戏
         """
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+            logging.info(istr({
+                CN: "PC版本跳过关闭游戏",
+                EN: "PC version skip closing game"
+            }))
+            return False
         if ((not meet_error and config.userconfigdict["CLOSE_GAME_FINISH"]) or must_do or (meet_error and config.userconfigdict["CLOSE_GAME_ERROR"])):
             if not check_app_running(config.userconfigdict['ACTIVITY_PATH']):
                 logging.info({"zh_CN": "检测到游戏已关闭", "en_US": "Detected that the game is already killing"})
@@ -288,7 +331,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         """
         if ((config.userconfigdict["TARGET_EMULATOR_PATH"]
              or
-             _is_steam_app(config.userconfigdict["SERVER_TYPE"])
+             _is_PC_app(config.userconfigdict["SERVER_TYPE"])
             )
             and 
             ((not meet_error and config.userconfigdict["CLOSE_EMULATOR_FINISH"]) 
@@ -307,7 +350,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 emulator_exe = os.path.basename(full_path).split(".exe")[0] + ".exe"
                 subprocess_run(["taskkill", "/T", "/F", "/PID", str(config.sessiondict["EMULATOR_PROCESS_PID"])],
                             encoding=None)
-                if not _is_steam_app(config.userconfigdict["SERVER_TYPE"]):
+                if not _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
                     # 杀掉模拟器可见窗口进程后，可能残留后台进程，这里根据adb端口再杀一次
                     BAAH_release_adb_port(justDoIt=True)
             except Exception as e:
