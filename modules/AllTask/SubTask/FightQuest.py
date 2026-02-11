@@ -41,7 +41,7 @@ class FightQuest(Task):
     def judge_whether_in_fight() -> bool:
         """判断是否进入了小人对战环节,用能量条最左边蓝色像素判断"""
         # 判断能量条最左边格子蓝色点
-        return match_pixel([831, 694], ([250, 170, 0], [255, 185, 20]), printit=True)
+        return match_pixel([831, 694], ([250, 170, 0], [255, 190, 60]), printit=True)
     
     @staticmethod
     def judge_whether_in_edit_team_page() -> bool:
@@ -49,7 +49,7 @@ class FightQuest(Task):
         # 队伍选择界面被选中的队伍的颜色范围
         COLOR_TEAM_SELECT_DARK = ([90, 60, 35], [110, 80, 55])
         for i in range(len(Page.LEFT_FOUR_TEAMS_POSITIONS)):
-            if match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[i], COLOR_TEAM_SELECT_DARK):
+            if match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[i], COLOR_TEAM_SELECT_DARK) and match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE):
                 return True
         return False
     
@@ -101,6 +101,10 @@ class FightQuest(Task):
         # 点魔法点直到战斗结束
         acc_confirm = 0 # 蓝色能量条可能刚好用光，这边确认连续5次匹配不到能量条就结束战斗
         total_confirms = 5
+        logging.info(istr({
+            CN: "等待战斗结束",
+            EN: "Waiting fight ending"
+        }))
         for i in range(90):
             screenshot()
             if acc_confirm >= total_confirms:
