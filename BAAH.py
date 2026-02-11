@@ -519,13 +519,13 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             f.write(json.dumps(sys_info, indent=4, ensure_ascii=False))
         # 保存错误信息
         handle_error_mention(str(e), logging.warn)
-        logging.save_custom_log_file_for_crash_report(path=report_path, now_timestr=now_timestr)
+        logging.save_custom_log_file(path=report_path, name="error.log")
         # 获取截图
         save_screenshot_to_file(f"{report_path}/final_step.png")
         screenshot(f"{report_path}/now.png")
-        # 保存完整日志
-        with open(f"{report_path}/full_log.log", "w", encoding="utf-8") as f:
-            f.write(logging.custom_log_list)
+        # 保存完整日志 好像错误日志里已经包含了完整日志了，这个就先注释掉了
+        # with open(f"{report_path}/full_log.log", "w", encoding="utf-8") as f:
+        #     f.write(logging.custom_log_list)
         # 保存配置文件
         with open(f"{report_path}/userconfig.json", "w", encoding="utf-8") as f:
             f.write(json.dumps(config.userconfigdict, indent=4, ensure_ascii=False))
