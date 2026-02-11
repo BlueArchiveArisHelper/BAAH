@@ -1,6 +1,3 @@
-from modules.utils import get_screenshot_cv_data
-
-
 def handle_error_mention(e, print_method):
     """
     根据各种奇妙的异常字符串，给出异常解决提示
@@ -41,7 +38,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app, get_screenshot_cv_data
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
