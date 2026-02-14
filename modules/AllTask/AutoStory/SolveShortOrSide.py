@@ -63,7 +63,7 @@ class SolveShortOrSide(Task):
             # =========处理当前页面新剧情=======
             for _ in range(6):
                 # 匹配new，点击
-                match_res = match(button_pic(ButtonName.BUTTON_NEW_STORY_LEVEL), threshold=0.8, returnpos=True)
+                match_res = match(button_pic(ButtonName.BUTTON_NEW_STORY_LEVEL), threshold=0.7, returnpos=True)
                 if not match_res[0]:
                     logging.info(istr({
                         CN: "本页无New剧情，停止",
