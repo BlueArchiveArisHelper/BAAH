@@ -15,6 +15,11 @@ from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic,
 class InMomotalk(Task):
     def __init__(self, name="InMomotalk") -> None:
         super().__init__(name)
+        # 日服桃信左侧聊天框深红色未读
+        self.MOMOTALK_UNREAD_RED =Page.COLOR_RED
+        if config.userconfigdict["SERVER_TYPE"] == "PC_EXE_JP":
+            self.MOMOTALK_UNREAD_RED = [[0, 30, 245],[5, 60, 255]]
+        
 
     def pre_condition(self) -> bool:
         return self.back_to_home()
@@ -37,11 +42,11 @@ class InMomotalk(Task):
             click((263, 253))
             # 检测红标记，手动截图！
             screenshot()
-            if match_pixel((638, 242), Page.COLOR_RED):
+            if match_pixel((638, 242), self.MOMOTALK_UNREAD_RED, printit=True):
                 # logging.info({"zh_CN": "检测到红色标记", "en_US": "Red marks detected"})
                 return True
             # 如果在第二位检测到红标记
-            if match_pixel((638, 318), Page.COLOR_RED):
+            if match_pixel((638, 318), self.MOMOTALK_UNREAD_RED, printit=True):
                 logging.info({"zh_CN": "刷新排序", "en_US": "Refresh Sorting"})
                 click((623, 177))
                 click((623, 177))
