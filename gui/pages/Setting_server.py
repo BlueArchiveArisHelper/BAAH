@@ -30,20 +30,20 @@ def set_server(config):
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda x: _is_PC_app(x)):
         ui.label(config.get_text("notice_steam_esc_break")).style('font-size: large')
         
-        
+    # 添加PC端隐藏设置
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):    
     #  大更新配置
-    #  BlockHaity:没写逻辑，先隐藏
-    ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
+        ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
     
-    ui.label(config.get_text("big_update_type")).style('font-size: large').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+        ui.label(config.get_text("big_update_type")).style('font-size: large').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
-    ui.radio({
-        "API":config.get_text("big_update_type_api"),
-        "DIRECT_GET":config.get_text("big_update_type_direct_get")
-    },
-                    value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+        ui.radio({
+            "API":config.get_text("big_update_type_api"),
+            "DIRECT_GET":config.get_text("big_update_type_direct_get")
+        },
+                        value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
-    ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
+        ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
     
     def set_big_update_type(big_update_type):
         config.userconfigdict['BIG_UPDATE_TYPE'] = big_update_type
