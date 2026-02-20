@@ -239,8 +239,8 @@ class Task:
         if not Task.has_popup():
             # 没有弹窗
             return False
-        # 判断黄色确认按钮，一般与消费有关
-        if notice and match(button_pic(ButtonName.BUTTON_CONFIRMY)):
+        # 体力不足弹窗标题"购买体力"，卷票次数不足标题是“通知”
+        if notice and match(popup_pic(PopupName.POPUP_NOTICE)):
             return True
         if diamond and match(popup_pic(PopupName.POPUP_USE_DIAMOND)):
             return True

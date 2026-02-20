@@ -218,9 +218,12 @@ class PushQuest(Task):
                     jsonname = f"H{jsonname}"
                 grider = GridAnalyzer("quest", jsonfilename=jsonname)
                 click(button_pic(ButtonName.BUTTON_TASK_START), sleeptime=2)
+                # 等级过高会有个 蓝色的确认按钮 警告等级过高的通知，直接点掉
                 self.run_until(
-                    lambda: click(button_pic(ButtonName.BUTTON_TASK_START)),
-                    lambda: match(page_pic(PageName.PAGE_GRID_FIGHT)) or self.has_cost_popup()
+                    lambda: click(button_pic(ButtonName.BUTTON_TASK_START)) or click(button_pic(ButtonName.BUTTON_CONFIRMB)),
+                    # 如果检测到蓝色OK，此lambda应当阻止进行has_cost_popup的检测
+                    lambda: not match(button_pic(ButtonName.BUTTON_CONFIRMB)) and (match(page_pic(PageName.PAGE_GRID_FIGHT)) or self.has_cost_popup())
+                    # 体力不足弹窗标题购买体力，卷票次数不足标题是“通知”
                 )
                 if self.has_cost_popup():
                     logging.info(istr({
