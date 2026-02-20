@@ -239,6 +239,7 @@ class Task:
         if not Task.has_popup():
             # 没有弹窗
             return False
+        # 体力不足弹窗标题"购买体力"，卷票次数不足标题是“通知”
         if notice and match(popup_pic(PopupName.POPUP_NOTICE)):
             return True
         if diamond and match(popup_pic(PopupName.POPUP_USE_DIAMOND)):
