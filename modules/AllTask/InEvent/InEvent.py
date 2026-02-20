@@ -106,12 +106,13 @@ class InEvent(Task):
             lambda: match(button_pic(ButtonName.BUTTON_EVENT_QUEST_SELLECTED)),
             times=2
         )
-        # 修复国服白鸟区修复活动 关卡在tab最左侧匹配失败问题
+        # 修复 白鸟区修复活动 Quest关卡在tab最左侧导致匹配失败问题
         if not matchpic:
+            # 点下左边Quest tab
             self.quest_button_xy = (922, 98)
             matchpic = self.run_until(
                 lambda: click(self.quest_button_xy),
-                lambda: match(button_pic(ButtonName.BUTTON_EVENT_QUEST_SELLECTED_LEFT)),
+                lambda: match(button_pic(ButtonName.BUTTON_EVENT_QUEST_SELLECTED)),
                 times=2
             ) 
         logging.info({"zh_CN": f"QUEST按钮匹配结果: {matchpic}",
