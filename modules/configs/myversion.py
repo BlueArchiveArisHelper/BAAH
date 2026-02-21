@@ -1,4 +1,4 @@
-myversion = "2.1.4"
+myversion = "2.1.5"
 mychangelog = """
 >> BAAH2: https://baah.sanmusen.top/ <<
 
