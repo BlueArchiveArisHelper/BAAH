@@ -101,6 +101,9 @@ class InEvent(Task):
             return False
         # 图片匹配深色的QUEST标签
         self.quest_button_xy = (965, 98)
+        # 预先点击一次假设的 Quest Tab 位置
+        click(self.quest_button_xy)
+        screenshot()
         matchpic = self.run_until(
             lambda: click(self.quest_button_xy),
             lambda: match(button_pic(ButtonName.BUTTON_EVENT_QUEST_SELLECTED)),
