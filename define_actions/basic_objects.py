@@ -3,8 +3,9 @@ import secrets
 import string
 import enum
 import zipfile
+import io
 from datetime import datetime
-from nicegui import ui
+from nicegui import ui,events
 from gui.components.cut_screenshot import screencut_button, cut_screenshot
 from gui.components.get_app_entrance import get_app_entrance_button
 from modules.utils import *
@@ -647,7 +648,31 @@ class FlowActionGroup:
                     print(f"Pic path not exists: {pic_path}")
         # 弹出nicegui提醒
         ui.notify(f"Flow saved into {zip_filename}", color="green")
+        return True
 
+    async def load_flow_from_zip(self, e:events.UploadEventArguments):
+        """
+        从zip文件中读取操作内容，zip文件内包含一个json文件保存操作内容的结构化信息，以及操作内容里涉及到的图片文件（如果有的话）
+        """
+        try:
+            # async 函数 e.file.read() 返回一个bytes对象，使用io.BytesIO把它转换成一个类文件对象，传给zipfile.ZipFile读取
+            zip_bytes = await e.file.read()
+            with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zipf:
+                # 读取json文件
+                with zipf.open('flow.json') as json_file:
+                    al_json = json.load(json_file)
+                    self.load_from_dict(al_json)
+                # 图片按照压缩包内相对路径解压出来
+                for file_info in zipf.infolist():
+                    if file_info.filename.endswith('.png'):
+                        zipf.extract(file_info, path='.')
+            ui.notify(f"Flow loaded from {e.file.name}", color="green")
+            return True
+        except:
+            logging.error(traceback.format_exc())
+            ui.notify(f"Failed to load flow from zip", color="red")
+            return False
+        
 
     def render_gui(self, dataconfig):
         @ui.refreshable
@@ -656,7 +681,8 @@ class FlowActionGroup:
                 # 第一行，添加按钮 和 导出按钮
                 with ui.row():
                     ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
-                    ui.button("Save", on_click=self.save_flow_into_zip)
+                    ui.button("Save", on_click=lambda: save_zip())
+                    ui.upload(on_upload=lambda e:upload_zip(e), max_files=1, auto_upload=True)
                 for i,action in enumerate(self.action_list):
                     with ui.card():
                         # 每个 action block
@@ -696,6 +722,13 @@ class FlowActionGroup:
             删除一个操作对象
             """
             self.action_list.pop(line_index)
+            flow_group_area.refresh()
+
+        def save_zip():
+            self.save_flow_into_zip()
+
+        async def upload_zip(e):
+            await self.load_flow_from_zip(e)
             flow_group_area.refresh()
 
     def _find_corresponding_flow_item_index_by_id(self, target_id):
