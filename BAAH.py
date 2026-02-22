@@ -38,7 +38,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app, get_screenshot_cv_data
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -499,6 +499,83 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         else:
             logging.info({"zh_CN": "未开启通知或未设定通知配置", "en_US": "Notification is not enabled or not configured"})
 
+    def BAAH_generate_crash_report(e):
+        """
+        生成错误报告
+        保存内容：
+        - 配置文件名称,时间 --> 对应的文件夹名称
+        - 系统信息 --> system.json
+        - 错误日志 --> error.log
+        - 最后一步的截图(从PIPE或PNG获取) --> final_step.png
+        - 当前屏幕截图 --> now.png
+        - 配置文件 --> userconfig.json
+        """
+        import platform
+        import sys
+        import os
+        import psutil
+        import json
+        import cv2
+        logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
+        now_timestr = time.strftime('%Y-%m-%d_%H-%M-%S')
+        report_path = config.CRASH_REPORT_FOLDER+"/"+config.nowuserconfigname+"-"+now_timestr
+        # 保存系统信息
+        with open(f"{report_path}/system.json", "w", encoding="utf-8") as f:
+            sys_info = {}
+            if platform.system() == "Windows":
+                        sys_info["OS"] = platform.system()
+                        sys_info["Windows"] = {
+                            "Release": platform.release(),
+                            "Version": platform.version(),
+                            "machine": platform.machine()
+                        }
+            elif platform.system() == "Linux":
+                        sys_info["OS"] = platform.system()
+                        sys_info["Linux"] = {
+                            "Name": platform.freedesktop_os_release()["NAME"],
+                            "Version": platform.freedesktop_os_release()["BUILD_ID"],
+                            "Kernel": platform.uname()["release"],
+                            "environment": "container" if os.path.exists("/.dockerenv") or os.getenv("container") == "podman" else "host"
+                        }
+            elif platform.system() == "Darwin":
+                        sys_info["OS"] = platform.system()
+                        sys_info["Darwin"] = {
+                            "Release": platform.release(),
+                            "Version": platform.version(),
+                            "machine": platform.machine()
+                        }
+            sys_info["Python"] = {
+                "Python": sys.version_info,
+                "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode")),
+                "BAAH_Version": config.softwareconfigdict['NOWVERSION']
+            }
+            sys_info["hardware"] = {
+                "CPU": {
+                    "Name": platform.processor(),
+                    "Cores": psutil.cpu_count(logical=False),
+                    "Logical_Cores": psutil.cpu_count(logical=True)
+                },
+                "Memory": {
+                    "Total": psutil.virtual_memory().total / 1073741824,
+                    "SWAP": psutil.swap_memory().total / 1073741824
+                }
+            }
+            f.write(json.dumps(sys_info, indent=4, ensure_ascii=False))
+        # 保存完整日志
+        handle_error_mention(str(e), logging.warn)
+        logging.save_custom_log_file(path=report_path, name="full.log")
+        # 获取截图
+        cv2.imwrite(f"{report_path}/final_step.png", get_screenshot_cv_data())
+        screenshot()
+        cv2.imwrite(f"{report_path}/now.png", get_screenshot_cv_data())
+        with open(f"{report_path}/error.log", "w", encoding="utf-8") as f:
+            logs = logging.custom_log_list[len(logging.custom_log_list)-20:len(logging.custom_log_list)]
+            log = "\n".join(logs)
+            f.write(log)
+        with open(f"{report_path}/userconfig.json", "w", encoding="utf-8") as f:
+            f.write(json.dumps(config.userconfigdict, indent=4, ensure_ascii=False))
+        logging.info({"zh_CN": "错误报告生成完成", "en_US": "Crash report generated"})
+                    
     def BAAH_main(run_precommand = True):
         """
         执行BAAH主程序, 在此之前config应该已经被单独import然后解析为用户指定的配置文件->随后再导入my_AllTask以及其他依赖config的模块
