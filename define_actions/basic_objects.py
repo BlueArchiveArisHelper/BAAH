@@ -2,6 +2,7 @@ import random
 import secrets
 import string
 import enum
+import zipfile
 from nicegui import ui
 from gui.components.cut_screenshot import screencut_button, cut_screenshot
 from gui.components.get_app_entrance import get_app_entrance_button
@@ -605,16 +606,56 @@ class FlowActionGroup:
     def to_json_dict(self):
         return {
             'a_l': [action.to_json_dict() for action in self.action_list],
-            # 's_d': self.status_dict
+            # 's_d': self.status_dict # 状态字典不保存,每次运行重新生成
         }
+    
+    def save_flow_into_zip(self):
+        """
+        将该操作内容打包成zip文件，zip文件内包含一个json文件保存操作内容的结构化信息，以及操作内容里涉及到的图片文件（如果有的话）
+        """
+        al_json = self.to_json_dict()
+        # 使用re找到所有 *.png 格式的字符串，保存到all_pic_paths里
+        all_pic_paths = set()
+        def find_pic_paths(obj, pic_set):
+            for k in obj:
+                # 得到集合对象内部元素
+                if isinstance(obj, list):
+                    v = k
+                elif isinstance(obj, dict):
+                    v = obj[k]
+                else:
+                    print(f"Unkown type in find_pic_paths: {type(obj)}")
+                # 字符串元素处理匹配png
+                if isinstance(v, str) and v.endswith('.png'):
+                    pic_set.add(v)
+                # 递归处理集合类型元素
+                elif isinstance(v, list) or isinstance(v, dict):
+                    find_pic_paths(v, pic_set)
+        find_pic_paths(al_json, all_pic_paths)
+        print(f"package pics: {all_pic_paths}")
+        # 压缩成zip文件，命名为flow_{timestamp}.zip
+        zip_filename = f"flow_{int(time.time())}.zip"
+        with zipfile.ZipFile(zip_filename, 'w') as zipf:
+            # 写入json文件
+            zipf.writestr('flow.json', json.dumps(al_json, indent=4))
+            # 写入图片文件
+            for pic_path in all_pic_paths:
+                if os.path.exists(pic_path):
+                    zipf.write(pic_path)
+                else:
+                    print(f"Pic path not exists: {pic_path}")
+        # 弹出nicegui提醒
+        ui.notify(f"Flow saved into {zip_filename}", color="green")
+
 
     def render_gui(self, dataconfig):
         @ui.refreshable
         def flow_group_area():
             with ui.column():
-                # 第一行，添加按钮
+                # 第一行，添加按钮 和 导出按钮
                 with ui.row():
                     ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
+                    ui.button("Save", on_click=self.save_flow_into_zip)
                 for i,action in enumerate(self.action_list):
                     with ui.card():
                         # 每个 action block
