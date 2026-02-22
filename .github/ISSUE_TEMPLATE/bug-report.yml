@@ -42,7 +42,7 @@ body:
       label: "BlueArchive Server / 游戏服务器"
       description: "Select your game server / 选择你的游戏服务器"
       options:
-        - "国际服（繁体）"
+        - "国际服 (繁体)"
         - "Global (English)"
         - "Japan / 日服"
         - "国服"
@@ -60,6 +60,18 @@ body:
       placeholder: "Resolution: 1280x720, DPI: 160"
     validations:
       required: false
+  - type: dropdown
+    id: emulator-type
+    attributes:
+      label: "Emulator Type / 模拟器类型"
+      description: "Select your emulator / 选择你的模拟器"
+      options:
+        - MUMU
+        - 雷电
+        - Android容器(Waydroid/Redroid)
+        - AVD
+        - 物理机/shizuku
+        - Other
   - type: input
     id: version
     attributes:
@@ -68,3 +80,14 @@ body:
       placeholder: "e.g. 1.5.4"
     validations:
       required: true
+  - type: dropdown
+    id: OS
+    attributes:
+      label: "Operating System / 操作系统"
+      description: "Select your operating system for running BAAH / 选择你运行BAAH的操作系统"
+      options:
+        - Windows
+        - Windows (Source Code)
+        - Linux (Container)
+        - Linux (Source Code)
+        - MacOS

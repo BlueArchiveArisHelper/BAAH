@@ -8,9 +8,9 @@ body:
     id: notice
     attributes:
       value: |
-        ## 常见疑问请见[文档](https://baah.sanmusen.top)
+        **常见疑问请见[文档](https://baah.sanmusen.top)**
         
-        ## Normal questions could be looked in [documentation](https://baah.sanmusen.top)
+        **Normal questions could be looked in [documentation](https://baah.sanmusen.top)**
         
         **如果可能，请优先使用Discussion板块提问**
   - type: textarea
