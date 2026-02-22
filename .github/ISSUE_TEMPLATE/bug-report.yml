@@ -1,0 +1,93 @@
+name: Bug report / 上报Bug
+description: Create a report to help us improve / 帮助我们改进
+title: "[BUG]"
+labels: bug
+body: 
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: "Confirmation / 确认"
+      description: "Before you raise this issue, plz make sure it is not duplicated / 在你提出该issue之前，请确保它以前从未被提及过."
+      options:
+        - label: "I have checked that this issue is not a duplicate / 我已确认此issue不是重复的"
+          required: true
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: "Bug Description / Bug描述"
+      description: "What you want to do and what the script did / 你想要脚本做什么，而它做了什么出乎意料的事"
+      placeholder: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots-logs
+    attributes:
+      label: "Screenshots and Logs / 截图和日志"
+      description: "Plz attach any screenshots of emulator or logs / 请提供相关日志以及模拟器的截图"
+      placeholder: |
+        1.
+        2.
+        3.
+        ...
+    validations:
+      required: false
+  - type: dropdown
+    id: server
+    attributes:
+      label: "BlueArchive Server / 游戏服务器"
+      description: "Select your game server / 选择你的游戏服务器"
+      options:
+        - "国际服 (繁体)"
+        - "Global (English)"
+        - "Japan / 日服"
+        - "国服"
+        - "国服(BiliBili)"
+        - "Steam国际服(繁体)"
+        - "Steam Global (English)"
+        - "PC Japan / PC日服"
+    validations:
+      required: true
+  - type: input
+    id: emulator-settings
+    attributes:
+      label: "Emulator Settings / 模拟器设置"
+      description: "Emulator Resolution and DPI / 你的模拟器分辨率和DPI"
+      placeholder: "Resolution: 1280x720, DPI: 160"
+    validations:
+      required: false
+  - type: dropdown
+    id: emulator-type
+    attributes:
+      label: "Emulator Type / 模拟器类型"
+      description: "Select your emulator / 选择你的模拟器"
+      options:
+        - MUMU
+        - 雷电
+        - Android容器(Waydroid/Redroid)
+        - AVD
+        - 物理机/shizuku
+        - Other
+  - type: input
+    id: version
+    attributes:
+      label: "BAAH Version / BAAH版本"
+      description: "BAAH version / 你的BAAH版本号"
+      placeholder: "e.g. 1.5.4"
+    validations:
+      required: true
+  - type: dropdown
+    id: OS
+    attributes:
+      label: "Operating System / 操作系统"
+      description: "Select your operating system for running BAAH / 选择你运行BAAH的操作系统"
+      options:
+        - Windows
+        - Windows (Source Code)
+        - Linux (Container)
+        - Linux (Source Code)
+        - MacOS

@@ -1,0 +1,23 @@
+name: Question / 请求解答疑问
+description: Better go to 'Discussion' / 最好前往"讨论"模块
+title: "[QUESTION]"
+labels: question
+body:
+
+  - type: markdown
+    id: notice
+    attributes:
+      value: |
+        **常见疑问请见[文档](https://baah.sanmusen.top)**
+        
+        **Normal questions could be looked in [documentation](https://baah.sanmusen.top)**
+        
+        **如果可能，请优先使用Discussion板块提问**
+  - type: textarea
+    id: question
+    attributes:
+      label: "Question / 问题"
+      description: "Describe your question / 描述你的问题"
+      placeholder: "How to ..."
+    validations:
+      required: true
