@@ -38,7 +38,8 @@ def create_line_chart(storage_data_list):
         # 图例配置
         "legend": {
             "data": ['Credit', 'Diamond'],
-            "top": 30
+            "top": 30,
+            "textStyle": {"fontSize": 14}
         },
 
         # 提示框配置
@@ -69,13 +70,23 @@ def create_line_chart(storage_data_list):
                 "formatter": '{yyyy}-{MM}-{dd}',  # 日期格式
                 "rotate": -40,  # 倾斜显示避免重叠
                 "interval": 0  # 显示所有标签
-            }
+            },
+            "splitLine": {"show": True, "lineStyle": {"color": '#f0f0f0'}}  # 显示网格线
         },
-        
         # y轴配置（双数值轴，因为credit和diamond数值范围差异大）
         "yAxis": [
-            {"type": 'value','position':'left'},
-            {"type": 'value','position':'right'},
+            {
+                "type": 'value',
+                "position": 'left',
+                "nameTextStyle": {"fontSize": 12},
+                "splitLine": {"show": True, "lineStyle": {"color": '#f0f0f0'}}
+            },
+            {
+                "type": 'value',
+                "position": 'right',
+                "nameTextStyle": {"fontSize": 12},
+                "splitLine": {"show": False}  # 右侧Y轴不显示网格线，避免冲突
+            }
         ],
         
         # 数据系列配置
@@ -92,7 +103,15 @@ def create_line_chart(storage_data_list):
                     "color": '#FFD700',
                     "width": 3
                 },
-                "symbolSize": 8  # 数据点大小
+                "symbolSize": 8, # 数据点大小
+                "showSymbol": False,  # 默认不显示数据点
+                "smooth": True,
+                "areaStyle": {"color": {"type": "linear", "x": 0, "y": 0, "x2": 0, "y2": 1, 
+                                       "colorStops": [{"offset": 0, "color": "rgba(255, 215, 0, 0.3)"}, 
+                                                      {"offset": 1, "color": "rgba(255, 215, 0, 0)"}]}},
+                "emphasis": {         # 悬停时的强调效果
+                    "focus": 'series'
+                }
             },
             {
                 "name": 'Diamond',
@@ -106,13 +125,22 @@ def create_line_chart(storage_data_list):
                     "color": '#1E90FF',
                     "width": 3
                 },
-                "symbolSize": 8
+                "symbolSize": 8,
+                "showSymbol": False,  # 默认不显示数据点
+                "smooth": True,
+                "areaStyle": {"color": {"type": "linear", "x": 0, "y": 0, "x2": 0, "y2": 1, 
+                                       "colorStops": [{"offset": 0, "color": "rgba(30, 144, 255, 0.3)"}, 
+                                                      {"offset": 1, "color": "rgba(30, 144, 255, 0)"}]}},
+                "emphasis": {         # 悬停时的强调效果
+                    "focus": 'series'
+                }
             }
-        ]
+        ],
+        "grid": {"left": '5%', "right": '8%', "bottom": '15%', "top": '10%', "containLabel": True},  # 调整边距
     }
     
-    # 创建ECharts图表
     chart = ui.echart(options=options)
+    chart.style('height: 600px; width: 100%')
     return chart
 
 if __name__ in {'__main__',  '__mp_main__'}:
