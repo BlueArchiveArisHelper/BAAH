@@ -1,0 +1,30 @@
+name: Feature request / 功能请求
+description: Suggest an idea for this project / 给此项目提供点子
+title: "[FEATURE]"
+labels: enhancement
+body:
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem / 问题描述"
+      description: "Is your feature request related to a problem? Please describe. / 该功能请求能解决你认为的何种困难？"
+      placeholder: "Ex. I'm always frustrated when ..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Solution / 解决方案"
+      description: "Describe the solution you'd like / 你对于实现该功能有何种建议"
+      placeholder: "A clear and concise description of what you think about the solution."
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "Additional Context / 补充信息"
+      description: "Add any other context or screenshots about the feature request here. / 在此处添加有关功能请求的任何其他上下文或截图"
+      placeholder: "Any additional information..."
+    validations:
+      required: false
