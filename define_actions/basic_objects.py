@@ -3,6 +3,7 @@ import secrets
 import string
 import enum
 import zipfile
+from datetime import datetime
 from nicegui import ui
 from gui.components.cut_screenshot import screencut_button, cut_screenshot
 from gui.components.get_app_entrance import get_app_entrance_button
@@ -148,7 +149,7 @@ class ParamsObj:
             ui.input(label=self.param_gui_name).bind_value(self, 'param_value').style("width:100px")
         elif self.param_type == ParamsTypes.PICPATH:
             with ui.column():
-                screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value')
+                screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value', save_folder_path=dataconfig.USER_STORAGE_FOLDER)
         elif self.param_type == ParamsTypes.APKPACKAGE:
             with ui.column():
                 get_app_entrance_button(inconfig=dataconfig, resultdict=self, resultkey="param_value")
@@ -633,8 +634,8 @@ class FlowActionGroup:
                     find_pic_paths(v, pic_set)
         find_pic_paths(al_json, all_pic_paths)
         print(f"package pics: {all_pic_paths}")
-        # 压缩成zip文件，命名为flow_{timestamp}.zip
-        zip_filename = f"flow_{int(time.time())}.zip"
+        # 压缩成zip文件，命名为flow_{YYYY-MM-DD}.zip
+        zip_filename = f"flow_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.zip"
         with zipfile.ZipFile(zip_filename, 'w') as zipf:
             # 写入json文件
             zipf.writestr('flow.json', json.dumps(al_json, indent=4))

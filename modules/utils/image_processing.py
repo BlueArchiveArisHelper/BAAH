@@ -10,6 +10,7 @@ import time
 from os.path import exists
 from math import isnan
 from enum import Enum
+import os
 
 OCR_SYS_EN = TextSystem('en')
 OCR_SYS_ZHT = TextSystem('zht')
@@ -333,7 +334,7 @@ quick_return_full_data_blueprint = {
     'imgx2':-1,
     'imgy2':-1
 }
-def screencut_tool(left_click = True, right_click = True, img_path = None, quick_return = False, quick_return_full = False, save_cut_img = True):
+def screencut_tool(left_click = True, right_click = True, img_path = None, quick_return = False, quick_return_full = False, save_cut_img = True, save_folder_path = None):
     """
     截图工具
     
@@ -349,6 +350,10 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
         是否开启快速返回, 如果开启，点击右键后会返回坐标
     quick_return_full: bool
         快速返回后返回完整的json信息
+    save_cut_img: bool
+        是否保存截取的图片，默认保存
+    save_folder_path: str
+        截取后的图片的保存文件夹 如果为None则保存到当前目录
     """
     window_name = 'Screenshot'
     global start_x, start_y, drawing, quick_return_data, quick_return_full_data, quick_return_full_data_blueprint
@@ -405,16 +410,18 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
             selected_region = screenshot[min(start_y,end_y):max(start_y,end_y), min(start_x,end_x):max(start_x,end_x)]
             nowstr = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
             filename = "selected_"+nowstr+".png"
+            file_save_folder = "./" if save_folder_path is None else save_folder_path
+            file_save_path = os.path.join(file_save_folder, filename)
             if save_cut_img:
-                cv2.imwrite(filename, selected_region)
-                print(f"选定区域已被保存为/Saved as {filename}")
+                cv2.imwrite(file_save_path, selected_region)
+                print(f"选定区域已被保存为/Saved as {file_save_path}")
             print(f"坐标点为起点[{start_x}, {start_y}] 终点[{end_x}, {end_y}]")
             print(f"cut code = [{start_y}:{end_y}, {start_x}:{end_x}]")
 
             if quick_return:
-                quick_return_data = filename
+                quick_return_data = file_save_path
                 # -----
-                quick_return_full_data['imgname'] = filename
+                quick_return_full_data['imgname'] = file_save_path
                 quick_return_full_data['imgx1'] = start_x
                 quick_return_full_data['imgy1'] = start_y
                 quick_return_full_data['imgx2'] = end_x

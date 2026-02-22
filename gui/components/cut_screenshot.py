@@ -1,7 +1,7 @@
 from nicegui import ui, run
 from modules.utils import connect_to_device, get_now_running_app,  get_now_running_app_entrance_activity, screen_shot_to_global, screencut_tool
 
-def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", button_text="Screencut"):
+def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", button_text="Screencut", save_folder_path = None):
     """
     截图，截图文件名，截图按钮
     """
@@ -11,7 +11,7 @@ def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", bu
     
     with ui.row():
         ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")
-        ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True))
+        ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True, save_folder_path=save_folder_path))
     
 
 cut_lock = False
