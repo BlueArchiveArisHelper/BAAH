@@ -21,19 +21,21 @@ BAAH can help you finish daily tasks of BlueArchive (Global server, Japan server
 
 # Support
 
-支持的操作系统/Systems supported:
+支持的操作系统 / Systems supported:
 
 - Windows (executable file, source code)
 - MacOS (source code)
 - Linux (source code, docker)
 - Android Termux (source code, proot, experimental)
 
-支持的BA游戏服务器/Supported BA servers：
+支持的BA游戏服务器 / Supported BA servers：
 
 - 国际服 Global Server 
-- 日服 Japanese Server 
+- 日服 Japan Server 
 - 国服 CN Server 
 - B服 Bilibili Server 
+- Steam国际服 Steam Global Server
+- PC日服 PC Japan Server
 
 # Functions
 
