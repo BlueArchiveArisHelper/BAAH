@@ -56,7 +56,7 @@ class MyLogger:
             traceback.print_exc()
             self.logfile = None
 
-    def save_custom_log_file(self):
+    def save_custom_log_file(self, path=None, name=None):
         """
         保存发生了错误的全量custom日志到文件
         """
@@ -64,7 +64,10 @@ class MyLogger:
             try:
                 now_timestr = self.get_now_time_str()
                 file_short_name = f"custom_log_{now_timestr}.txt"
-                file_full_path = os.path.join(config.LOG_FOLDER, file_short_name)
+                if path is not None and name is not None:
+                    file_full_path = os.path.join(path, name)
+                else:
+                    file_full_path = os.path.join(config.LOG_FOLDER, file_short_name)
                 with open(file_full_path, "w", encoding="utf-8") as f:
                     for line in self.custom_log_list:
                         f.write(line + "\n")
