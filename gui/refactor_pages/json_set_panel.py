@@ -36,178 +36,171 @@ import os
 import time
 
 
-class ConfigPanel:
+# ---------- 自定义组件封装 ----------
+
+def titled_card(title: str, content_func, classes: str = ''):
     """
-    连接子页面的i18n名称 与 渲染页面的函数
-
-    Parameters
-    ==========
-    nameID: str
-        子页面标题的i18n的key 或 标题名
-    func: 
-        子页面渲染函数
-    lst_config: Config
-        传入时通过nameID找到对应i18n名字作为name，为None时name=nameID
+    封装的卡片组件
+    :param title: 卡片标题
+    :param content_func: 渲染卡片内容的 lambda 或函数
+    :param classes: 额外的 CSS 类（用于控制高度、宽度等）
     """
-    def __init__(self, nameID: str, func: Callable[[], None], i18n_config=None):
-        self.name = i18n_config.get_text(nameID) if i18n_config else nameID
-        self.func = func
-        self.tab = None
-        self.nameID = nameID
+    # 默认加上 p-6 和 box-border 保持间距一致
+    with ui.card().classes(f'p-6 box-border {classes}'):
+        if title:
+            ui.label(title).classes('section-title text-lg font-bold mb-6')
+        # 执行传入的内容函数
+        content_func()
 
-    def set_tab(self, tab: ui.tab):
-        self.tab = tab
-
-def parse_obj_in_config(inconfig, obj_dict, backward = False):
-    """
-    将配置中的部分字段解析为实际对象，放入obj_dict
-
-    当backward=True时，执行反向操作，将obj_dict中的对象转为json存入配置中
-    """
-    parse_mapping = {
-        "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dict(x),
-        "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dict(x),
-        "OBJ_USER_DEFINE_TASK": lambda x: FlowActionGroup().load_from_dict(x),
-        "OBJ_FLOW_WHEN_LOGIN": lambda x: FlowActionGroup().load_from_dict(x),
-    }
-    reverse_mapping = {
-        "OBJ_ACTIONS_VPN_START": lambda x:x.to_json_dict(),
-        "OBJ_ACTIONS_VPN_SHUT": lambda x:x.to_json_dict(),
-        "OBJ_USER_DEFINE_TASK": lambda x:x.to_json_dict(),
-        "OBJ_FLOW_WHEN_LOGIN": lambda x:x.to_json_dict(),
-    }
-    if not backward:# json转对象，存obj_dict
-        for key, clsa in parse_mapping.items():
-            if key in inconfig.userconfigdict:
-                obj_dict[key] = clsa(inconfig.userconfigdict[key])
-    else:
-        for key, clsa in reverse_mapping.items(): # 对象转json，存userconfigdict
-            if key in obj_dict:
-                inconfig.userconfigdict[key] = clsa(obj_dict[key])
-
-def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
-    return [
-        ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None),
-        ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config),
-        ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config),
-        ConfigPanel("setting_task_order", lambda: set_task_order(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
-        ConfigPanel("setting_vpn", lambda: set_vpn(lst_config, parsed_obj_dict), i18n_config=lst_config),
-        ConfigPanel("setting_notification", lambda: set_notification(lst_config, gui_shared_config), i18n_config=lst_config),
-        ConfigPanel("task_login_game", lambda: set_login(lst_config, parsed_obj_dict), i18n_config=lst_config),
-        ConfigPanel("task_cafe", lambda: set_cafe(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_timetable", lambda: set_timetable(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_craft", lambda: set_craft(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_shop", lambda: set_shop(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_buy_ap", lambda: set_buyAP(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_wanted", lambda: set_wanted(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_special", lambda: set_special(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_exchange", lambda: set_exchange(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_exam", lambda: set_exam(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_event", lambda: set_event(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_assault", lambda: set_assault(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_oneclick_raid", lambda: set_oneclick_raid(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_hard", lambda: set_hard(lst_config, gui_shared_config), i18n_config=lst_config),
-        ConfigPanel("task_normal", lambda: set_normal(lst_config), i18n_config=lst_config),
-        ConfigPanel("setting_explore", lambda: set_explore(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
-        ConfigPanel("task_user_def_task", lambda: set_usertask(lst_config, parsed_obj_dict), i18n_config=lst_config),
-        ConfigPanel("setting_other", lambda: set_other(lst_config, gui_shared_config), i18n_config=lst_config)
-    ]
-
-
+# ---------- 页面主函数 ----------
 @ui.page('/panel/{json_file_name}')
-def show_json_panel(json_file_name: str):
-    # 部分json配置文件项目的gui是由对象方法渲染的，这里需要先解析出这些对象
-    obj_parsed_dict_of_config = {}
-    if get_token() is not None and get_token() != app.storage.user.get("token"):
-        return
-    curr_config: MyConfigger = MyConfigger()
-    curr_config.parse_user_config(json_file_name)
-    parse_obj_in_config(curr_config, obj_parsed_dict_of_config)
+def show_json_panel():
+    # 设置页面整体样式
+    ui.add_head_html('''
+        <style>
+            body { 
+                font-family: 'Segoe UI', sans-serif; 
+                background-color: #f5f5f5; 
+                margin: 0;
+                padding: 0;
+                overflow: hidden; 
+            }
+            .section-title { 
+                font-size: 16px; 
+                font-weight: 600; 
+                margin-bottom: 10px; 
+                color: #333; 
+            }
+            .task-item { 
+                padding: 8px 12px; 
+                border-bottom: 1px solid #eee; 
+            }
+            .log-entry { 
+                font-family: 'Consolas', monospace; 
+                font-size: 13px; 
+                padding: 4px 0; 
+            }
+            .blue-button { 
+                background: #1976d2 !important; 
+                color: white !important; 
+            }
+            .config-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .config-label {
+                width: 120px;
+                font-weight: 500;
+                color: #555;
+            }
+            .config-input {
+                flex: 1;
+            }
+        </style>
+    ''')
 
-    # 设置splitter高度使其占满全屏，减去2rem是content这个class的内边距
-    with ui.splitter(value=15).classes('w-full h-full').style("height: calc(100vh - 2rem);") as splitter:
+    # 任务开始回调
+    def start_tasks():
+        ui.notify('任务开始执行...', type='info')
 
-        # 创建logArea
-        with ui.column().style('flex-grow: 1;width: 30vw;position:sticky; top: 0px;'):
-            output_card = ui.card().style('width: 30vw; height: 80vh;overflow-y: auto;')
-            with output_card:
-                logArea = ui.log(max_lines=1000).classes('w-full h-full')
+    # 主容器
+    with ui.column().classes('w-full h-screen p-4 box-border'):
+        
+        # ========== 上面 15% 区域 (直接封装) ==========
+        def top_settings_content():
+            with ui.row().classes('w-full h-full items-center justify-between p-2 gap-8 box-border'):
+                with ui.row().classes('flex-1 items-center'):
+                    ui.label('游戏区服').classes('mr-4')
+                    ui.select(['官服', 'B服'], value='官服').classes('flex-1')
+                
+                with ui.row().classes('flex-1 items-center'):
+                    ui.label('模拟器路径').classes('mr-4')
+                    with ui.row().classes('flex-1 items-center'):
+                        ui.input(placeholder='请输入模拟器安装路径').classes('flex-1')
+                        ui.button(icon='folder').props('flat').classes('ml-2')
+                
+                with ui.row().classes('flex-1 items-center'):
+                    ui.label('ADB连接').classes('mr-4')
+                    ui.input(placeholder='127.0.0.1:5555', value='127.0.0.1:5555').classes('flex-1')
 
-        # 获取tab列表，传参logArea以支持日志输出
-        config_choose_list: list[ConfigPanel] = get_config_list(curr_config, logArea,obj_parsed_dict_of_config)
+        titled_card(title='', content_func=top_settings_content, classes='w-full h-[15%] mb-4')
 
-        with splitter.before:
-            ui.button("<-", on_click=lambda: ui.run_javascript('window.history.back()')).style("position: fixed; left:10px; top:10px; z-index: 999")
-            # 便于js查找tabs
-            with ui.tabs().props('vertical').classes('w-full h-full loctabs') as tabs:
-                for i, config_cls in enumerate(config_choose_list):
-                    config_choose_list[i].set_tab(ui.tab(config_cls.name))
+        # ========== 下面 85% 区域 ==========
+        with ui.row().classes('w-full h-[85%] gap-4 box-border no-wrap'):
+            
+            # 第一列：任务列表
+            def task_list_content():
+                tasks = [
+                    {'name': '启动游戏', 'checked': True},
+                    {'name': '活动刷取', 'checked': True},
+                    {'name': '自动战斗', 'checked': True},
+                    {'name': '领取奖励', 'checked': True},
+                    {'name': '切换账号', 'checked': False},
+                    {'name': '关闭游戏', 'checked': False},
+                ]
+                with ui.column().classes('w-full flex-grow'):
+                    for task in tasks:
+                        with ui.row().classes('task-item w-full items-center hover:bg-gray-50 rounded'):
+                            ui.checkbox(value=task['checked'])
+                            ui.label(task['name']).classes('ml-3 flex-grow')
+                
+                with ui.row().classes('justify-center mt-auto pt-4'):
+                    ui.button('开始任务', icon='play_arrow', on_click=start_tasks) \
+                        .classes('blue-button py-3 px-8 text-lg font-medium')
 
-        with splitter.after:
-            # 便于js查找被滚动元素
-            with ui.tab_panels(tabs, value=config_choose_list[0].tab).props('vertical').classes('w-full h-full locscroll'):
-                for cls in config_choose_list:
-                    with ui.tab_panel(cls.tab):
-                        ui.html("<div style='width: 1px;height: 20px'></div>", sanitize=False)
-                        cls.func()
-                        ui.html("<div style='width: 1px;height: 200px'></div>", sanitize=False)
+            titled_card('任务列表', task_list_content, classes='h-full flex-1')
 
-        ui.add_head_html(injectJSforTabs)
+            # 第二列：任务配置
+            def task_config_content():
+                with ui.column().classes('w-full'):
+                    configs = [
+                        ('控制器类型', lambda: ui.select(['模拟器', '真机'], value='模拟器')),
+                        ('当前设备', lambda: ui.select(['MuMu安卓设备', '雷电模拟器', '夜神模拟器'], value='MuMu安卓设备')),
+                        ('优先级', lambda: ui.select(['高', '中', '低'], value='中')),
+                    ]
+                    for label, widget in configs:
+                        with ui.row().classes('config-row w-full'):
+                            ui.label(label).classes('config-label')
+                            widget().classes('config-input')
+                    
+                    with ui.row().classes('config-row w-full'):
+                        ui.label('执行次数').classes('config-label')
+                        ui.number(value=1, min=1).classes('config-input')
+                    
+                    with ui.row().classes('config-row w-full'):
+                        ui.label('超时时间').classes('config-label')
+                        ui.number(value=30).classes('flex-1')
+                        ui.label('分钟').classes('ml-2')
+                
+                with ui.row().classes('justify-end mt-auto pt-4'):
+                    ui.button('保存配置', icon='save').classes('blue-button')
 
-        with ui.column().style(
-                'width: 10vw; overflow: auto; position: fixed; bottom: 40px; right: 20px;min-width: 150px;'):
-            def save_and_alert():
-                parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
-                curr_config.save_user_config(json_file_name)
-                curr_config.save_software_config()
-                gui_shared_config.save_software_config()
-                ui.notify(curr_config.get_text("notice_save_success"))
+            titled_card('任务配置', task_config_content, classes='h-full flex-1')
 
-            ui.button(curr_config.get_text("button_save"), on_click=save_and_alert)
+            # 第三列：说明 + 日志
+            with ui.column().classes('h-full flex-1 gap-4 box-border'):
+                
+                # 任务说明
+                def info_content():
+                    with ui.column().classes('h-full w-full overflow-y-auto text-gray-700 text-sm'):
+                        ui.label('功能说明:').classes('font-bold')
+                        ui.markdown('1. 支持多账号自动切换\n2. 建议分辨率 1280*720\n3. 官服/B服通用')
+                        ui.label('注意事项:').classes('font-bold mt-2')
+                        ui.label('• 运行期间请勿操作模拟器').classes('text-red-600')
 
-            def save_and_alert_and_run_in_terminal():
-                parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
-                curr_config.save_user_config(json_file_name)
-                curr_config.save_software_config()
-                gui_shared_config.save_software_config()
-                ui.notify(curr_config.get_text("notice_save_success"))
-                ui.notify(curr_config.get_text("notice_start_run"))
-                # 打开同目录中的BAAH.exe，传入当前config的json文件名
-                os.system(f'start BAAH.exe "{json_file_name}"')
+                titled_card('任务说明', info_content, classes='h-[55%] w-full')
 
-            ui.button(curr_config.get_text("button_save_and_run_terminal"), on_click=save_and_alert_and_run_in_terminal)
+                # 运行日志
+                def log_content():
+                    with ui.column().classes('h-full w-full overflow-hidden'):
+                        with ui.column().classes('flex-grow w-full overflow-y-auto bg-gray-50 p-2 rounded'):
+                            log_entries = ['11:13:42 正在连接...', '11:13:43 连接成功', '11:13:45 执行任务: 启动']
+                            for entry in log_entries:
+                                ui.label(entry).classes('log-entry border-b border-gray-100')
+                        
+                        with ui.row().classes('justify-end mt-2 gap-2'):
+                            ui.button(icon='delete').props('flat dense')
+                            ui.button('导出', icon='download').props('dense').classes('blue-button px-2')
 
-            # ======Run in GUI======
-            async def save_and_alert_and_run():
-                parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
-                curr_config.save_user_config(json_file_name)
-                curr_config.save_software_config()
-                gui_shared_config.save_software_config()
-                ui.notify(curr_config.get_text("notice_save_success"))
-                ui.notify(curr_config.get_text("notice_start_run"))
-                await run.io_bound(run_baah_task_and_bind_log, logArea, json_file_name)
-
-            # log recovery
-            msg_obj = RunningBAAHProcess_instance.get_status_obj(configname=json_file_name)
-            print(f"This config's ({json_file_name}) msg obj is {msg_obj}")
-            # 如果此config相关任务正在运行，使用save_and_alert_and_run绑定日志输出到GUI日志窗口内
-            if msg_obj["runing_signal"] == 1:
-                track_logger_timer = ui.timer(0.5, save_and_alert_and_run, once=True)
-
-            ui.button(curr_config.get_text("button_save_and_run_gui"), on_click=save_and_alert_and_run).bind_visibility_from(
-                msg_obj, "runing_signal", backward=lambda x: x == 0)
-
-            async def stop_run() -> None:
-                stop_baah_task(logArea, json_file_name)
-
-            ui.button(curr_config.get_text("notice_finish_run"), on_click=stop_run, color='red').bind_visibility_from(
-                msg_obj, "runing_signal", backward=lambda x: x == 1)
-
-            ui.button("...").bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0.25)
-
-            # ================
-
-
-    # 加载完毕保存一下config，应用最新的对config的更改
-    curr_config.save_user_config(json_file_name)
-    curr_config.save_software_config()
+                titled_card('运行日志', log_content, classes='h-[45%] w-full')
