@@ -2,8 +2,10 @@ FROM ubuntu:22.04
 
 WORKDIR /app
 
+ENV BAAH_EDITION=container
+
 RUN apt-get update && apt-get install -y \
-    aria2 adb git libgl1 libglib2.0-0 python3-pip && \
+    aria2 adb git libgl1 libglib2.0-0 python3-pip iproute2 && \
     pip install uv
 
 RUN git clone https://github.com/BlueArchiveArisHelper/BAAH.git --depth=1
