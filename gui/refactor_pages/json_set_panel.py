@@ -15,7 +15,7 @@ from ..pages.Setting_server import set_server
 from ..pages.Setting_shop import set_shop
 from ..pages.Setting_special import set_special
 from ..pages.Setting_exam import set_exam
-from ..pages.Setting_task_order import set_task_order # 此方法内有个导入myAllTask，可能导致下述异常
+from ..pages.Setting_task_order import set_task_order 
 from ..pages.Setting_timetable import set_timetable
 from ..pages.Setting_wanted import set_wanted
 from ..pages.Setting_notification import set_notification
@@ -25,37 +25,107 @@ from ..pages.Setting_BuyAP import set_buyAP
 from ..pages.Setting_UserTask import set_usertask
 from ..pages.Setting_explore import set_explore
 from ..pages.Setting_Oneclick_Raid import set_oneclick_raid
-from modules.AllTask.myAllTask import task_instances_map # 这里导入myAllTask可能会导致其内my_AllTask单例值异常，目前通过在run()里使用前再读取config的任务列表解决此bug
+from modules.AllTask.myAllTask import task_instances_map 
 from modules.configs.MyConfig import MyConfigger
-from ..define import gui_shared_config, injectJSforTabs
+from modules.utils import _is_PC_app
+from modules.configs.settingMaps import server2pic, server2activity, server2respond
+from ..define import gui_shared_config
 from define_actions.basic_objects import FlowActionGroup
 
 from nicegui import ui, app, run
-from typing import Callable
+from typing import Callable, Optional
 import os
 import time
 
-
-# ---------- 自定义组件封装 ----------
-
-def titled_card(title: str, content_func, classes: str = ''):
+class ConfigPanel:
     """
-    封装的卡片组件
-    :param title: 卡片标题
-    :param content_func: 渲染卡片内容的 lambda 或函数
-    :param classes: 额外的 CSS 类（用于控制高度、宽度等）
+    连接子页面的i18n名称 与 渲染页面的函数
+
+    Parameters
+    ==========
+    nameID: str
+        子页面标题的i18n的key 或 标题名
+    func: 
+        子页面渲染函数
+    desc:
+        子页面说明渲染函数 (lambda)
+    lst_config: Config
+        传入时通过nameID找到对应i18n名字作为name，为None时name=nameID
     """
-    # 默认加上 p-6 和 box-border 保持间距一致
-    with ui.card().classes(f'p-6 box-border {classes}'):
-        if title:
-            ui.label(title).classes('section-title text-lg font-bold mb-6')
-        # 执行传入的内容函数
-        content_func()
+    def __init__(self, nameID: str, func: Callable[[], None], desc: Callable[[], None] = None, i18n_config=None):
+        self.name = i18n_config.get_text(nameID) if i18n_config else nameID
+        self.func = func
+        # 4. Mock description as requested
+        self.desc = desc if desc else lambda: ui.label(f"配置项 {self.name} 的详细说明及注意事项。").classes('text-gray-600')
+        self.nameID = nameID
+
+def parse_obj_in_config(inconfig, obj_dict, backward = False):
+    """
+    将配置中的部分字段解析为实际对象，放入obj_dict
+
+    当backward=True时，执行反向操作，将obj_dict中的对象转为json存入配置中
+    """
+    parse_mapping = {
+        "OBJ_ACTIONS_VPN_START": lambda x: FlowActionGroup().load_from_dict(x),
+        "OBJ_ACTIONS_VPN_SHUT": lambda x: FlowActionGroup().load_from_dict(x),
+        "OBJ_USER_DEFINE_TASK": lambda x: FlowActionGroup().load_from_dict(x),
+        "OBJ_FLOW_WHEN_LOGIN": lambda x: FlowActionGroup().load_from_dict(x),
+    }
+    reverse_mapping = {
+        "OBJ_ACTIONS_VPN_START": lambda x:x.to_json_dict(),
+        "OBJ_ACTIONS_VPN_SHUT": lambda x:x.to_json_dict(),
+        "OBJ_USER_DEFINE_TASK": lambda x:x.to_json_dict(),
+        "OBJ_FLOW_WHEN_LOGIN": lambda x:x.to_json_dict(),
+    }
+    if not backward:# json转对象，存obj_dict
+        for key, clsa in parse_mapping.items():
+            if key in inconfig.userconfigdict:
+                obj_dict[key] = clsa(inconfig.userconfigdict[key])
+    else:
+        for key, clsa in reverse_mapping.items(): # 对象转json，存userconfigdict
+            if key in obj_dict:
+                inconfig.userconfigdict[key] = clsa(obj_dict[key])
+
+def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
+    return [
+        ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None),
+        ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config),
+        ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config),
+        ConfigPanel("setting_task_order", lambda: set_task_order(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
+        ConfigPanel("setting_vpn", lambda: set_vpn(lst_config, parsed_obj_dict), i18n_config=lst_config),
+        ConfigPanel("setting_notification", lambda: set_notification(lst_config, gui_shared_config), i18n_config=lst_config),
+        ConfigPanel("task_login_game", lambda: set_login(lst_config, parsed_obj_dict), i18n_config=lst_config),
+        ConfigPanel("task_cafe", lambda: set_cafe(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_timetable", lambda: set_timetable(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_craft", lambda: set_craft(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_shop", lambda: set_shop(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_buy_ap", lambda: set_buyAP(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_wanted", lambda: set_wanted(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_special", lambda: set_special(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_exchange", lambda: set_exchange(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_exam", lambda: set_exam(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_event", lambda: set_event(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_assault", lambda: set_assault(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_oneclick_raid", lambda: set_oneclick_raid(lst_config), i18n_config=lst_config),
+        ConfigPanel("task_hard", lambda: set_hard(lst_config, gui_shared_config), i18n_config=lst_config),
+        ConfigPanel("task_normal", lambda: set_normal(lst_config), i18n_config=lst_config),
+        ConfigPanel("setting_explore", lambda: set_explore(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
+        ConfigPanel("task_user_def_task", lambda: set_usertask(lst_config, parsed_obj_dict), i18n_config=lst_config),
+        ConfigPanel("setting_other", lambda: set_other(lst_config, gui_shared_config), i18n_config=lst_config)
+    ]
 
 # ---------- 页面主函数 ----------
 @ui.page('/panel/{json_file_name}')
-def show_json_panel():
-    # 设置页面整体样式
+def show_json_panel(json_file_name: str):
+    # 0. Setup and Parse same as old file
+    obj_parsed_dict_of_config = {}
+    if get_token() is not None and get_token() != app.storage.user.get("token"):
+        return
+    curr_config: MyConfigger = MyConfigger()
+    curr_config.parse_user_config(json_file_name)
+    parse_obj_in_config(curr_config, obj_parsed_dict_of_config)
+
+    # Styles
     ui.add_head_html('''
         <style>
             body { 
@@ -71,136 +141,224 @@ def show_json_panel():
                 margin-bottom: 10px; 
                 color: #333; 
             }
-            .task-item { 
-                padding: 8px 12px; 
-                border-bottom: 1px solid #eee; 
-            }
-            .log-entry { 
-                font-family: 'Consolas', monospace; 
-                font-size: 13px; 
-                padding: 4px 0; 
-            }
             .blue-button { 
                 background: #1976d2 !important; 
                 color: white !important; 
             }
-            .config-row {
-                display: flex;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-            .config-label {
-                width: 120px;
-                font-weight: 500;
-                color: #555;
-            }
-            .config-input {
-                flex: 1;
+            .item-selected {
+                background-color: #e3f2fd;
+                border-left: 4px solid #1976d2;
             }
         </style>
     ''')
+    
+    # 3. Ratio constant
+    COLUMN_RATIOS = [1, 4, 2] # Left:Middle:Right
+    
+    # Placeholders for controls that need to be accessed
+    logArea = None
+    
+    # State for selected panel
+    current_panel = None
+    config_choose_list = []
 
-    # 任务开始回调
-    def start_tasks():
-        ui.notify('任务开始执行...', type='info')
+    # Refreshable areas
+    @ui.refreshable
+    def render_task_list():
+        with ui.column().classes('w-full gap-0'):
+            for panel in config_choose_list:
+                is_selected = (panel == current_panel)
+                base_classes = 'w-full p-3 cursor-pointer hover:bg-gray-100 transition-colors border-b border-gray-100'
+                if is_selected:
+                    base_classes += ' item-selected'
+                
+                # Bind panel using default arg to capture loop variable
+                with ui.row().classes(base_classes).on('click', lambda _, p=panel: select_panel(p)):
+                    ui.label(panel.name).classes('flex-grow text-sm font-medium text-gray-700' if not is_selected else 'flex-grow text-sm font-bold text-blue-700')
+                    if is_selected:
+                        ui.icon('chevron_right', color='primary')
 
-    # 主容器
-    with ui.column().classes('w-full h-screen p-4 box-border'):
+    @ui.refreshable
+    def render_config_area():
+        if current_panel:
+            with ui.column().classes('w-full h-full p-4 overflow-y-auto'):
+                ui.label(current_panel.name).classes('section-title mb-4 border-b pb-2 w-full')
+                current_panel.func()
+    
+    @ui.refreshable
+    def render_description():
+        if current_panel:
+            with ui.column().classes('w-full h-full p-4 overflow-y-auto'):
+                 ui.label("任务说明").classes('section-title')
+                 current_panel.desc()
+
+    def select_panel(panel):
+        nonlocal current_panel
+        current_panel = panel
+        render_task_list.refresh()
+        render_config_area.refresh()
+        render_description.refresh()
+
+    # Save logic
+    def perform_save():
+        parse_obj_in_config(curr_config, obj_parsed_dict_of_config, backward=True)
+        curr_config.save_user_config(json_file_name)
+        curr_config.save_software_config()
+        gui_shared_config.save_software_config()
+    
+    def save_and_alert():
+        perform_save()
+        ui.notify(curr_config.get_text("notice_save_success"))
+
+    def run_in_terminal():
+        perform_save()
+        ui.notify(curr_config.get_text("notice_start_run"))
+        os.system(f'start BAAH.exe "{json_file_name}"')
         
-        # ========== 上面 15% 区域 (直接封装) ==========
-        def top_settings_content():
-            with ui.row().classes('w-full h-full items-center justify-between p-2 gap-8 box-border'):
-                with ui.row().classes('flex-1 items-center'):
-                    ui.label('游戏区服').classes('mr-4')
-                    ui.select(['官服', 'B服'], value='官服').classes('flex-1')
-                
-                with ui.row().classes('flex-1 items-center'):
-                    ui.label('模拟器路径').classes('mr-4')
-                    with ui.row().classes('flex-1 items-center'):
-                        ui.input(placeholder='请输入模拟器安装路径').classes('flex-1')
-                        ui.button(icon='folder').props('flat').classes('ml-2')
-                
-                with ui.row().classes('flex-1 items-center'):
-                    ui.label('ADB连接').classes('mr-4')
-                    ui.input(placeholder='127.0.0.1:5555', value='127.0.0.1:5555').classes('flex-1')
+    async def run_in_gui():
+        perform_save()
+        ui.notify(curr_config.get_text("notice_start_run"))
+        await run.io_bound(run_baah_task_and_bind_log, logArea, json_file_name)
 
-        titled_card(title='', content_func=top_settings_content, classes='w-full h-[15%] mb-4')
+    async def stop_run():
+        stop_baah_task(logArea, json_file_name)
 
-        # ========== 下面 85% 区域 ==========
-        with ui.row().classes('w-full h-[85%] gap-4 box-border no-wrap'):
+    # Server Info Helper
+    def set_server_info(servername):
+        curr_config.userconfigdict['SERVER_TYPE'] = servername
+        curr_config.userconfigdict["PIC_PATH"] = server2pic[servername]
+        curr_config.userconfigdict["ACTIVITY_PATH"] = server2activity[servername]
+        if curr_config.userconfigdict["LOCK_SERVER_TO_RESPOND_Y"]:
+            curr_config.userconfigdict["RESPOND_Y"] = server2respond[servername]
+
+    def render_top_bar():
+        with ui.card().classes('w-full p-2 flex flex-row items-center justify-between shadow-sm min-h-[60px] gap-2 box-border'):
+            # Left Group: Back Button & Title
+            with ui.row().classes('items-center gap-2 flex-none'):
+                ui.button(icon='arrow_back', on_click=lambda: ui.run_javascript('window.history.back()')).props('flat round dense')
+                ui.label(f'{json_file_name}').classes('text-lg font-bold text-gray-800')
             
-            # 第一列：任务列表
-            def task_list_content():
-                tasks = [
-                    {'name': '启动游戏', 'checked': True},
-                    {'name': '活动刷取', 'checked': True},
-                    {'name': '自动战斗', 'checked': True},
-                    {'name': '领取奖励', 'checked': True},
-                    {'name': '切换账号', 'checked': False},
-                    {'name': '关闭游戏', 'checked': False},
-                ]
-                with ui.column().classes('w-full flex-grow'):
-                    for task in tasks:
-                        with ui.row().classes('task-item w-full items-center hover:bg-gray-50 rounded'):
-                            ui.checkbox(value=task['checked'])
-                            ui.label(task['name']).classes('ml-3 flex-grow')
+            # Middle Group: Settings (Server -> ADB -> Emulator Path)
+            with ui.row().classes('items-center gap-2 flex-1 justify-start no-wrap overflow-hidden'):
+                # 1. Server Selection (Ratio 2)
+                server_options = {
+                    "JP":curr_config.get_text("config_server_jp"), 
+                    "GLOBAL":curr_config.get_text("config_server_global"), 
+                    "GLOBAL_EN":curr_config.get_text("config_server_global_en"),
+                    "CN":curr_config.get_text("config_server_cn"),
+                    "CN_BILI":curr_config.get_text("config_server_cn_b"),
+                    "PC_STEAM":"STEAM (Windows)",
+                    "PC_STEAM_EN":"STEAM_EN (Windows)",
+                    "PC_EXE_JP":f'{curr_config.get_text("config_server_jp")} (PC Windows)'
+                }
                 
-                with ui.row().classes('justify-center mt-auto pt-4'):
-                    ui.button('开始任务', icon='play_arrow', on_click=start_tasks) \
-                        .classes('blue-button py-3 px-8 text-lg font-medium')
+                ui.select(server_options, label=curr_config.get_text("setting_server"), value=curr_config.userconfigdict['SERVER_TYPE'], on_change=lambda e: set_server_info(e.value))\
+                    .style('flex: 2; min-width: 0px;').classes('mx-1')
 
-            titled_card('任务列表', task_list_content, classes='h-full flex-1')
+                # ADB & Emulator Visibility Helper
+                is_not_pc = lambda v: not _is_PC_app(v)
 
-            # 第二列：任务配置
-            def task_config_content():
-                with ui.column().classes('w-full'):
-                    configs = [
-                        ('控制器类型', lambda: ui.select(['模拟器', '真机'], value='模拟器')),
-                        ('当前设备', lambda: ui.select(['MuMu安卓设备', '雷电模拟器', '夜神模拟器'], value='MuMu安卓设备')),
-                        ('优先级', lambda: ui.select(['高', '中', '低'], value='中')),
-                    ]
-                    for label, widget in configs:
-                        with ui.row().classes('config-row w-full'):
-                            ui.label(label).classes('config-label')
-                            widget().classes('config-input')
+                # 2. ADB Port/Serial (Ratio 1)
+                with ui.element('div').style('flex: 1; min-width: 0px; display: flex; align-items: center;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                    # Port Input
+                    ui.number('ADB Port', step=1, precision=0)\
+                        .bind_value(curr_config.userconfigdict, 'TARGET_PORT', forward=lambda v: int(v) if v else 5555, backward=lambda v:int(v))\
+                        .bind_visibility_from(curr_config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: not v)\
+                        .classes('w-full')
                     
-                    with ui.row().classes('config-row w-full'):
-                        ui.label('执行次数').classes('config-label')
-                        ui.number(value=1, min=1).classes('config-input')
+                    # Serial Input 
+                    ui.input(curr_config.get_text("adb_serial"))\
+                        .bind_value(curr_config.userconfigdict, 'ADB_SEIAL_NUMBER')\
+                        .bind_visibility_from(curr_config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: v)\
+                        .classes('w-full')
+
+                # 3. Serial Checkbox (Ratio 3)
+                with ui.element('div').style('flex: 3; min-width: 0px; display: flex; align-items: center; overflow: hidden;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                    ui.checkbox(curr_config.get_text("adb_direct_use_serial"))\
+                        .bind_value(curr_config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')\
+                        .classes('w-full')
+                
+                # 4. Emulator Path (Ratio 6)
+                with ui.element('div').style('flex: 6; min-width: 0px; display: flex; align-items: center;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                    ui.input(curr_config.get_text("config_emulator_path"))\
+                        .bind_value(curr_config.userconfigdict, 'TARGET_EMULATOR_PATH', 
+                                   forward=lambda v: v.replace("\\", "/").replace('"','').replace('nx_main/MuMuNxMain.exe','nx_device/12.0/shell/MuMuNxDevice.exe'))\
+                        .props('placeholder="模拟器路径"').classes('w-full')
+
+            # Right Group: Action Buttons
+            with ui.row().classes('items-center gap-2 flex-none'):
+                ui.button('保存配置', icon='save', on_click=save_and_alert).props('flat')
+                
+                # Signal logic
+                msg_obj = RunningBAAHProcess_instance.get_status_obj(configname=json_file_name)
+                
+                # Container for the run button group
+                with ui.row().classes('items-center gap-0'):
                     
-                    with ui.row().classes('config-row w-full'):
-                        ui.label('超时时间').classes('config-label')
-                        ui.number(value=30).classes('flex-1')
-                        ui.label('分钟').classes('ml-2')
+                    # RUN BUTTON (GUI)
+                    run_btn = ui.button('运行 (GUI)', icon='play_arrow', on_click=run_in_gui) \
+                        .classes('blue-button rounded-r-none') \
+                        .bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0)
+                    
+                    # STOP BUTTON
+                    stop_btn = ui.button('停止运行', icon='stop', color='red', on_click=stop_run) \
+                        .classes('rounded-r-none') \
+                        .bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 1)
+
+                    # DROPDOWN TRIGGER
+                    with ui.button(icon='arrow_drop_down').classes('px-1 rounded-l-none border-l border-white/30 blue-button').bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0):
+                        with ui.menu():
+                            ui.menu_item('终端运行 (Term)', on_click=run_in_terminal)
+                            
+                    ui.spinner().bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0.25)
                 
-                with ui.row().classes('justify-end mt-auto pt-4'):
-                    ui.button('保存配置', icon='save').classes('blue-button')
+                # Log recovery
+                if msg_obj["runing_signal"] == 1:
+                    ui.timer(0.5, run_in_gui, once=True)
 
-            titled_card('任务配置', task_config_content, classes='h-full flex-1')
+    # Main Layout
+    with ui.column().classes('w-full h-screen p-4 box-border gap-4'):
+        
+        # 1. Top Bar
+        render_top_bar()
 
-            # 第三列：说明 + 日志
-            with ui.column().classes('h-full flex-1 gap-4 box-border'):
-                
-                # 任务说明
-                def info_content():
-                    with ui.column().classes('h-full w-full overflow-y-auto text-gray-700 text-sm'):
-                        ui.label('功能说明:').classes('font-bold')
-                        ui.markdown('1. 支持多账号自动切换\n2. 建议分辨率 1280*720\n3. 官服/B服通用')
-                        ui.label('注意事项:').classes('font-bold mt-2')
-                        ui.label('• 运行期间请勿操作模拟器').classes('text-red-600')
+        # 2. Main Content Area (1:4:2 Ratio) with Flex
+        # Using flex-basis/grow via style because Tailwind classes flex-1/2/4 might not cover the ratio sum=7 perfectly in default theme
+        
+        with ui.row().classes('w-full flex-grow gap-4 no-wrap overflow-hidden'):
+            
+            # Placeholder for Left and Middle, created first to maintain row order
+            left_section = ui.card().classes('h-full p-0 flex flex-col overflow-hidden').style(f'flex: {COLUMN_RATIOS[0]}')
+            middle_section = ui.card().classes('h-full p-0 flex flex-col overflow-hidden').style(f'flex: {COLUMN_RATIOS[1]}')
+            right_section = ui.column().classes('h-full gap-4 overflow-hidden').style(f'flex: {COLUMN_RATIOS[2]}')
 
-                titled_card('任务说明', info_content, classes='h-[55%] w-full')
+            # Populate Right Section immediately to create logArea
+            with right_section:
+                # Description Card (Top 1/3 approximately)
+                with ui.card().classes('w-full h-1/3 p-0 flex flex-col overflow-hidden'):
+                     desc_container = ui.column().classes('w-full h-full p-0') # Placeholder for render
 
-                # 运行日志
-                def log_content():
-                    with ui.column().classes('h-full w-full overflow-hidden'):
-                        with ui.column().classes('flex-grow w-full overflow-y-auto bg-gray-50 p-2 rounded'):
-                            log_entries = ['11:13:42 正在连接...', '11:13:43 连接成功', '11:13:45 执行任务: 启动']
-                            for entry in log_entries:
-                                ui.label(entry).classes('log-entry border-b border-gray-100')
-                        
-                        with ui.row().classes('justify-end mt-2 gap-2'):
-                            ui.button(icon='delete').props('flat dense')
-                            ui.button('导出', icon='download').props('dense').classes('blue-button px-2')
+                # Log Card (Bottom 2/3 approximately)
+                with ui.card().classes('w-full h-2/3 p-0 flex flex-col overflow-hidden'):
+                    ui.label('运行日志').classes('p-2 font-bold border-b border-gray-200 bg-gray-50 text-xs')
+                    with ui.column().classes('w-full flex-grow p-0 overflow-hidden relative'):
+                         # Create LogArea here
+                         logArea = ui.log(max_lines=1000).classes('w-full h-full font-mono text-xs p-2 bg-black text-white overflow-auto absolute inset-0')
 
-                titled_card('运行日志', log_content, classes='h-[45%] w-full')
+            # Now that logArea exists, get the config list
+            config_choose_list = get_config_list(curr_config, logArea, obj_parsed_dict_of_config)
+            current_panel = config_choose_list[0] if config_choose_list else None
+            
+            # Populate Left Section
+            with left_section:
+                 ui.label('配置列表').classes('p-3 font-bold border-b border-gray-200 bg-gray-50')
+                 with ui.column().classes('w-full flex-grow overflow-y-auto p-0'):
+                     render_task_list()
+
+            # Populate Middle Section
+            with middle_section:
+                 render_config_area()
+
+            # Populate Description in previously created container
+            with desc_container:
+                 render_description()
