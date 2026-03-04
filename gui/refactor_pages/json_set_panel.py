@@ -1,3 +1,5 @@
+from enum import Enum
+
 from ..components.exec_arg_parse import get_token
 from ..components.manage_baah_in_gui import run_baah_task_and_bind_log, stop_baah_task
 from ..components.running_task_pool import RunningBAAHProcess_instance
@@ -25,6 +27,7 @@ from ..pages.Setting_BuyAP import set_buyAP
 from ..pages.Setting_UserTask import set_usertask
 from ..pages.Setting_explore import set_explore
 from ..pages.Setting_Oneclick_Raid import set_oneclick_raid
+from ..pages.Setting_quick_runtask import set_quick_runtask
 from modules.AllTask.myAllTask import task_instances_map 
 from modules.configs.MyConfig import MyConfigger
 from modules.utils import _is_PC_app
@@ -36,6 +39,17 @@ from nicegui import ui, app, run
 from typing import Callable, Optional
 import os
 import time
+
+class ConfigPanelType(Enum):
+    BAAH_Bsic_Settings = 0
+    Daily_Task_Settings = 1
+    Quick_Task_Settings = 2
+
+panel_types_2_str = {
+    ConfigPanelType.BAAH_Bsic_Settings: "BAAH基础设置",
+    ConfigPanelType.Daily_Task_Settings: "日常任务设置",
+    ConfigPanelType.Quick_Task_Settings: "快速任务设置"
+}
 
 class ConfigPanel:
     """
@@ -51,13 +65,16 @@ class ConfigPanel:
         子页面说明渲染函数 (lambda)
     lst_config: Config
         传入时通过nameID找到对应i18n名字作为name，为None时name=nameID
+    panel_types
+        该配置项所属的类型列表，决定在不同的 Tab 栏目下是否显示
     """
-    def __init__(self, nameID: str, func: Callable[[], None], desc: Callable[[], None] = None, i18n_config=None):
+    def __init__(self, nameID: str, func: Callable[[], None], desc: Callable[[], None] = None, i18n_config=None, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
         # 4. Mock description as requested
         self.desc = desc if desc else lambda: ui.label(f"配置项 {self.name} 的详细说明及注意事项。")
         self.nameID = nameID
+        self.panel_types = panel_types
 
 def parse_obj_in_config(inconfig, obj_dict, backward = False):
     """
@@ -88,30 +105,34 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
 
 def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
     return [
-        ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None),
-        ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config),
-        ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config),
-        ConfigPanel("setting_task_order", lambda: set_task_order(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
-        ConfigPanel("setting_vpn", lambda: set_vpn(lst_config, parsed_obj_dict), i18n_config=lst_config),
-        ConfigPanel("setting_notification", lambda: set_notification(lst_config, gui_shared_config), i18n_config=lst_config),
-        ConfigPanel("task_login_game", lambda: set_login(lst_config, parsed_obj_dict), i18n_config=lst_config),
-        ConfigPanel("task_cafe", lambda: set_cafe(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_timetable", lambda: set_timetable(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_craft", lambda: set_craft(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_shop", lambda: set_shop(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_buy_ap", lambda: set_buyAP(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_wanted", lambda: set_wanted(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_special", lambda: set_special(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_exchange", lambda: set_exchange(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_exam", lambda: set_exam(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_event", lambda: set_event(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_assault", lambda: set_assault(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_oneclick_raid", lambda: set_oneclick_raid(lst_config), i18n_config=lst_config),
-        ConfigPanel("task_hard", lambda: set_hard(lst_config, gui_shared_config), i18n_config=lst_config),
-        ConfigPanel("task_normal", lambda: set_normal(lst_config), i18n_config=lst_config),
-        ConfigPanel("setting_explore", lambda: set_explore(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config),
-        ConfigPanel("task_user_def_task", lambda: set_usertask(lst_config, parsed_obj_dict), i18n_config=lst_config),
-        ConfigPanel("setting_other", lambda: set_other(lst_config, gui_shared_config), i18n_config=lst_config)
+        ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
+        ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
+        ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
+        ConfigPanel("setting_other", lambda: set_other(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
+
+        ConfigPanel("setting_task_order", lambda: set_task_order(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("setting_vpn", lambda: set_vpn(lst_config, parsed_obj_dict), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("setting_notification", lambda: set_notification(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_login_game", lambda: set_login(lst_config, parsed_obj_dict), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_cafe", lambda: set_cafe(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_timetable", lambda: set_timetable(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_craft", lambda: set_craft(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_shop", lambda: set_shop(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_buy_ap", lambda: set_buyAP(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_wanted", lambda: set_wanted(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_special", lambda: set_special(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_exchange", lambda: set_exchange(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_exam", lambda: set_exam(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_event", lambda: set_event(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_assault", lambda: set_assault(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_oneclick_raid", lambda: set_oneclick_raid(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_hard", lambda: set_hard(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_normal", lambda: set_normal(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("setting_explore", lambda: set_explore(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_user_def_task", lambda: set_usertask(lst_config, parsed_obj_dict), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+
+        ConfigPanel("config_quick_call_task", lambda: set_quick_runtask(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config, panel_types = [ConfigPanelType.Quick_Task_Settings]),
+        
     ]
 
 # ---------- 页面主函数 ----------
@@ -167,12 +188,16 @@ def show_json_panel(json_file_name: str):
     # State for selected panel
     current_panel = None
     config_choose_list = []
+    current_tab_type = ConfigPanelType.BAAH_Bsic_Settings
 
     # Refreshable areas
     @ui.refreshable
     def render_task_list():
         with ui.column().classes('w-full gap-0'):
-            for panel in config_choose_list:
+            # Filter config list based on current tab
+            filtered_list = [p for p in config_choose_list if current_tab_type in p.panel_types]
+            
+            for panel in filtered_list:
                 is_selected = (panel == current_panel)
                 base_classes = 'w-full p-3 cursor-pointer transition-colors border-b border-gray-100'
                 if is_selected:
@@ -238,7 +263,7 @@ def show_json_panel(json_file_name: str):
             curr_config.userconfigdict["RESPOND_Y"] = server2respond[servername]
 
     def render_top_bar():
-        with ui.card().classes('w-full p-2 flex flex-row items-center justify-between shadow-sm min-h-[60px] gap-2 box-border'):
+        with ui.card().classes('w-full h-full p-2 flex flex-row flex-nowrap items-center justify-between shadow-sm gap-2 box-border'):
             # Left Group: Back Button & Title
             with ui.row().classes('items-center gap-2 flex-none'):
                 ui.button(icon='arrow_back', on_click=lambda: ui.run_javascript('window.history.back()')).props('flat round dense')
@@ -279,7 +304,7 @@ def show_json_panel(json_file_name: str):
                         .classes('w-full')
 
                 # 3. Serial Checkbox (Ratio 3)
-                with ui.element('div').style('flex: 3; min-width: 0px; display: flex; align-items: center; overflow: hidden;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                with ui.element('div').style('flex: 2; min-width: 0px; display: flex; align-items: center; overflow: hidden;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
                     ui.checkbox(curr_config.get_text("adb_direct_use_serial"))\
                         .bind_value(curr_config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')\
                         .classes('w-full')
@@ -323,15 +348,16 @@ def show_json_panel(json_file_name: str):
                     ui.timer(0.5, run_in_gui, once=True)
 
     # Main Layout
-    with ui.column().classes('w-full h-screen p-4 box-border gap-4'):
+    with ui.element('div').classes('w-full h-screen overflow-hidden p-0 m-0 box-border'):
         
         # 1. Top Bar
-        render_top_bar()
+        with ui.element('div').classes('w-full h-[60px] z-10 relative'):
+            render_top_bar()
 
-        # 2. Main Content Area (1:4:2 Ratio) with Flex
+        # 2. Main Content Area (1:4:2 Ratio), Fixed height
         # Using flex-basis/grow via style because Tailwind classes flex-1/2/4 might not cover the ratio sum=7 perfectly in default theme
         
-        with ui.row().classes('w-full flex-grow gap-4 no-wrap overflow-hidden'):
+        with ui.row().classes('w-full h-[calc(100vh-60px)] p-4 pt-2 gap-4 no-wrap items-stretch'):
             
             # Placeholder for Left and Middle, created first to maintain row order
             left_section = ui.card().classes('h-full p-0 flex flex-col overflow-hidden').style(f'flex: {COLUMN_RATIOS[0]}')
@@ -357,7 +383,20 @@ def show_json_panel(json_file_name: str):
             
             # Populate Left Section
             with left_section:
-                 ui.label('配置列表').classes('p-3 font-bold border-b border-gray-200')
+                 # Tab Change Handler
+                 def on_tab_change(e):
+                    nonlocal current_tab_type
+                    # Convert integer value back to Enum for filtering
+                    current_tab_type = ConfigPanelType(e.value)
+                    render_task_list.refresh()
+
+                 with ui.tabs().classes('w-full border-b border-gray-200').on_value_change(on_tab_change) as tabs:
+                    for tabkey in panel_types_2_str.keys():
+                        this_tab = ui.tab(name=tabkey.value, label=panel_types_2_str.get(tabkey)).classes('flex-1')
+                 
+                 # Set default value
+                 tabs.set_value(ConfigPanelType.BAAH_Bsic_Settings.value)
+
                  with ui.column().classes('w-full flex-grow overflow-y-auto p-0'):
                      render_task_list()
 
