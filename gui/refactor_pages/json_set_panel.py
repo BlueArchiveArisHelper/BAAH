@@ -56,7 +56,7 @@ class ConfigPanel:
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
         # 4. Mock description as requested
-        self.desc = desc if desc else lambda: ui.label(f"配置项 {self.name} 的详细说明及注意事项。").classes('text-gray-600')
+        self.desc = desc if desc else lambda: ui.label(f"配置项 {self.name} 的详细说明及注意事项。")
         self.nameID = nameID
 
 def parse_obj_in_config(inconfig, obj_dict, backward = False):
@@ -117,6 +117,16 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 # ---------- 页面主函数 ----------
 @ui.page('/panel/{json_file_name}')
 def show_json_panel(json_file_name: str):
+
+    # Dark mode setup
+    dark = ui.dark_mode()
+    # Check browser preference
+    is_dark = ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
+    if is_dark:
+        dark.enable()
+    else:
+        dark.disable()
+
     # 0. Setup and Parse same as old file
     obj_parsed_dict_of_config = {}
     if get_token() is not None and get_token() != app.storage.user.get("token"):
@@ -130,23 +140,19 @@ def show_json_panel(json_file_name: str):
         <style>
             body { 
                 font-family: 'Segoe UI', sans-serif; 
-                background-color: #f5f5f5; 
                 margin: 0;
                 padding: 0;
                 overflow: hidden; 
+            }
+            ::-webkit-scrollbar {
+                display: none;
             }
             .section-title { 
                 font-size: 16px; 
                 font-weight: 600; 
                 margin-bottom: 10px; 
-                color: #333; 
-            }
-            .blue-button { 
-                background: #1976d2 !important; 
-                color: white !important; 
             }
             .item-selected {
-                background-color: #e3f2fd;
                 border-left: 4px solid #1976d2;
             }
         </style>
@@ -168,13 +174,13 @@ def show_json_panel(json_file_name: str):
         with ui.column().classes('w-full gap-0'):
             for panel in config_choose_list:
                 is_selected = (panel == current_panel)
-                base_classes = 'w-full p-3 cursor-pointer hover:bg-gray-100 transition-colors border-b border-gray-100'
+                base_classes = 'w-full p-3 cursor-pointer transition-colors border-b border-gray-100'
                 if is_selected:
                     base_classes += ' item-selected'
                 
                 # Bind panel using default arg to capture loop variable
                 with ui.row().classes(base_classes).on('click', lambda _, p=panel: select_panel(p)):
-                    ui.label(panel.name).classes('flex-grow text-sm font-medium text-gray-700' if not is_selected else 'flex-grow text-sm font-bold text-blue-700')
+                    ui.label(panel.name).classes('flex-grow text-sm font-medium' if not is_selected else 'flex-grow text-sm font-bold')
                     if is_selected:
                         ui.icon('chevron_right', color='primary')
 
@@ -236,7 +242,7 @@ def show_json_panel(json_file_name: str):
             # Left Group: Back Button & Title
             with ui.row().classes('items-center gap-2 flex-none'):
                 ui.button(icon='arrow_back', on_click=lambda: ui.run_javascript('window.history.back()')).props('flat round dense')
-                ui.label(f'{json_file_name}').classes('text-lg font-bold text-gray-800')
+                ui.label(f'{json_file_name}').classes('text-lg font-bold')
             
             # Middle Group: Settings (Server -> ADB -> Emulator Path)
             with ui.row().classes('items-center gap-2 flex-1 justify-start no-wrap overflow-hidden'):
@@ -340,10 +346,10 @@ def show_json_panel(json_file_name: str):
 
                 # Log Card (Bottom 2/3 approximately)
                 with ui.card().classes('w-full h-2/3 p-0 flex flex-col overflow-hidden'):
-                    ui.label('运行日志').classes('p-2 font-bold border-b border-gray-200 bg-gray-50 text-xs')
+                    ui.label('运行日志').classes('p-2 font-bold border-b border-gray-200 text-xs')
                     with ui.column().classes('w-full flex-grow p-0 overflow-hidden relative'):
                          # Create LogArea here
-                         logArea = ui.log(max_lines=1000).classes('w-full h-full font-mono text-xs p-2 bg-black text-white overflow-auto absolute inset-0')
+                         logArea = ui.log(max_lines=1000).classes('w-full h-full font-mono text-xs p-2 overflow-auto absolute inset-0')
 
             # Now that logArea exists, get the config list
             config_choose_list = get_config_list(curr_config, logArea, obj_parsed_dict_of_config)
@@ -351,7 +357,7 @@ def show_json_panel(json_file_name: str):
             
             # Populate Left Section
             with left_section:
-                 ui.label('配置列表').classes('p-3 font-bold border-b border-gray-200 bg-gray-50')
+                 ui.label('配置列表').classes('p-3 font-bold border-b border-gray-200')
                  with ui.column().classes('w-full flex-grow overflow-y-auto p-0'):
                      render_task_list()
 
