@@ -67,7 +67,8 @@ def main():
                         """)
         
         # 注入自定义样式,head, body
-        ui.add_css(os.path.join(current_dir, "DATA", "custom", "style.css"),shared=True)
+        with open(os.path.join(current_dir, "DATA", "custom", "style.css"), "r", encoding="utf-8") as f:
+            ui.add_css(f.read(),shared=True)
         with open(os.path.join(current_dir, "DATA", "custom", "head.html"), "r", encoding="utf-8") as f:
             ui.add_head_html(f.read(),shared=True)
         with open(os.path.join(current_dir, "DATA", "custom", "body.html"), "r", encoding="utf-8") as f:
