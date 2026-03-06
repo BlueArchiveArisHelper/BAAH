@@ -1,23 +1,29 @@
 from nicegui import ui
 from modules.configs.settingMaps import server2pic, server2activity, server2respond
-from modules.utils import _is_PC_app
+from modules.utils import _is_PC_app, _get_edition
 
 def set_server(config):
     with ui.row():
         ui.link_target("SERVER")
         ui.label(config.get_text("setting_server")).style('font-size: x-large')
     
-    server = ui.radio({
+    serverlist = {
         "JP":config.get_text("config_server_jp"), 
         "GLOBAL":config.get_text("config_server_global"), 
         "GLOBAL_EN":config.get_text("config_server_global_en"),
         "CN":config.get_text("config_server_cn"),
         "CN_BILI":config.get_text("config_server_cn_b"),
-        "PC_STEAM":"STEAM (Windows)",
-        "PC_STEAM_EN":"STEAM_EN (Windows)",
-        "PC_EXE_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
-        },
-                      value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
+        }
+    
+    # 非windows隐藏windows服务器选项
+    if _get_edition() == "pyinstaller" or _get_edition() == "windows-other":
+        serverlist.update({
+            "PC_STEAM":"STEAM (Windows)",
+            "PC_STEAM_EN":"STEAM_EN (Windows)",
+            "PC_EXE_JP":f'{config.get_text("config_server_jp")} (PC Windows)'
+        })
+    
+    server = ui.radio(serverlist,value=config.userconfigdict['SERVER_TYPE'], on_change=lambda a:set_server_info(a.value)).props('inline')
     
     def set_server_info(servername):
         config.userconfigdict['SERVER_TYPE'] = servername
