@@ -250,6 +250,7 @@
     "run_until_f_pattern": "重复次数 #%0# 运行 #%1# 终止条件 #%2#",
     "do_action_f_pattern": "执行操作 #%0#",
 
+    "container_auto_update": "开启容器启动时更新",
 
     "status_finish":"所有任务运行结束"
 }
