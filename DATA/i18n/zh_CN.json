@@ -58,7 +58,7 @@
     "button_save_and_run_gui":"保存并执行(GUI，实验性功能)",
     "button_save_and_run_terminal":"保存并执行(终端)",
     "button_check_version":"下载更新补丁，请手动解压覆盖（Windows）",
-    "button_update_advance":"一键更新版本（Windows）",
+    "button_update_advance":"一键更新版本",
     "button_select_all":"全选",
     "button_select_none":"全不选",
     "button_enable":"启用",

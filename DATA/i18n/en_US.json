@@ -58,7 +58,7 @@
     "button_save_and_run_gui":"Save and execute (GUI, experimental)",
     "button_save_and_run_terminal":"Save and execute (Terminal)",
     "button_check_version": "Download upgrade package (Unzip manually)",
-    "button_update_advance":"One Click to update (Windows)",
+    "button_update_advance":"One Click to update",
     "button_select_all": "Select All",
     "button_select_none": "Deselect All",
     "button_enable": "Enable",

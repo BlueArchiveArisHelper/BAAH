@@ -58,7 +58,7 @@
     "button_save_and_run_gui": "保存して実行（GUI、実験的）",
     "button_save_and_run_terminal": "保存して実行（ターミナル）",
     "button_check_version": "アップグレードパッケージをダウンロード (手動で解凍)",
-    "button_update_advance": "ワンクリックで更新 (Windows)",
+    "button_update_advance": "ワンクリックで更新",
     "button_select_all": "すべて選択",
     "button_select_none": "選択解除",
     "button_enable": "有効にする",
