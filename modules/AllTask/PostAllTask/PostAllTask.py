@@ -76,7 +76,8 @@ class PostAllTask(Task):
                     EN: f"Failed to save resources to user storage: {e}"
                 }))
         else:
-            logging.warn({"zh_CN": "退出游戏时，资源数量OCR失败，跳过记录", "en_US": "Invalid resource OCR result when exiting the game, skipping"})        
+            logging.warn({"zh_CN": "退出游戏时，资源数量OCR失败，跳过记录", "en_US": "Invalid resource OCR result when exiting the game, skipping"})
+            logging.warn({"zh_CN": "体力：{} 信用点：{} 钻石：{}".format(power_str, credit_str, diamond_str), "en_US": "Energy: {} Credits: {} Pyroxene: {}".format(power_str, credit_str, diamond_str)})
      
     def on_run(self) -> None:
         self.record_resources()

@@ -40,6 +40,7 @@ class EnterGame(Task):
             config.sessiondict["BEFORE_BAAH_SOURCES"] = {"power": power_str, "credit": credit_str, "diamond": diamond_str}
         else:
             logging.warn({"zh_CN": "进入游戏时，资源数量OCR失败，跳过记录", "en_US": "Invalid resource OCR result when entering the game, skipping"})
+            logging.warn({"zh_CN": "体力：{} 信用点：{} 钻石：{}".format(power_str, credit_str, diamond_str), "en_US": "Energy: {} Credits: {} Pyroxene: {}".format(power_str, credit_str, diamond_str)})
      
     def pre_condition(self) -> bool:
         return True
