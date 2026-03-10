@@ -10,7 +10,7 @@ def set_BAAH(config, shared_softwareconfig):
         ui.link_target("BAAH")
         ui.label(f"Blue Archive Aris Helper {config.NOWVERSION} ==> ({config.nowuserconfigname})").style('font-size: xx-large')
 
-        ui.label(config.get_text("BAAH_desc"))
+        # ui.label(config.get_text("BAAH_desc"))
         
         web_url = {
                     "github": "https://github.com/sanmusen214/BAAH",
@@ -23,7 +23,7 @@ def set_BAAH(config, shared_softwareconfig):
 
         with ui.row():
             ui.label(config.get_text("BAAH_attention")).style('color: red; font-size: x-large')
-            ui.label(f'  {config.get_text("notice_steam_esc_break")}').style('color: red; font-size: x-large')
+            ui.label(f'  {config.get_text("notice_steam_esc_break")}').style('color: red; font-size: x-large').bind_visibility_from(config.userconfigdict, "SERVER_TYPE", backward=lambda x: _is_PC_app(x))
 
         # kei的教程
         with ui.row():

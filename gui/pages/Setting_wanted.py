@@ -6,7 +6,7 @@ def set_wanted(config):
         ui.link_target("WANTED")
         ui.label(config.get_text("task_wanted")).style('font-size: x-large')
     
-    ui.label(config.get_text("config_desc_times"))
+    # ui.label(config.get_text("config_desc_times"))
     
     list_edit_area(
         config.userconfigdict["WANTED_HIGHEST_LEVEL"], 

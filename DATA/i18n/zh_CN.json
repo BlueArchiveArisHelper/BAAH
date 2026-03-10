@@ -86,7 +86,7 @@
     "config_close_emulator_when_finish" : "运行结束后关闭模拟器/游戏程序",
     "config_close_BAAH_when_finish" : "运行结束后关闭BAAH", 
     "config_close_even_if_error" : "即使发生错误，也关闭",
-    "config_desc_times":"关于关卡的说明，3就是第三关，-1就是倒数第一个可扫荡关卡。关于次数的说明：4次就是扫荡4次，-1次即为扫荡max次（支持国服max次），-2次即为扫荡max-2次。",
+    "config_desc_times":"关于关卡的说明，3就是第三关，-1就是倒数第一个可扫荡关卡(负数关卡仅材料类副本可用）。关于次数的说明：4次就是扫荡4次，-1次即为扫荡max次，-2次即为扫荡max-2次。",
     "config_nth":"第",
     "config_day":"天",
     "config_level":"关卡",

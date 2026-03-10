@@ -14,8 +14,3 @@ def set_login(config, parsed_obj_dict):
     with ui.row().bind_visibility_from(config.userconfigdict, 'USE_OBJ_FLOW_WHEN_LOGIN'):
         flow_group = parsed_obj_dict.get("OBJ_FLOW_WHEN_LOGIN", None)
         flow_group.render_gui(config)
-
-    # 截图测试
-    ui.separator()
-    with ui.row():
-        ui.button("测试截图/screencut test", on_click=lambda: test_screencut(config))

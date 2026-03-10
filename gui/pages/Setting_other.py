@@ -107,7 +107,7 @@ def set_other(config, gui_shared_config):
     
     # 将截图功能内嵌进GUI
     with ui.row():
-        ui.button("测试截图/screencut test", on_click=lambda: test_screencut(config))
+        ui.button(config.get_text("text_screenshot"), on_click=lambda: test_screencut(config))
 
     async def restart_adb_server():
         subprocess.run([config.userconfigdict['ADB_PATH'], "kill-server"])

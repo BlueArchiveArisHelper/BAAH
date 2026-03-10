@@ -105,7 +105,7 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
 
 def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
     return [
-        ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
+        ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None, panel_types = [ConfigPanelType.BAAH_Bsic_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("BAAH_desc"))),
         # ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
         ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
         ConfigPanel("setting_other", lambda: set_other(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
@@ -119,19 +119,19 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel("task_craft", lambda: set_craft(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
         ConfigPanel("task_shop", lambda: set_shop(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
         ConfigPanel("task_buy_ap", lambda: set_buyAP(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
-        ConfigPanel("task_wanted", lambda: set_wanted(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
-        ConfigPanel("task_special", lambda: set_special(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
-        ConfigPanel("task_exchange", lambda: set_exchange(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_wanted", lambda: set_wanted(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times"))),
+        ConfigPanel("task_special", lambda: set_special(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times"))),
+        ConfigPanel("task_exchange", lambda: set_exchange(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times"))),
         ConfigPanel("task_exam", lambda: set_exam(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
-        ConfigPanel("task_event", lambda: set_event(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_event", lambda: set_event(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times"))),
         ConfigPanel("task_assault", lambda: set_assault(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
         ConfigPanel("task_oneclick_raid", lambda: set_oneclick_raid(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
-        ConfigPanel("task_hard", lambda: set_hard(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
-        ConfigPanel("task_normal", lambda: set_normal(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
+        ConfigPanel("task_hard", lambda: set_hard(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times"))),
+        ConfigPanel("task_normal", lambda: set_normal(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times"))),
         ConfigPanel("setting_explore", lambda: set_explore(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
         ConfigPanel("task_user_def_task", lambda: set_usertask(lst_config, parsed_obj_dict), i18n_config=lst_config, panel_types = [ConfigPanelType.Daily_Task_Settings]),
 
-        ConfigPanel("config_quick_call_task", lambda: set_quick_runtask(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config, panel_types = [ConfigPanelType.Quick_Task_Settings]),
+        ConfigPanel("config_quick_call_task", lambda: set_quick_runtask(lst_config, task_instances_map.task_config_name_2_i18n_name, logArea), i18n_config=lst_config, panel_types = [ConfigPanelType.Quick_Task_Settings], desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_quick_call_task"))),
         
     ]
 

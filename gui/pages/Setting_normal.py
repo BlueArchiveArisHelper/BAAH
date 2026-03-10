@@ -8,7 +8,7 @@ def set_normal(config):
         ui.link_target("NORMAL")
         ui.label(config.get_text("task_normal")).style('font-size: x-large')
     
-    ui.label(config.get_text("config_desc_times"))
+    # ui.label(config.get_text("config_desc_times"))
     ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "NORMAL_QUEST_EVENT_STATUS") 
     list_edit_area(
         config.userconfigdict["NORMAL"], 
