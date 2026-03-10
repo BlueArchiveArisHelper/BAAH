@@ -27,20 +27,16 @@ class EnterGame(Task):
         """
         if not self.strict_mode:
             return
-        # 记录主页中的资源
-        power_str = ocr_area((483, 17), (582, 56))[0].strip()
-        # print("体力: ", power_str)
-        credit_str = ocr_area((668, 19), (812, 59))[0].strip()
-        # print("信用点: ", credit_str)
-        diamond_str = ocr_area((863, 21), (973, 60))[0].strip()
-        # print("钻石: ", diamond_str)
-
+        resources = self.ocr_account_resource()
+        logging.info(istr({
+            CN: f"进入游戏时OCR到的资源信息 {resources}",
+            EN: f"OCR result of resources when entering the game {resources}"
+        }))
         # 检查OCR结果是否合法
-        if re.fullmatch(r'\d+/\d+', power_str) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', credit_str) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', diamond_str) is not None:
-            config.sessiondict["BEFORE_BAAH_SOURCES"] = {"power": power_str, "credit": credit_str, "diamond": diamond_str}
+        if re.fullmatch(r'\d+/\d+', resources["power"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["credit"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["diamond"]) is not None:
+            config.sessiondict["BEFORE_BAAH_SOURCES"] = resources
         else:
-            logging.warn({"zh_CN": "进入游戏时，资源数量OCR失败，跳过记录", "en_US": "Invalid resource OCR result when entering the game, skipping"})
-            logging.warn({"zh_CN": "体力：{} 信用点：{} 钻石：{}".format(power_str, credit_str, diamond_str), "en_US": "Energy: {} Credits: {} Pyroxene: {}".format(power_str, credit_str, diamond_str)})
+            logging.warn({"zh_CN": "进入游戏时，资源数量OCR非法格式，跳过记录", "en_US": "Invalid resource OCR result when entering the game, skipping"})
      
     def pre_condition(self) -> bool:
         return True

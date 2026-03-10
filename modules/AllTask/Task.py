@@ -342,3 +342,21 @@ class Task:
                 lambda: not match_pixel(Page.LEFT_FOUR_TEAMS_POSITIONS[i], Page.COLOR_WHITE)
             )
             Task._modify_now_teams_students(auto_team=True)
+    
+    @staticmethod
+    def ocr_account_resource():
+        """
+        OCR账号资源，返回一个字典，包含当前账号的钻石，金币，体力等资源数量
+        """
+        # ...
+        power_str = ocr_area((483, 17), (582, 56))[0].strip()
+        # print("体力: ", power_str)
+        credit_str = ocr_area((668, 19), (812, 59))[0].strip()
+        # print("信用点: ", credit_str)
+        diamond_str = ocr_area((863, 21), (973, 60))[0].strip()
+        # print("钻石: ", diamond_str)
+        return {
+            "power": power_str,
+            "credit": credit_str,
+            "diamond": diamond_str
+        }
