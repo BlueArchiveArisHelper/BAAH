@@ -626,7 +626,7 @@ def show_json_panel(json_file_name: str):
             # Placeholder for Left and Middle, created first to maintain row order
             left_section = (
                 ui.card()
-                .classes("h-full p-0 flex flex-col overflow-hidden")
+                .classes("h-full p-0 flex flex-col flex-nowrap overflow-hidden")
                 .style(f"flex: {COLUMN_RATIOS[0]}")
             )
             middle_section = (
