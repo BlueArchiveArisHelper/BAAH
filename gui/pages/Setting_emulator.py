@@ -30,6 +30,23 @@ def set_emulator(config):
     
     ui.link_target("EMULATOR")
     ui.label(config.get_text("setting_emulator")).style('font-size: x-large')
+
+    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):    
+    #  大更新配置
+        ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
+    
+        ui.label(config.get_text("big_update_type")).style('font-size: large').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+    
+        ui.radio({
+            "API":config.get_text("big_update_type_api"),
+            "DIRECT_GET":config.get_text("big_update_type_direct_get")
+        },
+                        value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+    
+        ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
+    
+    def set_big_update_type(big_update_type):
+        config.userconfigdict['BIG_UPDATE_TYPE'] = big_update_type
     
     
     # with ui.row().bind_visibility_from(config.userconfigdict, "TARGET_PORT", lambda v: v>=16384):
@@ -49,27 +66,27 @@ def set_emulator(config):
     #             ui.label(istr({CN:"修复后请直接重开模拟器", EN:"Please restart the emulator directly after fixing", JP:"修正後、直接エミュレータを再起動してください"}))
     #             ui.label(istr({CN:"请勿再次更改上面设置, 否则修复失效", EN:"Do not change the above settings again, or fix will be disabled", JP:"上記の設定を再度変更しないでください。さもないと修正が無効になります"})).style('color: red')
     
-    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
-        # IP+端口
-        ui.number(config.get_text("config_emulator_port"),
-                step=1,
-                precision=0,
-                ).bind_value(config.userconfigdict, 'TARGET_PORT', forward=lambda v: int(v), backward=lambda v:int(v)).style('width: 400px').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: not v)
-        # 序列号
-        ui.input(config.get_text("adb_serial")).bind_value(config.userconfigdict, 'ADB_SEIAL_NUMBER').style('width: 400px').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: v)
+    # with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
+    #     # IP+端口
+    #     ui.number(config.get_text("config_emulator_port"),
+    #             step=1,
+    #             precision=0,
+    #             ).bind_value(config.userconfigdict, 'TARGET_PORT', forward=lambda v: int(v), backward=lambda v:int(v)).style('width: 400px').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: not v)
+    #     # 序列号
+    #     ui.input(config.get_text("adb_serial")).bind_value(config.userconfigdict, 'ADB_SEIAL_NUMBER').style('width: 400px').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: v)
         
-        # 切换使用序列号还是IP+端口
-        ui.checkbox(config.get_text("adb_direct_use_serial")).bind_value(config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')
+    #     # 切换使用序列号还是IP+端口
+    #     ui.checkbox(config.get_text("adb_direct_use_serial")).bind_value(config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')
         
     
-    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
-        kill_port = ui.checkbox(config.get_text("config_kill_port")).bind_value(config.userconfigdict, "KILL_PORT_IF_EXIST")
-        kill_port.set_value(False)
-        kill_port.set_enabled(False)
+    # with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
+    #     kill_port = ui.checkbox(config.get_text("config_kill_port")).bind_value(config.userconfigdict, "KILL_PORT_IF_EXIST")
+    #     kill_port.set_value(False)
+    #     kill_port.set_enabled(False)
     
-    with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not "STEAM" in v):    
-        ui.input(config.get_text("config_emulator_path"),
-                    ).bind_value(config.userconfigdict, 'TARGET_EMULATOR_PATH',forward=lambda v: v.replace("\\", "/").replace('"','').replace('nx_main/MuMuNxMain.exe','nx_device/12.0/shell/MuMuNxDevice.exe')).style('width: 400px')
+    # with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not "STEAM" in v):    
+    #     ui.input(config.get_text("config_emulator_path"),
+    #                 ).bind_value(config.userconfigdict, 'TARGET_EMULATOR_PATH',forward=lambda v: v.replace("\\", "/").replace('"','').replace('nx_main/MuMuNxMain.exe','nx_device/12.0/shell/MuMuNxDevice.exe')).style('width: 400px')
     
     # 结束后自动关闭操作
     with ui.card():

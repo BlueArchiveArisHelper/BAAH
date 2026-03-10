@@ -1,9 +1,9 @@
-myversion = "2.1.7"
+myversion = "2.2.0"
 mychangelog = """
 >> BAAH2: https://baah.sanmusen.top/ <<
 
-修复 GUI 内无法截图 PC端 ba 的问题 | Fix the problem that cannot screenshot ba in GUI
+优化 GUI 界面 | optimize GUI interface
 
-优化排版和部分文字 | Optimize layout and text
+修复了部分已知问题 | fixed some known issues
 
 """

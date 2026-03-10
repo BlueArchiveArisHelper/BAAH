@@ -74,12 +74,3 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
         ui.checkbox(config.get_text("desc_rerun_start_from_lastpoint")).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR_FROM_LAST_TASK").bind_visibility_from(config.userconfigdict, "RETRY_WHEN_ERROR", backward=lambda x:x>0)
 
 
-    # 快速调用任务
-    show_fast_run_task_buttons([
-        TaskName.MOMOTALK, 
-        [TaskName.MAIN_STORY, TaskName.SHORT_STORY, TaskName.SIDE_STORY],
-        TaskName.SOLVE_CHALLENGE, 
-        [TaskName.PUSH_NORMAL, TaskName.PUSH_HARD],
-        TaskName.EVENTRECAP
-    ], config, real_taskname_to_show_taskname, logArea)
-

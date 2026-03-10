@@ -66,7 +66,7 @@ def render_json_list():
                     async def show_release():
                         resultVI = await run.io_bound(only_check_version)
                         with release_area:
-                            ui.label(resultVI.msg).style(f'font-size: x-large;{"color: red" if resultVI.has_new_version else "color: black"}')
+                            ui.label(resultVI.msg).style(f'font-size: x-large;{"color: red" if resultVI.has_new_version else ""}')
                             ui.html(f'<div style="white-space: pre-line;font-size: large">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
                                 # 一键更新按钮
@@ -133,4 +133,12 @@ def render_json_list():
 
 @ui.page("/")
 def home_page():
+    # Dark mode setup
+    dark = ui.dark_mode()
+    # Check browser preference
+    is_dark = ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
+    if is_dark:
+        dark.enable()
+    else:
+        dark.disable()
     render_json_list()

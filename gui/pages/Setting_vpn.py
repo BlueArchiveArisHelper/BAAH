@@ -21,8 +21,3 @@ def set_vpn(config, parsed_obj_dict):
     end_group:FlowActionGroup = parsed_obj_dict["OBJ_ACTIONS_VPN_SHUT"]
     end_group.render_gui(config)
     # -----------------------------
-
-    # 将截图功能内嵌进GUI
-    ui.separator()
-    with ui.row():
-        ui.button("测试截图/screencut test", on_click=lambda: test_screencut(config))

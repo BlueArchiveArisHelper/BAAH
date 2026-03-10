@@ -8,7 +8,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, ActionType,screenshot, match_pixel, istr, CN, EN
 from modules.utils.log_utils import logging
-import time
+import time, re
 
 class PostAllTask(Task):
     def __init__(self, name="PostAllTask") -> None:
@@ -55,23 +55,25 @@ class PostAllTask(Task):
         """
         记录主页中的资源
         """
-        # 记录主页中的资源
-        power_str = ocr_area((483, 17), (582, 56))[0]
-        # print("体力: ", power_str)
-        credit_str = ocr_area((668, 19), (812, 59))[0]
-        # print("信用点: ", credit_str)
-        diamond_str = ocr_area((863, 21), (973, 60))[0]
-        # print("钻石: ", diamond_str)
-        record_obj = {"power": power_str, "credit": credit_str, "diamond": diamond_str}
-        config.sessiondict["AFTER_BAAH_SOURCES"] = record_obj
+        resources = self.ocr_account_resource()
+        logging.info(istr({
+            CN: f"退出游戏时OCR到的资源信息 {resources}",
+            EN: f"OCR result of resources when exiting the game {resources}"
+        }))
 
-        try:
-            self.save_sources_to_user_storage(record_obj)
-        except Exception as e:
-            logging.error(istr({
-                CN: f"保存资源到用户存储失败: {e}",
-                EN: f"Failed to save resources to user storage: {e}"
-            }))
+        # 检查OCR结果是否合法
+        if re.fullmatch(r'\d+/\d+', resources["power"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["credit"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["diamond"]) is not None:
+            config.sessiondict["AFTER_BAAH_SOURCES"] = resources
+
+            try:
+                self.save_sources_to_user_storage(resources)
+            except Exception as e:
+                logging.error(istr({
+                    CN: f"保存资源到用户存储失败: {e}",
+                    EN: f"Failed to save resources to user storage: {e}"
+                }))
+        else:
+            logging.warn({"zh_CN": "退出游戏时，资源数量OCR非法格式，跳过记录", "en_US": "Invalid resource OCR result when exiting the game, skipping"})
      
     def on_run(self) -> None:
         self.record_resources()

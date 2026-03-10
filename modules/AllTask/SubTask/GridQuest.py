@@ -128,6 +128,29 @@ class GridQuest(Task):
             times=2
         )
 
+    def check_open_taskinfo_in_grid(self, error_if_timeout = True):
+        """检测用户是否在走格子界面提示打开任务资讯，替代掉原本的回车确认"""
+        logging.warn(istr({
+            CN: "结束后请返回至走格子界面，打开任务资讯弹窗",
+            EN: "After it is completed, please return to the grid page and open the task information popup"
+        }))
+        find_taskinfo_popup = self.run_until(
+            lambda: sleep(1),
+            lambda: match(page_pic(PageName.PAGE_GRID_FIGHT)) and self.has_popup(),
+            times=30
+        )
+        if not find_taskinfo_popup and error_if_timeout:
+            logging.error(istr({
+                CN: "无法确认用户操作完成，请设置脚本配队逻辑 或 确保手动操作完成后打开任务资讯弹窗",
+                EN: "Unable to confirm that the user operation is completed, please set the script team configuration logic or make sure to open the task information popup after the manual operation is completed"
+            }))
+            raise Exception("无法确认用户操作完成，请设置脚本配队逻辑 或 确保手动操作完成后打开任务资讯弹窗")
+        if find_taskinfo_popup:
+            logging.info(istr({
+                CN: "识别到已确认用户操作完成，任务资讯弹窗已打开",
+                EN: "Recognize that user operation is completed, task information popup is opened"
+            }))
+
     def wait_end(self, possible_fight=False):
         """
         点击右下任务资讯，等待战斗结束可以弹出弹窗，然后点击魔法点关掉弹窗
@@ -296,7 +319,8 @@ class GridQuest(Task):
             logging.info({"zh_CN": "同时，请确保你的SKIP战斗设置为开启，PHASE自动结束为关闭",
                           "en_US": "In the meantime, please make sure your skip battle "
                                    "is set to on and phase automatically ends to off"})
-            input("配队结束后请直接返回至走格子界面，不用点击出击。输入回车继续：")
+            self.check_open_taskinfo_in_grid()
+            
             # 更新队伍信息
             config.sessiondict["LAST_TEAM_SET"] = now_need_team_set_list
             logging.info({"zh_CN": "配队信息已更新", "en_US": "Dispatch information has been updated"})
@@ -365,7 +389,11 @@ class GridQuest(Task):
                 logging.error({"zh_CN": "未识别到配队界面，可能是队伍起始点被遮挡导致识别失败",
                                "en_US": "Can't recognize the edit team page, maybe the team start point is blocked and the recognition fails"})
                 self.print_team_config(now_need_team_set_list, self.ind_map)
-                input("请按照以上要求手动出击队伍，然后返回至格子地图界面，回车以继续...")
+                logging.warn(istr({
+                    CN: "请按照以上要求手动出击队伍，然后返回至格子地图界面，打开任务资讯弹窗",
+                    EN: "Please manually dispatch the team according to the above requirements, then return to the grid map page and open the task information popup"
+                }))
+                self.check_open_taskinfo_in_grid()
             # 选择队伍编号
             # 如果开启了自动配队，第一次循环的时候进行自动配队
             if self.auto_team and focus_team_ind == 0:

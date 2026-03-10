@@ -11,7 +11,6 @@ def set_usertask(config, parsed_obj_dict):
 
     with ui.row():
         with ui.column().bind_visibility_from(config.userconfigdict, "USE_OBJ_USER_DEFINE_TASK", backward=lambda x:x):
-            ui.button("测试截图/screencut test", on_click=lambda: test_screencut(config))
             flow_group = parsed_obj_dict.get("OBJ_USER_DEFINE_TASK", None)
             flow_group.render_gui(config)
 

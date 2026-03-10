@@ -151,7 +151,6 @@ def screen_shot_to_global(use_config=None, output_png=False):
         if output_png:
             cv2.imwrite("./{}".format(target_config.userconfigdict['SCREENSHOT_NAME']), img_screenshot)
 
-
 def get_now_running_app(use_config=None):
     """
     获取当前运行的app的前台activity

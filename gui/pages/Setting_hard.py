@@ -6,7 +6,7 @@ def set_hard(config, shared_softwareconfig):
         ui.link_target("HARD")
         ui.label(config.get_text("task_hard")).style('font-size: x-large')
     
-    ui.label(config.get_text("config_desc_times"))
+    # ui.label(config.get_text("config_desc_times"))
     ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "HARD_QUEST_EVENT_STATUS") 
     
     show_note = {"val": False}
