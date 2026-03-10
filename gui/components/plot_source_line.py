@@ -2,6 +2,11 @@ from nicegui import ui
 import json
 from datetime import datetime
 
+# 数据转换helper函数，尝试滤出数字字符，失败则返回None
+def _extract_int(value):
+    digits = ''.join(filter(str.isdigit, str(value)))
+    return int(digits) if digits else None
+
 # 数据转换函数
 def convert_data(storage_data_list):
     raw_data = storage_data_list if storage_data_list else []
@@ -10,17 +15,23 @@ def convert_data(storage_data_list):
     diamonds = []
     
     for item in raw_data:
+        # 转换credit
+        credit_value = _extract_int(item.get('credit', ''))
+
+        # 转换diamond
+        diamond_value = _extract_int(item.get('diamond', ''))
+
+        # 检查转换后数据合法性
+        if credit_value is None or diamond_value is None:
+            print('Invalid credit or diamond value for date', item['date'])
+            continue
+
         # 添加日期（直接使用字符串或转换为日期对象）
         dates.append(item['date'])
-        
-        # 转换credit：滤出数字字符
-        credit_value = int(''.join(filter(str.isdigit, item['credit'])))
+
+        # 添加其他数据
         credits.append(credit_value)
-
-        # 转换diamond：滤出数字字符
-        diamond_value = int(''.join(filter(str.isdigit, item['diamond'])))
         diamonds.append(diamond_value)
-
     
     return dates, credits, diamonds
 

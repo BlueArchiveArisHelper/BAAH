@@ -6,6 +6,7 @@ from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
 from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, config, ocr_area, logging, istr, CN, EN, screenshot
+import re
 # =====
 from .Loginin import Loginin
 from .CloseInform import CloseInform
@@ -27,13 +28,19 @@ class EnterGame(Task):
         if not self.strict_mode:
             return
         # 记录主页中的资源
-        power_num = ocr_area((483, 17), (582, 56))[0]
-        # print("体力: ", power_num)
-        credit_num = ocr_area((668, 19), (812, 59))[0]
-        # print("信用点: ", credit_num)
-        diamond_num = ocr_area((863, 21), (973, 60))[0]
-        # print("钻石: ", diamond_num)
-        config.sessiondict["BEFORE_BAAH_SOURCES"] = {"power": power_num, "credit": credit_num, "diamond": diamond_num}
+        power_str = ocr_area((483, 17), (582, 56))[0].strip()
+        # print("体力: ", power_str)
+        credit_str = ocr_area((668, 19), (812, 59))[0].strip()
+        # print("信用点: ", credit_str)
+        diamond_str = ocr_area((863, 21), (973, 60))[0].strip()
+        # print("钻石: ", diamond_str)
+
+        # 检查OCR结果是否合法
+        if re.fullmatch(r'\d+/\d+', power_str) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', credit_str) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', diamond_str) is not None:
+            config.sessiondict["BEFORE_BAAH_SOURCES"] = {"power": power_str, "credit": credit_str, "diamond": diamond_str}
+        else:
+            logging.warn({"zh_CN": "进入游戏时，资源数量OCR失败，跳过记录", "en_US": "Invalid resource OCR result when entering the game, skipping"})
+            logging.warn({"zh_CN": "体力：{} 信用点：{} 钻石：{}".format(power_str, credit_str, diamond_str), "en_US": "Energy: {} Credits: {} Pyroxene: {}".format(power_str, credit_str, diamond_str)})
      
     def pre_condition(self) -> bool:
         return True
