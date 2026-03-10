@@ -46,9 +46,9 @@ class ConfigPanelType(Enum):
     Quick_Task_Settings = 2
 
 panel_types_2_str = {
-    ConfigPanelType.BAAH_Bsic_Settings: "BAAH基础设置",
-    ConfigPanelType.Daily_Task_Settings: "日常任务设置",
-    ConfigPanelType.Quick_Task_Settings: "快速任务设置"
+    ConfigPanelType.BAAH_Bsic_Settings: "BAAH",
+    ConfigPanelType.Daily_Task_Settings: gui_shared_config.get_text("setting_daily"),
+    ConfigPanelType.Quick_Task_Settings: gui_shared_config.get_text("config_quick_call_task")
 }
 
 class ConfigPanel:
@@ -72,7 +72,7 @@ class ConfigPanel:
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
         # 4. Mock description as requested
-        self.desc = desc if desc else lambda: ui.label(f"配置项 {self.name} 的详细说明及注意事项。")
+        self.desc = desc if desc else lambda: ui.label(f"{self.name}")
         self.nameID = nameID
         self.panel_types = panel_types
 
@@ -106,7 +106,7 @@ def parse_obj_in_config(inconfig, obj_dict, backward = False):
 def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
     return [
         ConfigPanel("BAAH", lambda: set_BAAH(lst_config, gui_shared_config), i18n_config=None, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
-        ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
+        # ConfigPanel("setting_server", lambda: set_server(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
         ConfigPanel("setting_emulator", lambda: set_emulator(lst_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
         ConfigPanel("setting_other", lambda: set_other(lst_config, gui_shared_config), i18n_config=lst_config, panel_types = [ConfigPanelType.BAAH_Bsic_Settings]),
 
@@ -220,7 +220,7 @@ def show_json_panel(json_file_name: str):
     def render_description():
         if current_panel:
             with ui.column().classes('w-full h-full p-4 overflow-y-auto'):
-                 ui.label("任务说明").classes('section-title')
+                 ui.label(gui_shared_config.get_text("text_description")).classes('section-title')
                  current_panel.desc()
 
     def select_panel(panel):
@@ -290,7 +290,13 @@ def show_json_panel(json_file_name: str):
                 is_not_pc = lambda v: not _is_PC_app(v)
 
                 # 2. ADB Port/Serial (Ratio 1)
-                with ui.element('div').style('flex: 1; min-width: 0px; display: flex; align-items: center;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                with ui.element('div').style('flex: 2; min-width: 0px; display: flex; align-items: center;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                    # IP Input
+                    ui.input(curr_config.get_text("config_ip_root")).\
+                        bind_value(curr_config.userconfigdict, 'TARGET_IP_PATH',forward=lambda v: v.replace("\\", "/"))\
+                        .bind_visibility_from(curr_config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: not v)\
+                        .classes('w-full')
+                    
                     # Port Input
                     ui.number('ADB Port', step=1, precision=0)\
                         .bind_value(curr_config.userconfigdict, 'TARGET_PORT', forward=lambda v: int(v) if v else 5555, backward=lambda v:int(v))\
@@ -318,7 +324,7 @@ def show_json_panel(json_file_name: str):
 
             # Right Group: Action Buttons
             with ui.row().classes('items-center gap-2 flex-none'):
-                ui.button('保存配置', icon='save', on_click=save_and_alert).props('flat')
+                ui.button(gui_shared_config.get_text("button_save"), icon='save', on_click=save_and_alert).props('flat')
                 
                 # Signal logic
                 msg_obj = RunningBAAHProcess_instance.get_status_obj(configname=json_file_name)
@@ -327,19 +333,19 @@ def show_json_panel(json_file_name: str):
                 with ui.row().classes('items-center gap-0'):
                     
                     # RUN BUTTON (GUI)
-                    run_btn = ui.button('运行 (GUI)', icon='play_arrow', on_click=run_in_gui) \
+                    run_btn = ui.button(gui_shared_config.get_text("button_save_and_run_gui"), icon='play_arrow', on_click=run_in_gui) \
                         .classes('blue-button rounded-r-none') \
                         .bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0)
                     
                     # STOP BUTTON
-                    stop_btn = ui.button('停止运行', icon='stop', color='red', on_click=stop_run) \
+                    stop_btn = ui.button(gui_shared_config.get_text("notice_finish_run"), icon='stop', color='red', on_click=stop_run) \
                         .classes('rounded-r-none') \
                         .bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 1)
 
                     # DROPDOWN TRIGGER
                     with ui.button(icon='arrow_drop_down').classes('px-1 rounded-l-none border-l border-white/30 blue-button').bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0):
                         with ui.menu():
-                            ui.menu_item('终端运行 (Term)', on_click=run_in_terminal)
+                            ui.menu_item(gui_shared_config.get_text("button_save_and_run_terminal"), on_click=run_in_terminal)
                             
                     ui.spinner().bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0.25)
                 
@@ -372,7 +378,7 @@ def show_json_panel(json_file_name: str):
 
                 # Log Card (Bottom 2/3 approximately)
                 with ui.card().classes('w-full h-2/3 p-0 flex flex-col overflow-hidden'):
-                    ui.label('运行日志').classes('p-2 font-bold border-b border-gray-200 text-xs')
+                    ui.label(gui_shared_config.get_text("text_log")).classes('p-2 font-bold border-b border-gray-200 text-xs')
                     with ui.column().classes('w-full flex-grow p-0 overflow-hidden relative'):
                          # Create LogArea here
                          logArea = ui.log(max_lines=1000).classes('w-full h-full font-mono text-xs p-2 overflow-auto absolute inset-0')
