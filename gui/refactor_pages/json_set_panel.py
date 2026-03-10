@@ -344,7 +344,7 @@ def show_json_panel(json_file_name: str):
 
                     # DROPDOWN TRIGGER
                     with ui.button(icon='arrow_drop_down').classes('px-1 rounded-l-none border-l border-white/30 blue-button').bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0):
-                        with ui.menu():
+                        with ui.menu().classes('min-w-60'):
                             ui.menu_item(gui_shared_config.get_text("button_save_and_run_terminal"), on_click=run_in_terminal)
                             
                     ui.spinner().bind_visibility_from(msg_obj, "runing_signal", backward=lambda x: x == 0.25)
