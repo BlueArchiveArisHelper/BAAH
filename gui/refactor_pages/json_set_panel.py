@@ -30,7 +30,7 @@ from ..pages.Setting_Oneclick_Raid import set_oneclick_raid
 from ..pages.Setting_quick_runtask import set_quick_runtask
 from modules.AllTask.myAllTask import task_instances_map 
 from modules.configs.MyConfig import MyConfigger
-from modules.utils import _is_PC_app
+from modules.utils import _is_PC_app, _is_STEAM_app
 from modules.configs.settingMaps import server2pic, server2activity, server2respond
 from ..define import gui_shared_config
 from define_actions.basic_objects import FlowActionGroup
@@ -316,7 +316,7 @@ def show_json_panel(json_file_name: str):
                         .classes('w-full')
                 
                 # 4. Emulator Path (Ratio 6)
-                with ui.element('div').style('flex: 6; min-width: 0px; display: flex; align-items: center;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", is_not_pc):
+                with ui.element('div').style('flex: 6; min-width: 0px; display: flex; align-items: center;').classes('mx-1').bind_visibility_from(curr_config.userconfigdict, "SERVER_TYPE", lambda v: not _is_STEAM_app(v)):
                     ui.input(curr_config.get_text("config_emulator_path"))\
                         .bind_value(curr_config.userconfigdict, 'TARGET_EMULATOR_PATH', 
                                    forward=lambda v: v.replace("\\", "/").replace('"','').replace('nx_main/MuMuNxMain.exe','nx_device/12.0/shell/MuMuNxDevice.exe'))\
