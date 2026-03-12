@@ -35,6 +35,9 @@ class Loginin(Task):
         self.sleep_between_detect = 3
         # 进入游戏后还会蹦出来活动弹窗,这里让run_until能多跑几轮
         self.extra_run_times = 2
+        # steam 和 安卓包 活动弹窗左下勾的位置
+        self.steam_event_check_box = ((260, 513), (294, 545))
+        self.APP_event_check_box = ((30, 662), (63, 691))
 
     def detect_loading_bar(self):
         """检测底部下载进度条，返回0-100进度，0表示无进度条"""
@@ -59,12 +62,23 @@ class Loginin(Task):
         """关闭登陆时的活动弹窗"""
         # 判断关键区域
         if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
-            event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
+            event_button_text = ocr_area(self.steam_event_check_box[0], self.steam_event_check_box[1])[0].strip().lower()
             logging.info(f"PC event button ocr: {event_button_text}")
         else:
-            event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
+            event_button_text = ocr_area(self.APP_event_check_box[0], self.APP_event_check_box[1])[0].strip().lower()
             logging.info(f"App event button ocr: {event_button_text}")
-        if any([eachv in event_button_text for eachv in ["√", "v", "y"]]):
+        
+        if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
+            logging.info(istr({
+                CN: "STEAM,尝试点击活动弹窗右上角关闭按钮位置",
+                EN: "STEAM,Try to click the close button in the upper right corner of the event popup位置"
+            }))
+            click((1023, 123))
+        if any([eachv in event_button_text for eachv in ["√", "v", "y", "r"]]):
+            logging.info(istr({
+                CN: "检测到活动弹窗，点击左下角勾选框",
+                EN: "Detect event popup, click the checkbox in the lower left corner"
+            }))
             if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
                 # 判断点击左下角是否有今日不再显示的勾（√）并点掉
                 # STEAM
@@ -114,10 +128,10 @@ class Loginin(Task):
                 }))
         # 判断关键区域
         if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
-            event_button_text = ocr_area((254, 524), (280, 551))[0].lower()
+            event_button_text = ocr_area(self.steam_event_check_box[0], self.steam_event_check_box[1])[0].lower()
             logging.info(f"STEAM event button ocr: {event_button_text}")
         else:
-            event_button_text = ocr_area((30, 662), (63, 691))[0].lower()
+            event_button_text = ocr_area(self.APP_event_check_box[0], self.APP_event_check_box[1])[0].lower()
             logging.info(f"App event button ocr: {event_button_text}")
         # ======== 判断流 ========
         # 如果进入安装器页面

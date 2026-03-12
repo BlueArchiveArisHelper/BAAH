@@ -1,9 +1,7 @@
-myversion = "2.2.3"
+myversion = "2.2.4"
 mychangelog = """
 >> BAAH2: https://baah.sanmusen.top/ <<
 
-优化 GUI 界面 | optimize GUI interface
-
-修复了2.2.1 GUI看不到任务列表问题 | fixed the problem that the task list is not visible in 2.2.1 GUI
+修复 STEAM 端登陆点不掉活动弹窗的bug | Fix the bug that the event popup cannot be clicked when logging in on STEAM
 
 """
