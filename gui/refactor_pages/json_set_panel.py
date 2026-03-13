@@ -293,14 +293,14 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 
 # ---------- 页面主函数 ----------
 @ui.page("/panel/{json_file_name}")
-def show_json_panel(json_file_name: str):
-
+async def show_json_panel(json_file_name: str):
     # Dark mode setup
     dark = ui.dark_mode()
     # Check browser preference
-    is_dark = ui.run_javascript(
+    is_dark = await ui.run_javascript(
         'window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches'
     )
+    
     if is_dark:
         dark.enable()
     else:
