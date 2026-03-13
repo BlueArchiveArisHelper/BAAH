@@ -132,11 +132,11 @@ def render_json_list():
 
 
 @ui.page("/")
-def home_page():
+async def home_page():
     # Dark mode setup
     dark = ui.dark_mode()
     # Check browser preference
-    is_dark = ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
+    is_dark = await ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
     if is_dark:
         dark.enable()
     else:
