@@ -131,13 +131,13 @@ class GridQuest(Task):
     def check_open_taskinfo_in_grid(self, error_if_timeout = True):
         """检测用户是否在走格子界面提示打开任务资讯，替代掉原本的回车确认"""
         logging.warn(istr({
-            CN: "结束后请返回至走格子界面，打开任务资讯弹窗",
-            EN: "After it is completed, please return to the grid page and open the task information popup"
+            CN: "结束后请返回至走格子界面，打开任务资讯弹窗 (120s内)",
+            EN: "After it is completed, please return to the grid page and open the task information popup (within 120s)"
         }))
         find_taskinfo_popup = self.run_until(
             lambda: sleep(1),
             lambda: match(page_pic(PageName.PAGE_GRID_FIGHT)) and self.has_popup(),
-            times=30
+            times=120
         )
         if not find_taskinfo_popup and error_if_timeout:
             logging.error(istr({
@@ -150,6 +150,8 @@ class GridQuest(Task):
                 CN: "识别到已确认用户操作完成，任务资讯弹窗已打开",
                 EN: "Recognize that user operation is completed, task information popup is opened"
             }))
+            # 关闭弹窗
+            self.clear_popup()
 
     def wait_end(self, possible_fight=False):
         """
