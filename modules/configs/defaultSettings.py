@@ -172,8 +172,12 @@ defaultUserDict = {
     "SENDER_EMAIL":{"d":""},
     "RECEIVER_EMAIL":{"d":""},
     "MAIL_HOST":{"d":""},
-    
+    # 总力战档位
     "AUTO_ASSAULT_LEVEL":{"d":4},
+    # 大决战档位
+    "AUTO_GRAND_ASSAULT_LEFT_LEVEL": {"d": 4},
+    "AUTO_GRAND_ASSAULT_MIDDLE_LEVEL": {"d": 4},
+    "AUTO_GRAND_ASSAULT_RIGHT_LEVEL": {"d": 4},
     
     "RUN_UNTIL_TRY_TIMES":{"d":9},
     "RUN_UNTIL_WAIT_TIME":{"d":0.6},
@@ -341,6 +345,14 @@ defaultUserDict = {
     # 总力战队伍无法出击（无编队，已出击）是否报错
     "ASSAULT_NO_TEAM_EXCEPT":{
         "d": True,
+    },
+    # 大决战队伍无法出击（无编队，已出击）是否报错
+    "GRAND_ASSAULT_NO_TEAM_EXCEPT":{
+        "d": True,
+    },
+    # 大决战指定关卡未解锁不进行战斗直接跳过扫荡
+    "GRAND_ASSAULT_NO_FIGHT":{
+        "d": False,
     },
     # 自定义任务操作使用action
     "USE_OBJ_USER_DEFINE_TASK":{

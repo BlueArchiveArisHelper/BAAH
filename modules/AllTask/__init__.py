@@ -21,6 +21,7 @@ from .CollectDailyRewards.CollectDailyRewards import CollectDailyRewards
 
 from .AutoStory.AutoStory import AutoStory
 from .AutoAssault.AutoAssault import AutoAssault
+from .AutoGrandAssault.AutoGrandAssault import AutoGrandAssault
 
 from .BuyAP.BuyAP import BuyAP
 

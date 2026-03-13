@@ -48,4 +48,6 @@ class PageName:
     
     PAGE_ASSAULT = "PAGE_ASSAULT"
 
+    PAGE_GRAND_ASSAULT = "PAGE_GRAND_ASSAULT" # 大决战
+
     PAGE_EXAM = "PAGE_EXAM" # 战术综合测试

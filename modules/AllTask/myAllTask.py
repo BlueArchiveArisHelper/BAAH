@@ -30,6 +30,7 @@ class TaskName():
     EVENT = "活动关卡"
     EVENTRECAP = "活动一览"
     ASSAULT = "总力战"
+    GRAND_ASSAULT = "大决战"
     DAILY = "每日任务"
     MAIL = "邮件"
     NORMAL = "普通关卡"
@@ -168,6 +169,12 @@ class TaskInstanceMap:
                     task_config_name = TaskName.ASSAULT,
                     i18n_key_name = "task_assault",
                     task_module = AutoAssault,
+                    task_params = {}
+                ),
+            TaskName.GRAND_ASSAULT: TaskInstance(
+                    task_config_name = TaskName.GRAND_ASSAULT,
+                    i18n_key_name = "task_grand_assault",
+                    task_module = AutoGrandAssault,
                     task_params = {}
                 ),
             TaskName.EVENT: TaskInstance(

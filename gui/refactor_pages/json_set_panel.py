@@ -23,6 +23,7 @@ from ..pages.Setting_wanted import set_wanted
 from ..pages.Setting_notification import set_notification
 from ..pages.Setting_vpn import set_vpn
 from ..pages.Setting_Assault import set_assault
+from ..pages.Setting_Grand_Assault import set_grand_assault
 from ..pages.Setting_BuyAP import set_buyAP
 from ..pages.Setting_UserTask import set_usertask
 from ..pages.Setting_explore import set_explore
@@ -237,6 +238,12 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
+            "task_grand_assault",
+            lambda: set_grand_assault(lst_config),
+            i18n_config=lst_config,
+            panel_types=[ConfigPanelType.Daily_Task_Settings],
+        ),
+        ConfigPanel(
             "task_oneclick_raid",
             lambda: set_oneclick_raid(lst_config),
             i18n_config=lst_config,
@@ -286,14 +293,14 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 
 # ---------- 页面主函数 ----------
 @ui.page("/panel/{json_file_name}")
-def show_json_panel(json_file_name: str):
-
+async def show_json_panel(json_file_name: str):
     # Dark mode setup
     dark = ui.dark_mode()
     # Check browser preference
-    is_dark = ui.run_javascript(
+    is_dark = await ui.run_javascript(
         'window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches'
     )
+    
     if is_dark:
         dark.enable()
     else:
@@ -485,7 +492,7 @@ def show_json_panel(json_file_name: str):
                     )
 
                     # Port Input
-                    ui.number("ADB Port", step=1, precision=0).bind_value(
+                    ui.number(curr_config.get_text("config_emulator_port"), step=1, precision=0).bind_value(
                         curr_config.userconfigdict,
                         "TARGET_PORT",
                         forward=lambda v: int(v) if v else 5555,
