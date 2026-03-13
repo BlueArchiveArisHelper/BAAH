@@ -152,7 +152,7 @@ class Loginin(Task):
             screenshot()
 
         # 大更新
-        elif match(popup_pic(PopupName.POPUP_UPDATE_APP)):
+        elif match(popup_pic(PopupName.POPUP_UPDATE_APP), threshold=0.8):
             if config.userconfigdict["BIG_UPDATE"]:
                 GameUpdate().run()
                 raise EmulatorBlockError(istr({
