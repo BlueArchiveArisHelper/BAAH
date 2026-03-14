@@ -15,10 +15,8 @@ from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic,
 class InMomotalk(Task):
     def __init__(self, name="InMomotalk") -> None:
         super().__init__(name)
-        # 日服桃信左侧聊天框深红色未读
-        self.MOMOTALK_UNREAD_RED =Page.COLOR_RED
-        if config.userconfigdict["SERVER_TYPE"] == "PC_EXE_JP":
-            self.MOMOTALK_UNREAD_RED = [[0, 30, 245],[5, 60, 255]]
+        # 没有红点未读消息时的背景色
+        self.MOMOTALK_NO_UNREAD_BG = ((125, 125, 125), (255, 255, 255))
         
 
     def pre_condition(self) -> bool:
@@ -38,15 +36,16 @@ class InMomotalk(Task):
             click((262, 330), sleeptime = 1.5)
             # 有时候第二个对话也会刷出来按钮，这时候也可以直接检测并点一下，加快速度，不尝试等待 (有就点，没有就不点)
             self.click_reply(only_try_once=True)
+            click(self.momo_title_pos) # 可能会有弹窗，点一下标题去掉
             # 点第一个
             click((263, 253))
             # 检测红标记，手动截图！
             screenshot()
-            if match_pixel((638, 242), self.MOMOTALK_UNREAD_RED, printit=True):
+            if not match_pixel((638, 242), self.MOMOTALK_NO_UNREAD_BG, printit=True):
                 # logging.info({"zh_CN": "检测到红色标记", "en_US": "Red marks detected"})
                 return True
             # 如果在第二位检测到红标记
-            if match_pixel((638, 318), self.MOMOTALK_UNREAD_RED, printit=True):
+            if not match_pixel((638, 318), self.MOMOTALK_NO_UNREAD_BG, printit=True):
                 logging.info({"zh_CN": "刷新排序", "en_US": "Refresh Sorting"})
                 click((623, 177))
                 click((623, 177))
@@ -89,8 +88,8 @@ class InMomotalk(Task):
                     lambda: click((partner_button[1][0], partner_button[1][1] + 40)),
                     lambda: not match(button_pic(ButtonName.BUTTON_MOMOTALK_PARTNER), threshold=0.87)
                 )
-                # 羁绊按钮后面必定有羁绊剧情按钮，等待一秒
-                sleep(1.5)
+                # 羁绊按钮后面必定有羁绊剧情按钮，等待
+                sleep(0.5)
                 # 前往羁绊剧情按钮
                 self.run_until(
                     lambda: click(button_pic(ButtonName.BUTTON_GO_PARTNER_STORY)),
@@ -99,6 +98,10 @@ class InMomotalk(Task):
                 sleep(2)
                 # 尝试跳过剧情
                 SkipStory().run()
+                # 去除可能存在的弹窗
+                click(self.momo_title_pos, sleeptime=2)
+                click(self.momo_title_pos)
+                click(self.momo_title_pos)
             # 如果第一次执行没有匹配到任何按钮，睡4秒再试一次
             if not only_try_once and t_time == 0 and not reply_button[0] and not partner_button[0]:
                 sleep(4)
