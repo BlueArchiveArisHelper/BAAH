@@ -31,9 +31,6 @@ class InFreeAward(Task):
             sleeptime = 4
         )
         free_tab_red_point_position = [1030, 153]
-        if "PC_EXE_JP" in config.userconfigdict["SERVER_TYPE"]:
-            # 日服 PC 领取页面仅一个tab
-            free_tab_red_point_position = [515, 151]
         free_tab_position = [free_tab_red_point_position[0]-130, free_tab_red_point_position[1]+28]
         if not open_shop or not match_pixel(free_tab_red_point_position, self.COLOR_RED_POINT, printit=True):
             logging.error(istr({
