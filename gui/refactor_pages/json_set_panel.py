@@ -296,15 +296,21 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 async def show_json_panel(json_file_name: str):
     # Dark mode setup
     dark = ui.dark_mode()
-    # Check browser preference
-    is_dark = await ui.run_javascript(
-        'window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches'
-    )
+    dark_mode_preference = gui_shared_config.softwareconfigdict.get("DARK_MODE")
     
-    if is_dark:
-        dark.enable()
-    else:
+    if dark_mode_preference == 0:
+        # Follow browser preference
+        is_dark = await ui.run_javascript(
+            'window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches'
+        )
+        if is_dark:
+            dark.enable()
+        else:
+            dark.disable()
+    elif dark_mode_preference == 1:
         dark.disable()
+    elif dark_mode_preference == 2:
+        dark.enable()
 
     # 0. Setup and Parse same as old file
     obj_parsed_dict_of_config = {}

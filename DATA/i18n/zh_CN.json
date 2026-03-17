@@ -55,6 +55,14 @@
     "notice_get_new_version":"目前发布的最新版本",
     "notice_no_new_version":"目前没有新版本",
     "notice_download_version":"正在下载版本",
+    "notice_theme_auto":"已设置为跟随浏览器",
+    "notice_theme_light":"已设置为浅色模式",
+    "notice_theme_dark":"已设置为深色模式",
+
+    "desc_theme":"主题模式",
+    "config_theme_auto":"跟随浏览器",
+    "config_theme_light":"浅色模式",
+    "config_theme_dark":"深色模式",
 
     "button_save":"保存",
     "button_save_and_run_gui":"执行(GUI)",

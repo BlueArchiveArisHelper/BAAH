@@ -19,6 +19,20 @@ def select_language(value):
         ui.notify("Language has been changed, restart to take effect")
     else:
         ui.notify("言語が切り替わりました。再起動して有効になります。")
+def select_dark_mode(value):
+    gui_shared_config.softwareconfigdict["DARK_MODE"] = int(value)
+    gui_shared_config.save_software_config()
+    dark = ui.dark_mode()
+    if value == 0:
+        ui.notify(gui_shared_config.get_text("notice_theme_auto"))
+        # 跟随浏览器要刷新生效
+        ui.timer(0.5, lambda: ui.run_javascript('window.location.reload()'), once=True)
+    elif value == 1:
+        dark.disable()
+        ui.notify(gui_shared_config.get_text("notice_theme_light"))
+    elif value == 2:
+        dark.enable()
+        ui.notify(gui_shared_config.get_text("notice_theme_dark"))
 
 # 网址
 web_url = {
@@ -44,7 +58,14 @@ def render_json_list():
                     with ui.row():
                         # 语言切换
                         ui.toggle({"zh_CN":"中文", "en_US":"English", "jp_JP":"日本語"}, value=gui_shared_config.softwareconfigdict["LANGUAGE"], on_change=lambda e:select_language(e.value)).bind_value_from(gui_shared_config.softwareconfigdict, "LANGUAGE")
-
+                    # 深色模式切换
+                    with ui.row():
+                        ui.select(
+                            {0: gui_shared_config.get_text("config_theme_auto"), 1: gui_shared_config.get_text("config_theme_light"), 2: gui_shared_config.get_text("config_theme_dark")},
+                            label=gui_shared_config.get_text("desc_theme"),
+                            value=gui_shared_config.softwareconfigdict.get("DARK_MODE"),
+                            on_change=lambda e: select_dark_mode(e.value)
+                        ).bind_value(gui_shared_config.softwareconfigdict, "DARK_MODE")
                     # 基本介绍
                     with ui.row():
                         ui.label(gui_shared_config.get_text("BAAH_desc"))
@@ -135,10 +156,20 @@ def render_json_list():
 async def home_page():
     # Dark mode setup
     dark = ui.dark_mode()
-    # Check browser preference
-    is_dark = await ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
-    if is_dark:
-        dark.enable()
-    else:
+    dark_mode_preference = gui_shared_config.softwareconfigdict.get("DARK_MODE")
+    # Follow browser preference
+    if dark_mode_preference == 0:
+        # Check browser preference
+        is_dark = await ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
+        if is_dark:
+            dark.enable()
+        else:
+            dark.disable()
+    elif dark_mode_preference == 1:
+        # Light mode
         dark.disable()
+    elif dark_mode_preference == 2:
+        # Dark mode
+        dark.enable()
+    
     render_json_list()

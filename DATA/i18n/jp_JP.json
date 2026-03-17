@@ -55,6 +55,14 @@
     "notice_get_new_version": "現在の最新バージョン",
     "notice_no_new_version": "現在、新しいバージョンはありません",
     "notice_download_version": "バージョンをダウンロードしています",
+    "notice_theme_auto": "ブラウザーに追随設定",
+    "notice_theme_light": "ライトモードに設定",
+    "notice_theme_dark": "ダークモードに設定",
+
+    "desc_theme": "テーマモード",
+    "config_theme_auto": "ブラウザーに追随",
+    "config_theme_light": "ライトモード",
+    "config_theme_dark": "ダークモード",
 
     "button_save": "保存",
     "button_save_and_run_gui": "実行（GUI）",

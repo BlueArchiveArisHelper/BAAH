@@ -55,6 +55,14 @@
     "notice_get_new_version": "Latest Version Released",
     "notice_no_new_version":"No New Version",
     "notice_download_version":"Download Version",
+    "notice_theme_auto": "Set to follow browser",
+    "notice_theme_light": "Set to light mode",
+    "notice_theme_dark": "Set to dark mode",
+
+    "desc_theme": "Theme Mode",
+    "config_theme_auto": "Follow Browser",
+    "config_theme_light": "Light Mode",
+    "config_theme_dark": "Dark Mode",
 
     "button_save": "Save",
     "button_save_and_run_gui":"Execute (GUI)",
