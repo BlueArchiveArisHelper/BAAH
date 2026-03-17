@@ -32,11 +32,7 @@ class EnterGame(Task):
             CN: f"进入游戏时OCR到的资源信息 {resources}",
             EN: f"OCR result of resources when entering the game {resources}"
         }))
-        # 检查OCR结果是否合法
-        if re.fullmatch(r'\d+/\d+', resources["power"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["credit"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["diamond"]) is not None:
-            config.sessiondict["BEFORE_BAAH_SOURCES"] = resources
-        else:
-            logging.warn({"zh_CN": "进入游戏时，资源数量OCR非法格式，跳过记录", "en_US": "Invalid resource OCR result when entering the game, skipping"})
+        config.sessiondict["BEFORE_BAAH_SOURCES"] = resources
      
     def pre_condition(self) -> bool:
         return True

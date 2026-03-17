@@ -290,6 +290,10 @@ class MyConfigger:
             # 列表追加
             if key not in self.userstoragedict:
                 self.userstoragedict[key] = []
+            # 如果不是列表类型，跳过
+            if not isinstance(self.userstoragedict[key], list):
+                print(f"Error: trying to append to a non-list key {key} in user storage dict, skip")
+                return
             self.userstoragedict[key].append(value)
 
     def save_user_storage_dict(self):
