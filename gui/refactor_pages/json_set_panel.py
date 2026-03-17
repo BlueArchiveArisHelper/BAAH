@@ -3,6 +3,7 @@ from enum import Enum
 from ..components.exec_arg_parse import get_token
 from ..components.manage_baah_in_gui import run_baah_task_and_bind_log, stop_baah_task
 from ..components.running_task_pool import RunningBAAHProcess_instance
+from ..components.web_dark_mode import apply_dark_mode, change_dark_mode
 from ..pages.Setting_BAAH import set_BAAH
 from ..pages.Setting_Craft import set_craft
 from ..pages.Setting_cafe import set_cafe
@@ -294,18 +295,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 # ---------- 页面主函数 ----------
 @ui.page("/panel/{json_file_name}")
 async def show_json_panel(json_file_name: str):
-    # Dark mode setup
-    dark = ui.dark_mode()
-    # Check browser preference
-    is_dark = await ui.run_javascript(
-        'window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches'
-    )
-    
-    if is_dark:
-        dark.enable()
-    else:
-        dark.disable()
-
+    await apply_dark_mode(gui_shared_config)
     # 0. Setup and Parse same as old file
     obj_parsed_dict_of_config = {}
     if get_token() is not None and get_token() != app.storage.user.get("token"):

@@ -384,6 +384,7 @@ defaultUserDict = {
 
 defaultSoftwareDict = {
     "LANGUAGE":{"d":"zh_CN", "s":["zh_CN", "en_US"]},
+    "DARK_MODE":{"d":"system", "s":["light", "dark", "system"]},
     # "MAIL_USER":{"d":""},  # 弃用
     # "MAIL_PASS":{"d":""},  # 弃用
     # "ADVANCED_EMAIL":{"d":False},  # 弃用

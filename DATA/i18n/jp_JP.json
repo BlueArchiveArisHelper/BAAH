@@ -213,6 +213,9 @@
     "text_search": "検索",
     "text_all": "すべて",
     "text_date": "日付",
+    "text_light": "ライト",
+    "text_dark": "ダーク",
+    "text_system": "システム",
 
     "config_server_jp": "日本サーバー",
     "config_server_cn": "中国公式サーバー",
@@ -222,7 +225,7 @@
 
 
     "config_event_status": "イベントがアクティブな状態のときにのみ実行する",
-    "notice_QA":"使用方法とよくある質問",
+    "notice_QA":"使用方法とよくある質問, 公式サイトを参照",
     "mirror_desc": "既存のMirror酱キーを追加して、アップデートパッケージのダウンロード速度と安定性を向上させることができます",
     "notice_steam_esc_break": "ボタンの閉じる提案、長押しでスクリプトの実行を中断します",
 

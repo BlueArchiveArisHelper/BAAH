@@ -213,6 +213,9 @@
     "text_search": "搜索",
     "text_all": "全部",
     "text_date": "日期",
+    "text_light": "浅色",
+    "text_dark": "深色",
+    "text_system": "跟随系统",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
@@ -222,7 +225,7 @@
 
 
     "config_event_status": "是否只在活动开启状态下执行",
-    "notice_QA":"如何使用以及常见问题",
+    "notice_QA":"如何使用以及常见问题，查看官网",
     "mirror_desc":"添加Mirror酱密钥加快更新下载速度/稳定性",
     "notice_steam_esc_break": "PC游戏需关闭键盘按键ui提示，游戏使用16:9窗口化运行。BAAH需以管理员运行。PC日服需要在 模拟器/游戏程序 路径处填写游戏exe文件路径。长按 esc 中断脚本运行",
 
