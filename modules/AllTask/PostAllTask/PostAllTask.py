@@ -61,10 +61,9 @@ class PostAllTask(Task):
             EN: f"OCR result of resources when exiting the game {resources}"
         }))
 
+        config.sessiondict["AFTER_BAAH_SOURCES"] = resources
         # 检查OCR结果是否合法
         if re.fullmatch(r'\d+/\d+', resources["power"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["credit"]) is not None and re.fullmatch(r'\d{1,3}(,\d{3})*', resources["diamond"]) is not None:
-            config.sessiondict["AFTER_BAAH_SOURCES"] = resources
-
             try:
                 self.save_sources_to_user_storage(resources)
             except Exception as e:

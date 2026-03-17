@@ -6,6 +6,7 @@ from nicegui import ui, app, run
 from ..components.check_update import only_check_version
 from ..components.exec_arg_parse import check_token_dialog
 from ..components.send_quick_refer_to_desktop import send_quick_call_to_desktop
+from ..components.web_dark_mode import apply_dark_mode, change_dark_mode
 from modules.utils.data_utils import encrypt_data, decrypt_data
 from ..define import gui_shared_config
 
@@ -19,6 +20,7 @@ def select_language(value):
         ui.notify("Language has been changed, restart to take effect")
     else:
         ui.notify("言語が切り替わりました。再起動して有効になります。")
+
 
 # 网址
 web_url = {
@@ -44,6 +46,10 @@ def render_json_list():
                     with ui.row():
                         # 语言切换
                         ui.toggle({"zh_CN":"中文", "en_US":"English", "jp_JP":"日本語"}, value=gui_shared_config.softwareconfigdict["LANGUAGE"], on_change=lambda e:select_language(e.value)).bind_value_from(gui_shared_config.softwareconfigdict, "LANGUAGE")
+                    
+                    with ui.row():
+                        # 暗色模式切换
+                        ui.toggle({"light": gui_shared_config.get_text("text_light"), "dark": gui_shared_config.get_text("text_dark"), "system": gui_shared_config.get_text("text_system")}, value=gui_shared_config.softwareconfigdict.get("DARK_MODE", "system"), on_change=lambda e: change_dark_mode(e.value, gui_shared_config)).bind_value_from(gui_shared_config.softwareconfigdict, "DARK_MODE")
 
                     # 基本介绍
                     with ui.row():
@@ -134,11 +140,5 @@ def render_json_list():
 @ui.page("/")
 async def home_page():
     # Dark mode setup
-    dark = ui.dark_mode()
-    # Check browser preference
-    is_dark = await ui.run_javascript('window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches')
-    if is_dark:
-        dark.enable()
-    else:
-        dark.disable()
+    await apply_dark_mode(gui_shared_config)
     render_json_list()
