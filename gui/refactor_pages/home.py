@@ -80,13 +80,13 @@ def render_json_list():
                             ui.label(resultVI.msg).style(f'font-size: x-large;{"color: red" if resultVI.has_new_version else "color: black"}')
                             ui.html(f'<div style="white-space: pre-line;font-size: large">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
-                                if edition == "pyinstaller":
+                                if edition == "windows-pyinstaller":
                                     # 一键更新按钮(Pyinstaller)
                                     ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_pyinstaller)
-                                elif edition == "container":
+                                elif edition == "linux-container":
                                     # 一键更新按钮(Container)
                                     ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container)
-                            if edition == "container":
+                            if edition == "linux-container":
                                 ui.checkbox(gui_shared_config.get_text("container_auto_update"), on_change=handle_auto_update_change)
                     # TODO: 改成服务器启动时检查更新
                     ui.timer(0.5, show_release, once=True)

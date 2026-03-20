@@ -16,7 +16,7 @@ def set_server(config):
         }
     
     # 非windows隐藏windows服务器选项
-    if _get_edition() == "pyinstaller" or _get_edition() == "windows-other":
+    if _get_edition().startswith("windows"):
         serverlist.update({
             "PC_STEAM":"STEAM (Windows)",
             "PC_STEAM_EN":"STEAM_EN (Windows)",
