@@ -27,9 +27,6 @@ def parse_args():
     parser.add_argument(
         "--no-show", action="store_false", dest="show", help="disable open browser"
     )
-    parser.add_argument(
-        "--allhost", help="enable all host", nargs="?"
-    )
     args = parser.parse_args()
     global g_token
     g_token = args.token

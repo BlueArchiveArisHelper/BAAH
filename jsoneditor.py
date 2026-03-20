@@ -23,10 +23,7 @@ def main():
         if (args.config is not None and args.config.endswith(".json")):
             run_baah_script(args.config)
         else:
-            if "--allhost" in sys.argv:
-                ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", language="zh-cn", reload=False, port=args.port, show=args.show, storage_secret="32737")
-            else:
-                ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", language="zh-cn", reload=False, host=args.host, port=args.port, show=args.show, storage_secret="32737")
+            ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", language="zh-cn", reload=False, host=args.host, port=args.port, show=args.show, storage_secret="32737")
 
 if __name__ in {"__main__", "__mp_main__"}:
     # 检查是否有BAAH_GUI.exe 文件，删除
