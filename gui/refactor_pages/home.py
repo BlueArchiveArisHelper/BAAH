@@ -44,9 +44,9 @@ def render_json_list():
                     ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").style('font-size: xx-large')
                     
                     # 版本信息
-                    if edition == "container":
+                    if edition == "linux-container":
                         ui.label("Container Edition").style('font-size: large; color: gray')
-                    elif edition == "pyinstaller":
+                    elif edition == "windows-pyinstaller":
                         ui.label("PyInstaller Edition").style('font-size: large; color: gray')
                     else:
                         ui.label("Source Code").style('font-size: large; color: gray')
@@ -119,7 +119,7 @@ def render_json_list():
                         except Exception as e:
                             ui.notify(f"Failed to update: {e}", type="warning")
                         
-                    if edition == "pyinstaller":
+                    if edition == "windows-pyinstaller":
                         # mirror酱密钥
                         with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
                             ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
