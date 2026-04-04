@@ -46,12 +46,7 @@ def render_json_list():
                     ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").style('font-size: xx-large')
                     
                     # 版本信息
-                    if edition == "linux-container":
-                        ui.label("Container Edition").style('font-size: large; color: gray')
-                    elif edition == "windows-pyinstaller":
-                        ui.label("PyInstaller Edition").style('font-size: large; color: gray')
-                    else:
-                        ui.label("Source Code").style('font-size: large; color: gray')
+                    ui.label(edition).style('font-size: large; color: gray')
                     
                     # 项目链接
                     with ui.row():

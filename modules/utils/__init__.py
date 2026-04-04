@@ -350,7 +350,7 @@ def _get_edition():
         else:
             return "linux-other"
     elif platform.system() == "Windows":
-        if os.path.exists("BAAH_UPDATE.exe"):
+        if os.path.exists("BAAH.exe"):
             return "windows-pyinstaller"
         else:
             return "windows-other"
