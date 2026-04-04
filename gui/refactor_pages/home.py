@@ -8,6 +8,7 @@ from ..components.exec_arg_parse import check_token_dialog
 from ..components.send_quick_refer_to_desktop import send_quick_call_to_desktop
 from ..components.web_dark_mode import apply_dark_mode, change_dark_mode
 from modules.utils.data_utils import encrypt_data, decrypt_data
+from modules.utils import _get_edition
 from ..define import gui_shared_config
 
 
@@ -34,6 +35,8 @@ how_to_use_url = {
     "en_US": "https://github.com/sanmusen214/BAAH/blob/main/docs/README_en.md"
     }
 
+edition = _get_edition()
+
 @ui.refreshable
 def render_json_list():
     if check_token_dialog(render_json_list):
@@ -41,6 +44,14 @@ def render_json_list():
             with splitter.before:
                 with ui.column().style("padding: 10px"):
                     ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").style('font-size: xx-large')
+                    
+                    # 版本信息
+                    if edition == "linux-container":
+                        ui.label("Container Edition").style('font-size: large; color: gray')
+                    elif edition == "windows-pyinstaller":
+                        ui.label("PyInstaller Edition").style('font-size: large; color: gray')
+                    else:
+                        ui.label("Source Code").style('font-size: large; color: gray')
                     
                     # 项目链接
                     with ui.row():
@@ -75,30 +86,55 @@ def render_json_list():
                             ui.label(resultVI.msg).style(f'font-size: x-large;{"color: red" if resultVI.has_new_version else ""}')
                             ui.html(f'<div style="white-space: pre-line;font-size: large">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
-                                # 一键更新按钮
-                                ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance)
+                                if edition == "windows-pyinstaller":
+                                    # 一键更新按钮(Pyinstaller)
+                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_pyinstaller)
+                                elif edition == "linux-container":
+                                    # 一键更新按钮(Container)
+                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container)
+                            if edition == "linux-container":
+                                ui.checkbox(gui_shared_config.get_text("container_auto_update"), on_change=handle_auto_update_change)
                     # TODO: 改成服务器启动时检查更新
                     ui.timer(0.5, show_release, once=True)
                     
+                    # Container: 容器启动时更新
+                    def handle_auto_update_change(e):
+                        if e.value:
+                            with open('.enable_auto_update', 'w') as f:
+                                f.write('')
+                        else:
+                            import os
+                            if os.path.exists('.enable_auto_update'):
+                                os.remove('.enable_auto_update')
+                    
                     # 一键更新，唤起更新程序，结束gui进程
-                    def update_advance():
+                    def update_advance_pyinstaller():
                         try:
                             subprocess.Popen(["BAAH_UPDATE.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
                             # app.shutdown()
                         except Exception as e:
                             ui.notify(f"Failed to start BAAH_UPDATE.exe: {e}", type="warning")
                     
+                    def update_advance_container():
+                        try:
+                            ui.notify("Start update, you can check the log in the container log")
+                            subprocess.run(["git","pull","--rebase"])
+                            subprocess.run(["python3","requireforyou.py","--core"])
+                            subprocess.run(["uv","pip","install","-r","requireforyou.txt","--system"])
+                            ui.notify("Update finished, please restart the container")
+                        except Exception as e:
+                            ui.notify(f"Failed to update: {e}", type="warning")
                         
-                    
-                    # mirror酱密钥
-                    with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
-                        ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
-                                 on_change = gui_shared_config.save_software_config
-                                ).bind_value(gui_shared_config.softwareconfigdict, "SEC_KEY_M", 
-                                            forward=lambda val: encrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"]),
-                                            backward=lambda val: decrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"])
-                            ).style("width: 450px")
-                        ui.link(text="Mirror", target = "https://mirrorchyan.com/zh/get-start", new_tab=True)
+                    if edition == "windows-pyinstaller":
+                        # mirror酱密钥
+                        with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
+                            ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
+                                    on_change = gui_shared_config.save_software_config
+                                    ).bind_value(gui_shared_config.softwareconfigdict, "SEC_KEY_M", 
+                                                forward=lambda val: encrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"]),
+                                                backward=lambda val: decrypt_data(val, gui_shared_config.softwareconfigdict["ENCRYPT_KEY"])
+                                ).style("width: 450px")
+                            ui.link(text="Mirror", target = "https://mirrorchyan.com/zh/get-start", new_tab=True)
                             
 
             with splitter.after:

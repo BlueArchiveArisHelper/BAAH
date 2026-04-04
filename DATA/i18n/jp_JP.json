@@ -60,7 +60,7 @@
     "button_save_and_run_gui": "実行（GUI）",
     "button_save_and_run_terminal": "実行（ターミナル）",
     "button_check_version": "アップグレードパッケージをダウンロード (手動で解凍)",
-    "button_update_advance": "ワンクリックで更新 (Windows)",
+    "button_update_advance": "ワンクリックで更新",
     "button_select_all": "すべて選択",
     "button_select_none": "選択解除",
     "button_enable": "有効にする",
@@ -269,6 +269,7 @@
     "run_until_f_pattern": "繰り返し回数 #%0# 実行内容 #%1# 終了条件 #%2#",
     "do_action_f_pattern": "操作を実行 #%0#",
 
-    
+    "container_auto_update": "コンテナ起動時の更新を有効にする",
+
     "status_finish": "すべてのタスクが終了しました"
 }
