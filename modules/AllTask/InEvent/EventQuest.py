@@ -119,6 +119,13 @@ class EventQuest(Task):
             click((970, 670))
             click((970, 670))
             click((970, 670))
+        else:
+            no_event_award_detected_str = istr({
+                CN: "未检测到活动任务奖励按钮,通常来说大部分活动应当能够检测到",
+                EN: "No event quest reward button detected, usually most events should be able to detect"
+            })
+            logging.info(no_event_award_detected_str)
+            config.append_noti_sentence("NO_EVENT_AWARD_DETECTED", no_event_award_detected_str)
         # 返回活动页面
         self.run_until(
             lambda: click(Page.TOPLEFTBACK),
