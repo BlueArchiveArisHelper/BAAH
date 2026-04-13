@@ -98,11 +98,11 @@ class EventQuest(Task):
             lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
         )
         # 领取活动任务
-        if match(button_pic(ButtonName.BUTTON_EVENT_DAILY_TASK)):
+        if match(button_pic(ButtonName.BUTTON_EVENT_DAILY_TASK), threshold=0.8):
             logging.info({"zh_CN": "检测到活动任务页面，尝试领取任务奖励",
                           "en_US": "Campaign quest page detected, try to claim quest rewards"})
             self.run_until(
-                lambda: click(button_pic(ButtonName.BUTTON_EVENT_DAILY_TASK)),
+                lambda: click(button_pic(ButtonName.BUTTON_EVENT_DAILY_TASK), threshold=0.8),
                 lambda: not Page.is_page(PageName.PAGE_EVENT)
             )
             # 进入页面后，点击黄色全部领取
@@ -119,6 +119,13 @@ class EventQuest(Task):
             click((970, 670))
             click((970, 670))
             click((970, 670))
+        else:
+            no_event_award_detected_str = istr({
+                CN: "未检测到活动任务奖励按钮,通常来说大部分活动应当能够检测到",
+                EN: "No event quest reward button detected, usually most events should be able to detect"
+            })
+            logging.info(no_event_award_detected_str)
+            config.append_noti_sentence("NO_EVENT_AWARD_DETECTED", no_event_award_detected_str)
         # 返回活动页面
         self.run_until(
             lambda: click(Page.TOPLEFTBACK),

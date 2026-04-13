@@ -60,7 +60,7 @@
     "button_save_and_run_gui":"Execute (GUI)",
     "button_save_and_run_terminal":"Execute (Terminal)",
     "button_check_version": "Download upgrade package (Unzip manually)",
-    "button_update_advance":"One Click to update (Windows)",
+    "button_update_advance":"One Click to update",
     "button_select_all": "Select All",
     "button_select_none": "Deselect All",
     "button_enable": "Enable",
@@ -269,6 +269,7 @@
     "run_until_f_pattern": "Repeat count #%0# run #%1# termination condition #%2#",
     "do_action_f_pattern": "Execute action #%0#",
 
+    "container_auto_update": "Enable container update on startup",
     
     "status_finish": "All Tasks Completed"
 }

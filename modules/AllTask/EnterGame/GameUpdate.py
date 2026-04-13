@@ -16,7 +16,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils.log_utils import logging
 
-from modules.utils import subprocess_run, click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, install_apk, install_dir
+from modules.utils import subprocess_run, click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, install_apk, install_dir, _is_PC_app
 
 class GameUpdateInfo():
     def __init__(self, apk_url, is_xapk):
@@ -255,6 +255,12 @@ class GameUpdate(Task):
             })
             
     def on_run(self):
+        # Pre. 检查是否为PC，如果是PC则不更新
+        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+            raise Exception(istr({
+                    "zh_CN": "检测到为PC版，不进行更新",
+                    "en_US": "Detected as PC version, no update"
+                }))
         # 1. 解析url
         if config.userconfigdict["BIG_UPDATE_TYPE"] == "API":
             download_info = self._parse_download_link_api()

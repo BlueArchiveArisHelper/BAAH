@@ -337,3 +337,22 @@ def logic_run_until(func1, func2, times=None, sleeptime = None) -> bool:
         return True
     logging.warning("run_until exceeded max times")
     return False
+
+def _get_edition():
+    """
+    获取发行版本，返回"linux-container"（容器版） "windows-pyinstaller"（PyInstaller版） "linux-other"（其他Linux版） "windows-other"（其他Windows版） "other"（其他未知版本）
+    """
+    import platform
+    import os
+    if platform.system() == "Linux":
+        if os.environ.get("BAAH_EDITION") == "container":
+            return "linux-container"
+        else:
+            return "linux-other"
+    elif platform.system() == "Windows":
+        if os.path.exists("BAAH.exe"):
+            return "windows-pyinstaller"
+        else:
+            return "windows-other"
+    else:
+        return "other"

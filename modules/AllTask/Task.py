@@ -208,7 +208,7 @@ class Task:
             if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]) and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
                 # 如果是STEAM且识别到社区弹窗，关闭社区弹窗(STEAM社区弹窗比小)
                 click((1123, 114))
-            elif match(button_pic(ButtonName.BUTTON_CONFIRMB)):
+            elif match(button_pic(ButtonName.BUTTON_CONFIRMB)) and match(page_pic(PageName.PAGE_HOME)):
                 # 登陆后活动临期提示只能通过点掉确认来关闭
                 click(button_pic(ButtonName.BUTTON_CONFIRMB))
             else:

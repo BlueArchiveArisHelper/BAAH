@@ -377,7 +377,12 @@ defaultUserDict = {
     # 脚本运行报错如果重新运行脚本是否从之前的中断处继续运行
     "RETRY_WHEN_ERROR_FROM_LAST_TASK":{
         "d": False,
-    }
+    },
+    # 课程表指定学生的图片路径，这些图片权重为100
+    # [{"path": "xxx.png"}, {"path": "yyy.png"}]
+    "TIMETABLE_SPECIAL_STUDENT_PIC":{
+        "d":[],
+    },
 }
 
 # 软件的config里的默认值

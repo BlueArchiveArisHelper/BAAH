@@ -265,14 +265,6 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
         ),
         ConfigPanel(
-            "setting_explore",
-            lambda: set_explore(
-                lst_config, task_instances_map.task_config_name_2_i18n_name, logArea
-            ),
-            i18n_config=lst_config,
-            panel_types=[ConfigPanelType.Daily_Task_Settings],
-        ),
-        ConfigPanel(
             "task_user_def_task",
             lambda: set_usertask(lst_config, parsed_obj_dict),
             i18n_config=lst_config,
@@ -288,6 +280,14 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             desc=lambda: ui.markdown(
                 gui_shared_config.get_text("config_desc_quick_call_task")
             ),
+        ),
+        ConfigPanel(
+            "setting_explore",
+            lambda: set_explore(
+                lst_config, task_instances_map.task_config_name_2_i18n_name, logArea
+            ),
+            i18n_config=lst_config,
+            panel_types=[ConfigPanelType.Quick_Task_Settings],
         ),
     ]
 

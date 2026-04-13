@@ -60,7 +60,7 @@
     "button_save_and_run_gui":"执行(GUI)",
     "button_save_and_run_terminal":"执行(终端)",
     "button_check_version":"下载更新补丁，请手动解压覆盖（Windows）",
-    "button_update_advance":"一键更新版本（Windows）",
+    "button_update_advance":"一键更新版本",
     "button_select_all":"全选",
     "button_select_none":"全不选",
     "button_enable":"启用",
@@ -269,6 +269,7 @@
     "run_until_f_pattern": "重复次数 #%0# 运行 #%1# 终止条件 #%2#",
     "do_action_f_pattern": "执行操作 #%0#",
 
+    "container_auto_update": "开启容器启动时更新",
 
     "status_finish":"所有任务运行结束"
 }

@@ -104,13 +104,26 @@ class Loginin(Task):
         # ======
         # 打印下当前app
         check_app_running(config.userconfigdict['ACTIVITY_PATH'], printit=True)
-        # 如果有进度条(条进度大于20），宽恕一定时间(5成检测间隔)
-        if self.detect_loading_bar() > 20:
+        # 如果有进度条(条进度大于10），宽恕一定时间
+        if self.detect_loading_bar() > 10:
             bar_percent = self.detect_loading_bar()
+            # 默认宽恕一定时间
             self.task_start_time += 0.5 * self.sleep_between_detect
+            bar_percent_updated = False
+            external_time_triggered = False
+            # 检测进度条是否动了,每5秒检测一次，如果动了就宽恕这之间的时间
+            if bar_percent != self.last_seen_bar_percent:
+                bar_percent_updated = True
+                if time.time() - self.last_seen_bar_change_time > 5:
+                    external_time_triggered = True
+                    # 进度条动了，更新最后看到进度条动的时间和进度
+                    self.last_seen_bar_change_time = time.time()
+                    self.last_seen_bar_percent = bar_percent
+                    # 额外宽恕等价时间
+                    self.task_start_time += time.time() - self.last_seen_bar_change_time
             logging.info(istr({
-                CN: f"检测到进度条：{bar_percent}",
-                EN: f"Detect loading bar: {bar_percent}"
+                CN: f"检测到进度条：{bar_percent}, {bar_percent_updated}, {external_time_triggered}",
+                EN: f"Detect loading bar: {bar_percent}, {bar_percent_updated}, {external_time_triggered}"
             }))
         # 判断超时
         if time.time() - self.task_start_time > config.userconfigdict["GAME_LOGIN_TIMEOUT"]:
@@ -236,6 +249,8 @@ class Loginin(Task):
      
     def on_run(self) -> None:
         self.task_start_time = time.time()
+        self.last_seen_bar_change_time = time.time()
+        self.last_seen_bar_percent = 0
         # 循环进行条件判断点击操作
         self.run_until(self.try_jump_useless_pages, 
                       lambda: match(popup_pic(PopupName.POPUP_LOGIN_FORM)) or match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)) or Page.is_page(PageName.PAGE_HOME), 

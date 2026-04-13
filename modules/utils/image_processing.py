@@ -87,7 +87,7 @@ def check_the_pic_validity(_img, _templ):
         return False
     return True
 
-def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: float = 0.9, show_result:bool = False, auto_rotate_if_trans = False) -> Tuple[bool, Tuple[float, float], float]:
+def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: float = 0.9, show_result:bool = False, auto_rotate_if_trans = False, multi_match: bool = False) -> Tuple[bool, Tuple[float, float], float] | list:
     """
     Match the pattern picture in the source picture.
     
@@ -100,6 +100,8 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
     """
     # logging.debug("Matching pattern {}".format(patternpic))
     default_response = (False, (0, 0), 0)
+    if multi_match:
+        default_response = []
     try:
         screenshot_cvmat = sourcepic_mat
         assert screenshot_cvmat is not None
@@ -132,6 +134,7 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
         have_alpha = True
         best_max_val = -1
         best_max_loc = (0, 0)
+        best_result = None
         for i in range(-3, 4):
             degree = i
             # 旋转
@@ -143,12 +146,14 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
             # https://www.cnblogs.com/FHC1994/p/9123393.html
             if not check_the_pic_validity(screenshot_cvmat, rotate_pattern):
                 return default_response
-            result = cv2.matchTemplate(screenshot_cvmat, rotate_pattern, cv2.TM_CCORR_NORMED, mask=rotate_mask)
-            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+            tresult = cv2.matchTemplate(screenshot_cvmat, rotate_pattern, cv2.TM_CCORR_NORMED, mask=rotate_mask)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(tresult)
             # print("角度为{}时，最大匹配值为{}".format(degree, max_val))
             if max_val>best_max_val:
                 best_max_val = max_val
                 best_max_loc = max_loc
+                best_result = tresult
+        result = best_result
         min_val, max_val, min_loc, max_loc = 0, best_max_val, 0, best_max_loc
     else:
         # 无旋转匹配
@@ -170,24 +175,63 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
     
     h, w, _ = pattern.shape
-    top_left = max_loc
-    # get the center of the pattern
-    center_x = top_left[0] + int(w / 2)
-    center_y = top_left[1] + int(h / 2)
-    if (show_result):
-        bottom_right = (top_left[0] + w, top_left[1] + h)
-        # draw a rectangle on the screenshot
-        cv2.rectangle(screenshot_cvmat, top_left, bottom_right, (0, 255, 0), 2)
-        # draw a circle on the center of the pattern
-        cv2.circle(screenshot_cvmat, (center_x, center_y), 10, (0, 0, 255), -1)
-        print("max_val: ", max_val)
-        cv2.imshow('Matched Screenshot', screenshot_cvmat)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-    if(max_val >= threshold):
-        # logging.debug("Pattern {} matched ({}). Center: ({}, {})".format(patternpic, max_val, center_x, center_y))
-        return (True, (center_x, center_y), max_val)
-    return (False, (0, 0), max_val)
+    
+    if multi_match:
+        loc = np.where(result >= threshold)
+        matches = []
+        
+        pts = list(zip(*loc[::-1]))
+        if pts:
+            # Sort points by match score descending (for peak analysis / Non-Maxima Suppression)
+            pt_scores = [(pt[0], pt[1], result[pt[1], pt[0]]) for pt in pts]
+            pt_scores.sort(key=lambda x: x[2], reverse=True)
+            
+            filtered_pts = []
+            for pt in pt_scores:
+                x, y, val = pt
+                is_close = False
+                for fx, fy, _ in filtered_pts:
+                    # Using half width/height as threshold to group close duplicate peaks
+                    if abs(x - fx) < w / 2 and abs(y - fy) < h / 2:
+                        is_close = True
+                        break
+                
+                if not is_close:
+                    filtered_pts.append(pt)
+                    center_x = x + int(w / 2)
+                    center_y = y + int(h / 2)
+                    matches.append((True, (center_x, center_y), float(val)))
+                    
+                    if show_result:
+                        bottom_right = (x + w, y + h)
+                        cv2.rectangle(screenshot_cvmat, (x, y), bottom_right, (0, 255, 0), 2)
+                        cv2.circle(screenshot_cvmat, (center_x, center_y), 10, (0, 0, 255), -1)
+        
+        if show_result:
+            cv2.imshow('Matched Screenshot', screenshot_cvmat)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            
+        return matches
+    else:
+        top_left = max_loc
+        # get the center of the pattern
+        center_x = top_left[0] + int(w / 2)
+        center_y = top_left[1] + int(h / 2)
+        if (show_result):
+            bottom_right = (top_left[0] + w, top_left[1] + h)
+            # draw a rectangle on the screenshot
+            cv2.rectangle(screenshot_cvmat, top_left, bottom_right, (0, 255, 0), 2)
+            # draw a circle on the center of the pattern
+            cv2.circle(screenshot_cvmat, (center_x, center_y), 10, (0, 0, 255), -1)
+            print("max_val: ", max_val)
+            cv2.imshow('Matched Screenshot', screenshot_cvmat)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        if(max_val >= threshold):
+            # logging.debug("Pattern {} matched ({}). Center: ({}, {})".format(patternpic, max_val, center_x, center_y))
+            return (True, (center_x, center_y), float(max_val))
+        return (False, (0, 0), float(max_val))
 
 def filter_num(input: str):
     """filter the number in the string"""
