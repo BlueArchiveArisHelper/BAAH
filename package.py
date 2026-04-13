@@ -20,6 +20,17 @@ import pponnxcr
 import platform
 import requests
 import tarfile
+import traceback
+
+# 打印 pyinstaller 和 setuptools 版本号
+try:
+    import pyinstaller
+    import setuptools
+    print(f"pyinstaller version: {pyinstaller.__version__}")
+    print(f"setuptools version: {setuptools.__version__}")
+except Exception as e:
+    print(traceback.format_exc())
+
 
 def package_download_adb(platformstr = None):
     

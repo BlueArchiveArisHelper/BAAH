@@ -86,6 +86,7 @@ proxy_tools==0.1.0
 pycparser==2.21
 pyinstaller==6.2.0
 pyinstaller-hooks-contrib==2023.10
+setuptools==75.1.0
 pyreadline3==3.4.1
 pythonnet==3.0.3
 pywebview==4.4.1
