@@ -40,14 +40,22 @@ class InWanted(Task):
         # 序号转下标
         target_info = [[each[0]-1, each[1]-1, *each[2:]] for each in target_info]
         # 从主页进入战斗池页面
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            fight_center_pos = (1196, 650)
+        else:
+            fight_center_pos = (1196, 567)
         self.run_until(
-            lambda: click((1196, 567)),
+            lambda: click(fight_center_pos),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
             sleeptime=4
         )
         # 进入悬赏通缉页面
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            In_wanted_pos = (746, 367)
+        else:
+            In_wanted_pos = (741, 440)
         caninwanted = self.run_until(
-            lambda: click((741, 440)),
+            lambda: click(In_wanted_pos),
             lambda: Page.is_page(PageName.PAGE_WANTED) or Page.is_page(PageName.PAGE_WANTED_SUB),
         )
         if Page.is_page(PageName.PAGE_WANTED_SUB):

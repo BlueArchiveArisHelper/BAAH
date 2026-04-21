@@ -21,6 +21,10 @@ class InEventRecap(Task):
             self.event_recap_button = [149, 220] # 日服活动一览放到第二个按钮
         else:
             self.event_recap_button = [149, 136]
+        if "JP" in config.userconfigdict["SERVER_TYPE"]:
+            self.in_event_button = (1055, 620)
+        else:
+            self.in_event_button = (1049, 558) # 日服活动一览进入位置不同
         self.COLOR_DARK_BLUE = ([89, 60, 35], [109, 80, 55])
      
     def pre_condition(self) -> bool:
@@ -29,7 +33,7 @@ class InEventRecap(Task):
     def _go_to_event_recap_page(self) -> bool:
         self.back_to_home()
         self.run_until(
-            lambda: click([1049, 558]),
+            lambda: click(self.in_event_button),
             lambda: not Page.is_page(PageName.PAGE_HOME),
             sleeptime=2
         )

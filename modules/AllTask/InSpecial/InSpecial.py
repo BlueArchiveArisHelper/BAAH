@@ -39,14 +39,22 @@ class InSpecial(Task):
         # 这之后target_info是一个list，内部会有多个关卡扫荡
         # 序号转下标
         target_info=[[each[0]-1, each[1]-1, *each[2:]] for each in target_info]
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            fight_center_pos = (1196, 650)
+        else:
+            fight_center_pos = (1196, 567)
         self.run_until(
-            lambda: click((1196, 567)),
+            lambda: click(fight_center_pos),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
             sleeptime=4
         )
         # 进入特殊任务页面
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            special_pos = (728, 481)
+        else:
+            special_pos = (721, 538)
         caninspecial = self.run_until(
-            lambda: click((721, 538)),
+            lambda: click(special_pos),
             lambda: Page.is_page(PageName.PAGE_SPECIAL),
         )
         if not caninspecial:

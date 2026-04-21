@@ -47,6 +47,10 @@ class Page:
     """队伍选择界面，左侧四个队伍的选择按钮坐标"""
     COLOR_SELECTED_LEFT_FOUR_TEAM = ((90, 60, 35), (110, 80, 55))
     """队伍选择界面，左侧四个队伍的选择按钮被选择后的颜色"""
+
+    COLOR_HOME_LEFT_NICKNAME = ((80, 50, 20), (100, 70, 40))
+    """主页左上角昵称的颜色范围"""
+
     # 父类
     def __init__(self, pagename) -> None:
         self.name = pagename
