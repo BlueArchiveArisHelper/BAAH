@@ -84,8 +84,12 @@ def try_to_solve_new_section(new_button_threshold = 0.9):
 
 def goto_story_page():
     """从主页到剧情总览页面"""
+    if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+        fight_center_pos = (1196, 650)
+    else:
+        fight_center_pos = (1196, 567)
     Task.run_until(
-        lambda: click((1196, 567)),
+        lambda: click(fight_center_pos),
         lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
         times=4,
         sleeptime=2

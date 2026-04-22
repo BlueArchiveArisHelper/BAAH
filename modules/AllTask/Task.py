@@ -229,7 +229,7 @@ class Task:
         判断是否有弹窗
         """
         if Page.is_page(PageName.PAGE_HOME):
-            return not match_pixel((1027, 49), Page.COLOR_WHITE)
+            return not match_pixel((217, 37), Page.COLOR_HOME_LEFT_NICKNAME)
         return not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
     
     @staticmethod
@@ -356,6 +356,11 @@ class Task:
             power_str = ocr_area((503, 17), (602, 56))[0].strip()
             credit_str = ocr_area((688, 19), (832, 59))[0].strip()
             diamond_str = ocr_area((863, 21), (973, 60))[0].strip()
+        if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
+            # 日服比较靠左
+            power_str = ocr_area((537, 24), (612, 49))[0].strip()
+            credit_str = ocr_area((699, 24), (844, 47))[0].strip()
+            diamond_str = ocr_area((899, 24), (1002, 48))[0].strip()
         else:
             # ...
             power_str = ocr_area((483, 17), (582, 56))[0].strip()
