@@ -26,6 +26,14 @@ class InEvent(Task):
         # 是否有活动但是已经结束
         self.has_event_but_closed = False
         self.quest_button_xy = (965, 98)
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            self.fight_center_button_xy = (1196, 650)
+        else:
+            self.fight_center_button_xy = (1196, 567)
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            self.event_button_xy = (60, 157)
+        else:
+            self.event_button_xy = (35, 110)
 
     def pre_condition(self) -> bool:
         # 通过get请求https://arona.diyigemt.com/api/v2/image?name=%E5%9B%BD%E9%99%85%E6%9C%8D%E6%B4%BB%E5%8A%A8
@@ -60,7 +68,7 @@ class InEvent(Task):
             logging.warn({"zh_CN": "页面发生未知偏移，尝试修正", "en_US": "Meets unknown page, try to fix it"})
             self.back_to_home()
             self.run_until(
-                lambda: click((1196, 567)),
+                lambda: click(self.fight_center_button_xy),
                 lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
             )
             # 睡眠一段时间
@@ -221,12 +229,12 @@ class InEvent(Task):
     def on_run(self) -> None:
         # 进入Fight Center, 这里离开了主页之后就狂点活动标
         self.run_until(
-            lambda: click((1196, 567)),
+            lambda: click(self.fight_center_button_xy),
             lambda: not Page.is_page(PageName.PAGE_HOME),
         )
         # 狂点活动标
         for i in range(15):
-            click((35, 110), sleeptime=0.2)
+            click((self.event_button_xy), sleeptime=0.2)
         click(Page.MAGICPOINT)
         click(Page.MAGICPOINT)
         # 尝试进入Event
