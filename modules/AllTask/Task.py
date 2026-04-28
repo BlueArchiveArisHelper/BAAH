@@ -229,7 +229,10 @@ class Task:
         判断是否有弹窗
         """
         if Page.is_page(PageName.PAGE_HOME):
-            return not match_pixel((217, 37), Page.COLOR_HOME_LEFT_NICKNAME)
+            if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
+                return not match_pixel((8, 26), Page.COLOR_HOME_LEFT_NICKNAME)
+            else:
+                return not match_pixel((1027, 49), Page.COLOR_WHITE)
         return not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
     
     @staticmethod
