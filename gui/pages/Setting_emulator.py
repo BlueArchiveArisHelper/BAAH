@@ -34,8 +34,9 @@ def set_emulator(config):
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):    
     #  大更新配置
         ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
-    
-        ui.label(config.get_text("big_update_type")).style('font-size: large').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
+
+    with ui.row():
+        ui.label(config.get_text("big_update_type")).style('font-size: medium').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
     
         ui.radio({
             "API":config.get_text("big_update_type_api"),
