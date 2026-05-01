@@ -27,6 +27,7 @@ class MyConfigger:
     LOG_FOLDER="./DATA/LOGS"
     CRASH_REPORT_FOLDER="./DATA/CRASH_REPORTS"
     USER_STORAGE_FOLDER="./DATA/USER_STORAGE"
+    TMP_FOLDER="./DATA/tmp"
     SOFTWARE_CONFIG_NAME="software_config.json"
     # 读取config这个py里面的配置
     def __init__(self):

@@ -42,6 +42,7 @@
     "setting_vpn": "VPN設定",
     "setting_explore":"攻略設定",
     "setting_daily": "デイリーミッション",
+    "setting_crash_report_manager": "クラッシュレポートマネージャー",
 
     "BAAH_desc": "BAAHは、碧藍のアーカイブ/ウルトラブルーアーカイブの日本版、国際版、公式中国版、中国B版のデイリーミッションを自動的に実行します。設定ファイルはBAAH_CONFIGSフォルダに保存されます。",
     "BAAH_get_version": "最新バージョンはGithubからダウンロードするか、グループ内からダウンロードできます",
@@ -73,6 +74,7 @@
     "button_hide":"非表示",
     "button_copy":"コピー",
     "button_rename":"名前を変更",
+    "button_download":"ダウンロード",
     "button_kill_adb_server":"ADBサーバーを再起動",
     "button_link_to_desktop":"デスクトップショートカットを作成",
 

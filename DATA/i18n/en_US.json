@@ -42,6 +42,7 @@
     "setting_vpn" : "VPN Configuration",
     "setting_explore":"Explore Configuration",
     "setting_daily": "Daily Task",
+    "setting_crash_report_manager": "Crash Report Manager",
 
     "BAAH_desc": "BAAH can help you complete the dailies of Blue Archive in the JP server, Global server, CN official server, Bilibili server. All config files are in the BAAH_CONFIGS folder.",
     "BAAH_get_version": "To get the latest version, download from Github or join the group to download",
@@ -73,6 +74,7 @@
     "button_hide":"Hide",
     "button_copy":"Copy",
     "button_rename":"Rename",
+    "button_download":"Download",
     "button_kill_adb_server":"Restart ADB Server",
     "button_link_to_desktop":"Create Desktop Shortcut",
 

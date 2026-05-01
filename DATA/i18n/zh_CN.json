@@ -42,6 +42,7 @@
     "setting_vpn":"加速器设置",
     "setting_explore":"推图设置",
     "setting_daily":"每日任务",
+    "setting_crash_report_manager":"崩溃报告管理器",
 
     "BAAH_desc":"BAAH可以帮助你完成碧蓝档案/蔚蓝档案的日服，国际服，国服官服，国服B服的每日任务。配置文件存放于BAAH_CONFIGS文件夹内。",
     "BAAH_get_version":"获取最新版本可以到Github下载，或进群下载",
@@ -73,6 +74,7 @@
     "button_hide":"隐藏",
     "button_copy":"复制",
     "button_rename":"重命名",
+    "button_download":"下载",
     "button_kill_adb_server":"重启ADB服务",
     "button_link_to_desktop":"创建桌面快捷方式",
 

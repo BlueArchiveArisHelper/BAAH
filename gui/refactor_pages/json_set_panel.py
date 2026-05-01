@@ -30,6 +30,7 @@ from ..pages.Setting_UserTask import set_usertask
 from ..pages.Setting_explore import set_explore
 from ..pages.Setting_Oneclick_Raid import set_oneclick_raid
 from ..pages.Setting_quick_runtask import set_quick_runtask
+from ..pages.Setting_CrashReportsManager import Set_Crash_Report_Manager
 from modules.AllTask.myAllTask import task_instances_map
 from modules.configs.MyConfig import MyConfigger
 from modules.utils import _is_PC_app, _is_STEAM_app
@@ -139,6 +140,12 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "setting_other",
             lambda: set_other(lst_config, gui_shared_config),
+            i18n_config=lst_config,
+            panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
+        ),
+        ConfigPanel(
+            "setting_Crash_Report_Manager",
+            lambda: Set_Crash_Report_Manager(lst_config),
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         ),

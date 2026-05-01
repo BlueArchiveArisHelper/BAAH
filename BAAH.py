@@ -524,6 +524,8 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         from .modules.utils import _get_edition
         logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
         now_timestr = time.strftime('%Y-%m-%d_%H-%M-%S')
+        if os.path.exists(config.CRASH_REPORT_FOLDER) is False:
+            os.mkdir(config.CRASH_REPORT_FOLDER)
         report_path = config.CRASH_REPORT_FOLDER+"/"+config.nowuserconfigname+"-"+now_timestr
         # 保存系统信息
         with open(f"{report_path}/env.json", "w", encoding="utf-8") as f:
