@@ -27,17 +27,21 @@ def download_report(report):
                 zipf.write(file_path, os.path.basename(file_path))
     ui.download(zip_path, report + ".zip")
 
+def refresh_report_list(container, config):
+    container.clear()
+    with container:
+        for report in get_report_list("crash_report"):
+            with ui.row().classes("flex items-center"):
+                with ui.card().props('flat bordered').style("border-radius: 5; border-color: gray;"):
+                    ui.label(report).style("font-size: large;")
+                ui.button(gui_shared_config.get_text("button_download"), on_click=lambda _, r=report: download_report(r))
+                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda _, r=report: (shutil.rmtree(os.path.join(gui_shared_config.CRASH_REPORT_FOLDER, r)), container.update()))
+
 def Set_Crash_Report_Manager(config):
     ui.link_target("Crash_Report_Manager")
-    ui.label(config.get_text("setting_crash_report_manager")).style(
-        "font-size: x-large"
-    )
+    with ui.row().classes("items-center"):
+        ui.label(config.get_text("setting_crash_report_manager")).style("font-size: x-large")
+        ui.button(icon="refresh", on_click=lambda: refresh_report_list(report_container, config)).props("flat round")
     
-    for report in get_report_list("crash_report"):
-        with ui.row().classes("flex items-center"):
-            with ui.card().props('flat bordered').style("border-radius: 5; border-color: gray;"):
-                ui.label(report).style("font-size: large;")
-            #打包下载
-            ui.button(gui_shared_config.get_text("button_download"), on_click=lambda _, r=report: download_report(r))
-            #删除
-            ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda _, r=report: shutil.rmtree(os.path.join(gui_shared_config.CRASH_REPORT_FOLDER, r)))
+    report_container = ui.column().classes("w-full")
+    refresh_report_list(report_container, config)
