@@ -669,6 +669,10 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             logging.error(detailed_trackback_str)
             handle_error_mention(str(e), logging.warn)
             logging.save_custom_log_file()
+            #保存错误报告
+            if config.userconfigdict["ENABLE_CRASH_REPORT"]:
+                BAAH_generate_crash_report(e)
+                
             # 发送错误邮件
             BAAH_send_err_mail(e)
             # 关闭游戏和模拟器

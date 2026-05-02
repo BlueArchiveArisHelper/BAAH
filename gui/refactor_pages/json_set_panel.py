@@ -144,7 +144,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         ),
         ConfigPanel(
-            "setting_Crash_Report_Manager",
+            "setting_crash_report_manager",
             lambda: Set_Crash_Report_Manager(lst_config),
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],

@@ -241,7 +241,9 @@
     "big_update_type_api": "API",
     "big_update_type_direct_get": "Direct Get",
     "big_update_type_direct_get_tips": "This method relies on the server to update the URL file, and there may be a delay in server updates. Please refer to https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk for details",
-    
+
+    "config_crash_report": "Enable Error Report",
+
     "click_pic_a": "Click Image",
     "click_xy_a": "Click Coordinates",
     "ocr_pic_a": "OCR English Recognition",

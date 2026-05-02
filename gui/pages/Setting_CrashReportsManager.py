@@ -43,5 +43,7 @@ def Set_Crash_Report_Manager(config):
         ui.label(config.get_text("setting_crash_report_manager")).style("font-size: x-large")
         ui.button(icon="refresh", on_click=lambda: refresh_report_list(report_container, config)).props("flat round")
     
+    ui.checkbox(config.get_text("config_crash_report")).bind_value(config.userconfigdict, "ENABLE_CRASH_REPORT")
+    
     report_container = ui.column().classes("w-full")
     refresh_report_list(report_container, config)

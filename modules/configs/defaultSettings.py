@@ -411,6 +411,7 @@ defaultSoftwareDict = {
     "SAVE_LOG_TO_FILE":{"d":False},
     # 发生错误时，是否输出custom日志
     "SAVE_ERR_CUSTOM_LOG":{"d":True},
+    "ENABLE_CRASH_REPORT":{"d":False},
     # Mirror酱的密钥
     "SEC_KEY_M":{
         "d": "",
