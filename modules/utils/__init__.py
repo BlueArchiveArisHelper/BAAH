@@ -1,6 +1,7 @@
 # 针对于单个BAAH任务实例的工具方法，默认截图内容为当前BAAH任务实例的模拟器截图
 import json
 from DATA.assets.ButtonName import ButtonName
+from DATA.assets.PopupName import PopupName
 from typing import Tuple, Union
 from .adb_utils import *
 from .image_processing import *
@@ -298,7 +299,7 @@ def _global_screenshot_check():
     """
     全局的截图元素检查，是否有卡顿弹窗等
     """
-    if "NGS" in ocr_area([444, 307], [829, 355])[0]:
+    if "NGS" in ocr_area([444, 307], [829, 355])[0] and match(popup_pic(PopupName.POPUP_NOTICE)):
         raise EmulatorBlockError(istr({
             CN: "匹配到NGS，触发模拟器卡顿异常",
             EN: "Match NGS, trigger emulator lag error"

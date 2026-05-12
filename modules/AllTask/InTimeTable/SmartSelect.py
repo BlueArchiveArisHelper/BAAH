@@ -140,7 +140,15 @@ class SmartSelect(Task):
         rooms_scores = rooms_scores[:tickets]
         logging.info({"zh_CN": f"最终选择的教室：{rooms_scores}",
                       "en_US": f"Final classrooms selected: {rooms_scores}"})
-        max_location_ind = max(rooms_scores, key=lambda x: x[0])[0]
+        if len(rooms_scores) == 0:
+            # 没有可选的教室，max_location_ind直接-1，控制后面不进行for循环
+            max_location_ind = -1
+            logging.warn(istr({
+                CN: "没有可选的教室了，可能是因为所有教室都已经被点击过了，或者识别出了问题，请检查后反馈",
+                EN: "No classrooms can be selected, maybe all classrooms have been clicked, or there is a problem with recognition, please check and feedback"
+            }))
+        else:
+            max_location_ind = max(rooms_scores, key=lambda x: x[0])[0]
         # 整合成字典 {地区下标: [教室序号, ...]}
         timetable_dict = {}
         for i, room_num, score in rooms_scores:
