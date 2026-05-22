@@ -521,13 +521,16 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         import json
         import cv2
         import traceback
-        from .modules.utils import _get_edition
+        from modules.utils import _get_edition
         logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
         now_timestr = time.strftime('%Y-%m-%d_%H-%M-%S')
-        if os.path.exists(config.CRASH_REPORT_FOLDER) is False:
-            os.mkdir(config.CRASH_REPORT_FOLDER)
-        report_path = config.CRASH_REPORT_FOLDER+"/"+config.nowuserconfigname+"-"+now_timestr
-        # 保存系统信息
+        if not os.path.exists(config.CRASH_REPORT_FOLDER):
+            os.makedirs(config.CRASH_REPORT_FOLDER, exist_ok=True)
+        # 每个 f"{config.nowuserconfigname}-{now_timestr}" 文件夹记录所有错误相关文件们
+        report_path = os.path.join(config.CRASH_REPORT_FOLDER,f"{config.nowuserconfigname}-{now_timestr}")
+        if not os.path.exists(report_path):
+            os.makedirs(report_path, exist_ok=True)
+        # *保存系统信息
         with open(f"{report_path}/env.json", "w", encoding="utf-8") as f:
             env_info = {}
             if platform.system() == "Windows":
@@ -573,21 +576,28 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 "BAAH_Edition": _get_edition(),
             }
             f.write(json.dumps(env_info, indent=4, ensure_ascii=False))
-        # 保存完整日志
-        handle_error_mention(str(e), logging.warn)
+        # *保存完整日志
         logging.save_custom_log_file(path=report_path, name="full.log")
-        # 获取截图
-        cv2.imwrite(f"{report_path}/final_step.png", get_screenshot_cv_data())
-        screenshot()
-        cv2.imwrite(f"{report_path}/now.png", get_screenshot_cv_data())
+        # *获取截图
+        logging.info(f"Length of screenshot list: {len(config.sessiondict['HISTORY_SCREENSHOT_LIST'])}")
+        for sc_index, screenshot_data in enumerate(config.sessiondict["HISTORY_SCREENSHOT_LIST"]):
+            file_name = f"history_screenshot_{sc_index}"
+            if screenshot_data is None:
+                file_name += "_is_None.txt"
+                with open(f"{report_path}/{file_name}", "w", encoding="utf-8") as f:
+                    f.write("No screenshot data")
+            else:
+                file_name += ".png"
+                cv2.imwrite(f"{report_path}/{file_name}", screenshot_data)
+        # *完整日志文件最后50句话存储进 error.log
         with open(f"{report_path}/error.log", "w", encoding="utf-8") as f:
-            logs = logging.custom_log_list[len(logging.custom_log_list)-20:len(logging.custom_log_list)]
+            logs = logging.custom_log_list[len(logging.custom_log_list)-50:len(logging.custom_log_list)]
             log = "\n".join(logs)
             f.write(log)
-        # 用户配置文件
+        # *用户配置文件
         with open(f"{report_path}/userconfig.json", "w", encoding="utf-8") as f:
             f.write(json.dumps(config.userconfigdict, indent=4, ensure_ascii=False))
-        # 错误跟踪文件
+        # *异常错误跟踪文件
         with open(f"{report_path}/traceback.txt", "w", encoding="utf-8") as f:
             f.write(traceback.format_exc())
         # TODO: 网页报告生成
@@ -670,8 +680,15 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             handle_error_mention(str(e), logging.warn)
             logging.save_custom_log_file()
             #保存错误报告
-            if config.userconfigdict["ENABLE_CRASH_REPORT"]:
-                BAAH_generate_crash_report(e)
+            if config.softwareconfigdict["ENABLE_CRASH_REPORT"]:
+                try:
+                    BAAH_generate_crash_report(e)
+                except Exception as eagain:
+                    logging.error(istr({
+                        CN: f"生成错误报告失败: {eagain}", 
+                        EN: f"Failed to generate crash report: {eagain}"
+                    }))
+                    logging.error(traceback.format_exc())
                 
             # 发送错误邮件
             BAAH_send_err_mail(e)
