@@ -531,7 +531,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         if not os.path.exists(report_path):
             os.makedirs(report_path, exist_ok=True)
         # *保存系统信息
-        with open(f"{report_path}/env.json", "w", encoding="utf-8") as f:
+        with open(os.path.join(report_path,"env.json"), "w", encoding="utf-8") as f:
             env_info = {}
             if platform.system() == "Windows":
                         env_info["OS"] = platform.system()
@@ -584,21 +584,21 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             file_name = f"history_screenshot_{sc_index}"
             if screenshot_data is None:
                 file_name += "_is_None.txt"
-                with open(f"{report_path}/{file_name}", "w", encoding="utf-8") as f:
+                with open(os.path.join(report_path,file_name), "w", encoding="utf-8") as f:
                     f.write("No screenshot data")
             else:
                 file_name += ".png"
-                cv2.imwrite(f"{report_path}/{file_name}", screenshot_data)
+                cv2.imwrite(os.path.join(report_path,file_name), screenshot_data)
         # *完整日志文件最后50句话存储进 error.log
-        with open(f"{report_path}/error.log", "w", encoding="utf-8") as f:
+        with open(os.path.join(report_path,"error.log"), "w", encoding="utf-8") as f:
             logs = logging.custom_log_list[len(logging.custom_log_list)-50:len(logging.custom_log_list)]
             log = "\n".join(logs)
             f.write(log)
         # *用户配置文件
-        with open(f"{report_path}/userconfig.json", "w", encoding="utf-8") as f:
+        with open(os.path.join(report_path,"userconfig.json"), "w", encoding="utf-8") as f:
             f.write(json.dumps(config.userconfigdict, indent=4, ensure_ascii=False))
         # *异常错误跟踪文件
-        with open(f"{report_path}/traceback.txt", "w", encoding="utf-8") as f:
+        with open(os.path.join(report_path,"traceback.txt"), "w", encoding="utf-8") as f:
             f.write(traceback.format_exc())
         # TODO: 网页报告生成
         logging.info({"zh_CN": "错误报告生成完成", "en_US": "Crash report generated"})
