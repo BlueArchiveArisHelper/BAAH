@@ -215,6 +215,15 @@ def sleep(seconds:float):
     """
     time.sleep(seconds)
     
+def _update_history_screenshot_list():
+    """
+    更新历史截图列表，最多保存4张截图
+    """
+    history_list = config.sessiondict["HISTORY_SCREENSHOT_LIST"]
+    history_list.append(get_screenshot_cv_data())
+    if len(history_list) > 4:
+        history_list.pop(0)
+
 def screenshot(output_png = False):
     """
     Task: take a screenshot
