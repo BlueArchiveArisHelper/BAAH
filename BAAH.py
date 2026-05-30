@@ -628,8 +628,8 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
             except EmulatorBlockError as ebe:
                 logging.info(istr({
-                    CN: "模拟器卡顿，重启模拟器",
-                    EN: "Emulator Blocked, Restart Emulator"
+                    CN: f"模拟器卡顿，重启模拟器: {str(ebe)}",
+                    EN: f"Emulator Blocked, Restart Emulator: {str(ebe)}"
                 }))
                 if config.sessiondict["EMULATOR_PROCESS_PID"] is None:
                     logging.error(istr({
