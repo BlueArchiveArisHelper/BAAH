@@ -1,6 +1,7 @@
 # 将当前脚本所在目录添加到模块搜索路径
 import sys
 import os
+import shutil
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_dir)
 # config logging before all imports
@@ -24,6 +25,12 @@ def main():
             run_baah_script(args.config)
         else:
             ui.run(title=f"BAAH{MyConfigger.NOWVERSION}", favicon="DATA/icons/kei.ico", language="zh-cn", reload=False, host=args.host, port=args.port, show=args.show, storage_secret="32737")
+        # 清理TMP
+        if os.path.exists(os.path.join(current_dir, "DATA", "tmp")):
+            shutil.rmtree(os.path.join(current_dir, "DATA", "tmp"))
+
+
+
 
 if __name__ in {"__main__", "__mp_main__"}:
     # 检查是否有BAAH_GUI.exe 文件，删除

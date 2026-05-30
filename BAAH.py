@@ -507,11 +507,12 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         生成错误报告
         保存内容：
         - 配置文件名称,时间 --> 对应的文件夹名称
-        - 系统信息 --> system.json
+        - 环境信息 --> env.json
         - 错误日志 --> error.log
         - 最后一步的截图(从PIPE或PNG获取) --> final_step.png
         - 当前屏幕截图 --> now.png
         - 配置文件 --> userconfig.json
+        - 错误跟踪文件 --> traceback.txt
         """
         import platform
         import sys
@@ -519,40 +520,47 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         import psutil
         import json
         import cv2
+        import traceback
+        from modules.utils import _get_edition
         logging.info({"zh_CN": "生成错误报告", "en_US": "Generate crash report"})
         now_timestr = time.strftime('%Y-%m-%d_%H-%M-%S')
-        report_path = config.CRASH_REPORT_FOLDER+"/"+config.nowuserconfigname+"-"+now_timestr
-        # 保存系统信息
-        with open(f"{report_path}/system.json", "w", encoding="utf-8") as f:
-            sys_info = {}
+        if not os.path.exists(config.CRASH_REPORT_FOLDER):
+            os.makedirs(config.CRASH_REPORT_FOLDER, exist_ok=True)
+        # 每个 f"{config.nowuserconfigname}-{now_timestr}" 文件夹记录所有错误相关文件们
+        report_path = os.path.join(config.CRASH_REPORT_FOLDER,f"{config.nowuserconfigname}-{now_timestr}")
+        if not os.path.exists(report_path):
+            os.makedirs(report_path, exist_ok=True)
+        # *保存系统信息
+        with open(os.path.join(report_path,"env.json"), "w", encoding="utf-8") as f:
+            env_info = {}
             if platform.system() == "Windows":
-                        sys_info["OS"] = platform.system()
-                        sys_info["Windows"] = {
+                        env_info["OS"] = platform.system()
+                        env_info["Windows"] = {
                             "Release": platform.release(),
                             "Version": platform.version(),
                             "machine": platform.machine()
                         }
             elif platform.system() == "Linux":
-                        sys_info["OS"] = platform.system()
-                        sys_info["Linux"] = {
+                        env_info["OS"] = platform.system()
+                        env_info["Linux"] = {
                             "Name": platform.freedesktop_os_release()["NAME"],
                             "Version": platform.freedesktop_os_release()["BUILD_ID"],
                             "Kernel": platform.uname()["release"],
                             "environment": "container" if os.path.exists("/.dockerenv") or os.getenv("container") == "podman" else "host"
                         }
             elif platform.system() == "Darwin":
-                        sys_info["OS"] = platform.system()
-                        sys_info["Darwin"] = {
+                        env_info["OS"] = platform.system()
+                        env_info["Darwin"] = {
                             "Release": platform.release(),
                             "Version": platform.version(),
                             "machine": platform.machine()
                         }
-            sys_info["Python"] = {
+            env_info["Python"] = {
                 "Python": sys.version_info,
                 "Run_Type": ("Offical Pyinstaller Build" if os.path.exists("BAAH.exe") else ("Custom Pyinstaller Build" if getattr(sys, 'frozen', False) else "Source Code Mode")),
                 "BAAH_Version": config.softwareconfigdict['NOWVERSION']
             }
-            sys_info["hardware"] = {
+            env_info["hardware"] = {
                 "CPU": {
                     "Name": platform.processor(),
                     "Cores": psutil.cpu_count(logical=False),
@@ -563,20 +571,36 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                     "SWAP": psutil.swap_memory().total / 1073741824
                 }
             }
-            f.write(json.dumps(sys_info, indent=4, ensure_ascii=False))
-        # 保存完整日志
-        handle_error_mention(str(e), logging.warn)
+            env_info["BAAH"] = {
+                "BAAH_Version": config.softwareconfigdict['NOWVERSION'],
+                "BAAH_Edition": _get_edition(),
+            }
+            f.write(json.dumps(env_info, indent=4, ensure_ascii=False))
+        # *保存完整日志
         logging.save_custom_log_file(path=report_path, name="full.log")
-        # 获取截图
-        cv2.imwrite(f"{report_path}/final_step.png", get_screenshot_cv_data())
-        screenshot()
-        cv2.imwrite(f"{report_path}/now.png", get_screenshot_cv_data())
-        with open(f"{report_path}/error.log", "w", encoding="utf-8") as f:
-            logs = logging.custom_log_list[len(logging.custom_log_list)-20:len(logging.custom_log_list)]
+        # *获取截图
+        logging.info(f"Length of screenshot list: {len(config.sessiondict['HISTORY_SCREENSHOT_LIST'])}")
+        for sc_index, screenshot_data in enumerate(config.sessiondict["HISTORY_SCREENSHOT_LIST"]):
+            file_name = f"history_screenshot_{sc_index}"
+            if screenshot_data is None:
+                file_name += "_is_None.txt"
+                with open(os.path.join(report_path,file_name), "w", encoding="utf-8") as f:
+                    f.write("No screenshot data")
+            else:
+                file_name += ".png"
+                cv2.imwrite(os.path.join(report_path,file_name), screenshot_data)
+        # *完整日志文件最后50句话存储进 error.log
+        with open(os.path.join(report_path,"error.log"), "w", encoding="utf-8") as f:
+            logs = logging.custom_log_list[len(logging.custom_log_list)-50:len(logging.custom_log_list)]
             log = "\n".join(logs)
             f.write(log)
-        with open(f"{report_path}/userconfig.json", "w", encoding="utf-8") as f:
+        # *用户配置文件
+        with open(os.path.join(report_path,"userconfig.json"), "w", encoding="utf-8") as f:
             f.write(json.dumps(config.userconfigdict, indent=4, ensure_ascii=False))
+        # *异常错误跟踪文件
+        with open(os.path.join(report_path,"traceback.txt"), "w", encoding="utf-8") as f:
+            f.write(traceback.format_exc())
+        # TODO: 网页报告生成
         logging.info({"zh_CN": "错误报告生成完成", "en_US": "Crash report generated"})
                     
     def BAAH_main(run_precommand = True):
@@ -655,6 +679,17 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             logging.error(detailed_trackback_str)
             handle_error_mention(str(e), logging.warn)
             logging.save_custom_log_file()
+            #保存错误报告
+            if config.softwareconfigdict["ENABLE_CRASH_REPORT"]:
+                try:
+                    BAAH_generate_crash_report(e)
+                except Exception as eagain:
+                    logging.error(istr({
+                        CN: f"生成错误报告失败: {eagain}", 
+                        EN: f"Failed to generate crash report: {eagain}"
+                    }))
+                    logging.error(traceback.format_exc())
+                
             # 发送错误邮件
             BAAH_send_err_mail(e)
             # 关闭游戏和模拟器

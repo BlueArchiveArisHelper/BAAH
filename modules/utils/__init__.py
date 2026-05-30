@@ -216,6 +216,18 @@ def sleep(seconds:float):
     """
     time.sleep(seconds)
     
+def _update_history_screenshot_list():
+    """
+    更新历史截图列表，最多保存4张截图
+    """
+    history_list = config.sessiondict["HISTORY_SCREENSHOT_LIST"]
+    sc_data = get_screenshot_cv_data()
+    if sc_data is not None:
+        history_list.append(sc_data)
+        if len(history_list) > 4:
+            history_list.pop(0)
+    config.sessiondict["HISTORY_SCREENSHOT_LIST"] = history_list
+
 def screenshot(output_png = False):
     """
     Task: take a screenshot
@@ -228,6 +240,7 @@ def screenshot(output_png = False):
     # start = time.time()
     screen_shot_to_global(output_png = output_png)
     _global_screenshot_check()
+    _update_history_screenshot_list()
     # end = time.time()
     # 输出截图耗时小数点后两位
     # logging.debug("截图耗时{:.2f}秒".format(end-start))

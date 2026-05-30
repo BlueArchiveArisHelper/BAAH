@@ -1,8 +1,8 @@
-myversion = "2.2.14"
+myversion = "2.2.15"
 mychangelog = """
 >> BAAH2: https://baah.sanmusen.top/ <<
 
-适配日服新GUI | fit new GUI of JP version
+修复日服PC部分匹配不稳定 | fit the problem of unstable matching in Japanese PC version
 
-修复课程表识别异常导致反复重启模拟器问题 | fix the problem of repeated restarting emulator caused by abnormal recognition of schedule
+添加异常报错追踪和导出开关 | add the switch of exception tracking and exporting
 """

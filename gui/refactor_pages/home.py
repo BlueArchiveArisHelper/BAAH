@@ -88,7 +88,12 @@ def render_json_list():
                                     # 一键更新按钮(Container)
                                     ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container)
                             if edition == "linux-container":
-                                ui.checkbox(gui_shared_config.get_text("container_auto_update"), on_change=handle_auto_update_change)
+                                import os
+                                ui.checkbox(
+                                    gui_shared_config.get_text("container_auto_update"),
+                                    value=os.path.exists('.enable_auto_update'),
+                                    on_change=handle_auto_update_change
+                                )
                     # TODO: 改成服务器启动时检查更新
                     ui.timer(0.5, show_release, once=True)
                     

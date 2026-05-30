@@ -27,7 +27,7 @@ class RunWantedFight(Task):
 
      
     def pre_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_WANTED_SUB)
+        return Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8)
     
     @staticmethod
     def match_task_info() -> bool:
@@ -71,7 +71,7 @@ class RunWantedFight(Task):
         # 关闭弹窗，回到WANTED_SUB页面或者WANTED页面
         self.run_until(
             lambda: click(Page.MAGICPOINT),
-            lambda: Page.is_page(PageName.PAGE_WANTED_SUB) or Page.is_page(PageName.PAGE_WANTED)
+            lambda: Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8) or Page.is_page(PageName.PAGE_WANTED)
         )
         
         
@@ -79,4 +79,4 @@ class RunWantedFight(Task):
     
      
     def post_condition(self) -> bool:
-        return Page.is_page(PageName.PAGE_WANTED_SUB) or Page.is_page(PageName.PAGE_WANTED)
+        return Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8) or Page.is_page(PageName.PAGE_WANTED)
