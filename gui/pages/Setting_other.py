@@ -23,6 +23,10 @@ def set_other(config, gui_shared_config):
         ui.checkbox(config.get_text("config_output_err_log")).bind_value(gui_shared_config.softwareconfigdict, 'SAVE_ERR_CUSTOM_LOG')
     
     with ui.row():
+        # 错误报告
+        ui.checkbox(config.get_text("config_crash_report")).bind_value(gui_shared_config.softwareconfigdict, "ENABLE_CRASH_REPORT")
+    
+    with ui.row():
         ui.number(config.get_text("config_run_until_try_times"),
                   step=1,
                   min=3,

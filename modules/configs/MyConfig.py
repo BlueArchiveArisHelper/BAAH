@@ -27,6 +27,7 @@ class MyConfigger:
     LOG_FOLDER="./DATA/LOGS"
     CRASH_REPORT_FOLDER="./DATA/CRASH_REPORTS"
     USER_STORAGE_FOLDER="./DATA/USER_STORAGE"
+    TMP_FOLDER="./DATA/tmp"
     SOFTWARE_CONFIG_NAME="software_config.json"
     # 读取config这个py里面的配置
     def __init__(self):
@@ -74,7 +75,7 @@ class MyConfigger:
         self.userconfigdict["USER_STORAGE_FILE_NAME"] = "STORAGE"+configname2screenshotname(file_name).replace(".png", ".json")
         # 检查缺失的配置
         self._check_user_config()
-        self.nowuserconfigname = file_name
+        self.nowuserconfigname = file_name  # 例如 "example.json"
         # ====读取userstoragedict========
         storage_path = os.path.join(self.current_dir, self.USER_STORAGE_FOLDER, self.userconfigdict["USER_STORAGE_FILE_NAME"])
         self.userstoragedict = self._read_config_file(storage_path)

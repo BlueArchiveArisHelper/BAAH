@@ -411,6 +411,7 @@ defaultSoftwareDict = {
     "SAVE_LOG_TO_FILE":{"d":False},
     # 发生错误时，是否输出custom日志
     "SAVE_ERR_CUSTOM_LOG":{"d":True},
+    "ENABLE_CRASH_REPORT":{"d":False},
     # Mirror酱的密钥
     "SEC_KEY_M":{
         "d": "",
@@ -440,6 +441,8 @@ defaultSessionDict = {
     "CURRENT_PERIOD_TASK_INDEX":{"d":-1},
     # 当前脚本重新执行过的次数
     "CURRENT_RETRY_TIMES":{"d":0}, # 跨运行生命周期
+    # 记录历史四张截图
+    "HISTORY_SCREENSHOT_LIST":{"d":[]},
 }
 
 # storagedict存储与某一个配置文件对应的游戏实例的持久性存储信息（如钻石历史变化曲线），其生命周期与userconfig相同，但是在脚本运行时是随用随写的

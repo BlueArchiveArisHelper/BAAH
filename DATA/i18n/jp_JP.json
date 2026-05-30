@@ -42,6 +42,7 @@
     "setting_vpn": "VPN設定",
     "setting_explore":"攻略設定",
     "setting_daily": "デイリーミッション",
+    "setting_crash_report_manager": "クラッシュレポートマネージャー",
 
     "BAAH_desc": "BAAHは、碧藍のアーカイブ/ウルトラブルーアーカイブの日本版、国際版、公式中国版、中国B版のデイリーミッションを自動的に実行します。設定ファイルはBAAH_CONFIGSフォルダに保存されます。",
     "BAAH_get_version": "最新バージョンはGithubからダウンロードするか、グループ内からダウンロードできます",
@@ -73,6 +74,7 @@
     "button_hide":"非表示",
     "button_copy":"コピー",
     "button_rename":"名前を変更",
+    "button_download":"ダウンロード",
     "button_kill_adb_server":"ADBサーバーを再起動",
     "button_link_to_desktop":"デスクトップショートカットを作成",
 
@@ -238,7 +240,9 @@
     "big_update_type": "更新方法",
     "big_update_type_api": "API",
     "big_update_type_direct_get": "直接取得",
-    "big_update_type_direct_get_tips": "この方法はサーバーがURLファイルを更新することに依存しており、サーバーの更新には遅延が生じる可能性があります。詳細については https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk をご参照ください。",
+    "big_update_type_direct_get_tips": "この方法はサーバーがURLファイルを更新することに依存しており、サーバーの更新には遅延が生じる可能性があります。詳細については https://api.blockhaity.dpdns.org/docs/#/api-doc/baapk をご確認ください。",
+
+    "config_crash_report": "エラー報告を有効にする",
 
     "click_pic_a": "画像をクリック",
     "click_xy_a": "座標をクリック",

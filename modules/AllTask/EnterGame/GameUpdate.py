@@ -49,7 +49,7 @@ class GameUpdate(Task):
     
     def __init__(self, name="GameUpdate", pre_times = 1, post_times = 1) -> None:
         super().__init__(name, pre_times, post_times)
-        self.download_temp_folder = "DATA/tmp"
+        self.download_temp_folder = config.TMP_FOLDER
     
     def pre_condition(self) -> bool:
         return True

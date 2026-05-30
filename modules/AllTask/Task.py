@@ -248,7 +248,7 @@ class Task:
         # 体力不足弹窗标题"购买体力"，卷票次数不足标题是“通知”
         if notice and match(popup_pic(PopupName.POPUP_NOTICE)):
             return True
-        if diamond and match(popup_pic(PopupName.POPUP_USE_DIAMOND)):
+        if diamond and match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.8):
             return True
         if price and match(popup_pic(PopupName.POPUP_TOTAL_PRICE), threshold=0.9):
             return True
