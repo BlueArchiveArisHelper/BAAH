@@ -56,9 +56,9 @@ class InWanted(Task):
             In_wanted_pos = (741, 440)
         caninwanted = self.run_until(
             lambda: click(In_wanted_pos),
-            lambda: Page.is_page(PageName.PAGE_WANTED) or Page.is_page(PageName.PAGE_WANTED_SUB),
+            lambda: Page.is_page(PageName.PAGE_WANTED) or Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8),
         )
-        if Page.is_page(PageName.PAGE_WANTED_SUB):
+        if Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8):
             # 点多了，进入到了子页面，此时点击左上角返回一次
             click(Page.TOPLEFTBACK, 1)
             caninwanted = self.run_until(
@@ -82,14 +82,14 @@ class InWanted(Task):
             # 点击location
             self.run_until(
                 lambda: click((959, points[each_target[0]])),
-                lambda: Page.is_page(PageName.PAGE_WANTED_SUB),
+                lambda: Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8),
             )
             # 扫荡对应的level
             RunWantedFight(levelnum = each_target[1], runtimes = each_target[2]).run()
             # 回到SUB界面之后，点击一下返回
             self.run_until(
                 lambda: click(Page.TOPLEFTBACK),
-                lambda: not Page.is_page(PageName.PAGE_WANTED_SUB),
+                lambda: not Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8),
                 sleeptime=3
             )
 

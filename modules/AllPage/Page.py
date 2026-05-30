@@ -74,7 +74,7 @@ class Page:
         return match(page_pic(self.name))
     
     @staticmethod
-    def is_page(pagename) -> bool:
+    def is_page(pagename, threshold=0.9) -> bool:
         """
         确定当前截图是否是指定页面
         
@@ -87,4 +87,4 @@ class Page:
         ------
         如果是指定页面，返回True，否则返回False
         """
-        return match(page_pic(pagename))
+        return match(page_pic(pagename), threshold=threshold)
