@@ -118,7 +118,7 @@ def render_json_list():
                     def update_advance_container():
                         try:
                             ui.notify("Start update, you can check the log in the container log")
-                            subprocess.run(["git","pull","--rebase"])
+                            subprocess.run(["git","pull"])
                             subprocess.run(["python3","requireforyou.py","--core"])
                             subprocess.run(["uv","pip","install","-r","requireforyou.txt","--system"])
                             ui.notify("Update finished, please restart the container")

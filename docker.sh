@@ -5,7 +5,7 @@ export CONTAINER_IP=$(hostname -I | awk '{print $1}')
 cd /app/BAAH
 # BlockHaity：如果要做Docker内部更新，就把git pull删掉，让用户选择更新
 if [ -f "BAAH/.enable_auto_update"]; then
-    git pull --rebase
+    git pull
     python3 requirements.py --core
     uv pip install -r requireforyou.txt --system
 fi
