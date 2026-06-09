@@ -1,8 +1,6 @@
-myversion = "2.2.15"
+myversion = "2.2.16"
 mychangelog = """
 >> BAAH2: https://baah.sanmusen.top/ <<
 
-修复日服PC部分匹配不稳定 | fit the problem of unstable matching in Japanese PC version
-
-添加异常报错追踪和导出开关 | add the switch of exception tracking and exporting
+修复竞技场队伍有优香的话竞技场无法正常出击的bug | fix the bug that if you have Yukari in your team, you cannot start contest battle
 """
