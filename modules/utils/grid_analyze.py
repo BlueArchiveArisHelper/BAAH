@@ -275,7 +275,7 @@ class GridAnalyzer:
                     "red": 4.0, "blue": 2.0, "yellow": 0.5, "purple": 2.0
                 },
                 "blue":{
-                    "red": 0.5, "blue": 4.0, "yellow": 2.0, "purple": 8.0
+                    "red": 0.5, "blue": 4.0, "yellow": 2.0, "purple": 3.0
                 },
                 "yellow":{
                     "red": 2.0, "blue": 0.5, "yellow": 4.0, "purple": 0.5
