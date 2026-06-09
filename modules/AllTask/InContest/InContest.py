@@ -121,10 +121,10 @@ class InContest(Task):
         # click the start button in the popup
         self.run_until(
             lambda: click(button_pic(ButtonName.BUTTON_EDIT)),
-            lambda: Page.is_page(PageName.PAGE_EDIT_TEAM) or match(popup_pic(PopupName.POPUP_NOTICE)) or match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.8)
+            lambda: Page.is_page(PageName.PAGE_EDIT_TEAM) or ((match(popup_pic(PopupName.POPUP_NOTICE)) or match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.85)) and self.has_popup())
         )
         #  匹配到通知弹窗或者匹配到使用钻石弹窗，说明没有票卷了，为什么日服的通知标题有时候是片假名有时候是汉字啊
-        if match(popup_pic(PopupName.POPUP_NOTICE)) or match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.8):
+        if ((match(popup_pic(PopupName.POPUP_NOTICE)) or match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.85)) and self.has_popup()):
             # if no ticket
             logging.warning({"zh_CN": "已经无票卷...尝试收集奖励", "en_US": "No ticket...try to collect reward"})
             # sessiondict设置

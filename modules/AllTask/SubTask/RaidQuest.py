@@ -119,13 +119,13 @@ class RaidQuest(Task):
             lambda: click(button_pic(ButtonName.BUTTON_CFIGHT_START)) or click(button_pic(ButtonName.BUTTON_CFIGHT_START_FANHEXIE)),
             lambda: match(popup_pic(PopupName.POPUP_NOTICE)) or
                         match(popup_pic(PopupName.POPUP_TOTAL_PRICE), threshold=0.9) or
-                        match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.8)
+                        match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.85)
         )
         # 如果弹出购买体力/票卷的弹窗，取消任务
         if match(popup_pic(PopupName.POPUP_TOTAL_PRICE), threshold=0.9):
             logging.warn({"zh_CN": "检测到购买体力/卷票弹窗，取消此次扫荡任务",
                           "en_US": "Detected purchase AP/ticket popup, cancel this raid task"})
-        elif match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.8):
+        elif match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.85):
             # 困难关卡恢复挑战次数
             logging.warn({"zh_CN": "检测到需要消耗钻石，跳过关卡扫荡",
                           "en_US": "Detected need to consume diamond, skip raiding"})
