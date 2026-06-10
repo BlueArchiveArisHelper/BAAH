@@ -186,7 +186,7 @@ class FightQuest(Task):
                 # 使用高度判断防止误触点购买弹窗
                 if res1[1][1] > self.y_height_threshold_story_confirm:
                     # 底部黄色确认按钮
-                    click(button_pic(ButtonName.BUTTON_CONFIRMY))
+                    click(button_pic(ButtonName.BUTTON_CONFIRMY), threshold=0.8)
             # 每一秒判断一次
             click(Page.MAGICPOINT, sleeptime=1)
         # 结束事件处理循环
