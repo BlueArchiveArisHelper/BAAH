@@ -21,10 +21,10 @@ class InEventRecap(Task):
             self.event_recap_button = [149, 220] # 日服国际服活动一览放到第二个按钮
         else:
             self.event_recap_button = [149, 136]
-        if config.userconfigdict["SERVER_TYPE"] not in ["CN", "CN_BILI"]:
+        if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
             self.in_event_button = (1055, 620)
         else:
-            self.in_event_button = (1049, 558) # 日服国际服活动一览进入位置不同
+            self.in_event_button = (1049, 558) # 日服国际服活动一览进入位置不同(日服主页资源按钮改动)
         self.COLOR_DARK_BLUE = ([89, 60, 35], [109, 80, 55])
      
     def pre_condition(self) -> bool:
