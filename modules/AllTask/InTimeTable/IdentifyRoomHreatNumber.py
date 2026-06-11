@@ -1,6 +1,6 @@
 import numpy as np
 
-from modules.utils import (screenshot, match_pixel, config)
+from modules.utils import (screenshot, match_pixel, config, match, logging)
 
 
 def get_hearts_of_rooms(has_scroll_down = False) -> dict:
@@ -37,7 +37,7 @@ def get_hearts_of_rooms(has_scroll_down = False) -> dict:
             # 序号从1开始
             total_counts[j * 3 + i + 1] = heart_count
     # print("爱心数量", total_counts)
-    print(f"Room heart nums: {total_counts}")
+    logging.info(f"Room heart nums: {total_counts}")
     return total_counts
 
 def get_open_status_of_rooms() -> dict:
@@ -63,7 +63,7 @@ def get_open_status_of_rooms() -> dict:
     for (j, y) in enumerate(baseY):
         for (i, x) in enumerate(baseX):
             if match_pixel((x, y), COLOR_NOROOM):
-                print(f"rooms unlock/lock status：{total_counts}")
+                logging.info(f"rooms unlock/lock status：{total_counts}")
                 return total_counts
             # 0表示解锁且未点击过 0.5表示解锁但是已被点击了 1表示未解锁
             total_counts[j * 3 + i + 1] = 0
@@ -71,9 +71,43 @@ def get_open_status_of_rooms() -> dict:
                 total_counts[j * 3 + i + 1] = 0.5
             if match_pixel((x, y), COLOR_LOCK):
                 total_counts[j * 3 + i + 1] = 1
-    # print(f"房间开启状态：{total_counts}")
+    logging.info(f"rooms unlock/lock status：{total_counts}")
     return total_counts
     
+def get_special_like_student_of_rooms(special_like_student_pic_path_list):
+    """
+    检查是否有特别喜欢的学生出现在某个教室，如果出现一个置为1，两个置为2，没有置为0
+    """
+    # 教室弹窗的学生小图片划分九宫格区域，尽可能最大间隔划分
+    # 九宫格中间四个交叉点x,y坐标 (左到右，上到下)
+    x1x2 = [470, 816]
+    y1y2 = [366, 519]
+    def return_pic_region(picx, picy):
+        """根据坐标返回所属的九宫格区域编号，从1开始"""
+        col_index = 0
+        if picx > x1x2[0]:
+            col_index = 1
+            if picx > x1x2[1]:
+                col_index = 2
+        row_index = 0
+        if picy > y1y2[0]:
+            row_index = 1
+            if picy > y1y2[1]:
+                row_index = 2
+        return row_index * 3 + col_index + 1
+    total_counts = dict()
+    for like_stu_path in special_like_student_pic_path_list:
+        res = match(like_stu_path, returnpos=True, threshold=0.88)
+        center_match_position = res[1]
+        if res[0]:
+            # 如果匹配成功
+            region_num = return_pic_region(center_match_position[0], center_match_position[1])
+            total_counts[region_num] = total_counts.get(region_num, 0) + 1
+    logging.info(f"Special like student counts in rooms: {total_counts}")
+    return total_counts
+
+
+
 
 # ======这一段是测试爱心像素点BGR和位置的代码=======
 # img = cv2.imread(config.userconfigdict['SCREENSHOT_NAME'])

@@ -9,7 +9,7 @@ from modules.AllTask.SubTask.ScrollSelect import ScrollSelect
 
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
                            match_pixel, ocr_area_0, get_screenshot_cv_data, istr, CN, EN)
-from .IdentifyRoomHreatNumber import get_hearts_of_rooms, get_open_status_of_rooms
+from .IdentifyRoomHreatNumber import get_hearts_of_rooms, get_open_status_of_rooms, get_special_like_student_of_rooms
 from modules.utils.log_utils import logging
 import numpy as np
 
@@ -21,6 +21,8 @@ class SmartSelect(Task):
         self.location_name_area = ((923, 94), (1132, 130))
         # 爱心是否显示在学生头像下侧，目前除了国服，其他都改动了
         self.scroll_down_to_recg_heart = not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]
+        # 用户选择的希望被优先点击好感的学生头像图片路径列表
+        self.special_like_student_pic_path_list = [each['path'] for each in config.userconfigdict['TIMETABLE_SPECIAL_STUDENT_PIC'] if 'path' in each]
 
     def pre_condition(self) -> bool:
         return Page.is_page(PageName.PAGE_TIMETABLE)
@@ -50,7 +52,7 @@ class SmartSelect(Task):
         self.clear_popup()
         return ticket_num
 
-    def evaluate_score(self, seq_this_room: int, heart_of_this_room: int, lock_num_of_this_area: int) -> int:
+    def evaluate_score(self, seq_this_room: int, heart_of_this_room: int, lock_num_of_this_area: int, special_like_stu_in_this_room: dict) -> int:
         """给格子打分, seq_this_room房子序号从1开始"""
         # 奖励
         weight_of_reward = config.userconfigdict["TIMETABLE_WEIGHT_OF_REWARD"]
@@ -58,17 +60,19 @@ class SmartSelect(Task):
         weight_of_heart = config.userconfigdict["TIMETABLE_WEIGHT_OF_HEART"]
         # 未解锁房间
         weight_of_lock = config.userconfigdict["TIMETABLE_WEIGHT_OF_LOCK"]
+        # weight of special like student
+        weight_of_special_like = 300
         if weight_of_reward is None or weight_of_heart is None or weight_of_lock is None:
             logging.info({
-                "zh_CN": f"当前设置为：奖励权重{weight_of_reward}，爱心权重{weight_of_heart}，未解锁房间权重{weight_of_lock}",
-                "en_US": f"Current settings: reward weight {weight_of_reward}, heart weight {weight_of_heart}, locked room weight {weight_of_lock}"
+                "zh_CN": f"当前设置为：奖励权重{weight_of_reward}，爱心权重{weight_of_heart}，未解锁房间权重{weight_of_lock}, 特别喜欢的学生权重{weight_of_special_like}",
+                "en_US": f"Current settings: reward weight {weight_of_reward}, heart weight {weight_of_heart}, locked room weight {weight_of_lock}, special like student weight {weight_of_special_like}"
             })
             raise ValueError(istr({
                 CN: "请在配置文件中设置课程表的三项权重为数字",
                 EN: "Please set the three weights of timetable elements in config file as numbers"
             }))
         row_ind = (seq_this_room - 1) // 3
-        score = weight_of_reward * row_ind + weight_of_heart * heart_of_this_room + weight_of_lock * lock_num_of_this_area
+        score = weight_of_reward * row_ind + weight_of_heart * heart_of_this_room + weight_of_lock * lock_num_of_this_area + weight_of_special_like * special_like_stu_in_this_room
         return score
 
     def on_run(self) -> None:
@@ -117,6 +121,7 @@ class SmartSelect(Task):
                 screenshot()
             heartdict = get_hearts_of_rooms(self.scroll_down_to_recg_heart)
             opendict = get_open_status_of_rooms()
+            special_like_stu_dict = get_special_like_student_of_rooms(self.special_like_student_pic_path_list)
             # 计算分数
             for room_num in range(1, 10):
                 if room_num not in opendict or opendict[room_num] == 1:
@@ -128,7 +133,7 @@ class SmartSelect(Task):
                 else:
                     # 对于解锁且未被点击的房间计算分数 
                     lockednum = list(opendict.values()).count(1)
-                    rooms_scores.append([i, room_num, self.evaluate_score(room_num, heartdict[room_num], lockednum)])
+                    rooms_scores.append([i, room_num, self.evaluate_score(room_num, heartdict[room_num], lockednum, special_like_stu_dict.get(room_num, 0))])
             # 清除弹窗
             self.clear_popup()
             # 往后翻页
