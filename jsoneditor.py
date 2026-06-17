@@ -12,8 +12,9 @@ from main import run_baah_script
 def main():
     # Use freeze_support to avoid running GUI again: https://blog.csdn.net/fly_leopard/article/details/121610641
     import multiprocessing
-    multiprocessing.freeze_support()
-    if not multiprocessing.get_start_method(allow_none=True):
+    if sys.platform.startswith('win'):
+        multiprocessing.freeze_support()
+    if multiprocessing.current_process().name == 'MainProcess':
         from gui.refactor_pages import home_page, show_json_panel # 载入路由
         from gui.components.exec_arg_parse import parse_args
         from modules.configs.MyConfig import MyConfigger
