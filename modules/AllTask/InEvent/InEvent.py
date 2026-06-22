@@ -66,7 +66,7 @@ class InEvent(Task):
         else:
             # 如果不在Fight Center页面，返回主页然后来到Fight Center页面
             logging.warn({"zh_CN": "页面发生未知偏移，尝试修正", "en_US": "Meets unknown page, try to fix it"})
-            self.back_to_home()
+            self.back_to_home(can_try_fixed_position=True)
             self.run_until(
                 lambda: click(self.fight_center_button_xy),
                 lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
@@ -290,4 +290,4 @@ class InEvent(Task):
 
     def post_condition(self) -> bool:
         config.sessiondict["HAS_ENTER_EVENT"] = True
-        return self.back_to_home()
+        return self.back_to_home(can_try_fixed_position=True)
