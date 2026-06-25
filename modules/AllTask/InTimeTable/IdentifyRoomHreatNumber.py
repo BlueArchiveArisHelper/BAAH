@@ -97,7 +97,7 @@ def get_special_like_student_of_rooms(special_like_student_pic_path_list):
         return row_index * 3 + col_index + 1
     total_counts = dict()
     for like_stu_path in special_like_student_pic_path_list:
-        res = match(like_stu_path, returnpos=True, threshold=0.88)
+        res = match(like_stu_path, returnpos=True, threshold=0.85)
         center_match_position = res[1]
         if res[0]:
             # 如果匹配成功

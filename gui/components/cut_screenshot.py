@@ -1,9 +1,11 @@
 from nicegui import ui, run
 from modules.utils import connect_to_device, get_now_running_app,  get_now_running_app_entrance_activity, screen_shot_to_global, screencut_tool
 
-def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", button_text="Screencut", save_folder_path = None):
+def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", button_text="Screencut", save_folder_path = None, post_process = None):
     """
     截图，截图文件名，截图按钮
+
+    post_process: lambda函数，截图后对截图文件进行处理,输入是图片MatLike数据，需要返回处理后的MatLike数据
     """
     with ui.row().style("width:300px; height: 150px"):
         # 图片
@@ -11,7 +13,7 @@ def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", bu
     
     with ui.row():
         ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")
-        ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True, save_folder_path=save_folder_path))
+        ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True, save_folder_path=save_folder_path, post_process=post_process))
     
 
 cut_lock = False
@@ -24,6 +26,8 @@ async def cut_screenshot(inconfig, resultdict=None, resultkey=None, left_click=T
     - quick_return_full: 快速返回是否返回完整json信息
     
     - save_cut_img: 截图操作后是否保存img图像
+
+    - post_process: lambda函数，截图后对截图文件进行处理,输入是图片MatLike数据，需要返回处理后的MatLike数据
     """
     
     global cut_lock
