@@ -31,7 +31,6 @@ jobs:
           auto-activate: true
 
       - name: Cache pip
-        shell: cmd /C CALL {0}
         uses: actions/cache@v4
         if: startsWith(runner.os, 'Windows')
         with:
