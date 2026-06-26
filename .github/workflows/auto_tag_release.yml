@@ -23,11 +23,11 @@ jobs:
           ref: main # 明确检出main分支[5](@ref)
 
       - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniconda-version: "py310_24.7.1-0"
           auto-update-conda: false
-          activate-environment: ""
+          activate-environment: "base"
           auto-activate: true
 
       - name: Cache pip
