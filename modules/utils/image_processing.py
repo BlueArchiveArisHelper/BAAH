@@ -223,8 +223,11 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
             # draw a rectangle on the screenshot
             cv2.rectangle(screenshot_cvmat, top_left, bottom_right, (0, 255, 0), 2)
             # draw a circle on the center of the pattern
-            cv2.circle(screenshot_cvmat, (center_x, center_y), 10, (0, 0, 255), -1)
+            cv2.circle(screenshot_cvmat, (center_x, center_y), 4, (0, 0, 255), -1)
             print("max_val: ", max_val)
+            # draw the max_val on the image (top and bottom of the rectangle)
+            cv2.putText(screenshot_cvmat, f"{max_val:.2f}", (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(screenshot_cvmat, f"{max_val:.2f}", (top_left[0], bottom_right[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
             cv2.imshow('Matched Screenshot', screenshot_cvmat)
             cv2.waitKey(0)
             cv2.destroyAllWindows()

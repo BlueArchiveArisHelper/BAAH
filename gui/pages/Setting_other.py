@@ -1,11 +1,15 @@
 from nicegui import ui, run
+import cv2
 from gui.components.cut_screenshot import cut_screenshot, test_screencut
 from gui.components.list_edit_area import list_edit_area
 import os
 import subprocess
 import time
 
-from modules.utils import screencut_tool, connect_to_device, screen_shot_to_global
+from DATA.assets.ButtonName import ButtonName
+from DATA.assets.PageName import PageName
+from DATA.assets.PopupName import PopupName
+from modules.utils import screencut_tool, connect_to_device, screen_shot_to_global, button_pic, popup_pic, page_pic, match_pattern,screenshot
 
 def set_other(config, gui_shared_config):
     with ui.row():
@@ -123,3 +127,49 @@ def set_other(config, gui_shared_config):
     # adb kill-server
     with ui.row():
         ui.button(config.get_text("button_kill_adb_server"), on_click=restart_adb_server, color="red")
+
+    # 测试图片识别按钮
+    pic_path_dict = {
+        "button":{
+            "func": lambda name, c=config: button_pic(name, use_config=c),
+            "list": [k for k in ButtonName.__dict__.keys() if not k.startswith("__")]
+        },
+        "page":{
+            "func": lambda name, c=config: page_pic(name, use_config=c),
+            "list": [k for k in PageName.__dict__.keys() if not k.startswith("__")]
+        },
+        "popup":{
+            "func": lambda name, c=config: popup_pic(name, use_config=c),
+            "list": [k for k in PopupName.__dict__.keys() if not k.startswith("__")]
+        }
+    }
+    now_focus_pic_type = {
+        "typename": "button",
+        "filename": pic_path_dict["button"]["list"][0]
+    }
+    @ui.refreshable
+    def show_quick_pic_match():
+        def update_big_type(e):
+            now_focus_pic_type["typename"] = e.value
+            now_focus_pic_type["filename"] = pic_path_dict[e.value]["list"][0]
+            show_quick_pic_match.refresh()
+        def update_small_name(e):
+            now_focus_pic_type["filename"] = e.value
+            show_quick_pic_match.refresh()
+        def screencut_and_match():
+            connect_to_device(use_config = config)
+            screen_shot_to_global(use_config = config, output_png = True)
+            match_pattern(cv2.imread(config.userconfigdict['SCREENSHOT_NAME']), pic_path_dict[now_focus_pic_type["typename"]]["func"](now_focus_pic_type["filename"]), show_result=True, auto_rotate_if_trans=False)
+        with ui.row():
+            with ui.column():
+                ui.select(list(pic_path_dict.keys()), on_change=update_big_type, value=now_focus_pic_type["typename"]).style('width: 200px')
+            
+            with ui.column():
+                ui.select(list(pic_path_dict[now_focus_pic_type["typename"]]["list"]), on_change=update_small_name, value=now_focus_pic_type["filename"]).style('width: 200px')
+            
+            with ui.column():
+                ui.button("GO!", on_click=screencut_and_match)
+
+
+
+    show_quick_pic_match()

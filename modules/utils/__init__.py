@@ -17,14 +17,20 @@ from modules.utils.log_utils import logging
 import time
 from modules.configs.MyConfig import config, ActionType
 
-def get_config_time_after_click():
-    return config.userconfigdict['TIME_AFTER_CLICK']
+def get_config_time_after_click(use_config = None):
+    if use_config is None:
+        use_config = config
+    return use_config.userconfigdict['TIME_AFTER_CLICK']
 
-def get_config_screenshot_name():
-    return config.userconfigdict['SCREENSHOT_NAME']
+def get_config_screenshot_name(use_config = None):
+    if use_config is None:
+        use_config = config
+    return use_config.userconfigdict['SCREENSHOT_NAME']
 
-def get_config_pic_path():
-    return config.userconfigdict['PIC_PATH']
+def get_config_pic_path(use_config = None):
+    if use_config is None:
+        use_config = config
+    return use_config.userconfigdict['PIC_PATH']
 
 def get_screenshot_cv_data():
     """
@@ -181,26 +187,26 @@ def match_pixel(xy, color, printit = False):
     sc_mat_data = get_screenshot_cv_data()
     return match_pixel_color_range(sc_mat_data, xy[0], xy[1], color[0], color[1], printit=printit)
 
-def page_pic(picname):
+def page_pic(picname, use_config = None):
     """
     给定页面的图片名称，得到图片的路径
     """
     # get_config_pic_path() + "/PAGE" + f"/{picname}.png"
-    return os.path.join(get_config_pic_path(), "PAGE", f"{picname}.png")
+    return os.path.join(get_config_pic_path(use_config), "PAGE", f"{picname}.png")
 
-def button_pic(buttonname):
+def button_pic(buttonname, use_config = None):
     """
     给定按钮的图片名称，得到图片的路径
     """
     # get_config_pic_path() + "/BUTTON" + f"/{buttonname}.png"
-    return os.path.join(get_config_pic_path(), "BUTTON", f"{buttonname}.png")
+    return os.path.join(get_config_pic_path(use_config), "BUTTON", f"{buttonname}.png")
 
-def popup_pic(popupname):
+def popup_pic(popupname, use_config = None):
     """
     给定弹窗的图片名称，得到图片的路径
     """
     # get_config_pic_path() + "/POPUP" + f"/{popupname}.png"
-    return os.path.join(get_config_pic_path(), "POPUP", f"{popupname}.png")
+    return os.path.join(get_config_pic_path(use_config), "POPUP", f"{popupname}.png")
 
 def get_grid_solution_json(location, level, ishard=False):
     # 读取DATA/grid_config/quest/里的文件
