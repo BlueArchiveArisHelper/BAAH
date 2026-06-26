@@ -30,10 +30,6 @@ jobs:
           activate-environment: ""
           auto-activate: true
 
-      - name: Check conda env list
-        run: |
-          conda env list
-
       - name: Cache pip
         uses: actions/cache@v4
         if: startsWith(runner.os, 'Windows')
