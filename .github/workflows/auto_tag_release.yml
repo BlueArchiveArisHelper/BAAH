@@ -31,6 +31,7 @@ jobs:
           auto-activate: true
 
       - name: Cache pip
+        shell: cmd /C CALL {0}
         uses: actions/cache@v4
         if: startsWith(runner.os, 'Windows')
         with:
@@ -40,12 +41,14 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Upgrade pip and install dependencies
+        shell: cmd /C CALL {0}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Extract version number
         id: get_version
+        shell: cmd /C CALL {0}
         run: |
           $version = python package.py -v
           echo "VERSION_NUMBER=$version" >> $env:GITHUB_OUTPUT
@@ -53,6 +56,7 @@ jobs:
       # 新增的标签检查步骤
       - name: Check for existing tag
         id: check_tag
+        shell: cmd /C CALL {0}
         run: |
           $tag = "BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
           $result = git ls-remote --tags origin $tag
@@ -65,14 +69,17 @@ jobs:
 
       - name: Extract version change log
         id: get_change_log
+        shell: cmd /C CALL {0}
         run: |
           # 将日志输出到文件，确保UTF-8编码和换行符保留
           python package.py -c | Out-File -FilePath changelog.md -Encoding utf8
 
       - name: Build package
+        shell: cmd /C CALL {0}
         run: python package.py # 执行打包脚本[8](@ref)
 
       - name: Create Git Tag
+        shell: cmd /C CALL {0}
         run: |
           git tag "BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
           git push origin "BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
