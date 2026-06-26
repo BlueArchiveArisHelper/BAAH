@@ -63,6 +63,7 @@ jobs:
               exit /b 1
           ) else if errorlevel 1 (
               echo Tag %tag% does not exist. Proceeding.
+              exit /b 0
           ) else (
               echo ::error::Already has this tag: %tag%
               exit /b 1
