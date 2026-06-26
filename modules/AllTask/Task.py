@@ -76,10 +76,12 @@ class Task:
             }))
 
     @staticmethod
-    def back_to_home(times = 3) -> bool:
+    def back_to_home(times = 3, can_try_fixed_position = False) -> bool:
         """
         尝试返回到游戏主页，如果游戏不在前台，会尝试打开游戏到前台，但不会等待登录加载，因此必须确保游戏在后台
         
+        can_try_fixed_position: 是否尝试点击右上角主页按钮的固定位置
+
         返回成功与否
         """
         logging.info({"zh_CN": "尝试返回主页", "en_US":"Try back to homepage"})
@@ -117,6 +119,10 @@ class Task:
                 can_back_home = True
             if can_back_home:
                 sleep(3)
+            else:
+                # 尝试点固定位置
+                if can_try_fixed_position and not match(button_pic(ButtonName.BUTTON_HOME_ICON)):
+                    click([1231, 26])
         logging.error({"zh_CN": "返回主页失败", "en_US":"Failed to return to home page"})
         return False
         

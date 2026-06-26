@@ -218,7 +218,7 @@
     "text_light": "Light",
     "text_dark": "Dark",
     "text_system": "System",
-    "config_timetable_special_student_pic_desc": "To add the students you want to prioritize in the timetable, please take a screenshot of the student avatars in the pop-up window of the classroom nine-grid in the timetable (note that only the upper half of the avatar is needed). Each student corresponds to a screenshot, and the classrooms where these students are located will be prioritized with a weight of 300.",
+    "config_timetable_special_student_pic_desc": "To add the students you want to prioritize in the timetable, please take a screenshot of the student avatars in the pop-up window of the classroom nine-grid in the timetable (note that only the content of the avatar is needed). Each student corresponds to a screenshot, and the classrooms where these students are located will be prioritized with a weight of 300.",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",

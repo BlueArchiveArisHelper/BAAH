@@ -223,8 +223,11 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
             # draw a rectangle on the screenshot
             cv2.rectangle(screenshot_cvmat, top_left, bottom_right, (0, 255, 0), 2)
             # draw a circle on the center of the pattern
-            cv2.circle(screenshot_cvmat, (center_x, center_y), 10, (0, 0, 255), -1)
+            cv2.circle(screenshot_cvmat, (center_x, center_y), 4, (0, 0, 255), -1)
             print("max_val: ", max_val)
+            # draw the max_val on the image (top and bottom of the rectangle)
+            cv2.putText(screenshot_cvmat, f"{max_val:.2f}", (top_left[0], top_left[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
+            cv2.putText(screenshot_cvmat, f"{max_val:.2f}", (top_left[0], bottom_right[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
             cv2.imshow('Matched Screenshot', screenshot_cvmat)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
@@ -378,7 +381,7 @@ quick_return_full_data_blueprint = {
     'imgx2':-1,
     'imgy2':-1
 }
-def screencut_tool(left_click = True, right_click = True, img_path = None, quick_return = False, quick_return_full = False, save_cut_img = True, save_folder_path = None):
+def screencut_tool(left_click = True, right_click = True, img_path = None, quick_return = False, quick_return_full = False, save_cut_img = True, save_folder_path = None, post_process = None):
     """
     截图工具
     
@@ -398,6 +401,7 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
         是否保存截取的图片，默认保存
     save_folder_path: str
         截取后的图片的保存文件夹 如果为None则保存到当前目录
+    post_process: lambda函数，截图后对截图文件进行处理,输入是图片MatLike数据，需要返回处理后的MatLike数据
     """
     window_name = 'Screenshot'
     global start_x, start_y, drawing, quick_return_data, quick_return_full_data, quick_return_full_data_blueprint
@@ -457,6 +461,8 @@ def screencut_tool(left_click = True, right_click = True, img_path = None, quick
             file_save_folder = "./" if save_folder_path is None else save_folder_path
             file_save_path = os.path.join(file_save_folder, filename)
             if save_cut_img:
+                if post_process:
+                    selected_region = post_process(selected_region)
                 cv2.imwrite(file_save_path, selected_region)
                 print(f"选定区域已被保存为/Saved as {file_save_path}")
             print(f"坐标点为起点[{start_x}, {start_y}] 终点[{end_x}, {end_y}]")

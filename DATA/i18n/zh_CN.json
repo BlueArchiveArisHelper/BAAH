@@ -218,7 +218,7 @@
     "text_light": "浅色",
     "text_dark": "深色",
     "text_system": "跟随系统",
-    "config_timetable_special_student_pic_desc": "给课程表教室九宫格弹窗里的学生头像截图来添加你希望在课程表中优先点击的学生（注意只接取头像上半部分就行）。下面每个学生对应一张截图，这些学生所在的教室会以权重300被优先点击",
+    "config_timetable_special_student_pic_desc": "给课程表教室九宫格弹窗里的学生头像截图来添加你希望在课程表中优先点击的学生（注意只截取头像方框内的部分就行）。下面每个学生对应一张截图，这些学生所在的教室会以权重300被优先点击",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
