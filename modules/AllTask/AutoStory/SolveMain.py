@@ -19,10 +19,15 @@ class SolveMain(Task):
     """
         主线剧情自动化
 
-        剧情总页-主线剧情（篇，章）-小节目录列表 PAGE_STORY_SELECT_SECTION.png 
+        剧情总页-主线剧情（篇，章）-小节目录列表 PAGE_STORY_SELECT_SECTION.png
+
+        type = "main-first" | "main-second"
+
+        第一部主线 | 第二部主线
     """
 
-    def __init__(self, name="SolveMain") -> None:
+    def __init__(self, type, name="SolveMain") -> None:
+        self.type = type
         super().__init__(name)
         self.yellow_points = [
             (975, 297),
@@ -55,21 +60,32 @@ class SolveMain(Task):
 
     def pre_condition(self) -> bool:
         return self.back_to_home()
-
     def on_run(self) -> None:
         goto_story_page()
         # 进入主线剧情
         click((359, 368), sleeptime=0.5)
         click((359, 368), sleeptime=0.5)
         click((359, 368), sleeptime=1)
-        # 可能在最终篇页面，点击左上角返回到Vol主线篇章选择页面
-        self.run_until(
-            lambda: click((84, 111)),
-            lambda: not match_pixel((84, 111), [(0, 0, 200), (255, 255, 255)]) # 主要比较第三位，白色按钮是244，淡蓝色背景是168
+        if self.type == "main-first":
+        # 可能在最终篇或第二部主线页面，点击左上角返回到Vol主线篇章选择页面
+            self.run_until(
+                lambda: click((84, 111), sleeptime=1),
+                lambda: not match_pixel((84, 111), [(0, 0, 200), (255, 255, 255)]) or match(button_pic(ButtonName.BUTTON_MAIN_STORY_FINAL)),
+            # 主要比较第三位，白色按钮是244，淡蓝色背景是168
+            logging.info({"zh_CN": "尝试进入第一部主线", "en_US": "Try to enter the first main storyline"}),
+        )
+        else:
+        # 可能在最终篇或第一部主线页面，点击左上角返回到Vol主线篇章选择页面
+            self.run_until(
+                lambda: click((84, 111), sleeptime=1),
+                lambda: not match(button_pic(ButtonName.BUTTON_MAIN_STORY_FINAL)) and not match(button_pic(ButtonName.BUTTON_MAIN_STORY_FINAL_BACK)),
+            logging.info({"zh_CN": "尝试进入第二部主线", "en_US": "Try to enter the second main storyline"}),
         )
         logging.info({"zh_CN": "进入主线剧情", "en_US": "Enter the main storyline"})
-        self.scroll_to_left()
+        self.scroll_to_left(5)
         # 设置一共10篇主线 x:347, 611 y: 291, 415
+        logging.info({"zh_CN": "EX篇涉及攻略战和学生控制内容，暂不支持以上功能", 
+                      "en_US": "EX Ep. involves strategy battle and student control, which are not currently supported"})
         for i in range(10):
             # 点下下每篇的章节，然后看右侧黄点
             y_click = [291, 415] # 高度 上下
@@ -92,39 +108,47 @@ class SolveMain(Task):
                                   "en_US": f"Detected eposide {i} New chapter {ind+1}, click to enter"})
                     self.run_until(
                         lambda: click((point_pos[0] + 10, point_pos[1] + 5)),
+                        lambda: Page.is_page(PageName.PAGE_STORY_SELECT_SECTION) or match(button_pic(ButtonName.BUTTON_CONFIRMB)),
+                        sleeptime=1
+                    )
+                    # 可能提示第一部前置关卡未完成，这里点击蓝色的确认
+                    if match(button_pic(ButtonName.BUTTON_CONFIRMB)):
+                        self.run_until(
+                            lambda: click(button_pic(ButtonName.BUTTON_CONFIRMB)),
+                            lambda: Page.is_page(PageName.PAGE_STORY_SELECT_SECTION),
+                            sleeptime=1
+                        )
+                        logging.info({"zh_CN": "点击确认", "en_US": "Clickconfirm"})
+                    # 尝试处理完当前黄点篇章所有可点的New小节
+                    try_to_solve_new_section()
+                    screenshot()
+            # 全部章节都处理完了
+            logging.info({"zh_CN": f"篇章下标{i}所有章节处理完毕", "en_US": f"Eposide index {i} All chapters have been processed"})
+        # 如果是第一部主线，处理最终篇
+        if self.type == "main-first":
+            logging.info({"zh_CN": "处理最终篇","en_US": "Process Final Ep."})
+            logging.warn({"zh_CN": "最终篇涉及到走格子以及攻略战，暂不支持以上部分",
+                        "en_US": "The Final Ep. involves grid walking and strategy battles, "
+                                "which are not currently supported"})
+            # 点击底部最终篇蓝色按钮
+            click((846, 634))
+            click((846, 634))
+            sleep(2)
+            screenshot()
+            # 尝试匹配右侧黄点篇章-大章节
+            for ind, point_pos in enumerate(self.yellow_points):
+                if match_pixel(point_pos, self.yellow_bgr):
+                    logging.info({"zh_CN": f"检测到最终篇新章节{ind+1}，点击进入",
+                                "en_US": f"Detect the final new chapter {ind+1}, click to enter"})
+                    self.run_until(
+                        lambda: click((point_pos[0] + 10, point_pos[1] + 5)),
                         lambda: Page.is_page(PageName.PAGE_STORY_SELECT_SECTION),
                         sleeptime=1
                     )
                     # 尝试处理完当前黄点篇章所有可点的New小节
                     try_to_solve_new_section()
                     screenshot()
-            # 全部章节都处理完了
-            logging.info({"zh_CN": f"篇章下标{i}所有章节处理完毕", "en_US": f"Eposide index {i} All chapters have been processed"})
-
-        # 处理最终篇
-        logging.info({"zh_CN": "处理最终篇","en_US": "Process final"})
-        logging.warn({"zh_CN": "最终篇涉及到走格子以及攻略战，暂不支持以上部分",
-                      "en_US": "The final chapter involves grid walking and strategy battles, "
-                               "which are not currently supported"})
-        # 点击底部最终篇蓝色按钮
-        click((846, 634))
-        click((846, 634))
-        sleep(2)
-        screenshot()
-        # 尝试匹配右侧黄点篇章-大章节
-        for ind, point_pos in enumerate(self.yellow_points):
-            if match_pixel(point_pos, self.yellow_bgr):
-                logging.info({"zh_CN": f"检测到最终篇新章节{ind+1}，点击进入",
-                              "en_US": f"Detect the final new chapter {ind+1}, click to enter"})
-                self.run_until(
-                    lambda: click((point_pos[0] + 10, point_pos[1] + 5)),
-                    lambda: Page.is_page(PageName.PAGE_STORY_SELECT_SECTION),
-                    sleeptime=1
-                )
-                # 尝试处理完当前黄点篇章所有可点的New小节
-                try_to_solve_new_section()
-                screenshot()
-        logging.info({"zh_CN": f"最终篇所有章节处理完毕", "en_US": "All chapters of the final chapter have been processed"})
+            logging.info({"zh_CN": f"最终篇所有章节处理完毕", "en_US": "All chapters of the final chapter have been processed"})
 
     def post_condition(self) -> bool:
         return self.back_to_home()

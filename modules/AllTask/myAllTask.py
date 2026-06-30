@@ -38,6 +38,7 @@ class TaskName():
     PUSH_NORMAL = "普通推图"
     PUSH_HARD = "困难推图"
     MAIN_STORY = "主线剧情"
+    MAIN_SECOND_STORY = "主线剧情第二部"
     SHORT_STORY = "短篇剧情"
     SIDE_STORY = "支线剧情"
     SOLVE_CHALLENGE = "挑战任务"
@@ -229,7 +230,14 @@ class TaskInstanceMap:
                     task_config_name = TaskName.MAIN_STORY,
                     i18n_key_name = "push_main_story",
                     task_module = AutoStory,
-                    task_params = {'types': ["main"]}
+                    task_params = {'types': ["main-first"]}
+                ),
+            TaskName.MAIN_SECOND_STORY: TaskInstance
+            (
+                    task_config_name = TaskName.MAIN_SECOND_STORY,
+                    i18n_key_name = "push_main_second_story",
+                    task_module = AutoStory,
+                    task_params = {'types': ["main-second"]}
                 ),
             TaskName.SHORT_STORY: TaskInstance(
                     task_config_name = TaskName.SHORT_STORY,
