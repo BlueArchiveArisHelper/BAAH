@@ -528,6 +528,21 @@ async def show_json_panel(json_file_name: str):
                     )
 
                 # 4. Emulator Path (Ratio 6)
+                def smart_replace_main2device(emulator_path):
+                    """将mumu多开器路径根据 --engine_series 参数选择替换为对应的路径模拟器"""
+                    emulator_path = emulator_path.replace("\\", "/").replace('"', "")
+                    replaced_off_str = "nx_main/MuMuNxMain.exe"
+                    mumu_version = "12.0" # 默认版本
+                    # 通过字符串匹配找到 --engine_series 参数的值
+                    if "--engine_series" in emulator_path:
+                        parts = emulator_path.split("--engine_series")
+                        if len(parts) > 1:
+                            # 获取参数值，去掉前后的空格和引号
+                            engine_series_value = parts[1].strip().split()[0].strip('"').replace('=','')
+                            mumu_version = engine_series_value
+                    replaced_on_str = "nx_device/{}/shell/MuMuNxDevice.exe".format(mumu_version)
+                    return emulator_path.replace(replaced_off_str, replaced_on_str).replace(f" --engine_series={mumu_version}", "")
+
                 with ui.element("div").style(
                     "flex: 6; min-width: 0px; display: flex; align-items: center;"
                 ).classes("mx-1").bind_visibility_from(
@@ -538,12 +553,7 @@ async def show_json_panel(json_file_name: str):
                     ui.input(curr_config.get_text("config_emulator_path")).bind_value(
                         curr_config.userconfigdict,
                         "TARGET_EMULATOR_PATH",
-                        forward=lambda v: v.replace("\\", "/")
-                        .replace('"', "")
-                        .replace(
-                            "nx_main/MuMuNxMain.exe",
-                            "nx_device/12.0/shell/MuMuNxDevice.exe",
-                        ),
+                        forward=smart_replace_main2device,
                     ).props('placeholder="模拟器路径"').classes("w-full")
 
             # Right Group: Action Buttons
