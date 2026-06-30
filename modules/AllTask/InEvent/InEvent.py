@@ -60,7 +60,8 @@ class InEvent(Task):
             # 尝试前往活动页面
             logging.info({"zh_CN": "尝试前往活动页面", "en_US": "Try going to the event page"})
             self.run_until(
-                lambda: click((105, 162), sleeptime=1.5),
+                # 进入尚未解锁的主线剧情之后的活动可能会有剧透提示，点击蓝色确定关掉才能进入活动画面
+                lambda: [click((105, 162), sleeptime=1.5), click(button_pic(ButtonName.BUTTON_CONFIRMB))],
                 lambda: not Page.is_page(PageName.PAGE_FIGHT_CENTER)
             )
         else:
@@ -76,7 +77,7 @@ class InEvent(Task):
             self.next_sleep_time += 2
             logging.info({"zh_CN": "尝试前往活动页面", "en_US": "Try going to the event page"})
             self.run_until(
-                lambda: click((105, 162), sleeptime=1.5),
+                lambda: [click((105, 162), sleeptime=1.5), click(button_pic(ButtonName.BUTTON_CONFIRMB))],
                 lambda: not Page.is_page(PageName.PAGE_FIGHT_CENTER)
             )
 

@@ -37,8 +37,10 @@ class AutoStory(Task):
         return self.back_to_home()
 
     def on_run(self) -> None:
-        if "main" in self.types:
-            SolveMain().run()
+        if "main-first" in self.types:
+            SolveMain("main-first").run()
+        if "main-second" in self.types:
+            SolveMain("main-second").run()
         if "short" in self.types:
             SolveShortOrSide("short").run()
         if "side" in self.types:

@@ -23,11 +23,11 @@ jobs:
           ref: main # 明确检出main分支[5](@ref)
 
       - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           miniconda-version: "py310_24.7.1-0"
           auto-update-conda: false
-          activate-environment: ""
+          activate-environment: "base"
           auto-activate: true
 
       - name: Cache pip
@@ -40,39 +40,48 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Upgrade pip and install dependencies
+        shell: cmd /C CALL {0}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Extract version number
         id: get_version
+        shell: cmd /C CALL {0}
         run: |
-          $version = python package.py -v
-          echo "VERSION_NUMBER=$version" >> $env:GITHUB_OUTPUT
+          for /f "delims=" %%i in ('python package.py -v') do echo VERSION_NUMBER=%%i>>"%GITHUB_OUTPUT%"
 
       # 新增的标签检查步骤
       - name: Check for existing tag
         id: check_tag
+        shell: cmd /C CALL {0}
         run: |
-          $tag = "BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
-          $result = git ls-remote --tags origin $tag
-          if ($result) {
-              Write-Output "::error::Already has this tag: $tag"
-              exit 1
-          } else {
-              Write-Output "Tag $tag does not exist. Proceeding."
-          }
+          set "tag=BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
+          git ls-remote --exit-code --tags origin "refs/tags/%tag%" >nul 2>&1
+          if errorlevel 3 (
+              echo ::error::Failed to check tag: %tag%
+              exit /b 1
+          ) else if errorlevel 1 (
+              echo Tag %tag% does not exist. Proceeding.
+              exit /b 0
+          ) else (
+              echo ::error::Already has this tag: %tag%
+              exit /b 1
+          )
 
       - name: Extract version change log
         id: get_change_log
+        shell: cmd /C CALL {0}
         run: |
-          # 将日志输出到文件，确保UTF-8编码和换行符保留
-          python package.py -c | Out-File -FilePath changelog.md -Encoding utf8
+          rem 将日志输出到文件，PYTHONIOENCODING 会确保 UTF-8 编码
+          python package.py -c > changelog.md
 
       - name: Build package
+        shell: cmd /C CALL {0}
         run: python package.py # 执行打包脚本[8](@ref)
 
       - name: Create Git Tag
+        shell: cmd /C CALL {0}
         run: |
           git tag "BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
           git push origin "BAAH${{ steps.get_version.outputs.VERSION_NUMBER }}"
