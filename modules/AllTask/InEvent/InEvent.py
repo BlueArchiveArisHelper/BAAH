@@ -56,15 +56,7 @@ class InEvent(Task):
         """
         点击滚动栏，前往活动页面
         """
-        if Page.is_page(PageName.PAGE_FIGHT_CENTER):
-            # 尝试前往活动页面
-            logging.info({"zh_CN": "尝试前往活动页面", "en_US": "Try going to the event page"})
-            self.run_until(
-                # 进入尚未解锁的主线剧情之后的活动可能会有剧透提示，点击蓝色确定关掉才能进入活动画面
-                lambda: [click((105, 162), sleeptime=1.5), click(button_pic(ButtonName.BUTTON_CONFIRMB))],
-                lambda: not Page.is_page(PageName.PAGE_FIGHT_CENTER)
-            )
-        else:
+        if not Page.is_page(PageName.PAGE_FIGHT_CENTER):
             # 如果不在Fight Center页面，返回主页然后来到Fight Center页面
             logging.warn({"zh_CN": "页面发生未知偏移，尝试修正", "en_US": "Meets unknown page, try to fix it"})
             self.back_to_home(can_try_fixed_position=True)
@@ -75,11 +67,18 @@ class InEvent(Task):
             # 睡眠一段时间
             sleep(self.next_sleep_time)
             self.next_sleep_time += 2
-            logging.info({"zh_CN": "尝试前往活动页面", "en_US": "Try going to the event page"})
-            self.run_until(
-                lambda: [click((105, 162), sleeptime=1.5), click(button_pic(ButtonName.BUTTON_CONFIRMB))],
-                lambda: not Page.is_page(PageName.PAGE_FIGHT_CENTER)
-            )
+
+        # 尝试前往活动页面
+        logging.info({"zh_CN": "尝试前往活动页面", "en_US": "Try going to the event page"})
+        self.run_until(
+            lambda: click((105, 162), sleeptime=1.5),
+            lambda: not Page.is_page(PageName.PAGE_FIGHT_CENTER)
+        )
+        # 进入尚未解锁的主线剧情之后的活动可能会弹出来剧透提示，点击蓝色确定关掉才能真正进入活动画面
+        self.run_until(
+            lambda: click(button_pic(ButtonName.BUTTON_CONFIRMB)),
+            lambda: not match(button_pic(ButtonName.BUTTON_CONFIRMB))
+        )
 
     def judge_whether_available_event(self):
         """
