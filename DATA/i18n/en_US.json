@@ -191,7 +191,7 @@
     "config_output_err_log":"Whether save log when error occurs",
     "config_shop_normal_buyall":"Buy all in normal shop",
     "config_shop_contest_buyall":"Buy all in contest shop",
-    "desc_one_click_raid":"One click raid, need to select the raid stage first and manually raid once to save the selection",
+    "desc_one_click_raid":"One click raid, need to select the raid stage first and manually raid once to save the selection. The number of task is the page number after clicking one click raid, and the number of times is how many times to raid on that page.",
     "config_reversed": "Whether reversed",
     "desc_cli_since_manual":"Since the explore task is set to manual start up teams, run in GUI will report an error， please use terminal to run",
     "word_normal":"Normal",
