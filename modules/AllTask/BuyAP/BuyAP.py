@@ -24,7 +24,7 @@ class BuyAP(Task):
     def on_run(self) -> None:
         # 打开购买弹窗
         res = self.run_until(
-            lambda: click((611, 38)),
+            lambda: click((616, 38)),
             lambda: match(button_pic(ButtonName.BUTTON_CONFIRMY)),
             sleeptime=2
         )
