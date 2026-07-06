@@ -164,3 +164,17 @@ def old_VPN2action_flow(VPN_json):
     except:
         print("Error when parse old VPN setting into obj workflows")
         return {}
+
+def default_fill_shop_table(val_list):
+    """
+    商店购买物品json配置的后处理，如果列表为空的，那么自动填充6行4列内容
+
+    val_list 是一个二维列表
+    """
+    if len(val_list) == 0:
+        for r in range(6):
+            this_row = []
+            for c in range(4):
+                this_row.append([c+1, False])
+            val_list.append(this_row)
+    return val_list
