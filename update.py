@@ -8,27 +8,8 @@ import os
 import zipfile
 import time
 import sys
-# ========================
+
 updater_version = "0.5.0"
-# 存储当前本地版本的json文件，需要包含 NOWVERSION 字段
-software_config_storage_path = os.path.join("DATA", "CONFIGS", "software_config.json")
-# 软件可执行文件的exe名称
-main_exe_name = "BAAH.exe"
-this_update_exe_name = "BAAH_UPDATE.exe"
-# 更新源声明
-# _update.zip结尾的releases附件会被当成增量更新文件
-urls = {
-    "gitee": "https://gitee.com/api/v5/repos/sammusen/BAAH/releases/latest",
-    "github": "https://api.github.com/repos/sanmusen214/BAAH/releases/latest",
-}
-mirror_base_url = "https://mirrorchyan.com/api/resources/BAAH/latest?cdk="
-# 云端以及本地端清洗版本号的函数，洗成只有数字和点的形式，方便比较大小
-def clean_version_str(version_str):
-    """
-    清洗版本号字符串，去掉前缀BAAH，保留数字和点
-    """
-    return version_str.replace("BAAH", "").strip()
-# ========================
 print(f"This Updator Version: {updater_version}")
 auto_close_window = True # 执行之后时候自动关闭窗口
 open_GUI_again = False # 执行完毕后是否重新打开 GUI.exe
@@ -111,20 +92,23 @@ def whether_has_new_version():
     """
     检查是否有新版本
     """
-    global urls
     # 初始化值
     vi = None
     # 这里读取software_config.json
     # DATA/CONFIGS/software_config.json里的NOWVERSION字段
-    with open(software_config_storage_path, "r", encoding="utf-8") as f:
+    with open(os.path.join("DATA", "CONFIGS", "software_config.json"), "r", encoding="utf-8") as f:
         confile = json.load(f)
     # 当前BAAH的版本号
-    current_version_num = get_one_version_num(clean_version_str(confile["NOWVERSION"]))
+    current_version_num = get_one_version_num(confile["NOWVERSION"].replace("BAAH", ""))
     enc_key = confile.get("ENCRYPT_KEY", "12345")
     mirror_key = confile.get("SEC_KEY_M", "12345")
-
+    # 更新源声明
+    urls = {
+        "gitee": "https://gitee.com/api/v5/repos/sammusen/BAAH/releases/latest",
+        "github": "https://api.github.com/repos/sanmusen214/BAAH/releases/latest",
+    }
     if confile["SEC_KEY_M"]:
-        urls["mirror"] = mirror_base_url + f"{decrypt_data(mirror_key, enc_key)}"
+        urls["mirror"] = f"https://mirrorchyan.com/api/resources/BAAH/latest?cdk={decrypt_data(mirror_key, enc_key)}"
 
     print("Checking for new version...")
     # 遍历当前所有更新源，维护 [tag最新的] 可访问的VersionInfo对象
@@ -138,12 +122,12 @@ def whether_has_new_version():
                 # 内容解析
                 if key == "mirror":
                     data = response.json().get("data", {})
-                    version_str = clean_version_str(data.get("version_name", ""))
+                    version_str = data.get("version_name", "").replace("BAAH", "")
                     update_zip_url = data.get("url", "")
                     update_body_text = data.get("release_note", "")
                 else:
                     data = response.json()
-                    version_str = clean_version_str(data.get("tag_name", ""))
+                    version_str = data.get("tag_name", "").replace("BAAH", "")
                     update_zip_url = [each["browser_download_url"] for each in data.get("assets", []) if each["browser_download_url"].endswith("_update.zip")][:1]
                     update_zip_url = update_zip_url[0] if update_zip_url else ""
                     update_body_text = data.get("body", "")
@@ -197,9 +181,9 @@ def whether_has_new_version():
         
 def check_and_update():
     global auto_close_window, open_GUI_again
-    # 判断路径下是否有main_exe_name，如果没有说明运行目录不对
-    if not os.path.exists(main_exe_name):
-        print(f"Please run this script in the same directory as {main_exe_name}.")
+    # 判断路径下是否有BAAH.exe，如果没有说明运行目录不对
+    if not os.path.exists("BAAH.exe"):
+        print("Please run this script in the same directory as BAAH.exe.")
         return
     
     version_info = whether_has_new_version()
@@ -240,9 +224,9 @@ def check_and_update():
     else:
         print(f"Update ZIP file: {targetfilename} already exists.")
     
-    # Check and terminate main_exe_name processes
+    # Check and terminate BAAH.exe and BAAH_GUI.exe processes
     # 中断已有的BAAH进程
-    processes_to_terminate = [main_exe_name]
+    processes_to_terminate = ["BAAH.exe"]
     for process in processes_to_terminate:
         try:
             #! only for Windows now
@@ -257,11 +241,12 @@ def check_and_update():
     # Extract the downloaded ZIP file
     # 解压下载下来的zip文件
     try:
+        # zip第一层是一个BAAH1.5.4这样的大文件夹，跳过
         total_sub_files_extracted = 0
         with zipfile.ZipFile(targetfilename, 'r') as zip_ref:
             all_files = zip_ref.namelist()
-            # 把this_update_exe_name放到最后
-            file_updateexe_name = next((file for file in all_files if file.endswith(this_update_exe_name)), None)
+            # 把BAAH_UPDATE.exe放到最后
+            file_updateexe_name = next((file for file in all_files if file.endswith("BAAH_UPDATE.exe")), None)
             if file_updateexe_name:
                 all_files.remove(file_updateexe_name)
                 all_files.append(file_updateexe_name)
@@ -315,18 +300,18 @@ def main():
         auto_close_window = False
         traceback.print_exc()
         print("========== [ERROR!] =========")
-        if this_update_exe_name in str(e) and "Permission denied" in str(e):
+        if "BAAH_UPDATE.exe" in str(e) and "Permission denied" in str(e):
             print(">>> You can not use this script to replace itself. Please unpack the zip manually. <<<")
     
-    # 重新启动main_exe_name
-    # 注意这里CREATE_NEW_CONSOLE即使把本文件命令行窗口关了，也不会影响main_exe_name的运行
+    # 重新启动BAAH.exe
+    # 注意这里CREATE_NEW_CONSOLE即使把本文件命令行窗口关了，也不会影响BAAH.exe的运行
     if open_GUI_again:
         try:
             # Windows only
-            subprocess.Popen([main_exe_name], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
-            print(f"{main_exe_name} started.")
+            subprocess.Popen(["BAAH.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
+            print("BAAH.exe started.")
         except Exception as e:
-            print(f"Failed to start {main_exe_name}: {e}")
+            print(f"Failed to start BAAH.exe: {e}")
 
     # 没问题就直接退出
     if auto_close_window:
