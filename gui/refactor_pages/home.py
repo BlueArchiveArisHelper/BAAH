@@ -5,7 +5,7 @@ from nicegui import ui, app, run
 
 from ..components.check_update import only_check_version
 from ..components.exec_arg_parse import check_token_dialog
-from ..components.send_quick_refer_to_desktop import send_quick_call_to_desktop
+from ..components.send_quick_refer_to_desktop import send_quick_call_to_desktop,fake_delete_config
 from ..components.web_dark_mode import apply_dark_mode, change_dark_mode
 from modules.utils.data_utils import encrypt_data, decrypt_data
 from modules.utils import _get_edition
@@ -164,6 +164,8 @@ def render_json_list():
                                 ui.button(gui_shared_config.get_text("button_copy"), on_click=lambda e, c=config_name:[copy_related_params.update({"old_name":c, "new_name":""}), dialog.open()])
                                 # 快捷方式按钮
                                 ui.button(gui_shared_config.get_text("button_link_to_desktop"), on_click=lambda e, c=config_name:send_quick_call_to_desktop(c) and ui.notify(gui_shared_config.get_text("notice_success")))
+                                # 删除按钮
+                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: fake_delete_config(c), color="red").style("margin: 0px 10px;")
 
                     # 添加配置
                     user_config_name = {"val":""}

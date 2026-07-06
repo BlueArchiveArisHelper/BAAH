@@ -1,5 +1,6 @@
 import os
-import os
+from nicegui import ui
+from modules.configs.MyConfig import MyConfigger
 
 # 打印当前程序运行路径
 print("os.getcwd: ", os.getcwd())
@@ -37,3 +38,12 @@ def send_quick_call_to_desktop(config_name):
     # 获取桌面路径
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
     return create_shortcut_file(config_name, "BAAH "+config_name.replace(".json", ".lnk"), _running_path, desktop_path)
+
+def fake_delete_config(config_name):
+    """假删除用户配置，将文件名添加.之后，从配置文件夹移动到用户存储文件夹"""
+    os.replace(
+        os.path.join(MyConfigger.USER_CONFIG_FOLDER, config_name),
+        os.path.join(MyConfigger.USER_STORAGE_FOLDER, ".delconfig_" + config_name),
+    )
+    print(f"deleted config: {config_name}")
+    ui.run_javascript('window.location.reload()')
