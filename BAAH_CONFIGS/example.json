@@ -161,12 +161,7 @@
     "RESPOND_Y": 40,
     "NEXT_CONFIG": "",
     "TARGET_IP_PATH": "127.0.0.1",
-    "SHOP_NORMAL": [
-        [
-            1,
-            2
-        ]
-    ],
+    "SHOP_NORMAL": [],
     "SHOP_CONTEST": [],
     "TASK_ACTIVATE": [
         false,
