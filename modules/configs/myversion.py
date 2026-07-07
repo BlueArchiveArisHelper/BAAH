@@ -1,9 +1,7 @@
-myversion = "2.2.21"
+myversion = "2.2.22"
 mychangelog = """
 
-修复日服购买AP失败的问题 | fix the problem of failing to purchase AP in the Japanese server
-
-优化商店默认购买栏目 | optimize the default purchase column in the store
+小工具页面新增推活动剧情和关卡任务 | Addon at the small tool page for pushing event stories and quest tasks
 
 
 """

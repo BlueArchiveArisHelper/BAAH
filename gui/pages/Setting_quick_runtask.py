@@ -11,5 +11,5 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
         [TaskName.MAIN_STORY, TaskName.MAIN_SECOND_STORY, TaskName.SHORT_STORY, TaskName.SIDE_STORY],
         TaskName.SOLVE_CHALLENGE, 
         [TaskName.PUSH_NORMAL, TaskName.PUSH_HARD],
-        TaskName.EVENTRECAP
+        [TaskName.EVENTPUSHSTORYQUEST, TaskName.EVENTRECAP]
     ], config, real_taskname_to_show_taskname, logArea)
