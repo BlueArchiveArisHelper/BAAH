@@ -28,6 +28,7 @@ class TaskName():
     TACTICAL_CHALLENGE = "战术大赛"
     HARD = "困难关卡"
     EVENT = "活动关卡"
+    EVENTPUSHSTORYQUEST = "推活动关卡剧情和推图"
     EVENTRECAP = "活动一览"
     ASSAULT = "总力战"
     GRAND_ASSAULT = "大决战"
@@ -183,6 +184,12 @@ class TaskInstanceMap:
                     i18n_key_name = "task_event",
                     task_module = InEvent,
                     task_params = {}
+                ),
+            TaskName.EVENTPUSHSTORYQUEST: TaskInstance(
+                    task_config_name = TaskName.EVENTPUSHSTORYQUEST,
+                    i18n_key_name = "task_event_push_story_quest",
+                    task_module = InEvent,
+                    task_params = {'force_push_story': True, 'force_push_quest': True, 'dont_raid_quest': True}
                 ),
             TaskName.DAILY: TaskInstance(
                     task_config_name = TaskName.DAILY,

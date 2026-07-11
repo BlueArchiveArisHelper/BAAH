@@ -337,7 +337,7 @@ async def show_json_panel(json_file_name: str):
     )
 
     # 3. Ratio constant
-    COLUMN_RATIOS = [1, 4, 2]  # Left:Middle:Right
+    COLUMN_RATIOS = [2, 7, 3]  # Left:Middle:Right
 
     # Placeholders for controls that need to be accessed
     logArea = None

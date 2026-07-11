@@ -19,7 +19,7 @@ from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic,
 
 
 class InEvent(Task):
-    def __init__(self, name="InEvent") -> None:
+    def __init__(self, name="InEvent", force_push_story = False, force_push_quest = False, dont_raid_quest = False) -> None:
         super().__init__(name)
         self.try_enter_times = 2
         self.next_sleep_time = 0.1
@@ -31,9 +31,16 @@ class InEvent(Task):
         else:
             self.fight_center_button_xy = (1196, 567)
         if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
-            self.event_button_xy = (60, 157)
+            # 刚好能点进活动但是又点不到活动页面左上角圆形icon
+            self.event_button_xy = (46, 140)
         else:
             self.event_button_xy = (35, 110)
+        # 是否强制推剧情
+        self.force_push_story = force_push_story
+        # 是否强制推图
+        self.force_push_quest = force_push_quest
+        # 是否强制 不进行扫荡
+        self.dont_raid_quest = dont_raid_quest
 
     def pre_condition(self) -> bool:
         # 通过get请求https://arona.diyigemt.com/api/v2/image?name=%E5%9B%BD%E9%99%85%E6%9C%8D%E6%B4%BB%E5%8A%A8
@@ -253,14 +260,14 @@ class InEvent(Task):
         today = time.localtime().tm_mday
 
         # 检测并推剧情，如果已经进入过活动一次了，就不用再推剧情了
-        if config.userconfigdict["AUTO_EVENT_STORY_PUSH"] and not config.sessiondict["HAS_ENTER_EVENT"]:
+        if self.force_push_story or (config.userconfigdict["AUTO_EVENT_STORY_PUSH"] and not config.sessiondict["HAS_ENTER_EVENT"]):
             # 点击Story标签
             click((766, 98))
             click((766, 98))
             story_max_level = self.get_biggest_level()
             EventStory(max_level=story_max_level).run()
         # 推图任务，如果已经进入过活动一次了，就不用再推图了
-        if config.userconfigdict["AUTO_PUSH_EVENT_QUEST"] and not config.sessiondict["HAS_ENTER_EVENT"]:
+        if self.force_push_quest or (config.userconfigdict["AUTO_PUSH_EVENT_QUEST"] and not config.sessiondict["HAS_ENTER_EVENT"]):
             # 点击Quest标签
             click(self.quest_button_xy)
             click(self.quest_button_xy)
@@ -277,7 +284,7 @@ class InEvent(Task):
                 # 设置一个推maxquest_ind关卡0次的任务
                 EventQuest([[maxquest_ind, 0]], explore=True, raid=False, collect=False, quest_button_xy=self.quest_button_xy).run()
         # 扫荡任务
-        if config.userconfigdict["EVENT_QUEST_LEVEL"] and len(config.userconfigdict["EVENT_QUEST_LEVEL"]) != 0:
+        if not self.dont_raid_quest and (config.userconfigdict["EVENT_QUEST_LEVEL"] and len(config.userconfigdict["EVENT_QUEST_LEVEL"]) != 0):
             # 可选任务队列不为空时
             quest_loc = today % len(config.userconfigdict['EVENT_QUEST_LEVEL'])
             # 得到要执行的QUEST LIST

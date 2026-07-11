@@ -16,6 +16,7 @@
     "task_contest": "戦術大会／競技場",
     "task_hard": "難関ステージ",
     "task_event": "イベントステージ",
+    "task_event_push_story_quest": "イベントストーリーとイベントステージを進行する",
     "task_normal": "通常ステージ",
     "task_daily": "デイリーミッションを受け取る",
     "task_mail": "メールを受け取る",
