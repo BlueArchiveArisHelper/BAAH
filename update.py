@@ -8,8 +8,9 @@ import os
 import zipfile
 import time
 import sys
+from concurrent.futures import ThreadPoolExecutor
 # ========================
-updater_version = "0.5.0"
+updater_version = "0.6.0"
 # 存储当前本地版本的json文件，需要包含 NOWVERSION 字段
 software_config_storage_path = os.path.join("DATA", "CONFIGS", "software_config.json")
 # 软件可执行文件的exe名称
@@ -106,6 +107,39 @@ def zip_file_checksum(zip_file, file_in_zip):
         for block in iter(lambda: f.read(4096), b''):
             sha256.update(block)
     return sha256.hexdigest()
+
+def get_version_info_from_source(key, url):
+    """
+    从单个更新源获取版本信息
+    """
+    print(f"Checking: {key}...")
+    response = requests.get(url, timeout=3)
+    if response.status_code != 200:
+        print(f"Failed to access {key}: HTTP {response.status_code}")
+        return None
+
+    if key == "mirror":
+        data = response.json().get("data", {})
+        version_str = clean_version_str(data.get("version_name", ""))
+        update_zip_url = data.get("url", "")
+        update_body_text = data.get("release_note", "")
+    else:
+        data = response.json()
+        version_str = clean_version_str(data.get("tag_name", ""))
+        update_zip_url = [each["browser_download_url"] for each in data.get("assets", []) if each["browser_download_url"].endswith("_update.zip")][:1]
+        update_zip_url = update_zip_url[0] if update_zip_url else ""
+        update_body_text = data.get("body", "")
+
+    if not version_str or len(update_zip_url) == 0:
+        print(f"No valid version or download URL found for {key}.")
+        return None
+
+    return {
+        "source": key,
+        "version_str": version_str,
+        "update_zip_url": update_zip_url,
+        "update_body_text": update_body_text,
+    }
         
 def whether_has_new_version():
     """
@@ -127,57 +161,49 @@ def whether_has_new_version():
         urls["mirror"] = mirror_base_url + f"{decrypt_data(mirror_key, enc_key)}"
 
     print("Checking for new version...")
+    # 同时请求所有更新源，之后按原有更新源顺序汇总，保持版本选择逻辑稳定
+    source_items = list(urls.items())
+    with ThreadPoolExecutor(max_workers=len(source_items)) as executor:
+        source_futures = {
+            key: executor.submit(get_version_info_from_source, key, url)
+            for key, url in source_items
+        }
+
     # 遍历当前所有更新源，维护 [tag最新的] 可访问的VersionInfo对象
-    for key in urls:
+    for key, _ in source_items:
         if vi is None:
             vi = VersionInfo()
         try:
-            print(f"Checking: {key}...")
-            response = requests.get(urls[key], timeout=3)
-            if response.status_code == 200:
-                # 内容解析
-                if key == "mirror":
-                    data = response.json().get("data", {})
-                    version_str = clean_version_str(data.get("version_name", ""))
-                    update_zip_url = data.get("url", "")
-                    update_body_text = data.get("release_note", "")
-                else:
-                    data = response.json()
-                    version_str = clean_version_str(data.get("tag_name", ""))
-                    update_zip_url = [each["browser_download_url"] for each in data.get("assets", []) if each["browser_download_url"].endswith("_update.zip")][:1]
-                    update_zip_url = update_zip_url[0] if update_zip_url else ""
-                    update_body_text = data.get("body", "")
-                # ======== early quit ========
-                if not version_str or len(update_zip_url) == 0:
-                    print(f"No valid version or download URL found for {key}.")
-                    continue
-                if get_one_version_num(version_str) <= current_version_num:
-                    print(f"Out-dated version found for {key}. Current version: {confile['NOWVERSION']}, Found version: {version_str}")
-                    # 即使线上源无新版本，若当前vi内无信息记录 或 现在vi比当前源记录的版本信息旧，则仍记录其信息 （永远显示线上源的最新版本信息）
-                    if not vi.version_str or get_one_version_num(vi.version_str) < get_one_version_num(version_str):
-                        vi.version_str = version_str
-                        vi.msg = version_str
-                        vi.update_body_text = update_body_text
-                    continue
-                # 如果vi内有新版本，判断当前循环的源与现在记录的源的版本号大小，如果已记录的vi里版本更加新
-                if vi.has_new_version and get_one_version_num(vi.version_str) >= get_one_version_num(version_str):
-                    print(f"Last checked version source {vi.from_source} occurs, {vi.version_str} ({vi.from_source}) is newer or equal to {version_str} ({key}). Skipping {key}.")
-                    if get_one_version_num(vi.version_str) == get_one_version_num(version_str) and key == "mirror":
-                        # 如果版本号相同，现在循环的是mirror源，由于用户填写了mirror密钥，肯定是希望走mirror源的，所以不跳过
-                        print("Versions keep same, but mirror source is preferred, not skipping.")
-                    else:
-                        continue
-                # ======== 更新 vi ========
-                print(f"New version found: {version_str} ({key})")
-                vi.has_new_version = True
-                vi.msg = f"New version: {version_str} ({key})"
-                vi.version_str = version_str
-                vi.update_zip_url = update_zip_url
-                vi.update_body_text = update_body_text
-                vi.from_source = key
-            else:
-                print(f"Failed to access {key}: HTTP {response.status_code}")
+            source_info = source_futures[key].result()
+            if source_info is None:
                 continue
+            version_str = source_info["version_str"]
+            update_zip_url = source_info["update_zip_url"]
+            update_body_text = source_info["update_body_text"]
+            if get_one_version_num(version_str) <= current_version_num:
+                print(f"Out-dated version found for {key}. Current version: {confile['NOWVERSION']}, Found version: {version_str}")
+                # 即使线上源无新版本，若当前vi内无信息记录 或 现在vi比当前源记录的版本信息旧，则仍记录其信息 （永远显示线上源的最新版本信息）
+                if not vi.version_str or get_one_version_num(vi.version_str) < get_one_version_num(version_str):
+                    vi.version_str = version_str
+                    vi.msg = version_str
+                    vi.update_body_text = update_body_text
+                continue
+            # 如果vi内有新版本，判断当前循环的源与现在记录的源的版本号大小，如果已记录的vi里版本更加新
+            if vi.has_new_version and get_one_version_num(vi.version_str) >= get_one_version_num(version_str):
+                print(f"Last checked version source {vi.from_source} occurs, {vi.version_str} ({vi.from_source}) is newer or equal to {version_str} ({key}). Skipping {key}.")
+                if get_one_version_num(vi.version_str) == get_one_version_num(version_str) and key == "mirror":
+                    # 如果版本号相同，现在循环的是mirror源，由于用户填写了mirror密钥，肯定是希望走mirror源的，所以不跳过
+                    print("Versions keep same, but mirror source is preferred, not skipping.")
+                else:
+                    continue
+            # ======== 更新 vi ========
+            print(f"New version found: {version_str} ({key})")
+            vi.has_new_version = True
+            vi.msg = f"New version: {version_str} ({key})"
+            vi.version_str = version_str
+            vi.update_zip_url = update_zip_url
+            vi.update_body_text = update_body_text
+            vi.from_source = key
         except Exception as e:
             print(f"Error accessing {key}: {e}")
             continue
