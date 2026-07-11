@@ -27,3 +27,6 @@ class PopupName:
 
     # STEAM 进游戏社区弹窗
     POPUP_LOGIN_FORM_STEAM = "POPUP_LOGIN_FORM_STEAM"
+
+    # 走格子的任务情报/任务资讯弹窗标题
+    POPUP_GRID_TASK_INFO = "POPUP_GRID_TASK_INFO"
