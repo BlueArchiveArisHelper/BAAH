@@ -8,8 +8,28 @@ import os
 import zipfile
 import time
 import sys
-
-updater_version = "0.5.0"
+from concurrent.futures import ThreadPoolExecutor
+# ========================
+updater_version = "0.6.0"
+# 存储当前本地版本的json文件，需要包含 NOWVERSION 字段
+software_config_storage_path = os.path.join("DATA", "CONFIGS", "software_config.json")
+# 软件可执行文件的exe名称
+main_exe_name = "BAAH.exe"
+this_update_exe_name = "BAAH_UPDATE.exe"
+# 更新源声明
+# _update.zip结尾的releases附件会被当成增量更新文件
+urls = {
+    "gitee": "https://gitee.com/api/v5/repos/sammusen/BAAH/releases/latest",
+    "github": "https://api.github.com/repos/sanmusen214/BAAH/releases/latest",
+}
+mirror_base_url = "https://mirrorchyan.com/api/resources/BAAH/latest?cdk="
+# 云端以及本地端清洗版本号的函数，洗成只有数字和点的形式，方便比较大小
+def clean_version_str(version_str):
+    """
+    清洗版本号字符串，去掉前缀BAAH，保留数字和点
+    """
+    return version_str.replace("BAAH", "").strip()
+# ========================
 print(f"This Updator Version: {updater_version}")
 auto_close_window = True # 执行之后时候自动关闭窗口
 open_GUI_again = False # 执行完毕后是否重新打开 GUI.exe
@@ -87,81 +107,103 @@ def zip_file_checksum(zip_file, file_in_zip):
         for block in iter(lambda: f.read(4096), b''):
             sha256.update(block)
     return sha256.hexdigest()
+
+def get_version_info_from_source(key, url):
+    """
+    从单个更新源获取版本信息
+    """
+    print(f"Checking: {key}...")
+    response = requests.get(url, timeout=3)
+    if response.status_code != 200:
+        print(f"Failed to access {key}: HTTP {response.status_code}")
+        return None
+
+    if key == "mirror":
+        data = response.json().get("data", {})
+        version_str = clean_version_str(data.get("version_name", ""))
+        update_zip_url = data.get("url", "")
+        update_body_text = data.get("release_note", "")
+    else:
+        data = response.json()
+        version_str = clean_version_str(data.get("tag_name", ""))
+        update_zip_url = [each["browser_download_url"] for each in data.get("assets", []) if each["browser_download_url"].endswith("_update.zip")][:1]
+        update_zip_url = update_zip_url[0] if update_zip_url else ""
+        update_body_text = data.get("body", "")
+
+    if not version_str or len(update_zip_url) == 0:
+        print(f"No valid version or download URL found for {key}.")
+        return None
+
+    return {
+        "source": key,
+        "version_str": version_str,
+        "update_zip_url": update_zip_url,
+        "update_body_text": update_body_text,
+    }
         
 def whether_has_new_version():
     """
     检查是否有新版本
     """
+    global urls
     # 初始化值
     vi = None
     # 这里读取software_config.json
     # DATA/CONFIGS/software_config.json里的NOWVERSION字段
-    with open(os.path.join("DATA", "CONFIGS", "software_config.json"), "r", encoding="utf-8") as f:
+    with open(software_config_storage_path, "r", encoding="utf-8") as f:
         confile = json.load(f)
     # 当前BAAH的版本号
-    current_version_num = get_one_version_num(confile["NOWVERSION"].replace("BAAH", ""))
+    current_version_num = get_one_version_num(clean_version_str(confile["NOWVERSION"]))
     enc_key = confile.get("ENCRYPT_KEY", "12345")
     mirror_key = confile.get("SEC_KEY_M", "12345")
-    # 更新源声明
-    urls = {
-        "gitee": "https://gitee.com/api/v5/repos/sammusen/BAAH/releases/latest",
-        "github": "https://api.github.com/repos/sanmusen214/BAAH/releases/latest",
-    }
+
     if confile["SEC_KEY_M"]:
-        urls["mirror"] = f"https://mirrorchyan.com/api/resources/BAAH/latest?cdk={decrypt_data(mirror_key, enc_key)}"
+        urls["mirror"] = mirror_base_url + f"{decrypt_data(mirror_key, enc_key)}"
 
     print("Checking for new version...")
+    # 同时请求所有更新源，之后按原有更新源顺序汇总，保持版本选择逻辑稳定
+    source_items = list(urls.items())
+    with ThreadPoolExecutor(max_workers=len(source_items)) as executor:
+        source_futures = {
+            key: executor.submit(get_version_info_from_source, key, url)
+            for key, url in source_items
+        }
+
     # 遍历当前所有更新源，维护 [tag最新的] 可访问的VersionInfo对象
-    for key in urls:
+    for key, _ in source_items:
         if vi is None:
             vi = VersionInfo()
         try:
-            print(f"Checking: {key}...")
-            response = requests.get(urls[key], timeout=3)
-            if response.status_code == 200:
-                # 内容解析
-                if key == "mirror":
-                    data = response.json().get("data", {})
-                    version_str = data.get("version_name", "").replace("BAAH", "")
-                    update_zip_url = data.get("url", "")
-                    update_body_text = data.get("release_note", "")
-                else:
-                    data = response.json()
-                    version_str = data.get("tag_name", "").replace("BAAH", "")
-                    update_zip_url = [each["browser_download_url"] for each in data.get("assets", []) if each["browser_download_url"].endswith("_update.zip")][:1]
-                    update_zip_url = update_zip_url[0] if update_zip_url else ""
-                    update_body_text = data.get("body", "")
-                # ======== early quit ========
-                if not version_str or len(update_zip_url) == 0:
-                    print(f"No valid version or download URL found for {key}.")
-                    continue
-                if get_one_version_num(version_str) <= current_version_num:
-                    print(f"Out-dated version found for {key}. Current version: {confile['NOWVERSION']}, Found version: {version_str}")
-                    # 即使线上源无新版本，若当前vi内无信息记录 或 现在vi比当前源记录的版本信息旧，则仍记录其信息 （永远显示线上源的最新版本信息）
-                    if not vi.version_str or get_one_version_num(vi.version_str) < get_one_version_num(version_str):
-                        vi.version_str = version_str
-                        vi.msg = version_str
-                        vi.update_body_text = update_body_text
-                    continue
-                # 如果vi内有新版本，判断当前循环的源与现在记录的源的版本号大小，如果已记录的vi里版本更加新
-                if vi.has_new_version and get_one_version_num(vi.version_str) >= get_one_version_num(version_str):
-                    print(f"Last checked version source {vi.from_source} occurs, {vi.version_str} ({vi.from_source}) is newer or equal to {version_str} ({key}). Skipping {key}.")
-                    if get_one_version_num(vi.version_str) == get_one_version_num(version_str) and key == "mirror":
-                        # 如果版本号相同，现在循环的是mirror源，由于用户填写了mirror密钥，肯定是希望走mirror源的，所以不跳过
-                        print("Versions keep same, but mirror source is preferred, not skipping.")
-                    else:
-                        continue
-                # ======== 更新 vi ========
-                print(f"New version found: {version_str} ({key})")
-                vi.has_new_version = True
-                vi.msg = f"New version: {version_str} ({key})"
-                vi.version_str = version_str
-                vi.update_zip_url = update_zip_url
-                vi.update_body_text = update_body_text
-                vi.from_source = key
-            else:
-                print(f"Failed to access {key}: HTTP {response.status_code}")
+            source_info = source_futures[key].result()
+            if source_info is None:
                 continue
+            version_str = source_info["version_str"]
+            update_zip_url = source_info["update_zip_url"]
+            update_body_text = source_info["update_body_text"]
+            if get_one_version_num(version_str) <= current_version_num:
+                print(f"Out-dated version found for {key}. Current version: {confile['NOWVERSION']}, Found version: {version_str}")
+                # 即使线上源无新版本，若当前vi内无信息记录 或 现在vi比当前源记录的版本信息旧，则仍记录其信息 （永远显示线上源的最新版本信息）
+                if not vi.version_str or get_one_version_num(vi.version_str) < get_one_version_num(version_str):
+                    vi.version_str = version_str
+                    vi.msg = version_str
+                    vi.update_body_text = update_body_text
+                continue
+            # 如果vi内有新版本，判断当前循环的源与现在记录的源的版本号大小，如果已记录的vi里版本更加新
+            if vi.has_new_version and get_one_version_num(vi.version_str) >= get_one_version_num(version_str):
+                print(f"Last checked version source {vi.from_source} occurs, {vi.version_str} ({vi.from_source}) is newer or equal to {version_str} ({key}). Skipping {key}.")
+                if get_one_version_num(vi.version_str) == get_one_version_num(version_str) and key == "mirror":
+                    # 如果版本号相同，现在循环的是mirror源，由于用户填写了mirror密钥，肯定是希望走mirror源的，所以不跳过
+                    print("Versions keep same, but mirror source is preferred, not skipping.")
+                else:
+                    continue
+            # ======== 更新 vi ========
+            print(f"New version found: {version_str} ({key})")
+            vi.has_new_version = True
+            vi.msg = f"New version: {version_str} ({key})"
+            vi.version_str = version_str
+            vi.update_zip_url = update_zip_url
+            vi.update_body_text = update_body_text
+            vi.from_source = key
         except Exception as e:
             print(f"Error accessing {key}: {e}")
             continue
@@ -181,9 +223,9 @@ def whether_has_new_version():
         
 def check_and_update():
     global auto_close_window, open_GUI_again
-    # 判断路径下是否有BAAH.exe，如果没有说明运行目录不对
-    if not os.path.exists("BAAH.exe"):
-        print("Please run this script in the same directory as BAAH.exe.")
+    # 判断路径下是否有main_exe_name，如果没有说明运行目录不对
+    if not os.path.exists(main_exe_name):
+        print(f"Please run this script in the same directory as {main_exe_name}.")
         return
     
     version_info = whether_has_new_version()
@@ -224,9 +266,9 @@ def check_and_update():
     else:
         print(f"Update ZIP file: {targetfilename} already exists.")
     
-    # Check and terminate BAAH.exe and BAAH_GUI.exe processes
+    # Check and terminate main_exe_name processes
     # 中断已有的BAAH进程
-    processes_to_terminate = ["BAAH.exe"]
+    processes_to_terminate = [main_exe_name]
     for process in processes_to_terminate:
         try:
             #! only for Windows now
@@ -241,12 +283,11 @@ def check_and_update():
     # Extract the downloaded ZIP file
     # 解压下载下来的zip文件
     try:
-        # zip第一层是一个BAAH1.5.4这样的大文件夹，跳过
         total_sub_files_extracted = 0
         with zipfile.ZipFile(targetfilename, 'r') as zip_ref:
             all_files = zip_ref.namelist()
-            # 把BAAH_UPDATE.exe放到最后
-            file_updateexe_name = next((file for file in all_files if file.endswith("BAAH_UPDATE.exe")), None)
+            # 把this_update_exe_name放到最后
+            file_updateexe_name = next((file for file in all_files if file.endswith(this_update_exe_name)), None)
             if file_updateexe_name:
                 all_files.remove(file_updateexe_name)
                 all_files.append(file_updateexe_name)
@@ -300,18 +341,18 @@ def main():
         auto_close_window = False
         traceback.print_exc()
         print("========== [ERROR!] =========")
-        if "BAAH_UPDATE.exe" in str(e) and "Permission denied" in str(e):
+        if this_update_exe_name in str(e) and "Permission denied" in str(e):
             print(">>> You can not use this script to replace itself. Please unpack the zip manually. <<<")
     
-    # 重新启动BAAH.exe
-    # 注意这里CREATE_NEW_CONSOLE即使把本文件命令行窗口关了，也不会影响BAAH.exe的运行
+    # 重新启动main_exe_name
+    # 注意这里CREATE_NEW_CONSOLE即使把本文件命令行窗口关了，也不会影响main_exe_name的运行
     if open_GUI_again:
         try:
             # Windows only
-            subprocess.Popen(["BAAH.exe"], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
-            print("BAAH.exe started.")
+            subprocess.Popen([main_exe_name], creationflags=subprocess.CREATE_NEW_CONSOLE, close_fds=True)
+            print(f"{main_exe_name} started.")
         except Exception as e:
-            print(f"Failed to start BAAH.exe: {e}")
+            print(f"Failed to start {main_exe_name}: {e}")
 
     # 没问题就直接退出
     if auto_close_window:

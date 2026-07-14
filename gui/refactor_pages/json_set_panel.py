@@ -4,6 +4,7 @@ from ..components.exec_arg_parse import get_token
 from ..components.manage_baah_in_gui import run_baah_task_and_bind_log, stop_baah_task
 from ..components.running_task_pool import RunningBAAHProcess_instance
 from ..components.web_dark_mode import apply_dark_mode, change_dark_mode
+from ..components.mumu_emulator_path_recognize import smart_replace_main2device
 from ..pages.Setting_BAAH import set_BAAH
 from ..pages.Setting_Craft import set_craft
 from ..pages.Setting_cafe import set_cafe
@@ -526,22 +527,6 @@ async def show_json_panel(json_file_name: str):
                     ).classes(
                         "w-full"
                     )
-
-                # 4. Emulator Path (Ratio 6)
-                def smart_replace_main2device(emulator_path):
-                    """将mumu多开器路径根据 --engine_series 参数选择替换为对应的路径模拟器"""
-                    emulator_path = emulator_path.replace("\\", "/").replace('"', "")
-                    replaced_off_str = "nx_main/MuMuNxMain.exe"
-                    mumu_version = "12.0" # 默认版本
-                    # 通过字符串匹配找到 --engine_series 参数的值
-                    if "--engine_series" in emulator_path:
-                        parts = emulator_path.split("--engine_series")
-                        if len(parts) > 1:
-                            # 获取参数值，去掉前后的空格和引号
-                            engine_series_value = parts[1].strip().split()[0].strip('"').replace('=','')
-                            mumu_version = engine_series_value
-                    replaced_on_str = "nx_device/{}/shell/MuMuNxDevice.exe".format(mumu_version)
-                    return emulator_path.replace(replaced_off_str, replaced_on_str).replace(f" --engine_series={mumu_version}", "")
 
                 with ui.element("div").style(
                     "flex: 6; min-width: 0px; display: flex; align-items: center;"
