@@ -56,8 +56,13 @@ class InEventRecap(Task):
         return res_list
 
     def on_run(self) -> None:
-        xs = np.linspace(786, 1228, 3, dtype=int)
-        ys = np.linspace(155, 502, 3, dtype=int)
+        if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
+            # 日服黄点有所收缩
+            xs = np.linspace(790, 1222, 3, dtype=int)
+            ys = np.linspace(155, 494, 3, dtype=int)
+        else:
+            xs = np.linspace(786, 1228, 3, dtype=int)
+            ys = np.linspace(155, 502, 3, dtype=int)
         # 是否需要重新进入剧情一览页面
         to_view_page = True
         ine = InEvent()
