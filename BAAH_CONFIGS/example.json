@@ -154,15 +154,233 @@
     ],
     "SERVER_INFO": "服务器信息",
     "PIC_PATH": "./DATA/assets_cn",
-    "ACTIVITY_PATH": "com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
+    "ACTIVITY_PATH": "com.RoamingStar.BlueArchive/com.tech.sdk.bridge.TechSDKUnityPlayerActivity",
     "Warning": "下方内容一般无需更改",
     "ADB_PATH": "./tools/adb/adb.exe",
     "SCREENSHOT_NAME": "e2419474.png",
     "RESPOND_Y": 40,
     "NEXT_CONFIG": "",
     "TARGET_IP_PATH": "127.0.0.1",
-    "SHOP_NORMAL": [],
-    "SHOP_CONTEST": [],
+    "SHOP_NORMAL": [
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ]
+    ],
+    "SHOP_CONTEST": [
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ],
+        [
+            [
+                1,
+                false
+            ],
+            [
+                2,
+                false
+            ],
+            [
+                3,
+                false
+            ],
+            [
+                4,
+                false
+            ]
+        ]
+    ],
     "TASK_ACTIVATE": [
         false,
         false,
@@ -478,7 +696,23 @@
     },
     "ASSAULT_NO_TEAM_EXCEPT": true,
     "USE_OBJ_USER_DEFINE_TASK": false,
-    "OBJ_USER_DEFINE_TASK": {},
+    "OBJ_USER_DEFINE_TASK": {
+        "a_l": []
+    },
     "USE_OBJ_FLOW_WHEN_LOGIN": false,
-    "OBJ_FLOW_WHEN_LOGIN": {}
+    "OBJ_FLOW_WHEN_LOGIN": {
+        "a_l": []
+    },
+    "AUTO_GRAND_ASSAULT_LEFT_LEVEL": 4,
+    "AUTO_GRAND_ASSAULT_MIDDLE_LEVEL": 4,
+    "AUTO_GRAND_ASSAULT_RIGHT_LEVEL": 4,
+    "CAFE1_BUY_INVITE_TICKET": false,
+    "CAFE2_BUY_INVITE_TICKET": false,
+    "CAFE1_BUY_INVITE_SEQ": 3,
+    "CAFE2_BUY_INVITE_SEQ": 4,
+    "GRAND_ASSAULT_NO_TEAM_EXCEPT": true,
+    "GRAND_ASSAULT_NO_FIGHT": false,
+    "RETRY_WHEN_ERROR": 0,
+    "RETRY_WHEN_ERROR_FROM_LAST_TASK": false,
+    "TIMETABLE_SPECIAL_STUDENT_PIC": []
 }
