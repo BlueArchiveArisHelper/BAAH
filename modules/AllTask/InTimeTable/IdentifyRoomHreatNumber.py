@@ -3,26 +3,26 @@ import numpy as np
 from modules.utils import (screenshot, match_pixel, config, match, logging)
 
 
-def get_hearts_of_rooms(has_scroll_down = False) -> dict:
+def get_hearts_of_rooms() -> dict:
     """
     截图并返回所有房间的爱心数，返回一个键值对，{房间的序号:爱心数}
     """
-    if not has_scroll_down:
-        # 每个房间最右侧学生大头的爱心位置， x：[445, 788, 1133], y: [290, 442, 594]
-        baseX = np.linspace(445, 1133, 3, dtype=int)
-        baseY = np.linspace(290, 594, 3, dtype=int)
-        # 单个房间内爱心x坐标挨个的偏移量 51，日服改动后 71
-        OFFSET_X = -51
-        OFFSET_Y = 0
-        # 爱心的BGR值 [144 118 255]，日服改动后 [210, 184, 243]
-        COLOR_HEART = [[140, 115, 253], [145, 120, 255]]
-    else:
-        # 日服改动后（需要滚动）：x: [354, 698, 1043], y: [277, 428, 579]
-        baseX = np.linspace(356, 1044, 3, dtype=int)
-        baseY = np.linspace(273, 576, 3, dtype=int)
-        OFFSET_X = -72
-        OFFSET_Y = 23
-        COLOR_HEART = [[205, 180, 239], [215, 189, 248]]
+    # if not has_scroll_down:
+    #     # 每个房间最右侧学生大头的爱心位置， x：[445, 788, 1133], y: [290, 442, 594]
+    #     baseX = np.linspace(445, 1133, 3, dtype=int)
+    #     baseY = np.linspace(290, 594, 3, dtype=int)
+    #     # 单个房间内爱心x坐标挨个的偏移量 51，日服改动后 71
+    #     OFFSET_X = -51
+    #     OFFSET_Y = 0
+    #     # 爱心的BGR值 [144 118 255]，日服改动后 [210, 184, 243]
+    #     COLOR_HEART = [[140, 115, 253], [145, 120, 255]]
+    # else:
+    # 日服改动后（需要滚动）：x: [354, 698, 1043], y: [277, 428, 579]
+    baseX = np.linspace(356, 1044, 3, dtype=int)
+    baseY = np.linspace(273, 576, 3, dtype=int)
+    OFFSET_X = -72
+    OFFSET_Y = 23
+    COLOR_HEART = [[205, 180, 239], [215, 189, 248]]
 
     
     total_counts = dict()
