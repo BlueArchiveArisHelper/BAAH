@@ -17,8 +17,8 @@ server2activity = {
     "JP":"com.YostarJP.BlueArchive/com.yostarjp.bluearchive.MxUnityPlayerActivity",
     "GLOBAL_EN":"com.nexon.bluearchive/.MxUnityPlayerActivity",
     "GLOBAL":"com.nexon.bluearchive/.MxUnityPlayerActivity",
-    "CN":"com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
-    "CN_BILI":"com.RoamingStar.BlueArchive.bilibili/com.yostar.supersdk.activity.YoStarSplashActivity",
+    "CN":"com.RoamingStar.BlueArchive/com.tech.sdk.bridge.TechSDKUnityPlayerActivity",
+    "CN_BILI":"com.RoamingStar.BlueArchive.bilibili/com.tech.sdk.bridge.TechSDKUnityPlayerActivity",
     "PC_STEAM":"Blue Archive/BlueArchive.exe",  # 包名为窗口名/进程名
     "PC_STEAM_EN":"Blue Archive/BlueArchive.exe",  # 包名为窗口名/进程名
     "PC_EXE_JP":"ブルーアーカイブ/BlueArchive.exe",  # 包名为窗口名/进程名

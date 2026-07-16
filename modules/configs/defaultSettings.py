@@ -99,16 +99,11 @@ defaultUserDict = {
     # "FANHEXIE":{"d":False}, # 于1.7.5弃用反和谐设置，对于反和谐差异图片进行动态匹配
     "ACTIVITY_PATH":{
         "d":"com.nexon.bluearchive/.MxUnityPlayerActivity",
-        "s":[
-            "com.YostarJP.BlueArchive/com.yostarjp.bluearchive.MxUnityPlayerActivity",
-            "com.nexon.bluearchive/.MxUnityPlayerActivity",
-            "com.RoamingStar.BlueArchive/com.yostar.supersdk.activity.YoStarSplashActivity",
-            "com.RoamingStar.BlueArchive.bilibili/com.yostar.supersdk.activity.YoStarSplashActivity"
-        ],
         "m":{
             "from": "SERVER_TYPE",
             "map": lambda x: server2activity[x] if x in server2activity else "com.nexon.bluearchive/.MxUnityPlayerActivity",
-        }
+        },
+        "p": lambda val, parsedjson: server2activity[parsedjson["SERVER_TYPE"]] if parsedjson["SERVER_TYPE"] in server2activity else val
     },
     "NEXT_CONFIG" : {"d":""},
     "ADB_PATH":{"d":"./tools/adb/adb.exe"},
