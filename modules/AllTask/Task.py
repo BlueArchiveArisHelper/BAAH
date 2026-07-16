@@ -360,11 +360,6 @@ class Task:
         """
         OCR账号资源，返回一个字典，包含当前账号的钻石，金币，体力等资源数量
         """
-        if config.userconfigdict["SERVER_TYPE"] in ["CN", "CN_BILI"]:
-            # 国服比较靠右
-            power_str = ocr_area((503, 17), (602, 56))[0].strip()
-            credit_str = ocr_area((688, 19), (832, 59))[0].strip()
-            diamond_str = ocr_area((863, 21), (973, 60))[0].strip()
         if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
             # 日服比较靠左
             power_str = ocr_area((537, 24), (612, 49))[0].strip()

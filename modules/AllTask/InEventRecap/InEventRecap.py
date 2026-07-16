@@ -17,10 +17,7 @@ class InEventRecap(Task):
     def __init__(self, name="InEventRecap") -> None:
         super().__init__(name)
         self.first_trigger = True
-        if config.userconfigdict["SERVER_TYPE"] not in ["CN", "CN_BILI"]:
-            self.event_recap_button = [149, 220] # 日服国际服活动一览放到第二个按钮
-        else:
-            self.event_recap_button = [149, 136]
+        self.event_recap_button = [149, 220]
         if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
             self.in_event_button = (1055, 620)
         else:
