@@ -19,8 +19,8 @@ class SmartSelect(Task):
         super().__init__(name)
         # 每个地区右上角的名字区域
         self.location_name_area = ((923, 94), (1132, 130))
-        # 爱心是否显示在学生头像下侧，目前除了国服，其他都改动了
-        self.scroll_down_to_recg_heart = not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]
+        # # 爱心是否显示在学生头像下侧，目前除了国服，其他都改动了
+        # self.scroll_down_to_recg_heart = not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]
         # 用户选择的希望被优先点击好感的学生头像图片路径列表
         self.special_like_student_pic_path_list = [each['path'] for each in config.userconfigdict['TIMETABLE_SPECIAL_STUDENT_PIC'] if 'path' in each]
 
@@ -116,10 +116,10 @@ class SmartSelect(Task):
                 lambda: match(popup_pic(PopupName.POPUP_TIMETABLE_ALL))
             )
             # 向下滑动，截图
-            if self.scroll_down_to_recg_heart:
-                swipe([814, 574], [813, 257], 0.5, sleeptime=0.5)
-                screenshot()
-            heartdict = get_hearts_of_rooms(self.scroll_down_to_recg_heart)
+            # if self.scroll_down_to_recg_heart:
+            #     swipe([814, 574], [813, 257], 0.5, sleeptime=0.5)
+            #     screenshot()
+            heartdict = get_hearts_of_rooms()
             opendict = get_open_status_of_rooms()
             special_like_stu_dict = get_special_like_student_of_rooms(self.special_like_student_pic_path_list)
             # 计算分数
