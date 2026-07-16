@@ -1,8 +1,6 @@
-myversion = "2.3.0"
+myversion = "2.3.1"
 mychangelog = """
 
-修复日服活动一栏 | fix the event recap page of JP server
-
-更新更新器为多线程查询更新 | Update the updater to multi-threaded query update
+适配国服 7月16日 大更新 | Added support for CN version update on July 16th
 
 """
