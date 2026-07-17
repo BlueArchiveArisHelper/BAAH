@@ -10,7 +10,7 @@ import time
 import sys
 from concurrent.futures import ThreadPoolExecutor
 # ========================
-updater_version = "0.6.0"
+updater_version = "0.6.1"
 # 存储当前本地版本的json文件，需要包含 NOWVERSION 字段
 software_config_storage_path = os.path.join("DATA", "CONFIGS", "software_config.json")
 # 软件可执行文件的exe名称
@@ -239,8 +239,8 @@ def check_and_update():
     target_url = version_info.update_zip_url
     targetfilename = os.path.basename(target_url)
     print("Downloading...Please wait")
-    # 不存在zip文件则下载
-    if not os.path.exists(targetfilename):
+    # 下载更新zip
+    if True:
         try:
             response = requests.get(target_url, stream=True, timeout=10)
             if response.status_code == 200:

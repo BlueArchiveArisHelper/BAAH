@@ -9,7 +9,7 @@ import time
 from DATA.assets.ButtonName import ButtonName
 from DATA.assets.PageName import PageName
 from DATA.assets.PopupName import PopupName
-from modules.utils import screencut_tool, connect_to_device, screen_shot_to_global, button_pic, popup_pic, page_pic, match_pattern,screenshot
+from modules.utils import screencut_tool, connect_to_device, screen_shot_to_global, button_pic, popup_pic, page_pic, match_pattern,screenshot,get_config_adb_path,getNewestSeialNumber,subprocess_run
 
 def set_other(config, gui_shared_config):
     with ui.row():
@@ -173,3 +173,19 @@ def set_other(config, gui_shared_config):
 
 
     show_quick_pic_match()
+
+    # 测试亮度调整
+    def query_brightness():
+        connect_to_device(config)
+        res = subprocess_run([get_config_adb_path(config), "-s", getNewestSeialNumber(config), "shell", "settings", "get", "system", "screen_brightness"], text=True)
+        print("Now brightness is: "+res.stdout)
+        ui.notify(res.stdout)
+    brightness_number = {"val": 21}
+    with ui.row():
+        ui.button("查询亮度/Query", on_click=query_brightness)
+        ui.number("亮度/Brightness", step=1, min=0, precision=0).bind_value(brightness_number, 'val', forward=lambda x:int(x), backward=lambda x:int(x))
+        ui.button("设置/Set", on_click=lambda: [
+            connect_to_device(config),
+            subprocess_run([get_config_adb_path(config), "-s", getNewestSeialNumber(config), "shell", "settings", "put", "system", "screen_brightness", str(brightness_number["val"])]), 
+            ui.notify("Done")
+            ])

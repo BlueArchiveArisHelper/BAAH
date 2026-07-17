@@ -27,4 +27,4 @@ def set_assault(config):
         # 助战是否后排
         ui.checkbox(config.get_text("config_assault_helper_is_support")).bind_value(config.userconfigdict, "AUTO_ASSAULT_HELP_STUDENT_IS_SUPPORT")
         
-        screencut_button(inconfig=config, resultdict=config.userconfigdict, resultkey="AUTO_ASSAULT_HELP_STUDENT", input_text=config.get_text("config_assault_helper_student"), button_text=config.get_text("config_assault_helper_student"))
+        screencut_button(inconfig=config, resultdict=config.userconfigdict, resultkey="AUTO_ASSAULT_HELP_STUDENT", input_text=config.get_text("config_assault_helper_student"), button_text=config.get_text("config_assault_helper_student"), save_folder_path=config.USER_STORAGE_FOLDER)
