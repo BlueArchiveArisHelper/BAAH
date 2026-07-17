@@ -12,7 +12,7 @@ def _find_param_value(emulator_path, param_name):
 def smart_replace_main2device(emulator_path):
     """将mumu多开器路径根据 --engine_series 参数选择替换为对应的路径模拟器"""
     print(f"Original emulator path: {emulator_path}")
-    emulator_path = emulator_path.replace("\\", "/").replace('"', "")
+    emulator_path = emulator_path.replace("\\", "/").replace('"', "").replace(" --from-shortcut","")
     replaced_off_str = "nx_main/MuMuNxMain.exe"
     final_emulator_path = emulator_path
     if replaced_off_str not in emulator_path:

@@ -17,7 +17,7 @@ from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, 
 
 
 class EventQuest(Task):
-    def __init__(self, level_list, explore=True, raid=True, collect=True, quest_button_xy = (965, 98),name="EventQuest") -> None:
+    def __init__(self, level_list, explore=True, raid=True, quest_button_xy = (965, 98),name="EventQuest") -> None:
         super().__init__(name)
         self.level_list = level_list
         # 记录上次自动推图的关卡下标
@@ -26,8 +26,6 @@ class EventQuest(Task):
         self.explore = explore
         # 是否扫荡
         self.raid = raid
-        # 是否领取奖励
-        self.collect = collect
         # quest按钮位置
         self.quest_button_xy = quest_button_xy
 
@@ -71,69 +69,6 @@ class EventQuest(Task):
             return "yes"
         return "no"
 
-    def try_collect_all_rewards(self):
-        """尝试领取右下角蓝色奖励资讯和左下角每日任务奖励，调用此函数时确保在Quest栏，函数结束会返回到活动页面"""
-        self.run_until(
-            lambda: click(Page.MAGICPOINT),
-            lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
-        )
-        if not self.collect:
-            logging.info({"zh_CN": "不尝试领取奖励", "en_US": "Don't try to claim your reward"})
-            return
-        else:
-            logging.info({"zh_CN": "尝试领取右下角点数奖励和左下角任务奖励",
-                          "en_US": "Try to claim the Bottom Right Point Reward and the Bottom Left Quest Reward"})
-        # 领取右下
-        self.run_until(
-            lambda: click((1124, 659)),
-            lambda: not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE),  # 弹窗
-            times=3
-        )
-        # 通过点中间偏左，防止万一点到关卡的开始任务按钮
-        click((585, 603))
-        click((585, 603))
-        # 清空弹窗
-        self.run_until(
-            lambda: click(Page.MAGICPOINT),
-            lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
-        )
-        # 领取活动任务
-        if match(button_pic(ButtonName.BUTTON_EVENT_DAILY_TASK), threshold=0.8):
-            logging.info({"zh_CN": "检测到活动任务页面，尝试领取任务奖励",
-                          "en_US": "Campaign quest page detected, try to claim quest rewards"})
-            self.run_until(
-                lambda: click(button_pic(ButtonName.BUTTON_EVENT_DAILY_TASK), threshold=0.8),
-                lambda: not Page.is_page(PageName.PAGE_EVENT)
-            )
-            # 进入页面后，点击黄色全部领取
-            collect_all = self.run_until(
-                lambda: click(Page.MAGICPOINT) and click(button_pic(ButtonName.BUTTON_ALL_COLLECT)),
-                lambda: not match(button_pic(ButtonName.BUTTON_ALL_COLLECT))
-            )
-            # 清空弹窗
-            self.run_until(
-                lambda: click(Page.MAGICPOINT),
-                lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
-            )
-            # 领取每日任务全部完成后的钻石
-            click((970, 670))
-            click((970, 670))
-            click((970, 670))
-        else:
-            no_event_award_detected_str = istr({
-                CN: "未检测到活动任务奖励按钮,通常来说大部分活动应当能够检测到",
-                EN: "No event quest reward button detected, usually most events should be able to detect"
-            })
-            logging.info(no_event_award_detected_str)
-            config.append_noti_sentence("NO_EVENT_AWARD_DETECTED", no_event_award_detected_str)
-        # 返回活动页面
-        self.run_until(
-            lambda: click(Page.TOPLEFTBACK),
-            lambda: Page.is_page(PageName.PAGE_EVENT),
-            times=3,
-            sleeptime=2
-        )
-
     def on_run(self) -> None:
         # 按level执行
         for level in self.level_list:
@@ -173,7 +108,6 @@ class EventQuest(Task):
                         lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
                     )
                     logging.info({"zh_CN": "返回到根页面", "en_US": "Back to Root Page"})
-                    self.try_collect_all_rewards()
                     return
                 hasfight_newlevel = False
                 for i in range(level_ind):
@@ -200,7 +134,6 @@ class EventQuest(Task):
                             lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
                         )
                         logging.info({"zh_CN": "返回到根页面", "en_US": "Back to Root Page"})
-                        self.try_collect_all_rewards()
                         return
                 if hasfight_newlevel:
                     # 继续从头滑动
@@ -220,7 +153,6 @@ class EventQuest(Task):
             lambda: click(Page.MAGICPOINT),
             lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
         )
-        self.try_collect_all_rewards()
 
     def post_condition(self) -> bool:
         return Page.is_page(PageName.PAGE_EVENT)

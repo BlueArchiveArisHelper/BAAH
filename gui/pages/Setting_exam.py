@@ -28,4 +28,4 @@ def set_exam(config):
         # 助战是否后排
         ui.checkbox(config.get_text("config_exam_helper_is_support")).bind_value(config.userconfigdict, "EXAM_HELP_STUDENT_IS_SUPPORT")
         # 助战学生截图按钮
-        screencut_button(inconfig=config, resultdict=config.userconfigdict, resultkey="EXAM_HELP_STUDENT", input_text=config.get_text("config_exam_helper_student"), button_text=config.get_text("config_exam_helper_student"))
+        screencut_button(inconfig=config, resultdict=config.userconfigdict, resultkey="EXAM_HELP_STUDENT", input_text=config.get_text("config_exam_helper_student"), button_text=config.get_text("config_exam_helper_student"), save_folder_path=config.USER_STORAGE_FOLDER)

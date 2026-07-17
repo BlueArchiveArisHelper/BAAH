@@ -20,7 +20,7 @@ class Page:
     The circle back icon on the top left corner
     """
 
-    COLOR_WHITE = ((240, 240, 240), (255, 255, 255))
+    COLOR_WHITE = ((230, 230, 230), (255, 255, 255))
     COLOR_RED = ((24, 70, 250), (26, 72, 252))
     COLOR_BUTTON_WHITE = ((220, 220, 220), (255, 255, 255))
     """
@@ -29,9 +29,10 @@ class Page:
 
     COLOR_BUTTON_GRAY = ((200, 200, 200), (230, 230, 230))
 
-    COLOR_BUTTON_BLUE = (([250, 220, 135]), ([255, 232, 145]))
+    COLOR_BUTTON_BLUE = ((250, 220, 135), (255, 232, 145))
     """列表关卡右侧蓝色可点击按钮"""
-
+    COLOR_BUTTON_YELLOW = ((64, 222, 235), (84, 242, 255))
+    """黄色按钮"""
     
     COLOR_PINK = ((175, 130, 250 ), (202, 155, 255 ))
     """

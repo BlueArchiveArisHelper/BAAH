@@ -82,7 +82,7 @@
 
     "config_cafe_attention":"请将咖啡馆视角拉到最高，把互动家具的开关关闭",
     "config_camera_full":"进入咖啡馆时视角为最高",
-    "desc_cafe_invite":"如果你想要邀请特定的学生，请收藏想要邀请的学生并在咖啡馆邀请列表内设置筛选方式为收藏",
+    "desc_cafe_invite":"如果你想要邀请特定/好感最低的学生，请收藏/排序想要邀请的学生并在咖啡馆邀请列表内设置筛选方式为收藏/好感度",
     "config_emulator_port":"ADB端口",
     "config_kill_port": "模拟器启动前强制释放端口",
     "config_emulator_path":"模拟器路径",
@@ -221,6 +221,8 @@
     "text_dark": "深色",
     "text_system": "跟随系统",
     "config_timetable_special_student_pic_desc": "给课程表教室九宫格弹窗里的学生头像截图来添加你希望在课程表中优先点击的学生（注意只截取头像方框内的部分就行）。下面每个学生对应一张截图，这些学生所在的教室会以权重300被优先点击",
+    "config_event_roll_enter_desc": "请在下方截取活动页面左下角进入抽奖页面的按钮图像，尽可能只包含按钮本身部分，BAAH会在活动页面中寻找这个图像来点击进入抽奖页面",
+    "config_event_roll_times": "活动抽奖抽几次",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",

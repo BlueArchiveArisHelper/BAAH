@@ -378,6 +378,15 @@ defaultUserDict = {
     "TIMETABLE_SPECIAL_STUDENT_PIC":{
         "d":[],
     },
+    # 活动进入抽奖页面的按钮的图片路径（用户指定）
+    "EVENT_ENTER_ROLL_PAGE_BUTTON":{
+        "d":"",
+    },
+    # 活动抽奖抽几次
+    "EVENT_ROLL_TARGET_COUNT":{
+        "d":3,
+    },
+
 }
 
 # 软件的config里的默认值
@@ -438,6 +447,8 @@ defaultSessionDict = {
     "CURRENT_RETRY_TIMES":{"d":0}, # 跨运行生命周期
     # 记录历史四张截图
     "HISTORY_SCREENSHOT_LIST":{"d":[]},
+    # 记录当前session活动抽奖了几次
+    "CURRENT_EVENT_ROLL_COUNT":{"d":0},
 }
 
 # storagedict存储与某一个配置文件对应的游戏实例的持久性存储信息（如钻石历史变化曲线），其生命周期与userconfig相同，但是在脚本运行时是随用随写的
