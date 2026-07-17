@@ -268,7 +268,7 @@ class InEvent(Task):
             )
         # 点击抽奖页面入口按钮，直到按钮消失
         enter_roll_page = self.run_until(
-            lambda: click(config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"]),
+            lambda: click(config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"], sleeptime=2),
             lambda: not match(config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"])
         )
         # 判断是否进入抽奖页面
@@ -280,6 +280,8 @@ class InEvent(Task):
             from_roll_page_safe_back_to_event_page()
             return
         # 判断按钮是否是亮着的
+        sleep(1.5)
+        screenshot()
         yellow_button_is_on = match_pixel(self.roll_button_xy, Page.COLOR_BUTTON_YELLOW, printit=True)
         if not yellow_button_is_on:
             logging.warn(istr({
