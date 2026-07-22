@@ -14,13 +14,15 @@ from modules.AllTask.InEvent.EventQuest import EventQuest
 from modules.AllTask.InEvent.EventStory import EventStory
 from modules.AllTask.Task import Task
 from .RollAward import RollAward
+from .ExchangeItem import ExchangeItem
 
 from modules.utils import (click, swipe, match, match_pixel, page_pic, button_pic, popup_pic, sleep, ocr_area, screenshot,
                            check_app_running, open_app, get_now_running_app_entrance_activity, get_now_running_app, istr, CN, EN)
 
 
 class InEvent(Task):
-    def __init__(self, name="InEvent", force_push_story = False, force_push_quest = False, dont_raid_quest = False, dont_roll_reward = False) -> None:
+    def __init__(self, name="InEvent", force_push_story = False, force_push_quest = False, dont_raid_quest = False, dont_roll_reward = False, dont_exchange_item = False) -> None:
+        #! 仅推图任务 TaskName.EVENTPUSHSTORYQUEST 需要把领取奖励什么的全设置为不进行
         super().__init__(name)
         self.try_enter_times = 2
         self.next_sleep_time = 0.1
@@ -44,6 +46,8 @@ class InEvent(Task):
         self.dont_raid_quest = dont_raid_quest
         # 是否强制 不进行抽奖
         self.dont_roll_reward = dont_roll_reward
+        # 是否强制 不进行赠品交换
+        self.dont_exchange_item = dont_exchange_item
 
 
     def pre_condition(self) -> bool:
@@ -374,6 +378,24 @@ class InEvent(Task):
             logging.warn(istr({
                 CN: "未配置活动抽奖入口按钮图片，跳过抽奖。请到GUI活动配置中截取抽奖页面的入口按钮图片",
                 EN: "The event lottery entry button is not configured, skip the lottery. Please go to the GUI event configuration to capture the entrance button picture of the lottery page"
+            }))
+        # 批量赠品交换任务
+        if config.userconfigdict["EVENT_ENTER_EXCHANGE_PAGE_BUTTON"]:
+            logging.info(istr({
+                CN: "尝试进行赠品交换",
+                EN: "Try to do event exchange"
+            }))
+            if self.dont_exchange_item:
+                logging.info(istr({
+                    CN: "当前配置为不进行赠品交换，跳过赠品交换",
+                    EN: "The current configuration is not to do event exchange, skip the exchange"
+                }))
+            else:
+                ExchangeItem().run()
+        else:
+            logging.warn(istr({
+                CN: "未配置活动赠品交换入口按钮图片，跳过赠品交换。请到GUI活动配置中截取赠品交换页面的入口按钮图片",
+                EN: "The event exchange item entry button is not configured, skip the exchange. Please go to the GUI event configuration to capture the entrance button picture of the exchange page"
             }))
         # 领取所有奖励
         self.try_collect_all_rewards()

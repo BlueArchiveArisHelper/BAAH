@@ -189,7 +189,7 @@ class TaskInstanceMap:
                     task_config_name = TaskName.EVENTPUSHSTORYQUEST,
                     i18n_key_name = "task_event_push_story_quest",
                     task_module = InEvent,
-                    task_params = {'force_push_story': True, 'force_push_quest': True, 'dont_raid_quest': True, 'dont_roll_reward': True}
+                    task_params = {'force_push_story': True, 'force_push_quest': True, 'dont_raid_quest': True, 'dont_roll_reward': True, 'dont_exchange_item': True}
                 ),
             TaskName.DAILY: TaskInstance(
                     task_config_name = TaskName.DAILY,

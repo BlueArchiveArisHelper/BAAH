@@ -8,6 +8,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP
 from modules.utils.log_utils import logging
+from .EventHelper import from_inner_page_safe_back_to_event_page
 
 class RollAward(Task):
     def __init__(self, name="RollAward") -> None:
@@ -18,18 +19,6 @@ class RollAward(Task):
      
     def pre_condition(self) -> bool:
         return super().pre_condition()
-
-    def from_roll_page_safe_back_to_event_page(self):
-        """
-        从抽奖页面安全返回活动页面，避免在抽奖页面中出现异常导致无法返回活动页面
-        """
-        self.clear_popup()
-        return self.run_until(
-            lambda: click(Page.TOPLEFTBACK),
-            lambda: Page.is_page(PageName.PAGE_EVENT),
-            sleeptime = 2,
-            times = 3
-        )
     
     def on_run(self) -> None:
         """
@@ -100,4 +89,4 @@ class RollAward(Task):
 
      
     def post_condition(self) -> bool:
-        return self.from_roll_page_safe_back_to_event_page()
+        return from_inner_page_safe_back_to_event_page()
