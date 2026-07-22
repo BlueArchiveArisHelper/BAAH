@@ -71,6 +71,9 @@ def connect_to_device(use_config=None):
         return
     subprocess_run([get_config_adb_path(target_config), "connect", getNewestSeialNumber(target_config)])
 
+def get_all_devices(use_config=None):
+    result = subprocess_run([get_config_adb_path(use_config), "devices"])
+    return [line for line in result.stdout.splitlines()[1:] if line]
 
 def click_on_screen(x, y):
     """Click on the given coordinates."""
