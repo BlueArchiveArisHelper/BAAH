@@ -386,6 +386,10 @@ defaultUserDict = {
     "EVENT_ROLL_TARGET_COUNT":{
         "d":3,
     },
+    # 活动进入[赠品交换]页面的按钮的图片路径（用户指定）
+    "EVENT_ENTER_EXCHANGE_PAGE_BUTTON":{
+        "d":"",
+    },
 
 }
 
