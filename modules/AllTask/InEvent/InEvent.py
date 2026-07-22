@@ -13,6 +13,7 @@ from modules.AllPage.Page import Page
 from modules.AllTask.InEvent.EventQuest import EventQuest
 from modules.AllTask.InEvent.EventStory import EventStory
 from modules.AllTask.Task import Task
+from .RollAward import RollAward
 
 from modules.utils import (click, swipe, match, match_pixel, page_pic, button_pic, popup_pic, sleep, ocr_area, screenshot,
                            check_app_running, open_app, get_now_running_app_entrance_activity, get_now_running_app, istr, CN, EN)
@@ -43,8 +44,7 @@ class InEvent(Task):
         self.dont_raid_quest = dont_raid_quest
         # 是否强制 不进行抽奖
         self.dont_roll_reward = dont_roll_reward
-        # 抽奖页面里面的进行抽奖按钮位置
-        self.roll_button_xy = [850, 591]
+
 
     def pre_condition(self) -> bool:
         # 通过get请求https://arona.diyigemt.com/api/v2/image?name=%E5%9B%BD%E9%99%85%E6%9C%8D%E6%B4%BB%E5%8A%A8
@@ -236,87 +236,6 @@ class InEvent(Task):
             except:
                 pass
         return temp_max
-    
-    def solve_event_roll_award(self):
-        """
-        处理活动抽奖页面，从活动主页面进入抽奖页面，点击抽奖按钮对应次数，然后返回活动主页面
-        """
-        if config.sessiondict["CURRENT_EVENT_ROLL_COUNT"] >= config.userconfigdict["EVENT_ROLL_TARGET_COUNT"]:
-            logging.info(istr({
-                CN: f"当前抽奖次数 {config.sessiondict['CURRENT_EVENT_ROLL_COUNT']} 已经达到目标次数 {config.userconfigdict['EVENT_ROLL_TARGET_COUNT']}，不再进行抽奖",
-                EN: f"Current number of draws {config.sessiondict['CURRENT_EVENT_ROLL_COUNT']} has reached the target number of draws {config.userconfigdict['EVENT_ROLL_TARGET_COUNT']}, no more draws"
-            }))
-            return
-        self.clear_popup()
-        roll_page_button_pos = match(config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"], returnpos=True)
-        if not roll_page_button_pos[0]:
-            logging.info(istr({
-                CN: f"未能识别抽奖页面入口按钮 {roll_page_button_pos}，跳过抽奖。可能截取的图片已过时？",
-                EN: f"Failed to recognize the entrance button of the lottery page {roll_page_button_pos}, skip the lottery. Maybe the captured picture is outdated?"
-            }))
-            return
-        def from_roll_page_safe_back_to_event_page():
-            """
-            从抽奖页面安全返回活动页面，避免在抽奖页面中出现异常导致无法返回活动页面
-            """
-            self.clear_popup()
-            return self.run_until(
-                lambda: click(Page.TOPLEFTBACK),
-                lambda: Page.is_page(PageName.PAGE_EVENT),
-                sleeptime = 2,
-                times = 3
-            )
-        # 点击抽奖页面入口按钮，直到按钮消失
-        enter_roll_page = self.run_until(
-            lambda: click(config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"], sleeptime=2),
-            lambda: not match(config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"])
-        )
-        # 判断是否进入抽奖页面
-        if not enter_roll_page:
-            logging.warn(istr({
-                CN: f"点击抽奖页面入口按钮 {config.userconfigdict['EVENT_ENTER_ROLL_PAGE_BUTTON']} 失败，未能进入抽奖页面",
-                EN: f"Click the entrance button of the lottery page {config.userconfigdict['EVENT_ENTER_ROLL_PAGE_BUTTON']} failed, failed to enter the lottery page"
-            }))
-            from_roll_page_safe_back_to_event_page()
-            return
-        # 判断按钮是否是亮着的
-        sleep(1.5)
-        screenshot()
-        yellow_button_is_on = match_pixel(self.roll_button_xy, Page.COLOR_BUTTON_YELLOW, printit=True)
-        if not yellow_button_is_on:
-            logging.warn(istr({
-                CN: f"抽奖按钮未亮起，跳过抽奖",
-                EN: f"The lottery button is not lit, skip the lottery"
-            }))
-            from_roll_page_safe_back_to_event_page()
-            return
-        # 点击抽奖按钮n次
-        def roll_and_collect():
-            """点击抽奖，直到出现popup，然后关掉popup"""
-            self.clear_popup()
-            success_click = self.run_until(
-                lambda: click(self.roll_button_xy),
-                lambda: self.has_popup()
-            )
-            self.clear_popup()
-            return success_click
-
-        n_times_to_click = config.userconfigdict["EVENT_ROLL_TARGET_COUNT"] - config.sessiondict["CURRENT_EVENT_ROLL_COUNT"]
-        for _ in range(n_times_to_click):
-            if(roll_and_collect()):
-                config.sessiondict["CURRENT_EVENT_ROLL_COUNT"] += 1
-                logging.info(istr({
-                    CN: f"成功点击抽奖按钮，当前抽奖次数 {config.sessiondict['CURRENT_EVENT_ROLL_COUNT']}",
-                    EN: f"Successfully clicked the lottery button, current number of draws {config.sessiondict['CURRENT_EVENT_ROLL_COUNT']}"
-                }))
-            else:
-                logging.warn(istr({
-                    CN: f"点击抽奖按钮失败，跳过抽奖",
-                    EN: f"Failed to click the lottery button, skip the lottery"
-                }))
-                break
-        # 退出
-        from_roll_page_safe_back_to_event_page()
 
     def try_collect_all_rewards(self):
         """尝试领取右下角蓝色奖励资讯和左下角每日任务奖励，调用此函数时确保在Quest栏，函数结束会返回到活动页面"""
@@ -450,7 +369,7 @@ class InEvent(Task):
                     EN: "The current configuration is not to do event lottery, skip the lottery"
                 }))
             else:
-                self.solve_event_roll_award()
+                RollAward().run()
         else:
             logging.warn(istr({
                 CN: "未配置活动抽奖入口按钮图片，跳过抽奖。请到GUI活动配置中截取抽奖页面的入口按钮图片",
