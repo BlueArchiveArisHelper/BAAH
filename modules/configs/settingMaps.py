@@ -179,3 +179,14 @@ def default_fill_shop_table(val_list):
                 this_row.append([c+1, False])
             val_list.append(this_row)
     return val_list
+
+
+def map_from_old_taskorder2pipeline(taskorder_list, parsedjson):
+    """
+    将旧版本单个taskorder包装成pipelines group形式的配置文件项目
+    """
+    taskactivate_list = parsedjson.get("TASK_ACTIVATE", [])
+    return {
+        "ALL_PIPELINES": [{"TASK_PIPELINE":taskorder_list, "TASK_ONOFF":taskactivate_list}], 
+        "ACTIVATE_IND":0
+    }

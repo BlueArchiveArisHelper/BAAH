@@ -25,7 +25,20 @@ defaultUserDict = {
     "EVENT_QUEST_LEVEL": {"d":[]},
     "HARD": {"d":[]},
     "NORMAL": {"d":[]},
-    "TASK_ORDER": {"d": []},
+    # "TASK_ORDER": {"d": []}, # 2.3.4弃用，改为多线任务ORDER
+    # "TASK_ACTIVATE": {"d":[]}, # 2.3.4弃用，改为多线任务ORDER
+    # 多线任务ORDER，用户可以设置多条ORDER，只有一条会被激活
+    "TASK_ORDER_GROUP": {
+        "d": {
+            #! 必须确保 ALL_PIPELINES 内至少有一个元素
+            "ALL_PIPELINES": [{"TASK_PIPELINE":[], "TASK_ONOFF":[]}], 
+            "ACTIVATE_IND":0
+        },
+        "m": {
+            "from": "TASK_ORDER",
+            "map": lambda val, parsedjson: map_from_old_taskorder2pipeline(val, parsedjson)
+        }
+    },
     "SHOP_NORMAL": {"d":[], "p": lambda val, parsedjson: default_fill_shop_table(val)},
     "SHOP_NORMAL_BUYALL": {"d":False},
     "SHOP_CONTEST": {"d":[], "p": lambda val, parsedjson: default_fill_shop_table(val)},
@@ -36,14 +49,13 @@ defaultUserDict = {
     "PUSH_HARD_USE_SIMPLE": {"d":False},
     "PUSH_HARD_QUEST": {"d":0},
     "PUSH_HARD_QUEST_LEVEL": {"d":1},
-    "TASK_ACTIVATE": {"d":[]},
     # new config in 1.2.x
     "SERVER_TYPE":{
         "d":"GLOBAL",
         "s":["GLOBAL", "GLOBAL_EN", "JP", "CN", "CN_BILI", "PC_STEAM", "PC_STEAM_EN", "PC_EXE_JP"],
         "m": {
             "from": "ACTIVITY_PATH",
-            "map": lambda x: activity2server[x] if x in activity2server else "GLOBAL"
+            "map": lambda x, parsedjson: activity2server[x] if x in activity2server else "GLOBAL"
         },
         "p": lambda val, parsedjson: "PC_"+val if val.startswith("STEAM") else val # 2.0.10 兼容 STEAM 到 PC_STEAM 的改名
     },
@@ -53,21 +65,21 @@ defaultUserDict = {
         "d": False,
         "m": {
             "from": "CLOSE_EMULATOR_BAAH",
-            "map": lambda x: x
+            "map": lambda x, parsedjson: x
         }
     },
     "CLOSE_GAME_FINISH":{
         "d": False,
         "m": {
             "from": "CLOSE_EMULATOR_BAAH",
-            "map": lambda x: x
+            "map": lambda x, parsedjson: x
         }
     },
     "CLOSE_BAAH_FINISH":{
         "d": False,
         "m": {
             "from": "CLOSE_EMULATOR_BAAH",
-            "map": lambda x: x
+            "map": lambda x, parsedjson: x
         }
     },
     # 发生异常报错后是否关闭模拟器
@@ -90,7 +102,7 @@ defaultUserDict = {
         ],
         "m":{
             "from" : "SERVER_TYPE",
-             "map" : lambda x: server2pic[x] if x in server2pic else "./DATA/assets"
+             "map" : lambda x, parsedjson: server2pic[x] if x in server2pic else "./DATA/assets"
         }
     },
     "GRID_SOL_PATH":{
@@ -101,7 +113,7 @@ defaultUserDict = {
         "d":"com.nexon.bluearchive/.MxUnityPlayerActivity",
         "m":{
             "from": "SERVER_TYPE",
-            "map": lambda x: server2activity[x] if x in server2activity else "com.nexon.bluearchive/.MxUnityPlayerActivity",
+            "map": lambda x, parsedjson: server2activity[x] if x in server2activity else "com.nexon.bluearchive/.MxUnityPlayerActivity",
         },
         "p": lambda val, parsedjson: server2activity[parsedjson["SERVER_TYPE"]] if parsedjson["SERVER_TYPE"] in server2activity else val
     },
@@ -118,7 +130,7 @@ defaultUserDict = {
         "d": 40,
         "m":{
             "from": "SERVER_TYPE",
-            "map": lambda x: server2respond[x] if x in server2respond else 40
+            "map": lambda x, parsedjson: server2respond[x] if x in server2respond else 40
         },
         "p": lambda val, parsedjson: server2respond[parsedjson["SERVER_TYPE"]] if parsedjson["LOCK_SERVER_TO_RESPOND_Y"] and parsedjson["SERVER_TYPE"] in server2respond else val # 如果开启了跟随服务器版本，则一直使用服务器版本映射出的y响应坐标
     },
@@ -279,7 +291,7 @@ defaultUserDict = {
         "d":"userStorage",
         "m":{
             "from": "SCREENSHOT_NAME",
-            "map": lambda x: x.replace(".png", ".json")
+            "map": lambda x, parsedjson: x.replace(".png", ".json")
         }
     },
     # 综合战术考试 关卡
@@ -326,7 +338,7 @@ defaultUserDict = {
         "d":{},
         "m":{
             "from": "VPN_CONFIG",
-            "map": lambda vjson: old_VPN2action_flow(vjson) 
+            "map": lambda vjson, parsedjson: old_VPN2action_flow(vjson) 
         }
     },
     # 关闭加速器操作
@@ -334,7 +346,7 @@ defaultUserDict = {
         "d":{},
         "m":{
             "from": "VPN_CLOSE_CONFIG",
-            "map": lambda vjson: old_VPN2action_flow(vjson) 
+            "map": lambda vjson, parsedjson: old_VPN2action_flow(vjson) 
         }
     },
     # 总力战队伍无法出击（无编队，已出击）是否报错
@@ -409,7 +421,7 @@ defaultSoftwareDict = {
         "m":{
             "from": "LANGUAGE", # map功能必须要有from字段，这里充当占位符
             # 使用现在的时间戳作为加密key，长度截取最后五位，字符串！
-            "map": lambda x:  str(int(time()))[-5:]
+            "map": lambda x, parsedjson:  str(int(time()))[-5:]
         }},
     # 用户在GUI里的各种备注
     "NOTE":{"d":{
