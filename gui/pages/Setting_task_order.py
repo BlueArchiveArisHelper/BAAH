@@ -26,11 +26,12 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     def task_order():
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         # pipelines页签管理
+        ui.label(config.get_text("config_pipelines_desc"))
         with ui.row():
-            ui.toggle({ind:f"{ind+1}" for ind in range(len(all_pipelines))}, value=activated_ind, on_change=lambda e:change_activated_pipeline(e))
+            ui.toggle({ind:f"{config.get_text('config_pipeline')} {ind+1}" for ind in range(len(all_pipelines))}, value=activated_ind, on_change=lambda e:change_activated_pipeline(e))
             ui.button("+", on_click=add_one_pipeline)
             if len(all_pipelines) > 1:
-                ui.button("-", on_click=del_one_pipeline, color="red")
+                ui.button(config.get_text("config_delete_now_activated_pipeline"), on_click=del_one_pipeline, color="red")
         # 当前被激活的pipeline
         with ui.card():
             with ui.row():

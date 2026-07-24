@@ -224,6 +224,9 @@
     "config_event_roll_enter_desc": "Please take a screenshot of the button in the lower left corner of the event page that leads to the lottery page. Try to capture only the button itself, as BAAH will look for this image on the event page to click and enter the lottery page.",
     "config_event_roll_times": "Number of times to participate in the event lottery",
     "config_event_exchange_enter_desc": "Please capture the image of the [Gift Exchange] button located at the bottom-left corner of the activity page below. Include only the button area as much as possible. BAAH will search for this image on the activity page and click it to enter the [Gift Exchange] page.",
+    "config_pipelines_desc": "You can configure multiple pipelines, but only one can be active at a time and must be switched manually.",
+    "config_delete_now_activated_pipeline": "Delete Current Pipeline",
+    "config_pipeline": "Pipeline",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",

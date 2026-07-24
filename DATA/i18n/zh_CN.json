@@ -224,6 +224,9 @@
     "config_event_roll_enter_desc": "请在下方截取活动页面左下角进入[抽奖/抽签页面]的按钮图像，尽可能只包含按钮本身部分，BAAH会在活动页面中寻找这个图像来点击进入[抽奖/抽签页面]页面",
     "config_event_roll_times": "活动抽奖抽几次",
     "config_event_exchange_enter_desc": "请在下方截取活动页面左下角进入[赠品交换]的按钮图像，尽可能只包含按钮本身部分，BAAH会在活动页面中寻找这个图像来点击进入[赠品交换]页面",
+    "config_pipelines_desc": "你可以设置多种流程，但是只能手动切换激活其中一个",
+    "config_delete_now_activated_pipeline": "删除本流程",
+    "config_pipeline": "流程",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
