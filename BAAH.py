@@ -38,7 +38,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
 
     import os
     import psutil
-    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app, get_screenshot_cv_data
+    from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app, get_screenshot_cv_data,return_now_activate_pipeline
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -410,8 +410,9 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                     EN: "Task completed: "
                 }))
                 tasks_str = ""
-                for ind, task in enumerate(config.userconfigdict["TASK_ORDER"]):
-                    if config.userconfigdict["TASK_ACTIVATE"][ind]:
+                task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
+                for ind, task in enumerate(task_pipeline):
+                    if task_onoff[ind]:
                         tasks_str += f" -> {task}"
                 content.append(tasks_str)
                 # 其他消息

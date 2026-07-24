@@ -1,6 +1,8 @@
-myversion = "2.3.3"
+myversion = "2.4.0"
 mychangelog = """
 
-添加活动摇奖功能，由于摇奖入口不固定，需要自行在活动配置页面内对活动页面左下角的摇奖按钮进行截图 | Add event roll reward function
+动了一些关于任务顺序的底层逻辑，虽然测试了，但是依然可能会有bug，感谢反馈
+
+添加单个配置文件内多种可切换的流程功能 | Add pipelines and can switch pipeline in one config
 
 """

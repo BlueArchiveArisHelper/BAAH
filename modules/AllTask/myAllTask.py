@@ -3,7 +3,7 @@ from modules.AllTask import *
 
 from modules.AllPage.Page import Page
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, screenshot
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, screenshot, return_now_activate_pipeline
 from modules.utils.log_utils import logging, istr, CN, EN
 from modules.configs.MyConfig import config
 
@@ -189,7 +189,7 @@ class TaskInstanceMap:
                     task_config_name = TaskName.EVENTPUSHSTORYQUEST,
                     i18n_key_name = "task_event_push_story_quest",
                     task_module = InEvent,
-                    task_params = {'force_push_story': True, 'force_push_quest': True, 'dont_raid_quest': True, 'dont_roll_reward': True}
+                    task_params = {'force_push_story': True, 'force_push_quest': True, 'dont_raid_quest': True, 'dont_roll_reward': True, 'dont_exchange_item': True}
                 ),
             TaskName.DAILY: TaskInstance(
                     task_config_name = TaskName.DAILY,
@@ -293,18 +293,23 @@ class AllTask:
         # 用于保存最后一次战术大赛的任务实例
         last_contest = None
         # GUI为了显示TaskName也会导入此文件，从而创建AllTask的实例，这边判断下如果config没有解析json就跳过
-        if "TASK_ORDER" in config.userconfigdict and "TASK_ACTIVATE" in config.userconfigdict:
+        task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
+        logging.info(istr({
+            CN: f"当前激活: pipeline {activated_ind+1}",
+            EN: f"Now activated pipeline {activated_ind+1}"
+        }))
+        if task_pipeline and task_onoff:
             # 把config的任务列表转换成任务实例列表
-            for i in range(len(config.userconfigdict['TASK_ORDER'])):
-                task_name = config.userconfigdict['TASK_ORDER'][i]
+            for i in range(len(task_pipeline)):
+                task_name = task_pipeline[i]
                 if task_name not in task_instances_map.taskmap:
                     logging.error({
                         CN: f"任务名:<{task_name}>无法解析, 已知的任务名有: {list(task_instances_map.taskmap.keys())}",
                         EN: f"Task name : {task_name} can not be parsed, please check it is one of: {list(task_instances_map.taskmap.keys())}"
                     })
                     raise Exception("Task Name can not be recognized and parsed")
-                # 如果任务对应的TASK_ACTIVATE为False，则不添加任务
-                if config.userconfigdict['TASK_ACTIVATE'][i] == False:
+                # 如果任务对应的 task_onoff 为False，则不添加任务
+                if task_onoff[i] == False:
                     continue
                 self.add_task(task_instances_map.taskmap[task_name].task_module(**task_instances_map.taskmap[task_name].task_params))
                 if task_name == TaskName.TACTICAL_CHALLENGE:
@@ -313,7 +318,7 @@ class AllTask:
             if last_contest:
                 last_contest.set_collect(True)
         else:
-            logging.warn({"zh_CN": "配置文件无TASK_ORDER和TASK_ACTIVATE解析", "en_US":"NO TASK_ORDER and TASK_ACTIVATE in config file"})
+            logging.warn({"zh_CN": "配置文件无task_pipeline和task_onoff解析", "en_US":"NO task_pipeline and task_onoff in config file"})
         # 任务列表末尾添加一个PostAllTask任务，用于统计资源
         if config.userconfigdict["DO_POST_ALL_TASK"]:
             self.add_task(PostAllTask())

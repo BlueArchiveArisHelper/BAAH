@@ -312,6 +312,14 @@ def check_connect():
     logging.warn({"zh_CN": "模拟器请检查adb与模拟器连接端口号是否正确，PC端请检查游戏是否在更新", "en_US":"Please check if the adb and emulator connection port number is correct or PC ba is updating"})
     if not _is_PC_app(config.userconfigdict["SERVER_TYPE"]) and "127.0.0.1" in getNewestSeialNumber():
         logging.warn({"zh_CN": "请确保关闭模拟器网络桥接", "en_US":"Please check if the emulator network bridging is turned off"})
+    # adb devices
+    all_devices_list = get_all_devices()
+    logging.info(istr({
+        CN: f"连接方式 ({getNewestSeialNumber()})是否正确? 当前检测到的设备列表:",
+        EN: f"Is Connection ({getNewestSeialNumber()}) right?Detected devices:"
+    }))
+    for each in all_devices_list:
+        logging.info(f"    {each}")
     return False
 
 def _global_screenshot_check():

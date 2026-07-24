@@ -79,7 +79,7 @@ class RaidQuest(Task):
 
     def on_run(self) -> None:
         # 全局变量存储当前这次任务是否可继续扫荡的信息
-        # 但不应当在开始就判断是否不合法，因为可能config.userconfigdict['TASK_ORDER']里有多次同名任务
+        # 但不应当在开始就判断是否不合法，因为可能now_activate_pipeline里有多次同名任务
         # 判断是否提前中止的操作应当交给外部循环层考虑
         repeat_times = self.raidtimes
         # 弹出任务咨询页面后选择次数
