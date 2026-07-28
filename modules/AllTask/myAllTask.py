@@ -292,6 +292,8 @@ class AllTask:
             self.add_task(EnterGame())
         # 用于保存最后一次战术大赛的任务实例
         last_contest = None
+        # 用户保存最后一次活动任务实例，用于控制最后一次执行才去抽奖三次完成活动每日任务
+        last_event = None
         # GUI为了显示TaskName也会导入此文件，从而创建AllTask的实例，这边判断下如果config没有解析json就跳过
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         logging.info(istr({
@@ -314,9 +316,16 @@ class AllTask:
                 self.add_task(task_instances_map.taskmap[task_name].task_module(**task_instances_map.taskmap[task_name].task_params))
                 if task_name == TaskName.TACTICAL_CHALLENGE:
                     last_contest = self.taskpool[-1]
+                if task_name == TaskName.EVENT:
+                    last_event = self.taskpool[-1]
+                    # 前几个活动任务不进行抽奖
+                    self.taskpool[-1].dont_roll_reward = True
             # 将最后一次战术大赛的收集奖励设置为True
             if last_contest:
                 last_contest.set_collect(True)
+            # 将最后一次活动的抽奖的dont_roll_reward 设置为 False，也就是进行抽奖
+            if last_event:
+                last_event.dont_roll_reward = False
         else:
             logging.warn({"zh_CN": "配置文件无task_pipeline和task_onoff解析", "en_US":"NO task_pipeline and task_onoff in config file"})
         # 任务列表末尾添加一个PostAllTask任务，用于统计资源
