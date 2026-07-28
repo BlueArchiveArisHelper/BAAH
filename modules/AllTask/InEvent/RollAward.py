@@ -72,7 +72,7 @@ class RollAward(Task):
             self.clear_popup()
             return success_click
 
-        n_times_to_click = config.userconfigdict["EVENT_ROLL_TARGET_COUNT"] - config.sessiondict["CURRENT_EVENT_ROLL_COUNT"]
+        n_times_to_click = int(config.userconfigdict["EVENT_ROLL_TARGET_COUNT"] - config.sessiondict["CURRENT_EVENT_ROLL_COUNT"])
         for _ in range(n_times_to_click):
             if(roll_and_collect()):
                 config.sessiondict["CURRENT_EVENT_ROLL_COUNT"] += 1

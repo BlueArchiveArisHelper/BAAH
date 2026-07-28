@@ -1,8 +1,8 @@
-myversion = "2.4.0"
+myversion = "2.4.1"
 mychangelog = """
 
-动了一些关于任务顺序的底层逻辑，虽然测试了，但是依然可能会有bug，感谢反馈
+活动抽奖任务只会在最后一个活动流程执行 | Only perform roll award in the last event task
 
-添加单个配置文件内多种可切换的流程功能 | Add pipelines and can switch pipeline in one config
+修复活动摇奖次数小数格式导致的报错 | Fix roll times is wrongly parsed into float
 
 """
