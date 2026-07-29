@@ -51,3 +51,5 @@ class PageName:
     PAGE_GRAND_ASSAULT = "PAGE_GRAND_ASSAULT" # 大决战
 
     PAGE_EXAM = "PAGE_EXAM" # 战术综合测试
+
+    PAGE_SHOP_PAY = "PAGE_SHOP_PAY" # 氪金商店页面

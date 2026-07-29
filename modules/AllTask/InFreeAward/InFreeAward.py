@@ -26,12 +26,16 @@ class InFreeAward(Task):
         }))
         open_shop = self.run_until(
             lambda: click([968, 38]),
-            lambda: self.has_popup(),
+            lambda: self.has_popup() or match(page_pic(PageName.PAGE_SHOP_PAY)),
             times = 3,
             sleeptime = 4
         )
-        free_tab_red_point_position = [1030, 153]
-        free_tab_position = [free_tab_red_point_position[0]-130, free_tab_red_point_position[1]+28]
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            free_tab_red_point_position = [228, 222]
+            free_tab_position = [66, 233]
+        else:
+            free_tab_red_point_position = [1030, 153]
+            free_tab_position = [free_tab_red_point_position[0]-130, free_tab_red_point_position[1]+28]
         if not open_shop or not match_pixel(free_tab_red_point_position, self.COLOR_RED_POINT, printit=True):
             logging.error(istr({
                 CN: "无弹窗或无商店免费奖励红点，结束任务",
