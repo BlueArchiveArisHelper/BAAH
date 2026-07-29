@@ -35,7 +35,7 @@ class InEvent(Task):
             self.fight_center_button_xy = (1196, 567)
         if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
             # 刚好能点进活动但是又点不到活动页面左上角圆形icon
-            self.event_button_xy = (46, 140)
+            self.event_button_xy = (52, 137)
         else:
             self.event_button_xy = (35, 110)
         # 是否强制推剧情
