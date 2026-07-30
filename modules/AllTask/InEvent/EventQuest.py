@@ -38,7 +38,7 @@ class EventQuest(Task):
 
         返回是否尝试了推一次
         """
-        if not config.userconfigdict["AUTO_PUSH_EVENT_QUEST"] or not self.explore:
+        if not self.explore:
             return "no"
         screenshot()
         if not (match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))) and not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE):
@@ -93,7 +93,7 @@ class EventQuest(Task):
                 logging.info({"zh_CN": f"尝试跳转到第{level_ind+1}个level",
                               "en_US": f"Try to jump to the {level_ind+1} level"})
                 # 向右挪到第level_ind个level
-                if not config.userconfigdict["AUTO_PUSH_EVENT_QUEST"] or not self.explore:
+                if not self.explore:
                     logging.info({"zh_CN": "不推活动图，尝试直接跳转到扫荡关卡",
                                   "en_US": "Not push the activity diagram, "
                                            "try to jump directly to the sweep level"})
