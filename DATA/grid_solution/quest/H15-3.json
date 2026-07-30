@@ -12,17 +12,20 @@
             {
                 "name": "A",
                 "type": "blue",
-                "position": "up"
+                "position": "up",
+				"click": [374, 177]
             },
             {
                 "name": "B",
                 "type": "blue",
-                "position": "center"
+                "position": "center",
+				"click": [405, 470]
             },
             {
                 "name": "C",
                 "type": "blue",
-                "position": "down"
+                "position": "down",
+				"click": [692, 693]
             }
         ],
         "fight_plan": [
