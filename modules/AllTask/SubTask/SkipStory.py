@@ -26,15 +26,20 @@ class SkipStory(Task):
         return match(button_pic(ButtonName.BUTTON_STORY_MENU))
 
     def on_run(self) -> None:
+        # 识别成功后记住按钮位置，下次尝试如果匹配不到MENU，直接点一下上次记的按钮位置
+        self.last_recg_menupos = None
         for i in range(7):
             screenshot()
             # 记住MENU的位置
             menures = match(button_pic(ButtonName.BUTTON_STORY_MENU), returnpos=True)
             if not menures[0]:
                 logging.info({"zh_CN": "跳过剧情被打断，重试", "en_US": "Skip the plot was interruption, try again"})
+                if self.last_recg_menupos is not None:
+                    click(self.last_recg_menupos)
                 click(Page.MAGICPOINT, sleeptime=1.5)
                 continue
             menupos = menures[1]
+            self.last_recg_menupos = menupos
             # 按MENU,点击跳过直到看到蓝色确认按钮，这里MENU和跳过图标之间响应很快，直接连点
             clickmenu_and_skip = self.run_until(
                 lambda: click(button_pic(ButtonName.BUTTON_STORY_MENU), sleeptime=0.3) and click((menupos[0], menupos[1] + 80), sleeptime=1),
