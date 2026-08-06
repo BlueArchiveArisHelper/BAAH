@@ -53,3 +53,5 @@ class PageName:
     PAGE_EXAM = "PAGE_EXAM" # 战术综合测试
 
     PAGE_SHOP_PAY = "PAGE_SHOP_PAY" # 氪金商店页面
+
+    PAGE_ATTENDANCE = "PAGE_ATTENDANCE" # 统合出席簿页面

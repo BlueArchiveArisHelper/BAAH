@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'requirements.txt'
   workflow_dispatch:
     inputs:
       tag:

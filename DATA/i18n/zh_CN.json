@@ -34,6 +34,7 @@
     "task_oneclick_raid":"一键扫荡",
     "task_event_recap":"活动一览",
     "task_daily_free_award":"每日免费奖励",
+    "task_attendance":"统合出席簿",
 
     "setting_emulator":"模拟器/游戏程序配置",
     "setting_server":"服务器配置",
@@ -48,7 +49,7 @@
 
     "BAAH_desc":"BAAH可以帮助你完成碧蓝档案/蔚蓝档案的日服，国际服，国服官服，国服B服的每日任务。配置文件存放于BAAH_CONFIGS文件夹内。",
     "BAAH_get_version":"获取最新版本可以到Github下载，或进群下载",
-    "BAAH_attention":"模拟器分辨率请设置为1280*720，240DPI, 最好关闭网络桥接功能; 游戏内 设置选项-游戏-技能动画-关，设置选项-图像-战斗时上下黑边-关",
+    "BAAH_attention":"模拟器分辨率请设置为1280*720，240DPI, 最好关闭网络桥接功能; 游戏内 设置选项-游戏-技能动画-关，设置选项-图像-战斗时上下黑边-关。",
 
     "notice_success":"成功",
     "notice_fail":"失败",

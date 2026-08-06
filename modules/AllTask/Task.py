@@ -239,7 +239,7 @@ class Task:
                 return not match_pixel((8, 26), Page.COLOR_HOME_LEFT_NICKNAME)
             else:
                 return not match_pixel((1027, 49), Page.COLOR_WHITE)
-        return not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
+        return not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE, printit=True)
     
     @staticmethod
     def has_cost_popup(notice = True, diamond = True, price = True):
