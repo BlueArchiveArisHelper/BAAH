@@ -12,6 +12,7 @@ class TaskName():
     配置文件里的task任务名称，此类下的属性可作为task标识符
     """
     LOGIN_GAME = "登录游戏"
+    ATTENDANCE = "长期签到"
     MOMOTALK = "清momotalk"
     CAFE = "咖啡馆"
     CAFE_ONLY_TOUCH = "咖啡馆只摸头"
@@ -89,6 +90,12 @@ class TaskInstanceMap:
                     task_module=InEventRecap,
                     task_params = {}
                 ),
+            TaskName.ATTENDANCE: TaskInstance(
+                    task_config_name= TaskName.ATTENDANCE,
+                    i18n_key_name="task_attendance",
+                    task_module=Attendance,
+                    task_params = {}
+            ),
             TaskName.CAFE: TaskInstance(
                     task_config_name = TaskName.CAFE,
                     i18n_key_name = "task_cafe",
