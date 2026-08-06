@@ -38,14 +38,14 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
             with ui.list().props("padding"):
                 for i in range(len(task_pipeline)):
                     with ui.item():
-                        # 启用开关（左侧 side section，不参与 flex 分配）
-                        with ui.item_section().props("side no-wrap"):
+                        # 启用开关（左侧 side section，不参与 flex 分配；pr-2 覆盖 Quasar side 默认 16px 间距，与行内 gap 统一为 8px）
+                        with ui.item_section().props("side no-wrap").classes("pr-2"):
                             ui.checkbox(value=task_onoff[i], on_change=lambda v,i=i: task_onoff.__setitem__(i, v.value))
                         # 主内容：序号 + 任务下拉 + 添加/删除按钮（一行左→右排列，下拉撑开使按钮靠右）
                         with ui.item_section().props("no-wrap").classes("flex-1"):
-                            with ui.row().classes("items-center w-full no-wrap gap-1"):
-                                # 序号固定宽度+右对齐，保证各行下拉框左边缘对齐
-                                ui.label(f'{config.get_text("config_task")} {i+1}:').classes("text-subtitle2 text-grey-7 text-no-wrap w-16 text-right shrink-0")
+                            with ui.row().classes("items-center w-full no-wrap gap-2"):
+                                # 序号固定宽度+居中，保证各行下拉框左边缘对齐
+                                ui.label(f'{config.get_text("config_task")} {i+1}:').classes("text-subtitle2 text-grey-7 text-no-wrap w-16 text-center shrink-0")
                                 ui.select(real_taskname_to_show_taskname,
                                           value=task_pipeline[i],
                                           on_change=lambda v,i=i: task_pipeline.__setitem__(i, v.value)
@@ -104,14 +104,14 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     
     # pre-run command
-    with ui.row().classes("items-center"):
-        ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').props("outlined dense").classes("w-96")
-    
+    with ui.row():
+        ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').style('width: 300px')
+
     task_order()
-    
+
     # post-run command
-    with ui.row().classes("items-center"):
-        ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').props("outlined dense").classes("w-96")
+    with ui.row():
+        ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').style('width: 300px')
     
     # with ui.row():
     #     ui.link_target("NEXT_CONFIG")
@@ -123,8 +123,8 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
 
     
     # 脚本运行报错自动重启脚本
-    with ui.row().classes("items-center"):
-        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).props("outlined dense").classes("w-96")
+    with ui.row():
+        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).style("width: 400px")
         ui.checkbox(config.get_text("desc_rerun_start_from_lastpoint")).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR_FROM_LAST_TASK").bind_visibility_from(config.userconfigdict, "RETRY_WHEN_ERROR", backward=lambda x:x>0)
 
 
