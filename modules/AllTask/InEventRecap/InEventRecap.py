@@ -53,13 +53,18 @@ class InEventRecap(Task):
         return res_list
 
     def on_run(self) -> None:
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            # 日服和国际服黄点有所收缩
-            xs = np.linspace(790, 1222, 3, dtype=int)
-            ys = np.linspace(155, 494, 3, dtype=int)
-        else:
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            # 日服黄点（加了下拉条的新版）
+            xs = np.linspace(783, 1215, 3, dtype=int)
+            ys = np.linspace(156, 495, 3, dtype=int)
+        elif config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
+            # 国服黄点（旧版）
             xs = np.linspace(786, 1228, 3, dtype=int)
             ys = np.linspace(155, 502, 3, dtype=int)
+        else:
+            # 国际服黄点（新版）
+            xs = np.linspace(790, 1222, 3, dtype=int)
+            ys = np.linspace(155, 494, 3, dtype=int)
         # 是否需要重新进入剧情一览页面
         to_view_page = True
         ine = InEvent()
