@@ -40,7 +40,7 @@ class InExchange(Task):
         # 序号转下标
         target_info = [[each[0]-1, each[1]-1, *each[2:]] for each in target_info]
         # 从主页进入战斗池页面
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
             fight_center_pos = (1196, 650)
         else:
             fight_center_pos = (1196, 567)

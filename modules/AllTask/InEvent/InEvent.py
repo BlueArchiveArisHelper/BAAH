@@ -29,11 +29,11 @@ class InEvent(Task):
         # 是否有活动但是已经结束
         self.has_event_but_closed = False
         self.quest_button_xy = (965, 98)
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
             self.fight_center_button_xy = (1196, 650)
         else:
             self.fight_center_button_xy = (1196, 567)
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
             # 刚好能点进活动但是又点不到活动页面左上角圆形icon
             self.event_button_xy = (52, 137)
         else:

@@ -84,7 +84,7 @@ def try_to_solve_new_section(new_button_threshold = 0.9):
 
 def goto_story_page():
     """从主页到剧情总览页面"""
-    if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+    if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
         fight_center_pos = (1196, 650)
     else:
         fight_center_pos = (1196, 567)
