@@ -53,8 +53,9 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
                                 ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense")
                                 ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense")
                     ui.separator()
-            with ui.row().classes("w-full justify-center"):
-                ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0)).props("outline no-caps")
+            if len(task_pipeline) == 0:
+                with ui.row().classes("w-full justify-center"):
+                    ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0)).props("outline no-caps")
 
     def add_task(i):
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
