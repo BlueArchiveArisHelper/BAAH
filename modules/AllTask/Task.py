@@ -235,7 +235,7 @@ class Task:
         判断是否有弹窗
         """
         if Page.is_page(PageName.PAGE_HOME):
-            if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
+            if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
                 return not match_pixel((8, 26), Page.COLOR_HOME_LEFT_NICKNAME)
             else:
                 return not match_pixel((1027, 49), Page.COLOR_WHITE)
@@ -360,8 +360,8 @@ class Task:
         """
         OCR账号资源，返回一个字典，包含当前账号的钻石，金币，体力等资源数量
         """
-        if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
-            # 日服比较靠左
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
+            # 日服和国际服比较靠左
             power_str = ocr_area((537, 24), (612, 49))[0].strip()
             credit_str = ocr_area((699, 24), (844, 47))[0].strip()
             diamond_str = ocr_area((899, 24), (1002, 48))[0].strip()

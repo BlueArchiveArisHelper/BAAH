@@ -60,7 +60,7 @@ class InContest(Task):
             self.collect_reward()
             self.back_to_home()
             return
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
             fight_center_pos = (1196, 650)
         else:
             fight_center_pos = (1196, 567)
