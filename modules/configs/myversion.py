@@ -1,6 +1,12 @@
-myversion = "2.4.4"
+myversion = "2.4.6"
 mychangelog = """
 
-适配日服签到簿 | Fix JP Attendance Page
+更新后如国际服仍有问题请进群反馈 985729020
+
+---
+
+适配国际服更新 | Fit Global Server Update
+
+每日流程页面样式优化 | Daily Task Page CSS Optimization
 
 """

@@ -276,7 +276,7 @@ class AutoAssault(Task):
             return "success"
 
     def on_run(self) -> None:
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
             fight_center_pos = (1196, 650)
         else:
             fight_center_pos = (1196, 567)

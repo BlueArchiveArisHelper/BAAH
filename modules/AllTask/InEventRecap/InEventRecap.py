@@ -18,7 +18,7 @@ class InEventRecap(Task):
         super().__init__(name)
         self.first_trigger = True
         self.event_recap_button = [149, 220]
-        if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
+        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
             self.in_event_button = (1055, 620)
         else:
             self.in_event_button = (1049, 558) # 日服国际服活动一览进入位置不同(日服主页资源按钮改动)
@@ -53,13 +53,18 @@ class InEventRecap(Task):
         return res_list
 
     def on_run(self) -> None:
-        if config.userconfigdict["SERVER_TYPE"] in ["JP", "PC_EXE_JP"]:
-            # 日服黄点有所收缩
-            xs = np.linspace(790, 1222, 3, dtype=int)
-            ys = np.linspace(155, 494, 3, dtype=int)
-        else:
+        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
+            # 日服黄点（加了下拉条的新版）
+            xs = np.linspace(783, 1215, 3, dtype=int)
+            ys = np.linspace(156, 495, 3, dtype=int)
+        elif config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
+            # 国服黄点（旧版）
             xs = np.linspace(786, 1228, 3, dtype=int)
             ys = np.linspace(155, 502, 3, dtype=int)
+        else:
+            # 国际服黄点（新版）
+            xs = np.linspace(790, 1222, 3, dtype=int)
+            ys = np.linspace(155, 494, 3, dtype=int)
         # 是否需要重新进入剧情一览页面
         to_view_page = True
         ine = InEvent()
