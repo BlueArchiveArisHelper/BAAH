@@ -1,6 +1,6 @@
-myversion = "2.4.4"
+myversion = "2.4.5"
 mychangelog = """
 
-适配日服签到簿 | Fix JP Attendance Page
+适配国际服更新 | Fit Global Server Update
 
 """
