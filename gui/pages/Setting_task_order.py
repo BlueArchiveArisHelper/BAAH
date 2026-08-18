@@ -26,26 +26,35 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     def task_order():
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         # pipelines页签管理
-        ui.label(config.get_text("config_pipelines_desc"))
-        with ui.row():
-            ui.toggle({ind:f"{config.get_text('config_pipeline')} {ind+1}" for ind in range(len(all_pipelines))}, value=activated_ind, on_change=lambda e:change_activated_pipeline(e))
-            ui.button("+", on_click=add_one_pipeline)
+        ui.label(config.get_text("config_pipelines_desc")).classes("text-subtitle2 text-grey-7")
+        with ui.row().classes("items-center"):
+            ui.toggle({ind:f"{config.get_text('config_pipeline')} {ind+1}" for ind in range(len(all_pipelines))}, value=activated_ind, on_change=lambda e:change_activated_pipeline(e)).props("no-caps")
+            ui.button(icon="add", on_click=add_one_pipeline).props("flat round dense")
             if len(all_pipelines) > 1:
-                ui.button(config.get_text("config_delete_now_activated_pipeline"), on_click=del_one_pipeline, color="red")
+                with ui.button(icon="delete", on_click=del_one_pipeline, color="red").props("flat round dense"):
+                    ui.tooltip(config.get_text("config_delete_now_activated_pipeline"))
         # 当前被激活的pipeline
-        with ui.card():
-            with ui.row():
-                # 第一行添加上添加按钮
-                ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0))
-            for i in range(len(task_pipeline)):
-                with ui.row():
-                    ui.label(f'{config.get_text("config_task")} {i+1}:')
-                    atask = ui.select(real_taskname_to_show_taskname,
-                                    value=task_pipeline[i],
-                                    on_change=lambda v,i=i: task_pipeline.__setitem__(i, v.value))
-                    acheck = ui.checkbox(config.get_text("button_enable"), value=task_onoff[i], on_change=lambda v,i=i: task_onoff.__setitem__(i, v.value))
-                    ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda i=i+1: add_task(i))
-                    ui.button(f'{config.get_text("button_delete")} {config.get_text("config_task")}', on_click=lambda i=i: del_task(i), color="red")
+        with ui.card().classes("w-full"):
+            with ui.list().props("padding"):
+                for i in range(len(task_pipeline)):
+                    with ui.item():
+                        # 启用开关（左侧 side section，不参与 flex 分配；pr-2 覆盖 Quasar side 默认 16px 间距，与行内 gap 统一为 8px）
+                        with ui.item_section().props("side no-wrap").classes("pr-2"):
+                            ui.checkbox(value=task_onoff[i], on_change=lambda v,i=i: task_onoff.__setitem__(i, v.value))
+                        # 主内容：序号 + 任务下拉 + 添加/删除按钮（一行左→右排列，下拉撑开使按钮靠右）
+                        with ui.item_section().props("no-wrap").classes("flex-1"):
+                            with ui.row().classes("items-center w-full no-wrap gap-2"):
+                                # 序号固定宽度+居中，保证各行下拉框左边缘对齐
+                                ui.label(f'{config.get_text("config_task")} {i+1}:').classes("text-subtitle2 text-grey-7 text-no-wrap w-16 text-center shrink-0")
+                                ui.select(real_taskname_to_show_taskname,
+                                          value=task_pipeline[i],
+                                          on_change=lambda v,i=i: task_pipeline.__setitem__(i, v.value)
+                                          ).props("dense outlined").classes("flex-1")
+                                ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense")
+                                ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense")
+                    ui.separator()
+            with ui.row().classes("w-full justify-center"):
+                ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0)).props("outline no-caps")
 
     def add_task(i):
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
@@ -97,9 +106,9 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     # pre-run command
     with ui.row():
         ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').style('width: 300px')
-    
+
     task_order()
-    
+
     # post-run command
     with ui.row():
         ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').style('width: 300px')
