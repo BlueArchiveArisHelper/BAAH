@@ -4,7 +4,7 @@ from DATA.assets.PopupName import PopupName
 from DATA.assets.ButtonName import ButtonName
 
 
-from modules.utils import click, swipe, match, page_pic, match_pixel, button_pic, popup_pic, sleep, screenshot, config, istr, CN, EN, ocr_area, logic_run_until, _is_PC_app, _is_STEAM_app
+from modules.utils import click, swipe, match, page_pic, match_pixel, button_pic, popup_pic, sleep, screenshot, config, istr, CN, EN, ocr_area, logic_run_until, _is_PC_app, _is_STEAM_app, is_server_type_in_group, MultiServerType, get_correct_asset, AssetMappingKeys
 
 from modules.utils.adb_utils import check_app_running, open_app
 from modules.utils.baah_exceptions import EmulatorBlockError
@@ -211,9 +211,9 @@ class Task:
         清除弹窗
         """
         def _close():
-            if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]) and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
+            if is_server_type_in_group(config, MultiServerType.SteamGroup) and match(popup_pic(PopupName.POPUP_LOGIN_FORM_STEAM)):
                 # 如果是STEAM且识别到社区弹窗，关闭社区弹窗(STEAM社区弹窗比小)
-                click((1123, 114))
+                click(get_correct_asset(config, AssetMappingKeys.CLOSE_LOGIN_SHEQU_POPUP))
             elif match(button_pic(ButtonName.BUTTON_CONFIRMB)) and match(page_pic(PageName.PAGE_HOME)):
                 # 登陆后活动临期提示只能通过点掉确认来关闭
                 click(button_pic(ButtonName.BUTTON_CONFIRMB))
@@ -235,10 +235,10 @@ class Task:
         判断是否有弹窗
         """
         if Page.is_page(PageName.PAGE_HOME):
-            if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-                return not match_pixel((8, 26), Page.COLOR_HOME_LEFT_NICKNAME)
-            else:
-                return not match_pixel((1027, 49), Page.COLOR_WHITE)
+            return not match_pixel(
+                get_correct_asset(config, AssetMappingKeys.CHECK_HOMEPAGE_HAS_POPUP_POS), 
+                get_correct_asset(config, AssetMappingKeys.CHECK_HOMEPAGE_HAS_POPUP_COLOR)
+            )
         return not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE, printit=True)
     
     @staticmethod
@@ -360,19 +360,10 @@ class Task:
         """
         OCR账号资源，返回一个字典，包含当前账号的钻石，金币，体力等资源数量
         """
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            # 日服和国际服比较靠左
-            power_str = ocr_area((537, 24), (612, 49))[0].strip()
-            credit_str = ocr_area((699, 24), (844, 47))[0].strip()
-            diamond_str = ocr_area((899, 24), (1002, 48))[0].strip()
-        else:
-            # ...
-            power_str = ocr_area((483, 17), (582, 56))[0].strip()
-            # print("体力: ", power_str)
-            credit_str = ocr_area((668, 19), (812, 59))[0].strip()
-            # print("信用点: ", credit_str)
-            diamond_str = ocr_area((863, 21), (973, 60))[0].strip()
-            # print("钻石: ", diamond_str)
+        power_str = ocr_area(*get_correct_asset(config, AssetMappingKeys.HOME_OCR_POWER_REGION))[0].strip()
+        credit_str = ocr_area(*get_correct_asset(config, AssetMappingKeys.HOME_OCR_CREDIT_REGION))[0].strip()
+        diamond_str = ocr_area(*get_correct_asset(config, AssetMappingKeys.HOME_OCR_DIAMOND_REGION))[0].strip()
+
         return {
             "power": power_str,
             "credit": credit_str,
