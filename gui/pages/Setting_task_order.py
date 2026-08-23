@@ -52,6 +52,8 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
                                           ).props("dense outlined").classes("flex-1")
                                 ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense")
                                 ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense")
+                                ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else ""))
+                                ui.button(icon="arrow_downward", on_click=lambda i=i: move_task_down(i)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else ""))
                     ui.separator()
             if len(task_pipeline) == 0:
                 with ui.row().classes("w-full justify-center"):
@@ -70,6 +72,24 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
             return
         task_pipeline.pop(i)
         task_onoff.pop(i)
+        task_order.refresh()
+
+    def move_task_up(i):
+        # 将第i个任务上移一格
+        task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
+        if i <= 0:
+            return
+        task_pipeline[i - 1], task_pipeline[i] = task_pipeline[i], task_pipeline[i - 1]
+        task_onoff[i - 1], task_onoff[i] = task_onoff[i], task_onoff[i - 1]
+        task_order.refresh()
+
+    def move_task_down(i):
+        # 将第i个任务下移一格
+        task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
+        if i >= len(task_pipeline) - 1:
+            return
+        task_pipeline[i + 1], task_pipeline[i] = task_pipeline[i], task_pipeline[i + 1]
+        task_onoff[i + 1], task_onoff[i] = task_onoff[i], task_onoff[i + 1]
         task_order.refresh()
 
     def add_one_pipeline():
