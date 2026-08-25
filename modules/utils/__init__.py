@@ -297,7 +297,7 @@ def check_connect():
                 return False
             return True
         else:
-            if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+            if is_server_type_in_group(config, MultiServerType.PCGroup):
                 from .win32_utils import _change_window_client_size
                 window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
                 if _change_window_client_size(window_title):
@@ -311,7 +311,7 @@ def check_connect():
         }))
     logging.error({"zh_CN": "模拟器adb或ba程序连接失败", "en_US":"Failed to connect to the emulator or ba program"})
     logging.warn({"zh_CN": "模拟器请检查adb与模拟器连接端口号是否正确，PC端请检查游戏是否在更新", "en_US":"Please check if the adb and emulator connection port number is correct or PC ba is updating"})
-    if not _is_PC_app(config.userconfigdict["SERVER_TYPE"]) and "127.0.0.1" in getNewestSeialNumber():
+    if not is_server_type_in_group(config, MultiServerType.PCGroup) and "127.0.0.1" in getNewestSeialNumber():
         logging.warn({"zh_CN": "请确保关闭模拟器网络桥接", "en_US":"Please check if the emulator network bridging is turned off"})
     # adb devices
     all_devices_list = get_all_devices()
