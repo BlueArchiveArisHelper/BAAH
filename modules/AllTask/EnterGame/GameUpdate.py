@@ -16,7 +16,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils.log_utils import logging
 
-from modules.utils import subprocess_run, click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, install_apk, install_dir, _is_PC_app
+from modules.utils import subprocess_run, click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, install_apk, install_dir, _is_PC_app, is_server_type_in_group, MultiServerType, get_correct_asset, AssetMappingKeys
 
 class GameUpdateInfo():
     def __init__(self, apk_url, is_xapk):
@@ -125,18 +125,17 @@ class GameUpdate(Task):
         
     def _parse_download_link_api(self):
         download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
-        if config.userconfigdict['SERVER_TYPE'] == 'JP':
+        if is_server_type_in_group(config, MultiServerType.JPSingle):
             download_info.is_xapk = True
             download_info.apk_url = GameUpdate.api_urls['JP']
-        elif (config.userconfigdict['SERVER_TYPE'] == 'GLOBAL_EN'
-               or config.userconfigdict['SERVER_TYPE'] == 'GLOBAL'):
+        elif is_server_type_in_group(config, MultiServerType.GlobalAndroidGroup):
             download_info.is_xapk = True
             download_info.apk_url = GameUpdate.api_urls['GLOBAL']
-        elif config.userconfigdict['SERVER_TYPE'] == 'CN':
+        elif is_server_type_in_group(config, MultiServerType.CNSingle):
             download_info.is_xapk = False
             # download_info.apk_url = GameUpdate.htmlread(GameUpdate.api_urls['CN'])
             download_info.apk_url = GameUpdate.requestread(GameUpdate.api_urls['CN'])
-        elif config.userconfigdict['SERVER_TYPE'] == 'CN_BILI':
+        elif is_server_type_in_group(config, MultiServerType.CNBiliSingle):
             download_info.is_xapk = False
             download_info.apk_url = GameUpdate.jsonread(GameUpdate.api_urls['CN_BILI'])
         else:
@@ -172,17 +171,16 @@ class GameUpdate(Task):
                     }))
                     number += 1
         download_info = GameUpdateInfo(apk_url = None, is_xapk = None)
-        if config.userconfigdict['SERVER_TYPE'] == 'JP':
+        if is_server_type_in_group(config, MultiServerType.JPSingle):
             download_info.apk_url = data['jp']
             download_info.is_xapk = True
-        elif (config.userconfigdict['SERVER_TYPE'] == 'GLOBAL_EN'
-               or config.userconfigdict['SERVER_TYPE'] == 'GLOBAL'):
+        elif is_server_type_in_group(config, MultiServerType.GlobalAndroidGroup):
             download_info.apk_url = data['global']
             download_info.is_xapk = True
-        elif config.userconfigdict['SERVER_TYPE'] == 'CN':
+        elif is_server_type_in_group(config, MultiServerType.CNSingle):
             download_info.apk_url = data['cn']
             download_info.is_xapk = False
-        elif config.userconfigdict['SERVER_TYPE'] == 'CN_BILI':
+        elif is_server_type_in_group(config, MultiServerType.CNBiliSingle):
             download_info.apk_url = data['cn_bili']
             download_info.is_xapk = False
         else:
@@ -256,7 +254,7 @@ class GameUpdate(Task):
             
     def on_run(self):
         # Pre. 检查是否为PC，如果是PC则不更新
-        if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+        if is_server_type_in_group(config, MultiServerType.PCGroup):
             raise Exception(istr({
                     "zh_CN": "检测到为PC版，不进行更新",
                     "en_US": "Detected as PC version, no update"

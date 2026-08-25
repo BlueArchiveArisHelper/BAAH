@@ -8,6 +8,8 @@ import traceback
 # 集中管理多服务器中的同个素材的不同坐标/像素值
 # 通过 serverAssetMapping 字典规定不同服务器所使用的某个素材的坐标/像素值
 
+# 以下几个在外部使用 is_server_type_in_group, MultiServerType, get_correct_asset, AssetMappingKeys
+
 class ServerTypes:
     # 最基础的配置文件里的服务器类型枚举
     JP = "JP"
@@ -45,6 +47,8 @@ class MultiServerType:
     """所有PC上跑的"""
 
     # ----------细分PC平台的Steam和独立EXE应用-----------
+    GlobalAndroidGroup = (ServerTypes.GLOBAL, ServerTypes.GLOBAL_EN)
+    """所有安卓上的国际服"""
 
     SteamGroup = (ServerTypes.PC_STEAM, ServerTypes.PC_STEAM_EN)
     """所有Steam应用"""
@@ -85,8 +89,8 @@ class AssetMappingKeys:
     """素材在不同服务器的映射"""
     # 登录后的社区弹窗的关闭位置
     CLOSE_LOGIN_SHEQU_POPUP = {
-        MultiServerType.SteamGroup: (1123, 114), # Steam社区弹窗的关闭按钮坐标
-        MultiServerType.Other_groups: MatchAssets.MAGICPOINT
+        MultiServerType.SteamGroup: (1123, 114),
+        MultiServerType.Other_groups: (1226, 56)
     }
     # 主页判断是否有弹窗的像素点位置
     CHECK_HOMEPAGE_HAS_POPUP_POS = {
@@ -112,6 +116,11 @@ class AssetMappingKeys:
     HOME_OCR_DIAMOND_REGION = {
         MultiServerType.CNGroup: ((863, 21), (973, 60)),
         MultiServerType.Other_groups: ((899, 24), (1002, 48))
+    }
+    # 主页右下角进入一堆活动页面的按钮位置
+    HOME_FIGHT_CENTER_POS = {
+        MultiServerType.CNGroup: (1196, 567),
+        MultiServerType.Other_groups: (1196, 650)
     }
 
 

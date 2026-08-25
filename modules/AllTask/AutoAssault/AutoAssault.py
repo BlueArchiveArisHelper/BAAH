@@ -10,7 +10,7 @@ from modules.AllTask.SubTask.SkipStory import SkipStory
 from modules.AllTask.Task import Task
 
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
-                           match_pixel, istr, CN, EN)
+                           match_pixel, istr, CN, EN, is_server_type_in_group, MultiServerType, get_correct_asset, AssetMappingKeys)
 from modules.utils.log_utils import logging
 from numpy import linspace
 
@@ -276,10 +276,7 @@ class AutoAssault(Task):
             return "success"
 
     def on_run(self) -> None:
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            fight_center_pos = (1196, 650)
-        else:
-            fight_center_pos = (1196, 567)
+        fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
         self.run_until(
             lambda: click(fight_center_pos),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
