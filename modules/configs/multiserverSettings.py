@@ -122,14 +122,85 @@ class AssetMappingKeys:
         MultiServerType.CNGroup: (1196, 567),
         MultiServerType.Other_groups: (1196, 650)
     }
+    # FIGHT_CENTER进入悬赏通缉的点击坐标
+    FIGHT_CENTER_WANTED_POS = {
+        MultiServerType.CNGroup: (741, 440),
+        MultiServerType.Other_groups: (746, 367)
+    }
+    # FIGHT_CENTER进入特殊任务的点击坐标
+    FIGHT_CENTER_SPECIAL_POS = {
+        MultiServerType.CNGroup: (721, 538),
+        MultiServerType.Other_groups: (728, 481)
+    }
+    # FIGHT_CENTER进入活动一栏的点击坐标
+    EVENT_RECAP_ENTRY_POS = {
+        MultiServerType.CNGroup: (1049, 558),
+        MultiServerType.Other_groups: (1055, 620)
+    }
+    # FIGHT_CENTER左侧进入当期活动的点击坐标，刚好能点进活动但是又点不到活动页面左上角圆形icon
+    EVENT_ENTRY_POS = {
+        MultiServerType.CNGroup: (35, 110),
+        MultiServerType.Other_groups: (52, 137)
+    }
+    # 活动一栏x轴y轴黄点linspace分布
+    EVENT_RECAP_YELLOW_GRID = {
+        MultiServerType.JapanGroup: ((783, 1215, 3), (156, 495, 3)),
+        MultiServerType.CNGroup: ((786, 1228, 3), (155, 502, 3)),
+        MultiServerType.Other_groups: ((790, 1222, 3), (155, 494, 3))
+    }
+    # 每日免费奖励弹窗里的tab页签红点位置以及要点击页签的位置
+    FREE_AWARD_TAB_POSITIONS = {
+        MultiServerType.JapanGroup: ((228, 222), (66, 233)),
+        MultiServerType.Other_groups: ((1030, 153), (900, 181))
+    }
+    # 主页进入商店的点击位置
+    SHOP_ENTRY_POS = {
+        MultiServerType.JapanGroup: (775, 677),
+        MultiServerType.Other_groups: (795, 667)
+    }
+    # 格子推图 跳过战斗和自动结束打勾的位置
+    GRID_AUTO_SETTINGS_POSITIONS = {
+        MultiServerType.CNGroup: ((1121, 551), (1080, 606)),
+        MultiServerType.JapanGroup: ((1088, 550), (952, 604)),
+        (ServerTypes.GLOBAL, ServerTypes.PC_STEAM): ((1116, 550), (1055, 605)),
+        (ServerTypes.GLOBAL_EN,ServerTypes.PC_STEAM_EN): ((1096, 550), (1045, 604))
+    }
+    # 格子推图 识别当前队伍编号的位置
+    GRID_TEAM_NUMBER_OCR_REGION = {
+        (ServerTypes.GLOBAL, ServerTypes.PC_STEAM): ((72, 544), (91, 569)),
+        MultiServerType.Other_groups: ((117, 544), (136, 569))
+    }
+    # 格子推图 人物头顶黄色蒙版颜色范围
+    # 国服的走格子头顶黄色箭头颜色暗一点,有些关卡敌人会有黄色感叹号(16, 219, 255)
+    # 有些关卡敌人会有黄色感叹号，那个的第一位在30或40左右，第二位在220左右。hard关头顶有灯照着时，第一个数字会变暗。
+    GRID_HEAD_YELLOW_COLOR = {
+        MultiServerType.CNGroup: ((2, 222, 249), (33, 233, 255)),
+        MultiServerType.Other_groups: ((4, 223, 254), (33, 235, 255))
+    }
+    # 登录时检查活动弹窗，左下角今日不再显示的勾勾的ocr区域
+    LOGIN_EVENT_CHECK_REGION = {
+        MultiServerType.SteamGroup: ((260, 513), (294, 545)),
+        MultiServerType.Other_groups: ((30, 662), (63, 691))
+    }
+    # 登录时检查活动弹窗，左下角今日不再显示中心坐标
+    LOGIN_EVENT_CHECKBOX_POS = {
+        MultiServerType.SteamGroup: (269, 534),
+        MultiServerType.Other_groups: (65, 676)
+    }
+    # 登陆时活动弹窗右上角关闭位置
+    LOGIN_EVENT_CLOSE_POS = {
+        MultiServerType.SteamGroup: (1023, 123),
+        MultiServerType.Other_groups: None
+    }
 
 
 def get_correct_asset(config, asset_mapping):
     """
     根据当前服务器类型，查找对应的素材坐标/像素值
 
-    config: 用户使用的config
-    asset_mapping: AssetMappingKeys下的静态变量
+    Params:
+        config: 用户使用的config
+        asset_mapping: AssetMappingKeys下的静态变量
     """
     server_type = config.userconfigdict["SERVER_TYPE"]
 

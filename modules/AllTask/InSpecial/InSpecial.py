@@ -10,7 +10,7 @@ from modules.AllPage.Page import Page
 from modules.AllTask.InSpecial.RunSpecialFight import RunSpecialFight
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, match_pixel,screenshot
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, match_pixel,screenshot, get_correct_asset, AssetMappingKeys
 
 import numpy as np
 
@@ -39,20 +39,14 @@ class InSpecial(Task):
         # 这之后target_info是一个list，内部会有多个关卡扫荡
         # 序号转下标
         target_info=[[each[0]-1, each[1]-1, *each[2:]] for each in target_info]
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            fight_center_pos = (1196, 650)
-        else:
-            fight_center_pos = (1196, 567)
+        fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
         self.run_until(
             lambda: click(fight_center_pos),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
             sleeptime=4
         )
         # 进入特殊任务页面
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            special_pos = (728, 481)
-        else:
-            special_pos = (721, 538)
+        special_pos = get_correct_asset(config, AssetMappingKeys.FIGHT_CENTER_SPECIAL_POS)
         caninspecial = self.run_until(
             lambda: click(special_pos),
             lambda: Page.is_page(PageName.PAGE_SPECIAL),

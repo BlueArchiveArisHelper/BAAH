@@ -10,7 +10,7 @@ from modules.AllTask.SubTask.SkipStory import SkipStory
 from modules.AllTask.Task import Task
 import numpy as np
 from itertools import product
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP, get_correct_asset, AssetMappingKeys
 from modules.utils.log_utils import logging
 
 class InEventRecap(Task):
@@ -18,10 +18,7 @@ class InEventRecap(Task):
         super().__init__(name)
         self.first_trigger = True
         self.event_recap_button = [149, 220]
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            self.in_event_button = (1055, 620)
-        else:
-            self.in_event_button = (1049, 558) # 日服国际服活动一览进入位置不同(日服主页资源按钮改动)
+        self.in_event_button = get_correct_asset(config, AssetMappingKeys.EVENT_RECAP_ENTRY_POS)
         self.COLOR_DARK_BLUE = ([89, 60, 35], [109, 80, 55])
      
     def pre_condition(self) -> bool:
@@ -53,18 +50,9 @@ class InEventRecap(Task):
         return res_list
 
     def on_run(self) -> None:
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
-            # 日服黄点（加了下拉条的新版）
-            xs = np.linspace(783, 1215, 3, dtype=int)
-            ys = np.linspace(156, 495, 3, dtype=int)
-        elif config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            # 国服黄点（旧版）
-            xs = np.linspace(786, 1228, 3, dtype=int)
-            ys = np.linspace(155, 502, 3, dtype=int)
-        else:
-            # 国际服黄点（新版）
-            xs = np.linspace(790, 1222, 3, dtype=int)
-            ys = np.linspace(155, 494, 3, dtype=int)
+        xs_args, ys_args = get_correct_asset(config, AssetMappingKeys.EVENT_RECAP_YELLOW_GRID)
+        xs = np.linspace(*xs_args, dtype=int)
+        ys = np.linspace(*ys_args, dtype=int)
         # 是否需要重新进入剧情一览页面
         to_view_page = True
         ine = InEvent()

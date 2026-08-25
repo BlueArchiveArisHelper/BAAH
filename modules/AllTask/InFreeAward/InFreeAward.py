@@ -6,7 +6,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP, get_correct_asset, AssetMappingKeys
 from modules.utils.log_utils import logging
 
 class InFreeAward(Task):
@@ -30,12 +30,9 @@ class InFreeAward(Task):
             times = 3,
             sleeptime = 4
         )
-        if config.userconfigdict['SERVER_TYPE'] in ["JP", "PC_EXE_JP"]:
-            free_tab_red_point_position = [228, 222]
-            free_tab_position = [66, 233]
-        else:
-            free_tab_red_point_position = [1030, 153]
-            free_tab_position = [free_tab_red_point_position[0]-130, free_tab_red_point_position[1]+28]
+        free_tab_red_point_position, free_tab_position = get_correct_asset(
+            config, AssetMappingKeys.FREE_AWARD_TAB_POSITIONS
+        )
         if not open_shop or not match_pixel(free_tab_red_point_position, self.COLOR_RED_POINT, printit=True):
             logging.error(istr({
                 CN: "无弹窗或无商店免费奖励红点，结束任务",

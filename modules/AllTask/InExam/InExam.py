@@ -8,7 +8,7 @@ from modules.AllTask.SubTask.FightQuest import FightQuest
 from modules.AllTask.SubTask.SkipStory import SkipStory
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot, match_pixel, istr, CN, EN, JP, get_correct_asset, AssetMappingKeys
 from modules.utils.log_utils import logging
 
 
@@ -284,10 +284,7 @@ class InExam(Task):
         
      
     def on_run(self) -> None:
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            fight_center_pos = (1196, 650)
-        else:
-            fight_center_pos = (1196, 567)
+        fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
         # 进到中心
         self.run_until(
             lambda: click(fight_center_pos),

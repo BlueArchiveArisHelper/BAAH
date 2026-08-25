@@ -13,7 +13,8 @@ from modules.AllTask.Task import Task
 import json
 
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
-                           get_screenshot_cv_data, match_pixel, istr, CN, EN, _is_STEAM_app)
+                           get_screenshot_cv_data, match_pixel, istr, CN, EN,
+                           get_correct_asset, AssetMappingKeys)
 
 from modules.utils.grid_analyze import GridAnalyzer
 
@@ -102,19 +103,10 @@ class GridQuest(Task):
         )
         # 开启的勾的蓝色
         blue_pixel = ((245, 225, 80), (255, 235, 90))
-        positions_map = {
-            "CN": [(1121, 551), (1080, 606)],
-            "CN_BILI": [(1121, 551), (1080, 606)],
-            "JP": [(1088, 550), (952, 604)],
-            "GLOBAL": [(1116, 550), (1055, 605)],
-            "GLOBAL_EN": [(1096, 550), (1045, 604)],
-            "PC_STEAM": [(1116, 550), (1055, 605)],
-            "PC_STEAM_EN": [(1096, 550), (1045, 604)],
-            "PC_EXE_JP": [(1088, 550), (952, 604)]
-        }
-        server = config.userconfigdict["SERVER_TYPE"]
         # 自动战斗和PHASE自动结束的位置
-        auto_fight_pos, auto_phase_pos = positions_map[server]
+        auto_fight_pos, auto_phase_pos = get_correct_asset(
+            config, AssetMappingKeys.GRID_AUTO_SETTINGS_POSITIONS
+        )
         # 自动战斗开启
         self.run_until(
             lambda: click(auto_fight_pos),
@@ -238,11 +230,8 @@ class GridQuest(Task):
             lambda: match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
         )
         # 识别左下角切换队伍的按钮文字
-        # 国际服和Steam不偏移，其他服往右偏移45
-        offsetx = 45
-        if config.userconfigdict["SERVER_TYPE"] in ["GLOBAL", "PC_STEAM"]:
-            offsetx = 0
-        now_team_str, loss = ocr_area((72 + offsetx, 544), (91 + offsetx, 569), multi_lines=False)
+        team_number_region = get_correct_asset(config, AssetMappingKeys.GRID_TEAM_NUMBER_OCR_REGION)
+        now_team_str, loss = ocr_area(*team_number_region, multi_lines=False)
         logging.info({"zh_CN": "ocr结果: " + str(now_team_str), "en_US": "ocr result: " + str(now_team_str)})
         try:
             nowteam_ind = int(now_team_str) - 1
@@ -471,11 +460,9 @@ class GridQuest(Task):
                                           "en_US": "Triangle approximation failed, "
                                                    "try to identify the yellow marking center of the head"})
                             # 需要蒙版的颜色
-                            need_to_mask_color = self.grider.PIXEL_HEAD_YELLOW
-                            # 国服的话头顶颜色会深一些
-                            if (config.userconfigdict["SERVER_TYPE"] == "CN" or
-                                    config.userconfigdict["SERVER_TYPE"] == "CN_BILI"):
-                                need_to_mask_color = self.grider.PIXEL_HEAD_YELLOW_CN_DARKER
+                            need_to_mask_color = get_correct_asset(
+                                config, AssetMappingKeys.GRID_HEAD_YELLOW_COLOR
+                            )
                             knn_positions, _, _ = (
                                 self.grider.multikmeans(self.grider.get_mask(get_screenshot_cv_data(),
                                                                              need_to_mask_color,

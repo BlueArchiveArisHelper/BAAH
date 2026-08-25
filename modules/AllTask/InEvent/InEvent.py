@@ -17,7 +17,8 @@ from .RollAward import RollAward
 from .ExchangeItem import ExchangeItem
 
 from modules.utils import (click, swipe, match, match_pixel, page_pic, button_pic, popup_pic, sleep, ocr_area, screenshot,
-                           check_app_running, open_app, get_now_running_app_entrance_activity, get_now_running_app, istr, CN, EN)
+                           check_app_running, open_app, get_now_running_app_entrance_activity, get_now_running_app, istr, CN, EN,
+                           get_correct_asset, AssetMappingKeys)
 
 
 class InEvent(Task):
@@ -29,15 +30,8 @@ class InEvent(Task):
         # 是否有活动但是已经结束
         self.has_event_but_closed = False
         self.quest_button_xy = (965, 98)
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            self.fight_center_button_xy = (1196, 650)
-        else:
-            self.fight_center_button_xy = (1196, 567)
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            # 刚好能点进活动但是又点不到活动页面左上角圆形icon
-            self.event_button_xy = (52, 137)
-        else:
-            self.event_button_xy = (35, 110)
+        self.fight_center_button_xy = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
+        self.event_button_xy = get_correct_asset(config, AssetMappingKeys.EVENT_ENTRY_POS)
         # 是否强制推剧情
         self.force_push_story = force_push_story
         # 是否强制推图
