@@ -83,10 +83,10 @@ def render_json_list():
                             if resultVI.has_new_version:
                                 if edition == "windows-pyinstaller":
                                     # 一键更新按钮(Pyinstaller)
-                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_pyinstaller)
+                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_pyinstaller, color="green")
                                 elif edition == "linux-container":
                                     # 一键更新按钮(Container)
-                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container)
+                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container, color="green")
                             if edition == "linux-container":
                                 import os
                                 ui.checkbox(

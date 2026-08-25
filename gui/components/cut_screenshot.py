@@ -1,12 +1,16 @@
 from nicegui import ui, run
 from modules.utils import connect_to_device, get_now_running_app,  get_now_running_app_entrance_activity, screen_shot_to_global, screencut_tool
 
-def screencut_button(inconfig, resultdict, resultkey, input_text="Screencut", button_text="Screencut", save_folder_path = None, post_process = None):
+def screencut_button(inconfig, resultdict, resultkey, input_text=None, button_text=None, save_folder_path = None, post_process = None):
     """
     截图，截图文件名，截图按钮
 
     post_process: lambda函数，截图后对截图文件进行处理,输入是图片MatLike数据，需要返回处理后的MatLike数据
     """
+    if input_text is None:
+        input_text = inconfig.get_text("text_screenshot")
+    if button_text is None:
+        button_text = inconfig.get_text("text_screenshot")
     with ui.row().style("width:300px; height: 150px"):
         # 图片
         ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
