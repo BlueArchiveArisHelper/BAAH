@@ -35,7 +35,7 @@ def set_emulator(config):
     #  大更新配置
         ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
 
-    ui.checkbox(config.get_text("adb_disable_auto_disconnect"), value=config.userconfigdict['ADB_DISABLE_AUTO_DISCONNECT']).props('inline').bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v))
+    ui.checkbox(config.get_text("adb_disable_auto_disconnect")).bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)).bind_value(config.userconfigdict, "ADB_DISABLE_AUTO_DISCONNECT")
     
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
         ui.label(config.get_text("big_update_type")).style('font-size: medium').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
