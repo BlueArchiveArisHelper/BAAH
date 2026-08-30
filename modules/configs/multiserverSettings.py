@@ -73,9 +73,18 @@ class MultiServerType:
 def is_server_type_in_group(config, group) -> bool:
     """
     判断某个服务器类型是否在某个服务器组中
+
+    Param:
+    config
+        可以是配置文件对象，也可以是 SERVER_TYPE 配置项目
+    group
+        可以是单个ServerTypes属性，也可以是MultiServerType属性
     """
     try:
-        server_type = config.userconfigdict["SERVER_TYPE"]
+        if isinstance(config, str): # 兼容字符串
+            server_type = config
+        else:
+            server_type = config.userconfigdict["SERVER_TYPE"]
         if isinstance(group, str): # 兼容单个字符串的情况
             group = [group]
         return server_type in group
