@@ -124,6 +124,7 @@ defaultUserDict = {
     },
     "TARGET_IP_PATH":{"d":"127.0.0.1"},
     "TARGET_PORT":{"d":5555},
+    "ADB_DISABLE_AUTO_DISCONNECT": {"d":False},
     "KILL_PORT_IF_EXIST":{"d":False},
     "TIME_AFTER_CLICK":{"d": 0.7},
     "RESPOND_Y":{

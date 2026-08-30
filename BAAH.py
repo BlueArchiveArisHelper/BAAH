@@ -210,7 +210,11 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
         检查adb连接
         """
         # 检查adb连接
-        disconnect_this_device()
+        if not config.userconfigdict['ADB_DISABLE_AUTO_DISCONNECT']:
+            disconnect_this_device()
+        else:
+            logging.debug({"zh_CN": "开启取消自动断开连接，跳过disconnect", 
+                           "en_US": "Cancel auto disconnect is enabled, skip disconnect"})
         for i in range(1, 10):
             sleep(i)
             if check_connect():
