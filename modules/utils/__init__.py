@@ -49,7 +49,7 @@ def get_screenshot_cv_data():
             }))
             return None
 
-def click(item:Union[str, Tuple[float, float]], sleeptime = -1, threshold=0.9) -> bool:
+def click(item:Union[str, Tuple[float, float]], sleeptime = -1, threshold=0.87) -> bool:
     """
     Task: click the position (x, y) or the center of a picture (given by a str)
     
@@ -108,7 +108,7 @@ def swipe(item:Union[str, Tuple[float, float]], toitem: Union[str, Tuple[float, 
         logging.warning("Cannot find the target pattern {} and {} when try to swipe".format(item, toitem))
         return False
 
-def match(imgurl:str, threshold:float = 0.9, returnpos = False, rotate_trans=False) -> bool | Tuple[bool, Tuple[float, float], float]:
+def match(imgurl:str, threshold:float = 0.87, returnpos = False, rotate_trans=False) -> bool | Tuple[bool, Tuple[float, float], float]:
     """
     Task: given a pattern picture url match it
     

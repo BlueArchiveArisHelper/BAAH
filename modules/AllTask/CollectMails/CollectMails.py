@@ -7,7 +7,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, screenshot
 
 class CollectMails(Task):
     def __init__(self, name="CollectMails") -> None:
@@ -27,6 +27,7 @@ class CollectMails(Task):
             return
         click(Page.MAGICPOINT)
         click(Page.MAGICPOINT)
+        screenshot()
         if not match(button_pic(ButtonName.BUTTON_ONE_COLLECT), threshold=0.95):
             # 简单适配下高画质收取邮箱
             click((1133, 673))

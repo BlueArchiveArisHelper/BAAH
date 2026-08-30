@@ -87,7 +87,7 @@ def check_the_pic_validity(_img, _templ):
         return False
     return True
 
-def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: float = 0.9, show_result:bool = False, auto_rotate_if_trans = False, multi_match: bool = False) -> Tuple[bool, Tuple[float, float], float] | list:
+def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: float = 0.87, show_result:bool = False, auto_rotate_if_trans = False, multi_match: bool = False) -> Tuple[bool, Tuple[float, float], float] | list:
     """
     Match the pattern picture in the source picture.
     

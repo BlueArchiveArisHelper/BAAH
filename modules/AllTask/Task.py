@@ -256,7 +256,7 @@ class Task:
             return True
         if diamond and match(popup_pic(PopupName.POPUP_USE_DIAMOND), threshold=0.85):
             return True
-        if price and match(popup_pic(PopupName.POPUP_TOTAL_PRICE), threshold=0.9):
+        if price and match(popup_pic(PopupName.POPUP_TOTAL_PRICE), threshold=0.87):
             return True
         return False
     

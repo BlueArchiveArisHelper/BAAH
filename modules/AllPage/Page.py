@@ -18,7 +18,7 @@ class Page(MatchAssets):
         self.topages[pagename]=item
     
     @staticmethod
-    def is_page(pagename, threshold=0.9) -> bool:
+    def is_page(pagename, threshold=0.87) -> bool:
         """
         确定当前截图是否是指定页面
         

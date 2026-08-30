@@ -13,7 +13,7 @@ from modules.AllTask.Task import Task
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
                            match_pixel, istr, CN, EN, get_correct_asset, AssetMappingKeys)
 
-def try_to_solve_new_section(new_button_threshold = 0.9):
+def try_to_solve_new_section(new_button_threshold = 0.87):
         """
         尝试处理完当前章节所有可点的New小节，此操作会退出小节选择页面返回上级
         """
