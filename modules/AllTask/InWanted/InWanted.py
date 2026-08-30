@@ -5,7 +5,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area_0
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area_0, get_correct_asset, AssetMappingKeys
 from modules.utils.log_utils import logging
 import time
 import numpy as np
@@ -40,20 +40,14 @@ class InWanted(Task):
         # 序号转下标
         target_info = [[each[0]-1, each[1]-1, *each[2:]] for each in target_info]
         # 从主页进入战斗池页面
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            fight_center_pos = (1196, 650)
-        else:
-            fight_center_pos = (1196, 567)
+        fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
         self.run_until(
             lambda: click(fight_center_pos),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),
             sleeptime=4
         )
         # 进入悬赏通缉页面
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            In_wanted_pos = (746, 367)
-        else:
-            In_wanted_pos = (741, 440)
+        In_wanted_pos = get_correct_asset(config, AssetMappingKeys.FIGHT_CENTER_WANTED_POS)
         caninwanted = self.run_until(
             lambda: click(In_wanted_pos),
             lambda: Page.is_page(PageName.PAGE_WANTED) or Page.is_page(PageName.PAGE_WANTED_SUB, threshold=0.8),

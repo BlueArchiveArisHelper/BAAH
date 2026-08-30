@@ -16,6 +16,7 @@ from .adb_utils import _is_PC_app, _is_STEAM_app
 from modules.utils.log_utils import logging
 import time
 from modules.configs.MyConfig import config, ActionType
+from modules.configs.multiserverSettings import MultiServerType, is_server_type_in_group, get_correct_asset, AssetMappingKeys
 
 def get_config_time_after_click(use_config = None):
     if use_config is None:
@@ -48,7 +49,7 @@ def get_screenshot_cv_data():
             }))
             return None
 
-def click(item:Union[str, Tuple[float, float]], sleeptime = -1, threshold=0.9) -> bool:
+def click(item:Union[str, Tuple[float, float]], sleeptime = -1, threshold=0.87) -> bool:
     """
     Task: click the position (x, y) or the center of a picture (given by a str)
     
@@ -107,7 +108,7 @@ def swipe(item:Union[str, Tuple[float, float]], toitem: Union[str, Tuple[float, 
         logging.warning("Cannot find the target pattern {} and {} when try to swipe".format(item, toitem))
         return False
 
-def match(imgurl:str, threshold:float = 0.9, returnpos = False, rotate_trans=False) -> bool | Tuple[bool, Tuple[float, float], float]:
+def match(imgurl:str, threshold:float = 0.87, returnpos = False, rotate_trans=False) -> bool | Tuple[bool, Tuple[float, float], float]:
     """
     Task: given a pattern picture url match it
     
@@ -296,7 +297,7 @@ def check_connect():
                 return False
             return True
         else:
-            if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
+            if is_server_type_in_group(config, MultiServerType.PCGroup):
                 from .win32_utils import _change_window_client_size
                 window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
                 if _change_window_client_size(window_title):
@@ -310,7 +311,7 @@ def check_connect():
         }))
     logging.error({"zh_CN": "模拟器adb或ba程序连接失败", "en_US":"Failed to connect to the emulator or ba program"})
     logging.warn({"zh_CN": "模拟器请检查adb与模拟器连接端口号是否正确，PC端请检查游戏是否在更新", "en_US":"Please check if the adb and emulator connection port number is correct or PC ba is updating"})
-    if not _is_PC_app(config.userconfigdict["SERVER_TYPE"]) and "127.0.0.1" in getNewestSeialNumber():
+    if not is_server_type_in_group(config, MultiServerType.PCGroup) and "127.0.0.1" in getNewestSeialNumber():
         logging.warn({"zh_CN": "请确保关闭模拟器网络桥接", "en_US":"Please check if the emulator network bridging is turned off"})
     # adb devices
     all_devices_list = get_all_devices()

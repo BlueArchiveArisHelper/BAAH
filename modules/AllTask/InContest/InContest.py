@@ -6,7 +6,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, config, filter_num, istr, CN, EN, ocr_area
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, config, filter_num, istr, CN, EN, ocr_area, is_server_type_in_group, MultiServerType, get_correct_asset, AssetMappingKeys
 from modules.utils.log_utils import logging
 
 class InContest(Task):
@@ -60,10 +60,7 @@ class InContest(Task):
             self.collect_reward()
             self.back_to_home()
             return
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            fight_center_pos = (1196, 650)
-        else:
-            fight_center_pos = (1196, 567)
+        fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
         self.run_until(
             lambda: click(fight_center_pos),
             lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),

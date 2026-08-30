@@ -16,7 +16,7 @@ from modules.AllTask.Task import Task
 
 import numpy as np
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, get_correct_asset, AssetMappingKeys
 
 class InShop(Task):
     def __init__(self, name="InShop") -> None:
@@ -29,18 +29,11 @@ class InShop(Task):
      
     def on_run(self) -> None:
         # 进入商店
-        # 可能这边不需要区分服务器
-        if config.userconfigdict["SERVER_TYPE"]=="JP":
-            # 适配日服新界面
-            self.run_until(
-                lambda: click((775, 677)),
-                lambda: Page.is_page(PageName.PAGE_SHOP),
-            )
-        else:
-            self.run_until(
-                lambda: click((795, 667)),
-                lambda: Page.is_page(PageName.PAGE_SHOP),
-            )
+        shop_entry_pos = get_correct_asset(config, AssetMappingKeys.SHOP_ENTRY_POS)
+        self.run_until(
+            lambda: click(shop_entry_pos),
+            lambda: Page.is_page(PageName.PAGE_SHOP),
+        )
         # 判断config里的开关是否开启
         if not config.userconfigdict["SHOP_NORMAL_SWITCH"]:
             logging.info(istr({

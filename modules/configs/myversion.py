@@ -1,12 +1,10 @@
-myversion = "2.4.6"
+myversion = "2.4.7"
 mychangelog = """
 
-更新后如国际服仍有问题请进群反馈 985729020
+底层多服务器适配逻辑更新 | Update the logic for fitting multi server
 
----
+可以手动关闭adb连接时disconnect行为 | Can disable disconnect to adb device (#408)
 
-适配国际服更新 | Fit Global Server Update
-
-每日流程页面样式优化 | Daily Task Page CSS Optimization
+单独启动更新器无更新时会自动关闭更新器 | Auto close updator if no update (#407)
 
 """

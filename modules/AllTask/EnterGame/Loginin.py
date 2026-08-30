@@ -9,7 +9,7 @@ from modules.AllTask.Task import Task
 
 from modules.utils.log_utils import logging
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, OCR_LANG, ocr_area, get_screenshot_cv_data, _is_STEAM_app
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, check_app_running, open_app, config, screenshot, EmulatorBlockError, istr, CN, EN, match_pixel, OCR_LANG, ocr_area, get_screenshot_cv_data, is_server_type_in_group, MultiServerType, get_correct_asset, AssetMappingKeys
 
 from modules.AllTask.EnterGame.GameUpdate import GameUpdate
 
@@ -35,9 +35,6 @@ class Loginin(Task):
         self.sleep_between_detect = 3
         # 进入游戏后还会蹦出来活动弹窗,这里让run_until能多跑几轮
         self.extra_run_times = 2
-        # steam 和 安卓包 活动弹窗左下勾的位置
-        self.steam_event_check_box = ((260, 513), (294, 545))
-        self.APP_event_check_box = ((30, 662), (63, 691))
 
     def detect_loading_bar(self):
         """检测底部下载进度条，返回0-100进度，0表示无进度条"""
@@ -61,31 +58,23 @@ class Loginin(Task):
     def close_activity_event_popup(self):
         """关闭登陆时的活动弹窗"""
         # 判断关键区域
-        if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
-            event_button_text = ocr_area(self.steam_event_check_box[0], self.steam_event_check_box[1])[0].strip().lower()
-            logging.info(f"PC event button ocr: {event_button_text}")
-        else:
-            event_button_text = ocr_area(self.APP_event_check_box[0], self.APP_event_check_box[1])[0].strip().lower()
-            logging.info(f"App event button ocr: {event_button_text}")
+        event_check_region = get_correct_asset(config, AssetMappingKeys.LOGIN_EVENT_CHECK_REGION)
+        event_button_text = ocr_area(*event_check_region)[0].strip().lower()
+        logging.info(f"event button ocr: {event_button_text}")
         
-        if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
+        event_close_pos = get_correct_asset(config, AssetMappingKeys.LOGIN_EVENT_CLOSE_POS)
+        if event_close_pos is not None:
             logging.info(istr({
                 CN: "STEAM,尝试点击活动弹窗右上角关闭按钮位置",
                 EN: "STEAM,Try to click the close button in the upper right corner of the event popup位置"
             }))
-            click((1023, 123))
+            click(event_close_pos)
         if any([eachv in event_button_text for eachv in ["√", "v", "y", "r"]]):
             logging.info(istr({
                 CN: "检测到活动弹窗，点击左下角勾选框",
                 EN: "Detect event popup, click the checkbox in the lower left corner"
             }))
-            if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
-                # 判断点击左下角是否有今日不再显示的勾（√）并点掉
-                # STEAM
-                click((269, 534))
-            else:
-                # 关闭手机ba活动弹窗
-                click((65, 676))
+            click(get_correct_asset(config, AssetMappingKeys.LOGIN_EVENT_CHECKBOX_POS))
             return True
         return False
             
@@ -140,12 +129,9 @@ class Loginin(Task):
                     EN: "Emulator blocked, try to restart emulator"
                 }))
         # 判断关键区域
-        if _is_STEAM_app(config.userconfigdict["SERVER_TYPE"]):
-            event_button_text = ocr_area(self.steam_event_check_box[0], self.steam_event_check_box[1])[0].lower()
-            logging.info(f"STEAM event button ocr: {event_button_text}")
-        else:
-            event_button_text = ocr_area(self.APP_event_check_box[0], self.APP_event_check_box[1])[0].lower()
-            logging.info(f"App event button ocr: {event_button_text}")
+        event_check_region = get_correct_asset(config, AssetMappingKeys.LOGIN_EVENT_CHECK_REGION)
+        event_button_text = ocr_area(*event_check_region)[0].lower()
+        logging.info(f"event button ocr: {event_button_text}")
         # ======== 判断流 ========
         # 如果进入安装器页面
         if any([check_app_running(ins_act, printit=False) for ins_act in self.installer_activities]):
@@ -186,11 +172,11 @@ class Loginin(Task):
         elif match(button_pic(ButtonName.BUTTON_QUIT_LAST)):
             # 点掉放弃上次战斗进度按钮
             click(button_pic(ButtonName.BUTTON_QUIT_LAST))
-        elif match(button_pic(ButtonName.BUTTON_LOGIN_BILI)) and config.userconfigdict["SERVER_TYPE"] == "CN_BILI":
+        elif match(button_pic(ButtonName.BUTTON_LOGIN_BILI)) and is_server_type_in_group(config, MultiServerType.CNBiliSingle):
             # 点掉B站登录按钮
             # 防止点到上方横幅右侧切换账号按钮，这里睡4s等待横幅消失
             click(button_pic(ButtonName.BUTTON_LOGIN_BILI), sleeptime=4)
-        elif self.has_bili_login_banner() and config.userconfigdict["SERVER_TYPE"] == "CN_BILI":
+        elif self.has_bili_login_banner() and is_server_type_in_group(config, MultiServerType.CNBiliSingle):
             # 如果出现B站登录横幅，睡2s等待横幅消失
             logging.info(istr({
                 CN: "等待B站登录横幅消失",

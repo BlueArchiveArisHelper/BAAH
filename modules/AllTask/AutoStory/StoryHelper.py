@@ -11,9 +11,9 @@ from modules.AllTask.SubTask.ScrollSelect import ScrollSelect
 from modules.AllTask.Task import Task
 
 from modules.utils import (click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, screenshot,
-                           match_pixel, istr, CN, EN)
+                           match_pixel, istr, CN, EN, get_correct_asset, AssetMappingKeys)
 
-def try_to_solve_new_section(new_button_threshold = 0.9):
+def try_to_solve_new_section(new_button_threshold = 0.87):
         """
         尝试处理完当前章节所有可点的New小节，此操作会退出小节选择页面返回上级
         """
@@ -84,10 +84,7 @@ def try_to_solve_new_section(new_button_threshold = 0.9):
 
 def goto_story_page():
     """从主页到剧情总览页面"""
-    if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-        fight_center_pos = (1196, 650)
-    else:
-        fight_center_pos = (1196, 567)
+    fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
     Task.run_until(
         lambda: click(fight_center_pos),
         lambda: Page.is_page(PageName.PAGE_FIGHT_CENTER),

@@ -233,7 +233,6 @@ def check_and_update():
     if not version_info.has_new_version:
         print("No new version available.")
         print(version_info.msg)
-        auto_close_window = False
         return
     # 根据update.zip结尾的url下载文件
     target_url = version_info.update_zip_url

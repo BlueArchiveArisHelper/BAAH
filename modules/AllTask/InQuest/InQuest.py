@@ -7,7 +7,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, istr, CN, EN
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, istr, CN, EN, get_correct_asset, AssetMappingKeys
 from .HardQuest import HardQuest
 from .NormalQuest import NormalQuest
 from .PushQuest import PushQuest
@@ -29,10 +29,7 @@ class InQuest(Task):
         return self.back_to_home()
 
     def on_run(self) -> None:
-        if not config.userconfigdict['SERVER_TYPE'] in ["CN", "CN_BILI"]:
-            fight_center_pos = (1196, 650)
-        else:
-            fight_center_pos = (1196, 567)
+        fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
         # 进入Fight Center
         self.run_until(
             lambda: click(fight_center_pos),
