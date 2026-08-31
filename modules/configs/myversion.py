@@ -1,5 +1,7 @@
-myversion = "2.4.7"
+myversion = "2.4.8"
 mychangelog = """
+
+修复图片匹配有时造成inf的问题 | Fix sometime inf when matching pictures
 
 底层多服务器适配逻辑更新 | Update the logic for fitting multi server
 

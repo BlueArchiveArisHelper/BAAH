@@ -102,6 +102,14 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
     default_response = (False, (0, 0), 0)
     if multi_match:
         default_response = []
+
+    def sanitize_match_result(result: MatLike) -> MatLike:
+        """Replace undefined normalized-match scores so they cannot become matches."""
+        # Masked normalized template matching can divide by zero for uniform or
+        # fully masked windows. OpenCV then returns NaN/Inf, and +Inf would pass
+        # every threshold. Normalized correlation scores are at most 1, so -1 is
+        # a safe value for an undefined result.
+        return np.nan_to_num(result, copy=False, nan=-1.0, posinf=-1.0, neginf=-1.0)
     try:
         screenshot_cvmat = sourcepic_mat
         assert screenshot_cvmat is not None
@@ -147,6 +155,7 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
             if not check_the_pic_validity(screenshot_cvmat, rotate_pattern):
                 return default_response
             tresult = cv2.matchTemplate(screenshot_cvmat, rotate_pattern, cv2.TM_CCORR_NORMED, mask=rotate_mask)
+            tresult = sanitize_match_result(tresult)
             min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(tresult)
             # print("角度为{}时，最大匹配值为{}".format(degree, max_val))
             if max_val>best_max_val:
@@ -172,6 +181,7 @@ def match_pattern(sourcepic_mat: MatLike, patternpic: str|MatLike,threshold: flo
             if not check_the_pic_validity(screenshot_cvmat, pattern):
                 return default_response
             result = cv2.matchTemplate(screenshot_cvmat, pattern[:,:,:3], cv2.TM_CCOEFF_NORMED)
+        result = sanitize_match_result(result)
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
     
     h, w, _ = pattern.shape
