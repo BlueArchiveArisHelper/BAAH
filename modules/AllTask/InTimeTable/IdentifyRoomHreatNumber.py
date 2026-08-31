@@ -102,6 +102,7 @@ def get_special_like_student_of_rooms(special_like_student_pic_path_list):
         if res[0]:
             # 如果匹配成功
             region_num = return_pic_region(center_match_position[0], center_match_position[1])
+            # print(f"success recg: {res}, recog 1 at region {region_num}")
             total_counts[region_num] = total_counts.get(region_num, 0) + 1
     logging.info(f"Special like student counts in rooms: {total_counts}")
     return total_counts
