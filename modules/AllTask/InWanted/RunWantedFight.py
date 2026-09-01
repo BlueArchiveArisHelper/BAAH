@@ -9,7 +9,7 @@ from modules.AllTask.SubTask.RaidQuest import RaidQuest
 from modules.AllTask.SubTask.ScrollSelect import ScrollSelect, SmartScrollSelect
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, istr, CN, EN
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, istr, CN, EN, match_pixel
 
 import numpy as np
 from modules.utils.log_utils import logging
@@ -32,7 +32,7 @@ class RunWantedFight(Task):
     @staticmethod
     def match_task_info() -> bool:
         # 考虑反和谐
-        return match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))
+        return (match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))) and not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE)
      
     def on_run(self) -> None:
         rq = RaidQuest(self.runtimes)

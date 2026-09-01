@@ -41,7 +41,7 @@ class EventQuest(Task):
         if not self.explore:
             return "no"
         screenshot()
-        if not (match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))) and not match_pixel(Page.MAGICPOINT, Page.COLOR_WHITE):
+        if not (match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))) and self.has_popup():
             logging.info({"zh_CN": "触发推图任务", "en_US": "Triggering a tweet task"})
             # 判断推图是否刚才打了一次，但是没三星或打不过去
             if this_level_ind == self.last_fight_level_ind:
