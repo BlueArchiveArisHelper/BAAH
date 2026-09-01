@@ -1,12 +1,8 @@
-myversion = "2.4.8"
+myversion = "2.4.9"
 mychangelog = """
 
+修复部分服务器悬赏通缉/交流会/特殊作战扫荡关卡匹配弹窗失败的问题 | Fix the problem of failing to match the popup when raiding levels in some servers' Wanted/Exchange/Special operations
+
 修复图片匹配有时造成inf的问题 | Fix sometime inf when matching pictures
-
-底层多服务器适配逻辑更新 | Update the logic for fitting multi server
-
-可以手动关闭adb连接时disconnect行为 | Can disable disconnect to adb device (#408)
-
-单独启动更新器无更新时会自动关闭更新器 | Auto close updator if no update (#407)
 
 """
