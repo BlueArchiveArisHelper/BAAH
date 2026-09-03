@@ -25,8 +25,8 @@ class InEvent(Task):
     def __init__(self, name="InEvent", force_push_story = False, force_push_quest = False, dont_raid_quest = False, dont_roll_reward = False, dont_exchange_item = False) -> None:
         #! 仅推图任务 TaskName.EVENTPUSHSTORYQUEST 需要把领取奖励什么的全设置为不进行
         super().__init__(name)
-        self.try_enter_times = 2
-        self.next_sleep_time = 0.1
+        self.try_enter_times = config.userconfigdict["TRY_ENTER_EVENT_AFTER_FAIL_NUMBER"]
+        self.next_sleep_time = 1
         # 是否有活动但是已经结束
         self.has_event_but_closed = False
         self.quest_button_xy = (965, 98)
@@ -75,7 +75,7 @@ class InEvent(Task):
             )
             # 睡眠一段时间
             sleep(self.next_sleep_time)
-            self.next_sleep_time += 2
+            self.next_sleep_time += 2.5
 
         # 尝试前往活动页面
         logging.info({"zh_CN": "尝试前往活动页面", "en_US": "Try going to the event page"})
@@ -294,6 +294,18 @@ class InEvent(Task):
             sleeptime=2
         )
 
+    def judge_whether_stop_try_goto_event(self):
+        """判断是否应该停止尝试进入event页面，返回True表示应该停止尝试"""
+        # 仅在识别到有效活动后退出run_until循环,循环次数会由try_enter_times控制
+        if self.judge_whether_available_event():
+            return True
+        else:
+            logging.warn({"zh_CN": "未能进入活动Event页面", "en_US": "Failed to enter the event Event page"})
+        if self.has_event_but_closed:
+            # 无效活动
+            logging.warn({"zh_CN": "存在活动但是已经结束", "en_US": "Contains events but has ended"})
+        return False
+
     def on_run(self) -> None:
         # 进入Fight Center, 这里离开了主页之后就狂点活动标
         self.run_until(
@@ -308,16 +320,15 @@ class InEvent(Task):
         # 尝试进入Event
         enter_event = self.run_until(
             lambda: self.try_goto_event(),
-            lambda: self.judge_whether_available_event() or self.has_event_but_closed,
-            times=self.try_enter_times
+            lambda: self.judge_whether_stop_try_goto_event(),
+            times=int(self.try_enter_times)
         )
-        if self.has_event_but_closed:
-            logging.warn({"zh_CN": "存在活动但是已经结束", "en_US": "Contains events but has ended"})
-            return
+
         if not enter_event:
-            logging.warn({"zh_CN": "未能成功进入活动Event页面", "en_US": "Failed to enter the event Event page"})
+            logging.warn({"zh_CN": "失败：多次尝试后未能成功进入活动Event页面", "en_US": "Fail: After many attempts, failed to enter the event Event page"})
             return
-        logging.info({"zh_CN": "成功进入Event页面", "en_US": "Successfully entered the Event page"})
+        logging.info({"zh_CN": "成功: 进入Event页面", "en_US": "Success: entered the Event page"})
+
         today = time.localtime().tm_mday
 
         # 检测并推剧情，如果已经进入过活动一次了，就不用再推剧情了

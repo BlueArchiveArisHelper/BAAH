@@ -59,7 +59,7 @@ class SmartSelect(Task):
         # 未解锁房间
         weight_of_lock = config.userconfigdict["TIMETABLE_WEIGHT_OF_LOCK"]
         # weight of special like student
-        weight_of_special_like = 300
+        weight_of_special_like = 1000
         if weight_of_reward is None or weight_of_heart is None or weight_of_lock is None:
             logging.info({
                 "zh_CN": f"当前设置为：奖励权重{weight_of_reward}，爱心权重{weight_of_heart}，未解锁房间权重{weight_of_lock}, 特别喜欢的学生权重{weight_of_special_like}",

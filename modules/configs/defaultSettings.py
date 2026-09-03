@@ -403,6 +403,10 @@ defaultUserDict = {
     "EVENT_ENTER_EXCHANGE_PAGE_BUTTON":{
         "d":"",
     },
+    # 尝试额外进入活动的次数
+    "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER":{
+        "d":2,
+    },
 
 }
 

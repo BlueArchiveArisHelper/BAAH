@@ -7,6 +7,11 @@ def set_event(config):
         ui.link_target("ACTIVITY")
         ui.label(config.get_text("task_event")).style('font-size: x-large')
 
+    # 尝试进入活动的次数
+    with ui.row().style("width: 100%; align-items: flex-start"):
+        ui.label(config.get_text("config_try_enter_event_number"))
+        ui.number(config.get_text("config_try_enter_event_number"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER", forward=lambda x:int(x))
+
     # 自动配队伍
     ui.checkbox(config.get_text("config_auto_team")).bind_value(config.userconfigdict, "ACTIVITY_AUTO_TEAM")
     
