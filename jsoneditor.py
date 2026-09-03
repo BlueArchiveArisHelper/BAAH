@@ -4,6 +4,10 @@ import os
 import shutil
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_dir)
+# Must switch cwd to the app root before importing any BAAH module.
+# Launching from the Windows search bar gives a cwd of C:\WINDOWS\system32, and the MyConfig singleton calls makedirs on cwd at import time.
+from modules.paths import chdir_to_app_root
+chdir_to_app_root()
 # config logging before all imports
 from modules.utils.log_utils import logging
 from main import run_baah_script
