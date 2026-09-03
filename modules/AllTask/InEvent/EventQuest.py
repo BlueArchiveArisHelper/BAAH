@@ -41,7 +41,13 @@ class EventQuest(Task):
         if not self.explore:
             return "no"
         screenshot()
-        if not (match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))) and self.has_popup():
+        # 利用扫荡区域能否识别来判断是否可扫荡
+        if self.has_popup() and (
+            not (
+                # 匹配task_info的图片并且对应区域是亮的就说明是可扫荡的，反之要推图
+                match(popup_pic(PopupName.POPUP_TASK_INFO)) or match(popup_pic(PopupName.POPUP_TASK_INFO_FANHEXIE))
+                and match_pixel([759, 353], [(120,120,120), (255,255,255)])
+            )):
             logging.info({"zh_CN": "触发推图任务", "en_US": "Triggering a tweet task"})
             # 判断推图是否刚才打了一次，但是没三星或打不过去
             if this_level_ind == self.last_fight_level_ind:
