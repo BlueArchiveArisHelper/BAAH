@@ -229,6 +229,7 @@
     "config_pipelines_desc": "你可以设置多种流程，但是只能手动切换激活其中一个",
     "config_delete_now_activated_pipeline": "删除本流程",
     "config_pipeline": "流程",
+    "config_try_enter_event_number": "进入活动页面识别到过期活动或识别失败后尝试额外进入活动页面的次数",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
