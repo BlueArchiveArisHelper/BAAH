@@ -2,12 +2,18 @@
 import sys
 import os
 import shutil
+import traceback
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_dir)
-# Must switch cwd to the app root before importing any BAAH module.
-# Launching from the Windows search bar gives a cwd of C:\WINDOWS\system32, and the MyConfig singleton calls makedirs on cwd at import time.
-from modules.paths import chdir_to_app_root
-chdir_to_app_root()
+try:
+    # 将当前工作目录切换到脚本所在目录，确保相对路径正确
+    if sys.argv and sys.argv[0] and not os.path.isabs(sys.argv[0]):
+        # 由于pywebview 重新解析相对入口 sys.argv[0]，得到错误的 ...\python\BAAH\python\BAAH
+        sys.argv[0] = os.path.abspath(sys.argv[0])
+    os.chdir(current_dir)
+except:
+    traceback.print_exc()
+    print("Failed to change working directory to script directory.")
 # config logging before all imports
 from modules.utils.log_utils import logging
 from main import run_baah_script
