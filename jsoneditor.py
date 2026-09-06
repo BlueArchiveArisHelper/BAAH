@@ -3,14 +3,20 @@ import sys
 import os
 import shutil
 import traceback
+# 代码运行这里是项目主目录，打包exe后这里是 _internal 目录
 current_dir = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_dir)
+# 代码运行这里是项目主目录，打包exe后这里是项目主目录目录
+project_dir = current_dir.replace("_internal", "")
+print(f"Current working directory: {current_dir}")
+print(f"Project directory: {project_dir}")
 try:
     # 将当前工作目录切换到脚本所在目录，确保相对路径正确
     if sys.argv and sys.argv[0] and not os.path.isabs(sys.argv[0]):
         # 由于pywebview 重新解析相对入口 sys.argv[0]，得到错误的 ...\python\BAAH\python\BAAH
         sys.argv[0] = os.path.abspath(sys.argv[0])
-    os.chdir(current_dir)
+    os.chdir(project_dir)
+    print(f"Changed working directory to: {os.getcwd()}")
 except:
     traceback.print_exc()
     print("Failed to change working directory to script directory.")
@@ -46,9 +52,8 @@ def main():
 if __name__ in {"__main__", "__mp_main__"}:
     # 检查是否有BAAH_GUI.exe 文件，删除
     # 这边current_dir要去掉_internal
-    print(f"Detect in {current_dir}")
-    exe_path = os.path.join(current_dir.replace("_internal", ""), "BAAH_GUI.exe")
-    print(f"Detect GUI.exe : {os.path.exists(exe_path)}")
+    exe_path = os.path.join(project_dir, "BAAH_GUI.exe")
+    print(f"Detect GUI.exe as {exe_path} : {os.path.exists(exe_path)}")
     if os.path.exists(exe_path):
         try:
             os.remove(exe_path)
