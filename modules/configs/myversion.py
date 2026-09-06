@@ -1,9 +1,8 @@
-myversion = "2.4.11"
+myversion = "2.4.12"
 mychangelog = """
 
-修复国服推图问题 | Fix the problem of pushing quests in the national server
+可以单独为课程表想要优先点击的学生各自设置权重了 | Can now set weights for favor students in timetable
 
-修复国际服旧活动排序在新活动前的问题 | Fix the problem that the old event in the international server is sorted before the new event
-
+添加了启动路径兼容，不再要求从BAAH项目目录运行程序 | No longer require running the program from the BAAH project directory
 
 """

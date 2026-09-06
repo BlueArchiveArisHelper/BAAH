@@ -386,10 +386,11 @@ defaultUserDict = {
     "RETRY_WHEN_ERROR_FROM_LAST_TASK":{
         "d": False,
     },
-    # 课程表指定学生的图片路径，这些图片权重为100
-    # [{"path": "xxx.png"}, {"path": "yyy.png"}]
+    # 课程表指定学生的图片路径，这些图片权重为w
+    # [{"path": "xxx.png", "w": 1000}, {"path": "yyy.png", "w": 1000}]
     "TIMETABLE_SPECIAL_STUDENT_PIC":{
         "d":[],
+        "p": lambda val, parsedjson: default_fill_special_like_student(val)
     },
     # 活动进入抽奖页面的按钮的图片路径（用户指定）
     "EVENT_ENTER_ROLL_PAGE_BUTTON":{

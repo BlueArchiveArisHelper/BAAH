@@ -31,13 +31,14 @@ def pic_list_edit_area(config, datalist, component_desc):
     def item_list():
         ui.label(component_desc)
         for i in range(len(datalist)):
-            with ui.column():
+            with ui.row():
                 screencut_button(config, datalist[i], "path", save_folder_path=config.USER_STORAGE_FOLDER, post_process=transparent_right_bottom_part_of_image)
-                ui.button(config.get_text("button_delete"), on_click=lambda i=i: action_delete_item(i)).style("margin-left: 10px")
+                ui.number(config.get_text("config_weight_of_sth"), precision=0, step=1).bind_value(datalist[i], "w").style("width: 300px")
+                ui.button(config.get_text("button_delete"), on_click=lambda i=i: action_delete_item(i),  color="red").style("margin-left: 10px")
         ui.button(config.get_text("button_add"), on_click=action_add_item).style("margin-top: 10px")
     
     def action_add_item():
-        datalist.append({"path": ""})
+        datalist.append({"path": "", "w": 1000})
         item_list.refresh()
     
     def action_delete_item(index):

@@ -190,3 +190,13 @@ def map_from_old_taskorder2pipeline(taskorder_list, parsedjson):
         "ALL_PIPELINES": [{"TASK_PIPELINE":taskorder_list, "TASK_ONOFF":taskactivate_list}], 
         "ACTIVATE_IND":0
     }
+
+def default_fill_special_like_student(val_list):
+    """
+    旧版本的特别喜爱学生列表只有pic path，这里补上权重
+    """
+    for each in val_list:
+        if isinstance(each, dict):
+            if "w" not in each:
+                each["w"] = 1000
+    return val_list
