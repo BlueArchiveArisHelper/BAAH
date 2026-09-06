@@ -76,7 +76,10 @@ def get_open_status_of_rooms() -> dict:
     
 def get_special_like_student_of_rooms(special_like_student_pic_path_list):
     """
-    检查是否有特别喜欢的学生出现在某个教室，如果出现一个置为1，两个置为2，没有置为0
+    检查是否有特别喜欢的学生出现在某个教室，返回字典记录 教室里出现的特别喜欢的学生在 【特别喜欢的学生列表】中的下标
+
+    Returns:
+        dict: {房间序号: [特别喜欢的学生在列表中的下标A，特别喜欢的学生在列表中的下标B], ...}
     """
     # 教室弹窗的学生小图片划分九宫格区域，尽可能最大间隔划分
     # 九宫格中间四个交叉点x,y坐标 (左到右，上到下)
@@ -96,14 +99,14 @@ def get_special_like_student_of_rooms(special_like_student_pic_path_list):
                 row_index = 2
         return row_index * 3 + col_index + 1
     total_counts = dict()
-    for like_stu_path in special_like_student_pic_path_list:
+    for like_stu_ind, like_stu_path in enumerate(special_like_student_pic_path_list):
         res = match(like_stu_path, returnpos=True, threshold=0.85)
         center_match_position = res[1]
         if res[0]:
             # 如果匹配成功
             region_num = return_pic_region(center_match_position[0], center_match_position[1])
             # print(f"success recg: {res}, recog 1 at region {region_num}")
-            total_counts[region_num] = total_counts.get(region_num, 0) + 1
+            total_counts[region_num] = total_counts.get(region_num, []) + [like_stu_ind]
     logging.info(f"Special like student counts in rooms: {total_counts}")
     return total_counts
 

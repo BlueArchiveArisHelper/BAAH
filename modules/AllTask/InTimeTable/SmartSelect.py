@@ -21,6 +21,7 @@ class SmartSelect(Task):
         self.location_name_area = ((923, 94), (1132, 130))
         # 用户选择的希望被优先点击好感的学生头像图片路径列表
         self.special_like_student_pic_path_list = [each['path'] for each in config.userconfigdict['TIMETABLE_SPECIAL_STUDENT_PIC'] if 'path' in each]
+        self.special_like_student_weight_list = [each['w']  if 'w' in each else 1000 for each in config.userconfigdict['TIMETABLE_SPECIAL_STUDENT_PIC']]
 
     def pre_condition(self) -> bool:
         return Page.is_page(PageName.PAGE_TIMETABLE)
@@ -50,7 +51,7 @@ class SmartSelect(Task):
         self.clear_popup()
         return ticket_num
 
-    def evaluate_score(self, seq_this_room: int, heart_of_this_room: int, lock_num_of_this_area: int, special_like_stu_in_this_room: dict) -> int:
+    def evaluate_score(self, seq_this_room: int, heart_of_this_room: int, lock_num_of_this_area: int, special_like_stu_in_this_room: dict, special_like_student_weight_list: list) -> int:
         """给格子打分, seq_this_room房子序号从1开始"""
         # 奖励
         weight_of_reward = config.userconfigdict["TIMETABLE_WEIGHT_OF_REWARD"]
@@ -70,7 +71,14 @@ class SmartSelect(Task):
                 EN: "Please set the three weights of timetable elements in config file as numbers"
             }))
         row_ind = (seq_this_room - 1) // 3
-        score = weight_of_reward * row_ind + weight_of_heart * heart_of_this_room + weight_of_lock * lock_num_of_this_area + weight_of_special_like * special_like_stu_in_this_room
+        # 这里传入的special_like_stu_in_this_room是一个列表，记录出现在这个房间里的喜爱学生的在special_like_student_pic_path_list中的下标
+        # 计算这个房间喜爱学生总权重
+        total_special_like_weight = 0
+        for stu_ind in special_like_stu_in_this_room:
+            if stu_ind < len(special_like_student_weight_list):
+                total_special_like_weight += special_like_student_weight_list[stu_ind]
+        # 计算房间总分数
+        score = weight_of_reward * row_ind + weight_of_heart * heart_of_this_room + weight_of_lock * lock_num_of_this_area + total_special_like_weight
         return score
 
     def on_run(self) -> None:
@@ -131,7 +139,7 @@ class SmartSelect(Task):
                 else:
                     # 对于解锁且未被点击的房间计算分数 
                     lockednum = list(opendict.values()).count(1)
-                    rooms_scores.append([i, room_num, self.evaluate_score(room_num, heartdict[room_num], lockednum, special_like_stu_dict.get(room_num, 0))])
+                    rooms_scores.append([i, room_num, self.evaluate_score(room_num, heartdict[room_num], lockednum, special_like_stu_dict.get(room_num, []), self.special_like_student_weight_list)])
             # 清除弹窗
             self.clear_popup()
             # 往后翻页
