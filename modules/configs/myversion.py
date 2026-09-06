@@ -1,4 +1,4 @@
-myversion = "2.4.12"
+myversion = "2.4.13"
 mychangelog = """
 
 可以单独为课程表想要优先点击的学生各自设置权重了 | Can now set weights for favor students in timetable

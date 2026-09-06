@@ -52,9 +52,8 @@ def main():
 if __name__ in {"__main__", "__mp_main__"}:
     # 检查是否有BAAH_GUI.exe 文件，删除
     # 这边current_dir要去掉_internal
-    print(f"Detect in {current_dir}")
     exe_path = os.path.join(project_dir, "BAAH_GUI.exe")
-    print(f"Detect GUI.exe : {os.path.exists(exe_path)}")
+    print(f"Detect GUI.exe as {exe_path} : {os.path.exists(exe_path)}")
     if os.path.exists(exe_path):
         try:
             os.remove(exe_path)
