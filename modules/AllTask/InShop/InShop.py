@@ -34,6 +34,7 @@ class InShop(Task):
             lambda: click(shop_entry_pos),
             lambda: Page.is_page(PageName.PAGE_SHOP),
         )
+        sleep(1)
         # 判断config里的开关是否开启
         if not config.userconfigdict["SHOP_NORMAL_SWITCH"]:
             logging.info(istr({
