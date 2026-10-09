@@ -14,7 +14,7 @@ def set_special(config):
             config.get_text("config_day"), 
             "",
             [
-                config.get_text("config_location"),
+                config.get_text("config_request", "config_location"),
                 config.get_text("config_level"),
                 config.get_text("config_times")
             ]

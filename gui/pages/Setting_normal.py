@@ -16,7 +16,7 @@ def set_normal(config):
             config.get_text("config_day"), 
             "",
             [
-                config.get_text("config_location"),
+                config.get_text("config_area", "config_location"),
                 config.get_text("config_level"),
                 config.get_text("config_times")
             ]
