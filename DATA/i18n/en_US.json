@@ -265,6 +265,10 @@
     "open_apk_package_a": "Open App",
     "scroll_xyxy_a": "Scroll",
     "jump_flow_item_id_a": "Jump to Flow Item",
+    "set_value_in_dict": "Set Value in Dictionary",
+    "get_value_in_dict": "Get Value from Dictionary",
+    "inc_value_in_dict": "Increase Value in Dictionary",
+    "dec_value_in_dict": "Decrease Value in Dictionary",
 
     "num_greater_p": "Number Greater Than",
     "num_less_p": "Number Less Than",
@@ -276,6 +280,8 @@
     "pixel_not_similar_p": "Pixel Not Similar",
     "img_match_p": "Image Matched",
     "img_not_match_p": "Image Not Matched",
+    "name": "Name",
+    "value": "Value",
 
 
     "ifelse_action_f": "Conditional Judgment",
