@@ -26,7 +26,11 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
             ui.label(f'{blocklinedesc}')
         for i in range(len(datadict)):
             line_item = datadict[i]
-            ui.label(f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: ')
+            # en_US reads "Day 1". zh/jp have no template yet, so they keep the old "第 1 天: " order.
+            if config.has_text("config_nth_heading"):
+                ui.label(config.get_text("config_nth_heading").format(item=linedesc[0], n=i+1))
+            else:
+                ui.label(f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: ')
             with ui.row():
                 if len(line_item) == 0:
                     ui.label(config.get_text("config_no_tasks_set_here"))
