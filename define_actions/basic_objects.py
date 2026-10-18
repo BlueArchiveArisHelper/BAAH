@@ -20,6 +20,20 @@ from modules.utils import *
 # return_copy 时，防止同名实例内参数被引用修改，用户能够修改的那些参数需要深拷贝
 #=======================
 
+# 在 define_actions 内定义存储和使用的字典值
+dict_values = {}
+def set_value_in_dict(name, val):
+    dict_values[name] = val
+    return True
+def get_value_in_dict(name):
+    return dict_values.get(name, 0)
+def inc_value_in_dict(name):
+    dict_values[name] = dict_values.get(name, 0) + 1
+    return dict_values[name]
+def dec_value_in_dict(name):
+    dict_values[name] = dict_values.get(name, 0) - 1
+    return dict_values[name]
+
 # 定义跳转异常，靠异常捕获实现行号跳转
 class FlowInterruptException(Exception):
     def __init__(self, message, target_id):

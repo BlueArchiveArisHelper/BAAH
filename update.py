@@ -10,7 +10,7 @@ import time
 import sys
 from concurrent.futures import ThreadPoolExecutor
 # ========================
-updater_version = "0.6.1"
+updater_version = "0.6.2"
 # 存储当前本地版本的json文件，需要包含 NOWVERSION 字段
 software_config_storage_path = os.path.join("DATA", "CONFIGS", "software_config.json")
 # 软件可执行文件的exe名称
@@ -157,7 +157,7 @@ def whether_has_new_version():
     enc_key = confile.get("ENCRYPT_KEY", "12345")
     mirror_key = confile.get("SEC_KEY_M", "12345")
 
-    if confile["SEC_KEY_M"]:
+    if "SEC_KEY_M" in confile and confile["SEC_KEY_M"]:
         urls["mirror"] = mirror_base_url + f"{decrypt_data(mirror_key, enc_key)}"
 
     print("Checking for new version...")

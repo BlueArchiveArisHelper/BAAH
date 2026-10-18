@@ -265,6 +265,10 @@
     "open_apk_package_a": "アプリを開く",
     "scroll_xyxy_a": "スクロール",
     "jump_flow_item_id_a": "フローアイテムにジャンプ",
+    "set_value_in_dict": "辞書に値を設定する",
+    "get_value_in_dict": "辞書から値を取得する",
+    "inc_value_in_dict": "辞書の値を増やす",
+    "dec_value_in_dict": "辞書の値を減らす",
 
     "num_greater_p": "数値が大きい",
     "num_less_p": "数値が小さい",
@@ -276,6 +280,8 @@
     "pixel_not_similar_p": "ピクセルが近似しない",
     "img_match_p": "画像にマッチ",
     "img_not_match_p": "画像にマッチしない",
+    "name": "名前",
+    "value": "値",
 
 
     "ifelse_action_f": "条件判断で実行可否",
