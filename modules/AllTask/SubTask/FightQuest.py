@@ -1,3 +1,5 @@
+import time
+
 from modules.utils.log_utils import logging
 
 from DATA.assets.PageName import PageName
@@ -156,14 +158,33 @@ class FightQuest(Task):
         # 累计两次确认backtopic后退出while
         acc_count = 0
         # 进入事件处理循环
+        start_time = time.time()
+        max_execute_seconds = 240
         while(1):
+            if time.time() - start_time > max_execute_seconds:
+                logging.warn(istr({
+                    CN: f"战斗任务事件处理循环超时{max_execute_seconds}s，退出循环",
+                    EN: f"Fight task event handling loop timeout ({max_execute_seconds}s), exit loop"
+                }))
+                break
+            if Page.is_page(PageName.PAGE_HOME):
+                logging.info(istr({
+                    CN: "检测到回到主页，退出战斗任务事件处理循环",
+                    EN: "Detected return to the home page, exit the fight task event handling loop"
+                }))
+                break
             logging.info(istr({
-                CN: "任务事件处理循环中...",
-                EN: "In the fight task event handling loop..."
+                CN: f"任务事件处理循环中...{time.time() - start_time:.2f}s",
+                EN: f"In the fight task event handling loop...{time.time() - start_time:.2f}s"
             }))
             screenshot()
             if self.backtopic():
                 if acc_count >= 1:
+                    # 结束事件处理循环
+                    logging.info(istr({
+                        CN: "战斗任务完成，返回任务起始页面",
+                        EN: "Fight task completed, returning to the starting page"
+                    }))
                     break
                 else:
                     acc_count += 1
@@ -189,11 +210,7 @@ class FightQuest(Task):
                     click(button_pic(ButtonName.BUTTON_CONFIRMY), threshold=0.8)
             # 每一秒判断一次
             click(Page.MAGICPOINT, sleeptime=1)
-        # 结束事件处理循环
-        logging.info(istr({
-            CN: "战斗任务完成，返回任务起始页面",
-            EN: "Fight task completed, returning to the starting page"
-        }))
+
         
 
 
