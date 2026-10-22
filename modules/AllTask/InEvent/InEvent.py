@@ -18,7 +18,7 @@ from .ExchangeItem import ExchangeItem
 
 from modules.utils import (click, swipe, match, match_pixel, page_pic, button_pic, popup_pic, sleep, ocr_area, screenshot,
                            check_app_running, open_app, get_now_running_app_entrance_activity, get_now_running_app, istr, CN, EN,
-                           get_correct_asset, AssetMappingKeys)
+                           get_correct_asset, AssetMappingKeys, OCR_LANG)
 
 
 class InEvent(Task):
@@ -137,6 +137,12 @@ class InEvent(Task):
             ) 
         logging.info({"zh_CN": f"QUEST按钮匹配结果: {matchpic}",
                       "en_US": f"QUEST button matching result: {matchpic}"})
+        # 适配只有一个Quest标签的活动，进行OCR识别
+        if not matchpic:
+            matchpic = (ocr_area([685, 84], [799, 123])[0].strip() == "Quest") or (ocr_area([685, 84], [799, 123], ocr_lang=OCR_LANG.ZHS)[0].strip() == "关卡")
+            logging.info({"zh_CN": f"QUEST标题匹配结果: {matchpic}",
+                      "en_US": f"QUEST title matching result: {matchpic}"})
+        # 结果判断
         if not matchpic:
             logging.warn({"zh_CN": "此页面不存在活动Quest", "en_US": "No event Quest on this page"})
             return False
