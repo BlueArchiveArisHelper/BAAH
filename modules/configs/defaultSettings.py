@@ -334,6 +334,15 @@ defaultUserDict = {
     "NOTI_WHEN_ERROR":{
         "d": False,
     },
+    # 网页url通知类型,0:get,1:post
+    "WEB_NOTI_TYPE_GET_OR_POST":{
+        "d": 0,
+        "s": [0, 1]
+    },
+    # 网页url post类型通知内容格式化json内容
+    "WEB_NOTI_POST_CONTENT":{
+        "d":r'{"token": "[token]", "title": "[title]", "content": "[content]"}'
+    },
     # 启动加速器操作
     "OBJ_ACTIONS_VPN_START":{
         "d":{},
