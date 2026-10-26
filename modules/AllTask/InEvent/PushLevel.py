@@ -17,17 +17,15 @@ class PushLevel(Task):
     """
     把右侧关卡推关或刷取，如果是推关，level_list传入最后一关扫荡0次
 
-    level_list: 关卡列表，里面是若干关卡序号和次数
+    level_list: 关卡列表，里面是若干关卡下标和次数，如[[0, 20], [9, 10]]
     exploreORraid: 0表示推图，1表示扫荡
     storyORquest: 0表示剧情，1表示关卡
-    quest_button_xy: 关卡列表顶部quest按钮位置
     """
-    def __init__(self, level_list, exploreORraid = 0, storyORquest = 0, quest_button_xy = (965, 98), name="PushLevel") -> None:
+    def __init__(self, level_list, exploreORraid = 0, storyORquest = 0, name="PushLevel") -> None:
         super().__init__(name)
         self.level_list = level_list
         self.exploreORraid = exploreORraid
         self.storyORquest = storyORquest
-        self.quest_button_xy = quest_button_xy
         self.story_button_xy = (766, 98)
         self.ocr_area = ((696, 149), (769, 683))
         # 如果有积分进度条，关卡窗口 endy 应该变为 589

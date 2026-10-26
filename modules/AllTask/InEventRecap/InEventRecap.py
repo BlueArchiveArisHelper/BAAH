@@ -5,6 +5,7 @@ from DATA.assets.PopupName import PopupName
 
 from modules.AllPage.Page import Page
 from modules.AllTask.InEvent.EventStory import EventStory
+from modules.AllTask.InEvent.PushLevel import PushLevel
 from modules.AllTask.InEvent.InEvent import InEvent
 from modules.AllTask.SubTask.SkipStory import SkipStory
 from modules.AllTask.Task import Task
@@ -94,7 +95,8 @@ class InEventRecap(Task):
                         CN: "开始执行推剧情任务",
                         EN: "Start executing event story task",
                     }))
-                    evtsty = EventStory(max_level=ine.get_biggest_level())
+                    # evtsty = EventStory(max_level=ine.get_biggest_level())
+                    evtsty = PushLevel(level_list=[[ine.get_biggest_level() - 1, 0]], exploreORraid=0, storyORquest=0)
                     evtsty.run()
                     if evtsty.status == Task.STATUS_ERROR:
                         logging.info(istr({
