@@ -250,12 +250,13 @@ class SmartScrollSelect(Task):
         # 不是的话就是找到已解锁与未解锁的分界，没找到就上划
         for i in range(3):
             self.go_down()
-        for try_times in range(3):
+        total_try_times = 5
+        for try_times in range(total_try_times):
             screenshot()
             unlock_button_pixels = self.analyze_column_segment()
             # 如果没有找到解锁的按钮或解锁的按钮数量不够，就继续上划
             if len(unlock_button_pixels) < abs(self.targetind):
-                self.go_up(swipe_during=2)
+                self.go_up(swipe_during=2) if try_times < total_try_times - 1 else 0 # 最后一次for循环不滚动了，防止造成错觉
                 sleep(1)
             else:
                 break
@@ -267,14 +268,21 @@ class SmartScrollSelect(Task):
             }))
             self.wantclick_pos = [self.clickx, unlock_button_pixels[self.targetind][1]]
             if self.finalclick:
-                self.run_until(
+                res = self.run_until(
                     lambda: click(self.wantclick_pos),
-                    self.hasexpectimage
+                    self.hasexpectimage,
+                    times=3
                 )
+                self.status = self.STATUS_SUCCESS if res else self.STATUS_SKIP
+                return
+            else:
+                self.status = self.STATUS_SUCCESS
+                return
         else:
             logging.warn({"zh_CN": "没有找到解锁的按钮",
                             "en_US": "No unlocked button found"})
-            return False
+            self.status = self.STATUS_FAILED
+            return
 
     def scroll_if_nonnegative_targetind(self):
         # ocr 列表左侧区域，计算目标关卡和当前区间关系，控制上下滑动
@@ -299,11 +307,16 @@ class SmartScrollSelect(Task):
                     }))
                     self.wantclick_pos = [self.clickx, int(0.5*(each_res[2][0][1] + each_res[2][1][1]))]
                     if self.finalclick:
-                        self.run_until(
+                        res = self.run_until(
                             lambda: click(self.wantclick_pos),
-                            self.hasexpectimage
+                            self.hasexpectimage,
+                            times=3
                         )
-                    return True
+                        self.status = self.STATUS_SUCCESS if res else self.STATUS_SKIP
+                        return
+                    else:
+                        self.status = self.STATUS_SUCCESS
+                        return
             # 如果没在当前ocr结果中找到，那么就判断目标关卡在当前ocr结果的上方还是下方，控制滑动
             if len(num_ocr_results) > 0:
                 if self.targetind + 1 < num_ocr_results[0][0]:
@@ -338,13 +351,15 @@ class SmartScrollSelect(Task):
             CN: f"未能找到目标关卡 {self.targetind + 1}，请检查关卡是否存在或OCR识别是否正确",
             EN: f"Failed to find the target level {self.targetind + 1}, please check if the level exists or if OCR recognition is correct"
         }))
+        self.status = self.STATUS_FAILED
+        return
 
 
     def on_run(self) -> None:
         if self.targetind < 0:
-            return self.scroll_if_negative_targetind()
+            self.scroll_if_negative_targetind()
         else:
-            return self.scroll_if_nonnegative_targetind()
+            self.scroll_if_nonnegative_targetind()
         
         
 
