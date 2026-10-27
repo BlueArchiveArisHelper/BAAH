@@ -1,8 +1,10 @@
 from email.mime.text import MIMEText
 from email.header import Header
 from smtplib import SMTP_SSL
+import json
 
 from requests import get as http_get
+from requests import post as http_post
 from modules.configs.MyConfig import config
 from modules.utils.data_utils import decrypt_data
 
@@ -70,7 +72,7 @@ class Http_Sender(Message_Sender):
     """
     Api发送类
     """
-    def __init__(self, target_url, token, token_pattern="[token]", is_get=True, content_pattern="[content]", title_pattern="[title]") -> None:
+    def __init__(self, target_url, token, token_pattern="[token]", is_get=True, content_pattern="[content]", title_pattern="[title]", content="{}") -> None:
         super().__init__()
         self.target_url = target_url
         self.token = token
@@ -78,13 +80,34 @@ class Http_Sender(Message_Sender):
         self.is_get = is_get
         self.content_pattern = content_pattern
         self.title_pattern = title_pattern
+        self.content = content
     
     def send(self, message: str, title: str = "BAAH通知") -> str:
         request_url = self.target_url.replace(self.token_pattern, self.token).replace(self.title_pattern, title).replace(self.content_pattern, message)
-        response = http_get(request_url)
+        if self.is_get:
+            response = http_get(request_url)
+        else:
+            # 先解析 JSON，再替换字符串，避免通知中的引号、换行破坏请求体。
+            def replace_content(value):
+                if isinstance(value, str):
+                    return value.replace(self.token_pattern, self.token).replace(self.title_pattern, title).replace(self.content_pattern, message)
+                if isinstance(value, list):
+                    return [replace_content(item) for item in value]
+                if isinstance(value, dict):
+                    return {replace_content(key): replace_content(item) for key, item in value.items()}
+                return value
+
+            request_body = replace_content(json.loads(self.content))
+            headers = {'Content-Type': 'application/json;charset=utf-8'}
+            response = http_post(request_url, json=request_body, headers=headers)
         if response.status_code == 200:
-            if len(response.json()['data']) != 0:
-                print(response.json()['data'])
+            # 自定义通知接口可能返回空响应、纯文本或不含 data 的 JSON。
+            try:
+                result = response.json()
+            except ValueError:
+                return
+            if isinstance(result, dict) and result.get('data'):
+                print(result['data'])
 
 class Notificationer:
     """
@@ -135,7 +158,9 @@ def create_notificationer():
     if config.userconfigdict["ENABLE_HTTP_NOTI"]:
         http_sender = Http_Sender(
             config.userconfigdict['TARGET_HTTP_URL'],
-            token=config.userconfigdict['TARGET_HTTP_TOKEN']
+            token=config.userconfigdict['TARGET_HTTP_TOKEN'],
+            is_get=config.userconfigdict['WEB_NOTI_TYPE_GET_OR_POST'] == 0,
+            content=config.userconfigdict['WEB_NOTI_POST_CONTENT']
         )
         notificationer.add_sender(http_sender)
 

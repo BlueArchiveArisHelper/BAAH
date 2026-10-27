@@ -15,6 +15,7 @@ class Task:
     STATUS_SUCCESS = 0
     STATUS_ERROR = 1
     STATUS_SKIP = 2
+    STATUS_FAILED = 3
     # 父类
     def __init__(self, name = "default Task", pre_times = 2, post_times = 4) -> None:
         self.name = name

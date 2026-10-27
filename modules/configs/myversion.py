@@ -1,12 +1,10 @@
-myversion = "2.4.16"
+myversion = "2.5.0"
 mychangelog = """
 
-修复日服新活动只有quest页标签无法识别的问题 | Fixed the problem that the new event in the Japanese server can only recognize the quest page tag
+重新写了活动关卡推剧情/推关卡逻辑，第一次更新后请手动观察活动功能稳定性 | Rewrite logic of events, please check the stability of event function
 
-修复日服大决战不进入战斗的问题 | Fixed the problem of not entering the battle in the Japanese server's final battle
+web通知新增post请求 | Add post request in web notification
 
-修复29-4推图问题 | Fixed the problem of 29-4 quest
-
-修复战斗过程出现网络异常时，卡死在无限判断中的问题 | Fixed the problem of being stuck in infinite judgment when a network exception occurs during the battle process
+适配日服悬赏通缉第四/五个地区 | Feat the 4th/5th area of wanted fight in JP server
 
 """

@@ -15,6 +15,7 @@ from modules.AllTask.InEvent.EventStory import EventStory
 from modules.AllTask.Task import Task
 from .RollAward import RollAward
 from .ExchangeItem import ExchangeItem
+from .PushLevel import PushLevel
 
 from modules.utils import (click, swipe, match, match_pixel, page_pic, button_pic, popup_pic, sleep, ocr_area, screenshot,
                            check_app_running, open_app, get_now_running_app_entrance_activity, get_now_running_app, istr, CN, EN,
@@ -343,7 +344,13 @@ class InEvent(Task):
             click((766, 98))
             click((766, 98))
             story_max_level = self.get_biggest_level()
-            EventStory(max_level=story_max_level).run()
+            if story_max_level == -1:
+                logging.warn({"zh_CN": "未能识别活动剧情最大序号，跳过",
+                                "en_US": "Failed to recognize the event story, skip"})
+            else:
+                # 序号转下标
+                PushLevel(level_list=[[story_max_level-1,0]], exploreORraid=0, storyORquest=0).run()
+                # EventStory(max_level=story_max_level).run()
         # 推图任务，如果已经进入过活动一次了，就不用再推图了
         if self.force_push_quest or (config.userconfigdict["AUTO_PUSH_EVENT_QUEST"] and not config.sessiondict["HAS_ENTER_EVENT"]):
             # 点击Quest标签
@@ -356,11 +363,11 @@ class InEvent(Task):
                               "en_US": "Failed to recognize the event level, "
                                        "skip the push map and go directly to the sweep"})
             else:
-                maxquest_ind = maxquest - 1
                 logging.info({"zh_CN": f"最大关卡: {maxquest}，开始检测是否需要推图",
                               "en_US": f"Max level: {maxquest}, start to detect whether the tweet is needed"})
                 # 设置一个推maxquest_ind关卡0次的任务
-                EventQuest([[maxquest_ind, 0]], explore=True, raid=False, quest_button_xy=self.quest_button_xy).run()
+                PushLevel(level_list=[[maxquest - 1,0]], exploreORraid=0, storyORquest=1).run()
+                # EventQuest([[maxquest_ind, 0]], explore=True, raid=False, quest_button_xy=self.quest_button_xy).run()
         # 扫荡任务
         if not self.dont_raid_quest and (config.userconfigdict["EVENT_QUEST_LEVEL"] and len(config.userconfigdict["EVENT_QUEST_LEVEL"]) != 0):
             # 可选任务队列不为空时
@@ -371,7 +378,8 @@ class InEvent(Task):
             # 序号转下标
             quest_list_2 = [[x[0] - 1, x[1], *x[2:]] for x in quest_list]
             # do Event QUEST
-            EventQuest(quest_list_2, explore=False, raid=True, quest_button_xy=self.quest_button_xy).run()
+            PushLevel(level_list=quest_list_2, exploreORraid=1, storyORquest=1).run()
+            # EventQuest(quest_list_2, explore=False, raid=True, quest_button_xy=self.quest_button_xy).run()
         # 抽奖任务
         if config.userconfigdict["EVENT_ENTER_ROLL_PAGE_BUTTON"]:
             logging.info(istr({

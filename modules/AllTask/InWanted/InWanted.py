@@ -72,7 +72,7 @@ class InWanted(Task):
             # check whether there is a ticket
             # 使用PageName.PAGE_WANTED的坐标判断是国服还是其他服
             # 可点击的一列点
-            points = np.linspace(206, 422, 3)
+            points = np.linspace(206, 682, 5)
             # 点击location
             self.run_until(
                 lambda: click((959, points[each_target[0]])),

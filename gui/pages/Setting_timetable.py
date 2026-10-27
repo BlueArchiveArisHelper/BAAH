@@ -20,8 +20,8 @@ def transparent_right_bottom_part_of_image(matlike_image):
         }))
     
     h, w = matlike_image.shape[:2]
-    # 将右下角四分之一区域的alpha通道设为0
-    matlike_image[h//2:, w//2:, 3] = 0
+    # 将右下角三分之一区域的alpha通道设为0
+    matlike_image[(60*h)//100:, (70*w)//100:, 3] = 0
     return matlike_image
 
 def pic_list_edit_area(config, datalist, component_desc):
