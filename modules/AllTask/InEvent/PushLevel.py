@@ -150,7 +150,7 @@ class PushLevel(Task):
                 }))
             # 之后 now_progress_ind 就是目前推到哪一关的记录
             # 循环执行直到打完最后一关
-            for _ in range(now_progress_ind, level_ind + 1):
+            for detect_t in range(now_progress_ind, level_ind + 1):
                 open_now_progress_popup = self.run_until(
                     lambda: click(click_pos),
                     lambda: self.has_popup(),
@@ -181,6 +181,14 @@ class PushLevel(Task):
                 # 单次战斗
                 FightQuest(backtopic=lambda: match(page_pic(PageName.PAGE_EVENT)), auto_team = config.userconfigdict["ACTIVITY_AUTO_TEAM"]).run()
                 # 战斗结束后，期望的now_progress_ind往后推一位,继续探测 click_pos
+                if detect_t == level_ind:
+                    # 循环的最后一次不需要往下再翻关卡了（已经通管所有关）
+                    logging.info(istr({
+                        CN: "推关完毕",
+                        EN: "Finished"
+                    }))
+                    self.status = self.STATUS_SUCCESS
+                    return
                 now_progress_ind += 1
                 find_now_progress_params = self.smart_scroll_params.copy()
                 find_now_progress_params["targetind"] = now_progress_ind
