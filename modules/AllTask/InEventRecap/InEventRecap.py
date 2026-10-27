@@ -98,7 +98,7 @@ class InEventRecap(Task):
                     # evtsty = EventStory(max_level=ine.get_biggest_level())
                     evtsty = PushLevel(level_list=[[ine.get_biggest_level() - 1, 0]], exploreORraid=0, storyORquest=0)
                     evtsty.run()
-                    if evtsty.status == Task.STATUS_ERROR:
+                    if evtsty.status not in [evtsty.STATUS_SUCCESS]:
                         logging.info(istr({
                             CN: "Status_error: 推剧情任务执行失败, 返回",
                             EN: "STATUS_ERROR: Event story task execution failed, returning",

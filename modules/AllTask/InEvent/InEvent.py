@@ -344,9 +344,13 @@ class InEvent(Task):
             click((766, 98))
             click((766, 98))
             story_max_level = self.get_biggest_level()
-            # 序号转下标
-            PushLevel(level_list=[[story_max_level-1,0]], exploreORraid=0, storyORquest=0).run()
-            # EventStory(max_level=story_max_level).run()
+            if story_max_level == -1:
+                logging.warn({"zh_CN": "未能识别活动剧情最大序号，跳过",
+                                "en_US": "Failed to recognize the event story, skip"})
+            else:
+                # 序号转下标
+                PushLevel(level_list=[[story_max_level-1,0]], exploreORraid=0, storyORquest=0).run()
+                # EventStory(max_level=story_max_level).run()
         # 推图任务，如果已经进入过活动一次了，就不用再推图了
         if self.force_push_quest or (config.userconfigdict["AUTO_PUSH_EVENT_QUEST"] and not config.sessiondict["HAS_ENTER_EVENT"]):
             # 点击Quest标签

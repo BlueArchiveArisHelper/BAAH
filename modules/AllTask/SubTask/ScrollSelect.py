@@ -155,7 +155,7 @@ class ScrollSelect(Task):
 
 class SmartScrollSelect(Task):
     """
-    根据所给列进行边缘点分析，提取出按钮位置，分析每个按钮正中的坐标颜色，根据颜色筛选可点击的那些按钮
+    (可使用status) 根据所给列进行边缘点分析，提取出按钮位置，分析每个按钮正中的坐标颜色，根据颜色筛选可点击的那些按钮
     
     可以用于找到已经解锁的最后一关，用于扫荡任务时注意已经解锁的最后一关可能并未3星可扫荡
 
@@ -250,15 +250,13 @@ class SmartScrollSelect(Task):
         # 不是的话就是找到已解锁与未解锁的分界，没找到就上划
         for i in range(3):
             self.go_down()
-        total_try_times = 5
-        for try_times in range(total_try_times):
+        for try_times in range(5):
+            if try_times != 0: # 第一次循环时不要滑动。如果没有找到解锁的按钮或解锁的按钮数量不够，就继续上划
+                self.go_up(swipe_during=2)
+                sleep(1)
             screenshot()
             unlock_button_pixels = self.analyze_column_segment()
-            # 如果没有找到解锁的按钮或解锁的按钮数量不够，就继续上划
-            if len(unlock_button_pixels) < abs(self.targetind):
-                self.go_up(swipe_during=2) if try_times < total_try_times - 1 else 0 # 最后一次for循环不滚动了，防止造成错觉
-                sleep(1)
-            else:
+            if len(unlock_button_pixels) >= abs(self.targetind):
                 break
         # 有足够的按钮数量，点击
         if len(unlock_button_pixels) >= abs(self.targetind):

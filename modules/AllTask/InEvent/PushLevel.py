@@ -15,7 +15,7 @@ from modules.utils.log_utils import logging
 
 class PushLevel(Task):
     """
-    把右侧关卡推关或刷取，如果是推关，level_list传入最后一关扫荡0次
+    (可使用status) 把右侧关卡推关或刷取，如果是推关，level_list传入最后一关扫荡0次
 
     level_list: 关卡列表，里面是若干关卡下标和次数，如[[0, 20], [9, 10]]
     exploreORraid: 0表示推图，1表示扫荡
@@ -44,14 +44,18 @@ class PushLevel(Task):
             "min_button_height":40,
             "ocr_area" : self.ocr_area
         }
-        if self.now_event_has_right_bottom_reward():
-            self.smart_scroll_params["window_endy"] = 589
-        if self.storyORquest == 1:
-            self.smart_scroll_params["min_button_height"] = 60
+        
 
      
     def pre_condition(self) -> bool:
         return Page.is_page(PageName.PAGE_EVENT)
+
+    def check_button_type_and_box(self):
+        """检查当前页面的关卡区域高度和按钮高度，更改默认params"""
+        if self.now_event_has_right_bottom_reward():
+            self.smart_scroll_params["window_endy"] = 589
+        if self.storyORquest == 1:
+            self.smart_scroll_params["min_button_height"] = 60
 
     def now_event_has_right_bottom_reward(self):
         """检查当前活动的任务界面右下角是否有活动积分进度条以及按钮"""
@@ -94,6 +98,7 @@ class PushLevel(Task):
                     CN: f"已经通关最后一个关卡或剧情",
                     EN: f"Already passed the last level"
                 }))
+                self.status = self.STATUS_SUCCESS
                 return
         # 需要推图
         logging.info(istr({
@@ -112,6 +117,13 @@ class PushLevel(Task):
                 **find_now_progress_params
             )
             find_now_progress_level.run()
+            if find_now_progress_level.status not in [Task.STATUS_SUCCESS]:
+                logging.error(istr({
+                    CN: "未能找到最后亮色按钮，结束",
+                    EN: "Can not find the last light button, end"
+                }))
+                self.status = Task.STATUS_FAILED
+                return
             # 得到欲点击位置，替换得到左侧ocr区域
             click_pos = find_now_progress_level.wantclick_pos
             logging.info(istr({
@@ -149,6 +161,7 @@ class PushLevel(Task):
                         CN: f"未能打开期望的弹窗，结束",
                         EN: f"Can not open desired popup, end"
                     }))
+                    self.status = self.STATUS_FAILED
                     return
                 # quest只需点 BUTTON_TASK_START, story 还需要考虑只有一个居中小弹窗的主要情况
                 self.run_until(
@@ -162,6 +175,7 @@ class PushLevel(Task):
                         CN: "体力不够，结束", 
                         EN: "Not enough AP, end"
                     }))
+                    self.status = self.STATUS_SKIP
                     return
                 # 单次战斗
                 FightQuest(backtopic=lambda: match(page_pic(PageName.PAGE_EVENT)), auto_team = config.userconfigdict["ACTIVITY_AUTO_TEAM"]).run()
@@ -174,6 +188,13 @@ class PushLevel(Task):
                     **find_now_progress_params
                 )
                 find_now_progress_level.run()
+                if find_now_progress_level.status not in [Task.STATUS_SUCCESS]:
+                    logging.error(istr({
+                        CN: f"未能找到下一个关卡 {now_progress_ind+1} 按钮，结束",
+                        EN: f"Can not find the next level {now_progress_ind+1} button, end"
+                    }))
+                    self.status = Task.STATUS_FAILED
+                    return
                 click_pos = find_now_progress_level.wantclick_pos
 
         except Exception as e:
@@ -181,6 +202,7 @@ class PushLevel(Task):
                 CN: f"当执行推图探测的时候出现错误：{traceback.format_exc()}",
                 EN: f"Error when detecting push level: {traceback.format_exc()}"
             }))
+            self.status = self.STATUS_ERROR
 
 
     def process_raid_mode_one_level(self, level_ind, repeat_times):
@@ -205,14 +227,17 @@ class PushLevel(Task):
                 CN: f"扫荡模式下，找不到关卡{level_ind+1}对应的扫荡弹窗",
                 EN: f"In sweep mode, the level {level_ind+1} cannot be found"
             }))
+            self.status = self.STATUS_FAILED
      
     def on_run(self) -> None:
+        self.check_button_type_and_box()
         # 按level执行
         for level in self.level_list:
             if self.exploreORraid == 1:
                 # raid模式判断扫荡次数是否为0，为0则跳过
                 if level[-1] == 'false' or level[-1] == False or level[-1] == 0 : # 开关关闭
                     logging.info(f"level {level[0]+1} swap times is 0 or not enabled, skip")
+                    self.status = self.STATUS_SKIP
                     continue
             level_ind = level[0]
             repeat_times = level[1]
