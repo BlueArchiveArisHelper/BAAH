@@ -1,4 +1,4 @@
-myversion = "2.5.0"
+myversion = "2.5.1"
 mychangelog = """
 
 重新写了活动关卡推剧情/推关卡逻辑，第一次更新后请手动观察活动功能稳定性 | Rewrite logic of events, please check the stability of event function
