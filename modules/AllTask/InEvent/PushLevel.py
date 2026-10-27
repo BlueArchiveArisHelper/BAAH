@@ -156,10 +156,11 @@ class PushLevel(Task):
                     lambda: self.has_popup(),
                     times = 3
                 )
-                if not open_now_progress_popup:
+                if (not open_now_progress_popup) or (match(popup_pic(PopupName.POPUP_NOTICE))):
+                    # 通知弹窗意味着上一关没能通过
                     logging.error(istr({
-                        CN: f"未能打开期望的弹窗，结束",
-                        EN: f"Can not open desired popup, end"
+                        CN: f"未能打开期望的弹窗或中断关卡连续性，结束",
+                        EN: f"Can not open desired popup or previous level broke, end"
                     }))
                     self.status = self.STATUS_FAILED
                     return
