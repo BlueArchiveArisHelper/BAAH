@@ -239,6 +239,8 @@
     "config_pipeline": "Pipeline",
     "config_try_enter_event_number": "Number of attempts to enter the event page",
     "gui_new_update": "Detect new update",
+    "gui_diamond": "pyroxene",
+    "gui_credit": "credit",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",

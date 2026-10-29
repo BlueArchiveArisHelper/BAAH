@@ -239,6 +239,8 @@
     "config_pipeline": "流程",
     "config_try_enter_event_number": "进入活动页面识别到过期活动或识别失败后尝试额外进入活动页面的次数",
     "gui_new_update": "检测到更新",
+    "gui_diamond": "青辉石",
+    "gui_credit": "信用点",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
