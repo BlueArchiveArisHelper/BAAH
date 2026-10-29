@@ -1,4 +1,8 @@
 from enum import Enum
+# 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
+from ..components.modern_ui import (
+    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, CATEGORY_ICONS, PANEL_ICONS,
+)
 
 from ..components.exec_arg_parse import get_token
 from ..components.manage_baah_in_gui import run_baah_task_and_bind_log, stop_baah_task
@@ -303,6 +307,8 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 # ---------- 页面主函数 ----------
 @ui.page("/panel/{json_file_name}")
 async def show_json_panel(json_file_name: str):
+    # 直达配置页也需在首次等待前注册样式，确保“跟随系统”模式下布局正常。
+    apply_theme()
     await apply_dark_mode(gui_shared_config)
     # 0. Setup and Parse same as old file
     obj_parsed_dict_of_config = {}
@@ -311,34 +317,6 @@ async def show_json_panel(json_file_name: str):
     curr_config: MyConfigger = MyConfigger()
     curr_config.parse_user_config(json_file_name)
     parse_obj_in_config(curr_config, obj_parsed_dict_of_config)
-
-    # Styles
-    ui.add_head_html(
-        """
-        <style>
-            body { 
-                font-family: 'Segoe UI', sans-serif; 
-                margin: 0;
-                padding: 0;
-                overflow: hidden; 
-            }
-            ::-webkit-scrollbar {
-                display: none;
-            }
-            .section-title { 
-                font-size: 16px; 
-                font-weight: 600; 
-                margin-bottom: 10px; 
-            }
-            .item-selected {
-                border-left: 4px solid #1976d2;
-            }
-        </style>
-    """
-    )
-
-    # 3. Ratio constant
-    COLUMN_RATIOS = [2, 7, 3]  # Left:Middle:Right
 
     # Placeholders for controls that need to be accessed
     logArea = None
@@ -358,39 +336,25 @@ async def show_json_panel(json_file_name: str):
             ]
 
             for panel in filtered_list:
-                is_selected = panel == current_panel
-                base_classes = "w-full p-3 cursor-pointer transition-colors border-b border-gray-100"
-                if is_selected:
-                    base_classes += " item-selected"
-
-                # Bind panel using default arg to capture loop variable
-                with ui.row().classes(base_classes).on(
-                    "click", lambda _, p=panel: select_panel(p)
-                ):
-                    ui.label(panel.name).classes(
-                        "flex-grow text-sm font-medium"
-                        if not is_selected
-                        else "flex-grow text-sm font-bold"
-                    )
-                    if is_selected:
-                        ui.icon("chevron_right", color="primary")
+                # 导航统一封装为可键盘操作的按钮，不改变页面选择回调。
+                navigation_item(panel.name, panel == current_panel,
+                                lambda _, p=panel: select_panel(p),
+                                icon=PANEL_ICONS.get(panel.nameID, 'settings'))
 
     @ui.refreshable
     def render_config_area():
         if current_panel:
-            with ui.column().classes("w-full h-full p-4 overflow-y-auto"):
-                ui.label(current_panel.name).classes(
-                    "section-title mb-4 border-b pb-2 w-full"
-                )
-                current_panel.func()
+            with ui.column().classes('baah-form'):
+                ui.label(current_panel.name).classes('baah-form-title')
+                render_description()
+                # 所有已注册设置页共用表单容器，动态表单仍由原函数生成。
+                with ui.column().classes('baah-form-body'):
+                    current_panel.func()
 
     @ui.refreshable
     def render_description():
         if current_panel:
-            with ui.column().classes("w-full h-full p-4 overflow-y-auto"):
-                ui.label(gui_shared_config.get_text("text_description")).classes(
-                    "section-title"
-                )
+            with description_panel(gui_shared_config.get_text('text_description')):
                 current_panel.desc()
 
     def select_panel(panel):
@@ -433,20 +397,82 @@ async def show_json_panel(json_file_name: str):
             curr_config.userconfigdict["RESPOND_Y"] = server2respond[servername]
 
     def render_top_bar():
-        with ui.card().classes(
-            "w-full h-full p-2 flex flex-row flex-nowrap items-center justify-between shadow-sm gap-2 box-border"
-        ):
-            # Left Group: Back Button & Title
-            with ui.row().classes("items-center gap-2 flex-none"):
-                ui.button(
-                    icon="arrow_back",
-                    on_click=lambda: ui.run_javascript("window.history.back()"),
-                ).props("flat round dense")
-                ui.label(f"{json_file_name}").classes("text-lg font-bold")
+        # 顶栏拆为操作与连接设置两层，避免路径和按钮相互挤压。
+        with surface('baah-header'):
+            with ui.row().classes('baah-title-row'):
+                with ui.row().classes("baah-brand"):
+                    ui.button(
+                        icon="arrow_back",
+                        on_click=lambda: ui.run_javascript("window.history.back()"),
+                    ).props("flat round dense")
+                    ui.label(f"{json_file_name}").classes("baah-brand-name")
 
-            # Middle Group: Settings (Server -> ADB -> Emulator Path)
+                with ui.row().classes("baah-operation-bar"):
+                    ui.button(
+                        gui_shared_config.get_text("button_save"),
+                        icon="save",
+                        on_click=save_and_alert,
+                    ).props("flat")
+
+                    # Signal logic
+                    msg_obj = RunningBAAHProcess_instance.get_status_obj(
+                        configname=json_file_name
+                    )
+
+                    # Container for the run button group
+                    with ui.row().classes("items-center gap-0"):
+
+                        # RUN BUTTON (GUI)
+                        run_btn = (
+                            ui.button(
+                                gui_shared_config.get_text("button_save_and_run_gui"),
+                                icon="play_arrow",
+                                on_click=run_in_gui,
+                            )
+                            .classes("blue-button rounded-r-none")
+                            .bind_visibility_from(
+                                msg_obj, "runing_signal", backward=lambda x: x == 0
+                            )
+                        )
+
+                        # STOP BUTTON
+                        stop_btn = (
+                            ui.button(
+                                gui_shared_config.get_text("notice_finish_run"),
+                                icon="stop",
+                                color="red",
+                                on_click=stop_run,
+                            )
+                            .classes("rounded-r-none")
+                            .bind_visibility_from(
+                                msg_obj, "runing_signal", backward=lambda x: x == 1
+                            )
+                        )
+
+                        # DROPDOWN TRIGGER
+                        with ui.button(icon="arrow_drop_down").classes(
+                            "px-1 rounded-l-none border-l border-white/30 blue-button"
+                        ).bind_visibility_from(
+                            msg_obj, "runing_signal", backward=lambda x: x == 0
+                        ):
+                            with ui.menu().classes("min-w-60"):
+                                ui.menu_item(
+                                    gui_shared_config.get_text(
+                                        "button_save_and_run_terminal"
+                                    ),
+                                    on_click=run_in_terminal,
+                                )
+
+                        ui.spinner().bind_visibility_from(
+                            msg_obj, "runing_signal", backward=lambda x: x == 0.25
+                        )
+
+                    # Log recovery
+                    if msg_obj["runing_signal"] == 1:
+                        ui.timer(0.5, run_in_gui, once=True)
+
             with ui.row().classes(
-                "items-center gap-2 flex-1 justify-start no-wrap overflow-hidden"
+                "baah-connection"
             ):
                 # 1. Server Selection (Ratio 2)
                 server_options = {
@@ -465,15 +491,13 @@ async def show_json_panel(json_file_name: str):
                     label=curr_config.get_text("setting_server"),
                     value=curr_config.userconfigdict["SERVER_TYPE"],
                     on_change=lambda e: set_server_info(e.value),
-                ).style("flex: 2; min-width: 0px;").classes("mx-1")
+                ).classes("baah-server")
 
                 # ADB & Emulator Visibility Helper
                 is_not_pc = lambda v: not _is_PC_app(v)
 
                 # 2. ADB Port/Serial (Ratio 1)
-                with ui.element("div").style(
-                    "flex: 2; min-width: 0px; display: flex; align-items: center;"
-                ).classes("mx-1").bind_visibility_from(
+                with ui.row().classes("baah-address").bind_visibility_from(
                     curr_config.userconfigdict, "SERVER_TYPE", is_not_pc
                 ):
                     # IP Input
@@ -515,9 +539,7 @@ async def show_json_panel(json_file_name: str):
                     )
 
                 # 3. Serial Checkbox (Ratio 3)
-                with ui.element("div").style(
-                    "flex: 2; min-width: 0px; display: flex; align-items: center; overflow: hidden;"
-                ).classes("mx-1").bind_visibility_from(
+                with ui.element("div").classes("baah-serial").bind_visibility_from(
                     curr_config.userconfigdict, "SERVER_TYPE", is_not_pc
                 ):
                     ui.checkbox(
@@ -528,9 +550,7 @@ async def show_json_panel(json_file_name: str):
                         "w-full"
                     )
 
-                with ui.element("div").style(
-                    "flex: 6; min-width: 0px; display: flex; align-items: center;"
-                ).classes("mx-1").bind_visibility_from(
+                with ui.element("div").classes("baah-path").bind_visibility_from(
                     curr_config.userconfigdict,
                     "SERVER_TYPE",
                     lambda v: not _is_STEAM_app(v),
@@ -541,162 +561,37 @@ async def show_json_panel(json_file_name: str):
                         forward=smart_replace_main2device,
                     ).props('placeholder="模拟器路径"').classes("w-full")
 
-            # Right Group: Action Buttons
-            with ui.row().classes("items-center gap-2 flex-none"):
-                ui.button(
-                    gui_shared_config.get_text("button_save"),
-                    icon="save",
-                    on_click=save_and_alert,
-                ).props("flat")
 
-                # Signal logic
-                msg_obj = RunningBAAHProcess_instance.get_status_obj(
-                    configname=json_file_name
-                )
+    # 编辑器使用正常 flex 布局，日志展开时缩小表单区域而不覆盖控件。
+    with page_shell():
+        render_top_bar()
+        with ui.row().classes('baah-workspace') as workspace:
+            left_section = surface('baah-nav')
+            middle_section = surface('baah-main')
 
-                # Container for the run button group
-                with ui.row().classes("items-center gap-0"):
+        # 日志实例在注册设置页前创建，折叠和页面刷新均不会替换它。
+        logArea = log_panel(gui_shared_config.get_text('text_log'))
+        config_choose_list = get_config_list(curr_config, logArea, obj_parsed_dict_of_config)
+        current_panel = config_choose_list[0] if config_choose_list else None
 
-                    # RUN BUTTON (GUI)
-                    run_btn = (
-                        ui.button(
-                            gui_shared_config.get_text("button_save_and_run_gui"),
-                            icon="play_arrow",
-                            on_click=run_in_gui,
-                        )
-                        .classes("blue-button rounded-r-none")
-                        .bind_visibility_from(
-                            msg_obj, "runing_signal", backward=lambda x: x == 0
-                        )
-                    )
+        with left_section:
+            def on_tab_change(e):
+                nonlocal current_tab_type
+                current_tab_type = ConfigPanelType(e.value)
+                render_task_list.refresh()
 
-                    # STOP BUTTON
-                    stop_btn = (
-                        ui.button(
-                            gui_shared_config.get_text("notice_finish_run"),
-                            icon="stop",
-                            color="red",
-                            on_click=stop_run,
-                        )
-                        .classes("rounded-r-none")
-                        .bind_visibility_from(
-                            msg_obj, "runing_signal", backward=lambda x: x == 1
-                        )
-                    )
+            # 一级页签使用横向图文排列；图标映射只影响展示。
+            with ui.tabs().props('inline-label').on_value_change(on_tab_change) as tabs:
+                for tabkey in panel_types_2_str.keys():
+                    ui.tab(name=tabkey.value, label=panel_types_2_str.get(tabkey),
+                           icon=CATEGORY_ICONS[tabkey.value])
+            tabs.set_value(ConfigPanelType.BAAH_Bsic_Settings.value)
+            with ui.column().classes('baah-nav-scroll'):
+                render_task_list()
 
-                    # DROPDOWN TRIGGER
-                    with ui.button(icon="arrow_drop_down").classes(
-                        "px-1 rounded-l-none border-l border-white/30 blue-button"
-                    ).bind_visibility_from(
-                        msg_obj, "runing_signal", backward=lambda x: x == 0
-                    ):
-                        with ui.menu().classes("min-w-60"):
-                            ui.menu_item(
-                                gui_shared_config.get_text(
-                                    "button_save_and_run_terminal"
-                                ),
-                                on_click=run_in_terminal,
-                            )
-
-                    ui.spinner().bind_visibility_from(
-                        msg_obj, "runing_signal", backward=lambda x: x == 0.25
-                    )
-
-                # Log recovery
-                if msg_obj["runing_signal"] == 1:
-                    ui.timer(0.5, run_in_gui, once=True)
-
-    # Main Layout
-    with ui.element("div").classes(
-        "w-full h-screen overflow-hidden p-0 m-0 box-border"
-    ):
-
-        # 1. Top Bar
-        with ui.element("div").classes("w-full h-[60px] z-10 relative"):
-            render_top_bar()
-
-        # 2. Main Content Area (1:4:2 Ratio), Fixed height
-        # Using flex-basis/grow via style because Tailwind classes flex-1/2/4 might not cover the ratio sum=7 perfectly in default theme
-
-        with ui.row().classes(
-            "w-full h-[calc(100vh-60px)] p-4 pt-2 gap-4 no-wrap items-stretch"
-        ):
-
-            # Placeholder for Left and Middle, created first to maintain row order
-            left_section = (
-                ui.card()
-                .classes("h-full p-0 flex flex-col flex-nowrap overflow-hidden")
-                .style(f"flex: {COLUMN_RATIOS[0]}")
-            )
-            middle_section = (
-                ui.card()
-                .classes("h-full p-0 flex flex-col overflow-hidden")
-                .style(f"flex: {COLUMN_RATIOS[1]}")
-            )
-            right_section = (
-                ui.column()
-                .classes("h-full gap-4 overflow-hidden")
-                .style(f"flex: {COLUMN_RATIOS[2]}")
-            )
-
-            # Populate Right Section immediately to create logArea
-            with right_section:
-                # Description Card (Top 1/3 approximately)
-                with ui.card().classes(
-                    "w-full h-1/3 p-0 flex flex-col overflow-hidden"
-                ):
-                    desc_container = ui.column().classes(
-                        "w-full h-full p-0"
-                    )  # Placeholder for render
-
-                # Log Card (Bottom 2/3 approximately)
-                with ui.card().classes(
-                    "w-full h-2/3 p-0 flex flex-col overflow-hidden"
-                ):
-                    ui.label(gui_shared_config.get_text("text_log")).classes(
-                        "p-2 font-bold border-b border-gray-200 text-xs"
-                    )
-                    with ui.column().classes(
-                        "w-full flex-grow p-0 overflow-hidden relative"
-                    ):
-                        # Create LogArea here
-                        logArea = ui.log(max_lines=1000).classes(
-                            "w-full h-full font-mono text-xs p-2 overflow-auto absolute inset-0"
-                        )
-
-            # Now that logArea exists, get the config list
-            config_choose_list = get_config_list(
-                curr_config, logArea, obj_parsed_dict_of_config
-            )
-            current_panel = config_choose_list[0] if config_choose_list else None
-
-            # Populate Left Section
-            with left_section:
-                # Tab Change Handler
-                def on_tab_change(e):
-                    nonlocal current_tab_type
-                    # Convert integer value back to Enum for filtering
-                    current_tab_type = ConfigPanelType(e.value)
-                    render_task_list.refresh()
-
-                with ui.tabs().classes(
-                    "w-full border-b border-gray-200"
-                ).on_value_change(on_tab_change) as tabs:
-                    for tabkey in panel_types_2_str.keys():
-                        this_tab = ui.tab(
-                            name=tabkey.value, label=panel_types_2_str.get(tabkey)
-                        ).classes("flex-1")
-
-                # Set default value
-                tabs.set_value(ConfigPanelType.BAAH_Bsic_Settings.value)
-
-                with ui.column().classes("w-full flex-grow overflow-y-auto p-0"):
-                    render_task_list()
-
-            # Populate Middle Section
-            with middle_section:
-                render_config_area()
-
-            # Populate Description in previously created container
-            with desc_container:
-                render_description()
+        with middle_section:
+            # 小窗口专用导航开关只切换展示类，不接触配置参数。
+            ui.button(icon='menu', on_click=lambda: workspace.classes(
+                toggle='baah-nav-collapsed')).props('flat').classes('baah-nav-toggle').tooltip(
+                    gui_shared_config.get_text('setting_daily'))
+            render_config_area()

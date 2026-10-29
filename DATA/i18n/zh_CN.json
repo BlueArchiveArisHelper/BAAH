@@ -48,6 +48,7 @@
     "setting_crash_report_manager":"崩溃报告管理器",
 
     "BAAH_desc":"BAAH可以帮助你完成碧蓝档案/蔚蓝档案的日服，国际服，国服官服，国服B服的每日任务。配置文件存放于BAAH_CONFIGS文件夹内。",
+    "desc_project_resources": "这里是此项目的相关主页和视频教程(Bilibili)，请浏览以知晓使用方法",
     "BAAH_get_version":"获取最新版本可以到Github下载，或进群下载",
     "BAAH_attention":"模拟器分辨率请设置为1280*720，240DPI, 最好关闭网络桥接功能; 游戏内 设置选项-游戏-技能动画-关，设置选项-图像-战斗时上下黑边-关。",
 
@@ -97,7 +98,7 @@
     "config_day":"天",
     "config_level":"关卡",
     "config_times":"次数",
-    "config_no_tasks_set_here":"这里没有设置任何任务",
+    "config_no_tasks_set_here":"这天没有设置任何任务，这意味着某一天运行时此任务将会被跳过",
     "config_desc_list_edit":"一个月有30天，如果在这里定义了30天每天刷什么，那么每天都会刷取不同的东西。如果定义了3天，那每三天一轮按照这个来刷取。如果只定义1天，那么每天都按照那个刷。",
     "config_academy":"学院",
     "config_location":"地区",
@@ -173,6 +174,7 @@
     "config_weight_of_hearts":"爱心权重（偏向获取更多学生的好感度）",
     "config_weight_of_lock":"未解锁房间权重（偏向解锁更多房间）",
     "config_buy_ap_attention":"购买体力时请确保有足够的钻石",
+    "config_buy_ap_rules_notice": "如果你在每日流程中添加了一个或多个购买体力流程，每次执行脚本时都会进行一次或多次如下规则的判断以抉择是否购买。请勿设置过高的单价阈值以防止意外情况发生。",
     "config_buy_ap_max_price":"体力单价的最大值（包含）",
     "config_buy_ap_add_times":"购买体力组数",
     "config_pre_command":"任务开始前执行命令, 留空忽略",
@@ -183,7 +185,7 @@
     "desc_note":"备注",
     "config_login_timeout":"登录游戏超时时间（秒）",
     "config_max_emulator_restart_times": "登录超时后模拟器/游戏程序最多重启次数，0为不重启",
-    "desc_team_strength":"设置你的每只编队的学生的攻击属性比例，0到10，不需要考虑属性克制关系。比如一号队伍一半黄攻一半红攻，那么黄攻和红攻的强度都设置为5就可以。",
+    "desc_team_strength":"设置你的每只编队的学生的攻击属性强弱关系。比如一号队伍全是红攻角色，那么红攻的强度设置为9或者10。比如二号队伍一半红攻一半紫攻角色，但是紫攻有大C，那么可以酌情设置高一点：红攻为5紫攻为8",
     "team_red":"红攻",
     "team_yellow":"黄攻",
     "team_blue":"蓝攻",
@@ -205,6 +207,7 @@
     "desc_exam_times":"参与考试的小队数量",
     "desc_exam_allow_fallback":"若考试失败则尝试挑战更低难度关卡",
     "desc_noti_content_diy":"自定义通知内容格式化字符串，使用 %KEY% 包裹想要的字段。你可以在项目的 modules/configs/defaultSettings 查看可用字段",
+    "desc_noti_content_diy_hint": "默认通知内容为流程和日程提醒，你可以自定义通知内容格式化字符串来修改发送的通知内容",
     "desc_noti_when_error": "发生错误时是否发送通知",
     "desc_noti_when_success": "任务成功时是否发送通知",
     "error_if_assault_no_team": "总力战无可出击队伍是否报错",
@@ -234,6 +237,7 @@
     "config_delete_now_activated_pipeline": "删除本流程",
     "config_pipeline": "流程",
     "config_try_enter_event_number": "进入活动页面识别到过期活动或识别失败后尝试额外进入活动页面的次数",
+    "gui_new_update": "检测到更新",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",
@@ -242,7 +246,7 @@
     "config_server_global_en" : "国际服(英文)",
 
 
-    "config_event_status": "是否只在活动开启状态下执行",
+    "config_event_status": "是否只在多倍率活动开启状态下执行",
     "notice_QA":"如何使用以及常见问题，查看官网",
     "mirror_desc":"添加Mirror酱密钥加快更新下载速度/稳定性",
     "notice_steam_esc_break": "PC游戏需关闭键盘按键ui提示，游戏使用16:9窗口化运行。BAAH需以管理员运行。PC日服需要在 模拟器/游戏程序 路径处填写游戏exe文件路径。长按 esc 中断脚本运行",

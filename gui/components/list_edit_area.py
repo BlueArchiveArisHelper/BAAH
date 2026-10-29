@@ -1,12 +1,14 @@
 from nicegui import ui
+from .modern_ui import form_row, surface, operation_bar, notice_box
 from modules.configs.MyConfig import config
 
 def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False, 
-                   min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99):
+                   min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99, *, blockdesc_as_notice=False):
     """
     datadict: 要修改的二维或三维列表，长度代表列表维度
         [str1, str2] 或 [str1, str2, [str3, str4]] 或 [str1, str2, [str3, str4, str5]]
     linedesc: 二维或三维列表的描述，长度代表列表维度
+    blockdesc_as_notice: 是否将区块说明展示为提醒框，默认保持原有普通文字。
     blockdesc: 对于这个块的描述
     has_switch: 是否有单个元素的功能开关，有功能开关的话，二维列表会升三维，三维列表的最后一维会多一个值 表示开关
     min_value_for_1st_dim: 元素长度为2时元素中的第一维度（地区序号）的最小值，默认为1
@@ -20,23 +22,28 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
     subdim = 0
     if dim >= 3:
         subdim = len(linedesc[2])
+    # 列表共用卡片与操作栏，增删及数值约束保持原有逻辑。
     @ui.refreshable
     def item_list():
-        for blocklinedesc in blockdesc.split('\n'):
-            ui.label(f'{blocklinedesc}')
+        # 说明的展示形式由调用方显式指定，不比较翻译后的内容。
+        if blockdesc_as_notice and blockdesc:
+            notice_box(blockdesc)
+        else:
+            for blocklinedesc in blockdesc.split('\n'):
+                ui.label(f'{blocklinedesc}')
         for i in range(len(datadict)):
             line_item = datadict[i]
             ui.label(f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: ')
-            with ui.row():
+            with form_row().classes("baah-list-items"):
                 if len(line_item) == 0:
-                    ui.label(config.get_text("config_no_tasks_set_here"))
+                    notice_box(config.get_text("config_no_tasks_set_here"), tone="warning")
                 for j in range(len(line_item)):
                     if len(linedesc) == 2:
                         # 第i个地区的第j个教室, or 商店里的第i行第j个物品
                         if isinstance(datadict[i][j], tuple) or isinstance(datadict[i][j], list):
                             # 如果该元素是个元组或者列表，那么该元素应当包含一个开关
                             # [值，开关boolean]
-                            with ui.card():
+                            with surface("baah-list-entry"):
                                 ui.number(f'{linedesc[1]}',
                                     min=1,
                                     step=1,
@@ -44,7 +51,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                                     format="%.0f",
                                     value=line_item[j][0],
                                     on_change=lambda v,i=i,j=j: datadict[i][j].__setitem__(0, int(v.value)),
-                                    ).style('width: 60px')
+                                    ).style('width: 128px')
                                 if len(line_item[j]) == 2 and has_switch:
                                     ui.label(config.get_text("button_enable"))
                                     ui.switch(value=line_item[j][1],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(1, bool(v.value)))
@@ -57,11 +64,13 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                                     format="%.0f",
                                     value=line_item[j],
                                     on_change=lambda v,i=i,j=j: datadict[i].__setitem__(j, int(v.value)),
-                                    ).style('width: 60px')
+                                    ).style('width: 128px')
                     elif len(linedesc) == 3:
-                        ui.label(f'{linedesc[1]}:')
-                        with ui.row():
-                            with ui.card():
+                        # 无副标题的列表不额外渲染孤立冒号，字段和值仍按原顺序显示。
+                        if linedesc[1]:
+                            ui.label(f'{linedesc[1]}:')
+                        with form_row().classes("baah-list-items"):
+                            with surface("baah-list-entry"):
                                 for k in range(len(line_item[j])):
                                     # 如果一个元素的数据量超出了给定的文字描述的数量，而且是有开关的
                                     # 那么最后那个'多出来的'数据就是开关
@@ -85,12 +94,12 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                                                 format="%.0f",
                                                 value=line_item[j][k],
                                                 on_change=lambda v,i=i,j=j,k=k: datadict[i][j].__setitem__(k, int(v.value)),
-                                                ).style('width: 60px')
-                with ui.column():
+                                                ).style('width: 128px')
+                with operation_bar().classes("baah-list-actions"):
                     ui.button(f"{config.get_text('button_add')} {linedesc[1]}", on_click=lambda i=i: add_item_item(i))
                     if len(datadict[i]) > 0:
                         ui.button(f"{config.get_text('button_delete')} {linedesc[1]}", on_click=lambda i=i: del_item_item(i), color="red")
-        with ui.row():
+        with form_row().classes("baah-list-items"):
             ui.button(f"{config.get_text('button_add')} {linedesc[0]}", on_click=add_item)
             if len(datadict) > 0:
                 ui.button(f"{config.get_text('button_delete')} {linedesc[0]}", on_click=del_item, color="red")
