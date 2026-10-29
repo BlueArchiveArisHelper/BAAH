@@ -22,7 +22,8 @@ def set_normal(config):
             ]
         ], 
         config.get_text("config_desc_list_edit"),
-        has_switch=True
+        has_switch=True,
+        empty_line_prompt_id="config_no_tasks_set_here"
     )
 
     

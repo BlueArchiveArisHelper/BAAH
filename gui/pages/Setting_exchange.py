@@ -21,5 +21,6 @@ def set_exchange(config):
         ], 
         config.get_text("config_desc_list_edit"),
         has_switch=True,
-        min_value_for_2nd_dim=-1
+        min_value_for_2nd_dim=-1,
+        empty_line_prompt_id="config_no_tasks_set_here"
     )

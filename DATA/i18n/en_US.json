@@ -99,6 +99,7 @@
     "config_level": "Stage",
     "config_times": "Times",
     "config_no_tasks_set_here": "No tasks are configured for this day. This task will be skipped when the script runs on that day.",
+    "config_no_data_set_here": "Empty line here",
     "config_desc_list_edit": "There are 30 days in a month. If you set what to do each day for 30 days, then different combinations will be raid every day. If set for 3 days, then the cycle will be every three days according to the plan. If only 1 day is set, then do the same raid everyday according to that.",
     "config_academy": "Academy",
     "config_location": "Location",

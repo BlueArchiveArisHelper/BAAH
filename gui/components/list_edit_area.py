@@ -3,7 +3,7 @@ from .modern_ui import form_row, surface, operation_bar, notice_box
 from modules.configs.MyConfig import config
 
 def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False, 
-                   min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99, *, blockdesc_as_notice=False):
+                   min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99, *, blockdesc_as_notice=False, empty_line_prompt_id="config_no_data_set_here"):
     """
     datadict: 要修改的二维或三维列表，长度代表列表维度
         [str1, str2] 或 [str1, str2, [str3, str4]] 或 [str1, str2, [str3, str4, str5]]
@@ -11,7 +11,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
     blockdesc_as_notice: 是否将区块说明展示为提醒框，默认保持原有普通文字。
     blockdesc: 对于这个块的描述
     has_switch: 是否有单个元素的功能开关，有功能开关的话，二维列表会升三维，三维列表的最后一维会多一个值 表示开关
-    min_value_for_1st_dim: 元素长度为2时元素中的第一维度（地区序号）的最小值，默认为1
+    min_value_for_1st_dim: 元素长度为3时元素中的第一维度（地区序号）的最小值，默认为1
     min_value_for_2nd_dim: 元素长度为3时元素中的第二维度（关卡序号）的最小值，默认为1
     min_value_for_3rd_dim: 元素长度为3时元素中的第三维度（关卡扫荡次数）的最小值，默认为-99
     """
@@ -36,7 +36,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
             ui.label(f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: ')
             with form_row().classes("baah-list-items"):
                 if len(line_item) == 0:
-                    notice_box(config.get_text("config_no_tasks_set_here"), tone="warning")
+                    notice_box(config.get_text(empty_line_prompt_id), tone="warning")
                 for j in range(len(line_item)):
                     if len(linedesc) == 2:
                         # 第i个地区的第j个教室, or 商店里的第i行第j个物品
