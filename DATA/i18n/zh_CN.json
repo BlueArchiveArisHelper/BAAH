@@ -98,7 +98,8 @@
     "config_day":"天",
     "config_level":"关卡",
     "config_times":"次数",
-    "config_no_tasks_set_here":"这天没有设置任何任务，这意味着某一天运行时此任务将会被跳过",
+    "config_no_tasks_set_here":"这天没有设置任何任务，这意味着当周表排到这一天时此任务将会被跳过",
+    "config_no_data_set_here":"此行目前为空",
     "config_desc_list_edit":"一个月有30天，如果在这里定义了30天每天刷什么，那么每天都会刷取不同的东西。如果定义了3天，那每三天一轮按照这个来刷取。如果只定义1天，那么每天都按照那个刷。",
     "config_academy":"学院",
     "config_location":"地区",
@@ -238,6 +239,8 @@
     "config_pipeline": "流程",
     "config_try_enter_event_number": "进入活动页面识别到过期活动或识别失败后尝试额外进入活动页面的次数",
     "gui_new_update": "检测到更新",
+    "gui_diamond": "青辉石",
+    "gui_credit": "信用点",
 
     "config_server_jp":"日服",
     "config_server_cn":"国服官服",

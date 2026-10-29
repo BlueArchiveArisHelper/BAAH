@@ -4,19 +4,15 @@
 
 ---
 
-BAAH可以帮助你在模拟器内自动完成碧蓝档案（国际服，日服，国服）的每日任务
-
-BAAH can help you finish daily tasks of BlueArchive (Global server, Japan server, CN server) in emulator automatically.
-
----
-
 [ :tada: 全新的项目官网上线啦 | Project website is deployed :tada: ](https://baah.sanmusen.top/)
 
+BAAH可以帮助你在模拟器内或PC端自动完成碧蓝档案（国际服，日服，国服）的每日任务
+
+BAAH can help you finish daily tasks of BlueArchive (Global server, Japan server, CN server) in emulator or desktop automatically.
+
 ---
 
-<img src="./docs/static/GUI_CN.png" />
-<img src="./docs/static/GUI_EN.png" />
-<img src="./docs/static/GUI_JP.png" />
+<img src="./docs/static/baah_page.png" />
 
 
 # Support

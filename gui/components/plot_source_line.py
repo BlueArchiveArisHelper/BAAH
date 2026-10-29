@@ -67,7 +67,7 @@ def filter_data_by_date(data_list, start_date=None, end_date=None):
     return filtered_data
 
 
-def create_line_chart(storage_data_list):
+def create_line_chart(storage_data_list, name_of_credit = 'Credit', name_of_diamond = 'Diamond'):
     """
     创建一个显示credit和diamond随时间变化的折线图。
 
@@ -85,7 +85,7 @@ def create_line_chart(storage_data_list):
         
         # 图例配置
         "legend": {
-            "data": ['Credit', 'Diamond'],
+            "data": [name_of_credit, name_of_diamond],
             "top": 30,
             "textStyle": {"fontSize": 14}
         },
@@ -140,7 +140,7 @@ def create_line_chart(storage_data_list):
         # 数据系列配置
         "series": [
             {
-                "name": 'Credit',
+                "name": name_of_credit,
                 "type": 'line',
                 "data": [[dates[i], credits[i]] for i in range(len(dates))],
                 "yAxisIndex": 0,  # 使用第一个y轴
@@ -162,7 +162,7 @@ def create_line_chart(storage_data_list):
                 }
             },
             {
-                "name": 'Diamond',
+                "name": name_of_diamond,
                 "type": 'line',
                 "data": [[dates[i], diamonds[i]] for i in range(len(dates))],
                 "yAxisIndex": 1,  # 使用第二个y轴

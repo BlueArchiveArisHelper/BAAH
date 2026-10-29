@@ -1,4 +1,4 @@
-myversion = "2.5.2"
+myversion = "2.5.3"
 mychangelog = """
 
 重新优化 GUI 布局和样式 | Re-optimized GUI layout and style
