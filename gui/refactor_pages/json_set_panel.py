@@ -1,7 +1,7 @@
 from enum import Enum
 # 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
 from ..components.modern_ui import (
-    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, CATEGORY_ICONS, PANEL_ICONS,
+    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel,
 )
 
 from ..components.exec_arg_parse import get_token
@@ -55,18 +55,23 @@ class ConfigPanelType(Enum):
     Quick_Task_Settings = 2
 
 
+# 分类名称与图标共同维护，导航只读取分类元数据。
 panel_types_2_str = {
-    ConfigPanelType.BAAH_Bsic_Settings: "BAAH",
-    ConfigPanelType.Daily_Task_Settings: gui_shared_config.get_text("setting_daily"),
-    ConfigPanelType.Quick_Task_Settings: gui_shared_config.get_text(
-        "config_quick_call_task"
-    ),
+    ConfigPanelType.BAAH_Bsic_Settings: {"name": "BAAH", "icon": "settings"},
+    ConfigPanelType.Daily_Task_Settings: {
+        "name": gui_shared_config.get_text("setting_daily"),
+        "icon": "event_note",
+    },
+    ConfigPanelType.Quick_Task_Settings: {
+        "name": gui_shared_config.get_text("config_quick_call_task"),
+        "icon": "build",
+    },
 }
 
 
 class ConfigPanel:
     """
-    连接子页面的i18n名称 与 渲染页面的函数
+    集中定义子页面的名称、图标、分类与渲染入口。
 
     Parameters
     ==========
@@ -76,10 +81,12 @@ class ConfigPanel:
         子页面渲染函数
     desc:
         子页面说明渲染函数 (lambda)
-    lst_config: Config
+    i18n_config:
         传入时通过nameID找到对应i18n名字作为name，为None时name=nameID
     panel_types
         该配置项所属的类型列表，决定在不同的 Tab 栏目下是否显示
+    icon: str
+        导航图标名，与页面一同注册；省略时使用 settings
     """
 
     def __init__(
@@ -89,13 +96,16 @@ class ConfigPanel:
         desc: Callable[[], None] = None,
         i18n_config=None,
         panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
+        *,
+        icon: str = 'settings',
     ):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
-        # 4. Mock description as requested
+        # 未提供说明时，沿用页面名称作为默认说明。
         self.desc = desc if desc else lambda: ui.label(f"{self.name}")
         self.nameID = nameID
         self.panel_types = panel_types
+        self.icon = icon
 
 
 def parse_obj_in_config(inconfig, obj_dict, backward=False):
@@ -131,6 +141,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "BAAH",
             lambda: set_BAAH(lst_config, gui_shared_config),
+            icon='info_outline',
             i18n_config=None,
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("BAAH_desc")),
@@ -139,18 +150,21 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "setting_emulator",
             lambda: set_emulator(lst_config),
+            icon='devices',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         ),
         ConfigPanel(
             "setting_other",
             lambda: set_other(lst_config, gui_shared_config),
+            icon='tune',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         ),
         ConfigPanel(
             "setting_crash_report_manager",
             lambda: Set_Crash_Report_Manager(lst_config),
+            icon='bug_report',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         ),
@@ -159,60 +173,70 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             lambda: set_task_order(
                 lst_config, task_instances_map.task_config_name_2_i18n_name, logArea
             ),
+            icon='format_list_numbered',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "setting_vpn",
             lambda: set_vpn(lst_config, parsed_obj_dict),
+            icon='vpn_lock',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "setting_notification",
             lambda: set_notification(lst_config, gui_shared_config),
+            icon='notifications_none',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_login_game",
             lambda: set_login(lst_config, parsed_obj_dict),
+            icon='exit_to_app',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_cafe",
             lambda: set_cafe(lst_config),
+            icon='local_cafe',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_timetable",
             lambda: set_timetable(lst_config),
+            icon='date_range',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_craft",
             lambda: set_craft(lst_config),
+            icon='build',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_shop",
             lambda: set_shop(lst_config),
+            icon='shopping_cart',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_buy_ap",
             lambda: set_buyAP(lst_config),
+            icon='flash_on',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_wanted",
             lambda: set_wanted(lst_config),
+            icon='my_location',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
@@ -220,6 +244,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "task_special",
             lambda: set_special(lst_config),
+            icon='assignment',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
@@ -227,6 +252,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "task_exchange",
             lambda: set_exchange(lst_config),
+            icon='school',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
@@ -234,12 +260,14 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "task_exam",
             lambda: set_exam(lst_config),
+            icon='assignment_turned_in',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_event",
             lambda: set_event(lst_config),
+            icon='event',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
@@ -247,24 +275,28 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "task_assault",
             lambda: set_assault(lst_config),
+            icon='security',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_grand_assault",
             lambda: set_grand_assault(lst_config),
+            icon='group_work',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_oneclick_raid",
             lambda: set_oneclick_raid(lst_config),
+            icon='playlist_play',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
         ConfigPanel(
             "task_hard",
             lambda: set_hard(lst_config, gui_shared_config),
+            icon='layers',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
@@ -272,6 +304,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "task_normal",
             lambda: set_normal(lst_config),
+            icon='view_module',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
             desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
@@ -279,6 +312,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
         ConfigPanel(
             "task_user_def_task",
             lambda: set_usertask(lst_config, parsed_obj_dict),
+            icon='account_tree',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
         ),
@@ -287,6 +321,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             lambda: set_quick_runtask(
                 lst_config, task_instances_map.task_config_name_2_i18n_name, logArea
             ),
+            icon='play_circle_outline',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Quick_Task_Settings],
             desc=lambda: ui.markdown(
@@ -298,6 +333,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             lambda: set_explore(
                 lst_config, task_instances_map.task_config_name_2_i18n_name, logArea
             ),
+            icon='explore',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Quick_Task_Settings],
         ),
@@ -339,7 +375,7 @@ async def show_json_panel(json_file_name: str):
                 # 导航统一封装为可键盘操作的按钮，不改变页面选择回调。
                 navigation_item(panel.name, panel == current_panel,
                                 lambda _, p=panel: select_panel(p),
-                                icon=PANEL_ICONS.get(panel.nameID, 'settings'))
+                                icon=panel.icon)
 
     @ui.refreshable
     def render_config_area():
@@ -580,11 +616,11 @@ async def show_json_panel(json_file_name: str):
                 current_tab_type = ConfigPanelType(e.value)
                 render_task_list.refresh()
 
-            # 一级页签使用横向图文排列；图标映射只影响展示。
+            # 一级页签使用横向图文排列，名称与图标来自同一分类定义。
             with ui.tabs().props('inline-label').on_value_change(on_tab_change) as tabs:
-                for tabkey in panel_types_2_str.keys():
-                    ui.tab(name=tabkey.value, label=panel_types_2_str.get(tabkey),
-                           icon=CATEGORY_ICONS[tabkey.value])
+                for tabkey, metadata in panel_types_2_str.items():
+                    ui.tab(name=tabkey.value, label=metadata['name'],
+                           icon=metadata['icon'])
             tabs.set_value(ConfigPanelType.BAAH_Bsic_Settings.value)
             with ui.column().classes('baah-nav-scroll'):
                 render_task_list()

@@ -58,24 +58,6 @@ def operation_bar():
     return ui.row().classes('baah-operation-bar')
 
 
-# 图标按稳定的页面标识映射，切换语言时不依赖翻译后的导航文字。
-CATEGORY_ICONS = {0: 'settings', 1: 'event_note', 2: 'build'}
-PANEL_ICONS = {
-    'BAAH': 'info_outline', 'setting_emulator': 'devices',
-    'setting_other': 'tune', 'setting_crash_report_manager': 'bug_report',
-    'setting_task_order': 'format_list_numbered', 'setting_vpn': 'vpn_lock',
-    'setting_notification': 'notifications_none', 'task_login_game': 'exit_to_app',
-    'task_cafe': 'local_cafe', 'task_timetable': 'date_range',
-    'task_craft': 'build', 'task_shop': 'shopping_cart', 'task_buy_ap': 'flash_on',
-    'task_wanted': 'my_location', 'task_special': 'assignment',
-    'task_exchange': 'school', 'task_exam': 'assignment_turned_in',
-    'task_event': 'event', 'task_assault': 'security', 'task_grand_assault': 'group_work',
-    'task_oneclick_raid': 'playlist_play', 'task_hard': 'layers',
-    'task_normal': 'view_module', 'task_user_def_task': 'account_tree',
-    'config_quick_call_task': 'play_circle_outline', 'setting_explore': 'explore',
-}
-
-
 def notice_box(text, *, tone='info'):
     """共用静态提醒框：只展示传入文字，调用方继续负责原有条件和显隐。"""
     if tone not in {'info', 'warning'}:
@@ -214,7 +196,8 @@ body.body--dark.baah-page {
 .baah-notice { padding: 12px 16px; border-left: 3px solid var(--q-warning); background: var(--baah-soft); border-radius: 8px; }
 .baah-notice-text { font-size: 14px; line-height: 1.8; color: var(--q-warning); }
 .baah-list-items .baah-list-items { width: auto; flex: 0 1 auto; }
-.baah-list-entry { flex-direction: row; flex-wrap: wrap; align-items: center; }
+/* 仅纵向排列条目卡片内的字段，外层条目行和操作栏分别控制自身布局。 */
+.baah-list-entry { flex-direction: column; flex-wrap: nowrap; align-items: center; }
 .baah-form-title { font-size: 22px; font-weight: 650; line-height: 1.4; }
 .baah-form-body { width: 100%; min-width: 0; gap: 16px; }
 .baah-form-body > .nicegui-row:first-child { margin-bottom: 0; }
