@@ -1,4 +1,6 @@
 import subprocess
+from ..components.modern_ui import apply_theme, page_shell, surface, form_row
+
 from ..components.json_file_docker import get_json_list, add_new_config, copy_and_rename_config
 
 from nicegui import ui, app, run
@@ -40,13 +42,14 @@ edition = _get_edition()
 @ui.refreshable
 def render_json_list():
     if check_token_dialog(render_json_list):
-        with ui.splitter(value=50).classes('w-full h-full').style("height: calc(100vh - 2rem); overflow-y:auto") as splitter:
-            with splitter.before:
-                with ui.column().style("padding: 10px"):
-                    ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").style('font-size: xx-large')
+        # 首页共用自适应布局：配置优先，辅助信息在窄屏自动下移。
+        with ui.element('div').classes('baah-home-grid'):
+            with surface('baah-home-info'):
+                with ui.column().classes("w-full gap-4"):
+                    ui.label(f"Blue Archive Aris Helper {gui_shared_config.NOWVERSION}").classes('baah-brand-name')
                     
                     # 版本信息
-                    ui.label(edition).style('font-size: large; color: gray')
+                    ui.label(edition).classes('baah-muted')
                     
                     # 项目链接
                     with ui.row():
@@ -56,10 +59,6 @@ def render_json_list():
                     with ui.row():
                         # 暗色模式切换
                         ui.toggle({"light": gui_shared_config.get_text("text_light"), "dark": gui_shared_config.get_text("text_dark"), "system": gui_shared_config.get_text("text_system")}, value=gui_shared_config.softwareconfigdict.get("DARK_MODE", "system"), on_change=lambda e: change_dark_mode(e.value, gui_shared_config)).bind_value_from(gui_shared_config.softwareconfigdict, "DARK_MODE")
-
-                    # 基本介绍
-                    with ui.row():
-                        ui.label(gui_shared_config.get_text("BAAH_desc"))
 
                     # 如何使用
                     with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
@@ -74,12 +73,12 @@ def render_json_list():
                     #=================更新区域=================
                                         
                     # 显示更新信息
-                    release_area = ui.card()
+                    release_area = surface('baah-release')
                     async def show_release():
                         resultVI = await run.io_bound(only_check_version)
                         with release_area:
-                            ui.label(resultVI.msg).style(f'font-size: x-large;{"color: red" if resultVI.has_new_version else ""}')
-                            ui.html(f'<div style="white-space: pre-line;font-size: large">{resultVI.update_body_text}</div>', sanitize=False)
+                            ui.label((gui_shared_config.get_text("gui_new_update") if resultVI.has_new_version else "") + " " + resultVI.msg).classes('baah-group-title').style('color: var(--q-negative)' if resultVI.has_new_version else '')
+                            ui.html(f'<div style="white-space: pre-line;font-size: 14px;line-height: 1.8">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
                                 if edition == "windows-pyinstaller":
                                     # 一键更新按钮(Pyinstaller)
@@ -126,8 +125,8 @@ def render_json_list():
                             ui.notify(f"Failed to update: {e}", type="warning")
                         
                     if edition == "windows-pyinstaller":
-                        # mirror酱密钥
-                        with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
+                        # Mirror 密钥复用可换行表单行，避免源码目录含 EXE 时固定宽度输入框撑破侧栏。
+                        with form_row():
                             ui.input(gui_shared_config.get_text("mirror_desc"), password=True, placeholder="Mirror Key", password_toggle_button=True,
                                     on_change = gui_shared_config.save_software_config
                                     ).bind_value(gui_shared_config.softwareconfigdict, "SEC_KEY_M", 
@@ -137,10 +136,14 @@ def render_json_list():
                             ui.link(text="Mirror", target = "https://mirrorchyan.com/zh/get-start", new_tab=True)
                             
 
-            with splitter.after:
-                with ui.column().style("padding: 20px"):
+            with surface('baah-home-configs'):
+                with ui.column().classes("w-full gap-4"):
                     # ============配置文件区域===========
-                    ui.label(gui_shared_config.get_text("config_file")).style("font-size: xx-large")
+                    ui.label(gui_shared_config.get_text("config_file")).classes("baah-home-title")
+
+                    # 基本介绍
+                    with ui.row():
+                        ui.label(gui_shared_config.get_text("BAAH_desc"))
 
                     # 复制操作的相关参数：被复制的文件名，新文件名
                     copy_related_params = {"old_name":"", "new_name":""}
@@ -153,30 +156,31 @@ def render_json_list():
                             
 
                     # 配置文件名 卡片
-                    with ui.column():
+                    with ui.column().classes("baah-config-list"):
                         for config_name in get_json_list():
-                            with ui.row().classes("flex items-center"):
+                            with surface("baah-config-card"):
                                 # config名
-                                with ui.link(target = f"/panel/{config_name}"):
-                                    with ui.card().props('flat bordered').style("border-radius: 5; border-color: gray;"):
+                                with ui.link(target = f"/panel/{config_name}").classes("baah-config-link"):
+                                    with ui.card().props('flat bordered'):
                                         ui.label(config_name).style("font-size: large;")
                                 # 复制按钮
                                 ui.button(gui_shared_config.get_text("button_copy"), on_click=lambda e, c=config_name:[copy_related_params.update({"old_name":c, "new_name":""}), dialog.open()])
                                 # 快捷方式按钮
                                 ui.button(gui_shared_config.get_text("button_link_to_desktop"), on_click=lambda e, c=config_name:send_quick_call_to_desktop(c) and ui.notify(gui_shared_config.get_text("notice_success")))
                                 # 删除按钮
-                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: fake_delete_config(c), color="red").style("margin: 0px 10px;")
+                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: fake_delete_config(c), color="red").props("outline")
 
                     # 添加配置
                     user_config_name = {"val":""}
-                    with ui.row().classes("flex items-center"):
-                        ui.input("Name").bind_value(user_config_name, "val")
-                        ui.button(gui_shared_config.get_text("button_add"), on_click=lambda: add_new_config(user_config_name["val"])).style(
-                        "height: 30px; line-height: 30px; text-align: center; cursor: pointer;")
+                    with form_row():
+                        ui.input(gui_shared_config.get_text("name")).bind_value(user_config_name, "val")
+                        ui.button(gui_shared_config.get_text("button_add"), on_click=lambda: add_new_config(user_config_name["val"]))
 
 
 @ui.page("/")
 async def home_page():
-    # Dark mode setup
+    # 系统主题会等待浏览器连接，必须先注册头部样式，避免初始页面发送后 CSS 脚本不执行。
+    apply_theme()
     await apply_dark_mode(gui_shared_config)
-    render_json_list()
+    with page_shell(home=True):
+        render_json_list()

@@ -48,6 +48,7 @@
     "setting_crash_report_manager": "クラッシュレポートマネージャー",
 
     "BAAH_desc": "BAAHは、碧藍のアーカイブ/ウルトラブルーアーカイブの日本版、国際版、公式中国版、中国B版のデイリーミッションを自動的に実行します。設定ファイルはBAAH_CONFIGSフォルダに保存されます。",
+    "desc_project_resources": "このプロジェクトの関連ホームページと動画チュートリアル（Bilibili）です。使い方を理解するためにご覧ください。",
     "BAAH_get_version": "最新バージョンはGithubからダウンロードするか、グループ内からダウンロードできます",
     "BAAH_attention": "エミュレータ解像度は1280*720、DPIは240に設定してください, ネットワークブリッジをオフにする; ゲーム内設定オプション-ゲーム-スキルアニメーション-オフ、設定オプション-画像-戦闘時の上下の黒帯-オフ",
 
@@ -97,7 +98,7 @@
     "config_day": "日",
     "config_level": "ステージ",
     "config_times": "回数",
-    "config_no_tasks_set_here": "ここにタスクは設定されていません",
+    "config_no_tasks_set_here": "この日にはタスクが設定されていないため、該当日にスクリプトを実行するとこのタスクはスキップされます。",
     "config_desc_list_edit": "1か月は30日あります。ここで30日ごとに何をクリアするかを定義した場合、毎日異なるものがクリアされます。3日ごとに定義した場合は、3日ごとにループしてクリアされます。1日だけ定義した場合は、毎日その通りにクリアされます。",
     "config_academy": "学院",
     "config_location": "地域",
@@ -173,6 +174,7 @@
     "config_weight_of_hearts":"ハートの重み（偏向ハートを取得する）",
     "config_weight_of_lock":"ロックの重み（偏向ロックを取得する）",
     "config_buy_ap_attention":"APを購入する際は、十分なダイヤモンドがあることを確認してください",
+    "config_buy_ap_rules_notice": "日次実行フローにAP購入タスクを1つ以上追加すると、スクリプトを実行するたびに、その数だけ以下の条件を判定し、APを購入するかどうかを決定します。意図しない購入を防ぐため、単価の上限を高く設定しすぎないでください。",
     "config_buy_ap_max_price":"APの最大価格(含む)",
     "config_buy_ap_add_times":"APを購入する回数",
     "config_pre_command":"タスク開始前に実行するコマンド",
@@ -205,6 +207,7 @@
     "desc_exam_times":"試験を受けるチームの数",
     "desc_exam_allow_fallback": "試験に失敗した場合、難易度の低いレベルに挑戦する",
     "desc_noti_content_diy":"「メール内容のフォーマット文字列をカスタマイズできます。必要なフィールドを %KEY% で囲んで指定してください。利用可能なフィールドは、プロジェクトの modules/configs/defaultSettings で確認できます。」",
+    "desc_noti_content_diy_hint": "既定の通知内容は実行フローとスケジュールのお知らせです。通知内容の書式文字列をカスタマイズして、送信する内容を変更できます。",
     "desc_noti_when_error": "エラーが発生した場合に通知を送信するかどうかを選択します",
     "desc_noti_when_success": "タスクが成功した場合に通知を送信するかどうかを選択します",
     "error_if_assault_no_team": "総力戦で出撃可能なチームがいない場合、エラーが報告されますか",
@@ -234,6 +237,7 @@
     "config_delete_now_activated_pipeline": "現在のフローを削除",
     "config_pipeline": "フロー",
     "config_try_enter_event_number": "イベントページに入る試行回数",
+    "gui_new_update": "New update",
 
     "config_server_jp": "日本サーバー",
     "config_server_cn": "中国公式サーバー",

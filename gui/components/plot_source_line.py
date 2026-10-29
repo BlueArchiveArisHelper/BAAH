@@ -1,4 +1,5 @@
 from nicegui import ui
+from gui.components.modern_ui import style_chart_options
 import json
 from datetime import datetime
 
@@ -186,11 +187,12 @@ def create_line_chart(storage_data_list):
         "grid": {"left": '5%', "right": '8%', "bottom": '15%', "top": '10%', "containLabel": True},  # 调整边距
     }
     
-    chart = ui.echart(options=options)
-    chart.style('height: 600px; width: 100%')
+    # 图表通过公共主题调整可读性与高度，日期筛选和数据序列保持原样。
+    chart = ui.echart(options=style_chart_options(options)).classes('baah-history-chart')
 
     # 存储日期筛选值的变量
-    with ui.row().classes('items-center gap-4'):
+    # 日期与筛选操作共享全宽居中容器，不改变筛选条件或回调。
+    with ui.row().classes('baah-chart-filters'):
         with ui.input('开始日期/Start Date', placeholder='YYYY-MM-DD', value=None) as start_date_input:
             with ui.menu().props('no-parent-event') as start_menu:
                 with ui.date().bind_value(start_date_input):
@@ -208,12 +210,12 @@ def create_line_chart(storage_data_list):
                 ui.icon('edit_calendar').on('click', end_menu.open).classes('cursor-pointer')
         
         # 添加筛选按钮
-        ui.button('应用筛选/Apply Filter', on_click=lambda: update_chart()).classes('mt-4')
+        ui.button('应用筛选/Apply Filter', on_click=lambda: update_chart())
         ui.button('显示全部/Show All', on_click=lambda: (
             setattr(start_date_input, 'value', ''), 
             setattr(end_date_input, 'value', ''),
             update_chart()
-        )).classes('mt-4 ml-2')
+        ))
     
     def update_chart():
         # 根据筛选条件更新图表数据

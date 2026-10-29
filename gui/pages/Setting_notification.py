@@ -73,5 +73,7 @@ def set_notification(config, shared_softwareconfig):
             ui.link("ServerChan", "https://sct.ftqq.com/r/13283", new_tab=True)
             ui.link("Telegram Bot", "https://t.me/BotFather", new_tab=True)
     
-    with ui.row():
+    # 说明与输入框保持同列，原有 placeholder 和配置绑定不变。
+    with ui.column().classes('baah-described-field'):
+        ui.label(config.get_text('desc_noti_content_diy_hint')).classes('baah-help-text')
         ui.textarea(placeholder=config.get_text("desc_noti_content_diy")).bind_value(config.userconfigdict, "CUSTOM_EMAIL").style("width: 500px; height: 200px")

@@ -48,6 +48,7 @@
     "setting_crash_report_manager": "Crash Report Manager",
 
     "BAAH_desc": "BAAH can help you complete the dailies of Blue Archive in the JP server, Global server, CN official server, Bilibili server. All config files are in the BAAH_CONFIGS folder.",
+    "desc_project_resources": "The project homepages and Bilibili video tutorials are listed here. Please review them to learn how to use this project.",
     "BAAH_get_version": "To get the latest version, download from Github or join the group to download",
     "BAAH_attention": "Please set the emulator resolution to 1280*720, 240DPI, better close network bridge; Game settings: the skill animation off, black bars during battles off",
 
@@ -97,7 +98,7 @@
     "config_day": "Day",
     "config_level": "Stage",
     "config_times": "Times",
-    "config_no_tasks_set_here": "No tasks set here",
+    "config_no_tasks_set_here": "No tasks are configured for this day. This task will be skipped when the script runs on that day.",
     "config_desc_list_edit": "There are 30 days in a month. If you set what to do each day for 30 days, then different combinations will be raid every day. If set for 3 days, then the cycle will be every three days according to the plan. If only 1 day is set, then do the same raid everyday according to that.",
     "config_academy": "Academy",
     "config_location": "Location",
@@ -173,6 +174,7 @@
     "config_weight_of_hearts":"Weight of heart, try to increase more relationship with students",
     "config_weight_of_lock":"Weight of lock rooms, try to unlock more rooms",
     "config_buy_ap_attention":"When buying AP, please make sure you have enough diamonds",
+    "config_buy_ap_rules_notice": "If you add one or more Buy AP tasks to your daily pipeline, the rules below will be evaluated once for each such task whenever the script runs to decide whether to buy AP. Avoid setting the maximum price too high to prevent unintended purchases.",
     "config_buy_ap_max_price":"The Maximum price of AP(included)",
     "config_buy_ap_add_times":"Number of times to buy AP",
     "config_pre_command":"Command before task start, leave blank to ignore",
@@ -205,6 +207,7 @@
     "desc_exam_times":"Number of teams to take the exam",
     "desc_exam_allow_fallback":"If the exam fails, attempt to challenge a lower difficulty level",
     "desc_noti_content_diy":"Customize the email content formatting string by wrapping desired fields with %KEY%. You can view available fields in the project's modules/configs/defaultSettings.",
+    "desc_noti_content_diy_hint": "By default, notifications contain workflow and schedule reminders. You can customize the notification format string to change the message that is sent.",
     "desc_noti_when_error": "Whether to send notification when an error occurs",
     "desc_noti_when_success": "Whether to send notification when the task is successful",
     "error_if_assault_no_team": "Throw error if no team can fight in assault",
@@ -234,6 +237,7 @@
     "config_delete_now_activated_pipeline": "Delete Current Pipeline",
     "config_pipeline": "Pipeline",
     "config_try_enter_event_number": "Number of attempts to enter the event page",
+    "gui_new_update": "Detect new update",
 
     "config_server_jp": "Japanese Server",
     "config_server_cn": "Chinese Official Server",
