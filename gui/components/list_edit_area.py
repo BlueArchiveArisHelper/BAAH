@@ -53,8 +53,9 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                                     on_change=lambda v,i=i,j=j: datadict[i][j].__setitem__(0, int(v.value)),
                                     ).style('width: 128px')
                                 if len(line_item[j]) == 2 and has_switch:
-                                    ui.label(config.get_text("button_enable"))
-                                    ui.switch(value=line_item[j][1],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(1, bool(v.value)))
+                                    with form_row():
+                                        ui.checkbox(value=line_item[j][1],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(1, bool(v.value)))
+                                        ui.label(config.get_text("button_enable"))
                         else:
                             # 否则就按照单个数字渲染
                             ui.number(f'{linedesc[1]}',
@@ -76,8 +77,9 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                                     # 那么最后那个'多出来的'数据就是开关
                                     if k >= subdim: # 多出来的数据下标continue掉，没有对应的渲染文字
                                         if k == subdim and has_switch: # 如果刚好多一个数据而且has_switch就渲染个开关
-                                            ui.label(config.get_text("button_enable"))
-                                            ui.switch(value=line_item[j][k],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(k, bool(v.value)))
+                                            with form_row():
+                                                ui.checkbox(value=line_item[j][k],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(k, bool(v.value)))
+                                                ui.label(config.get_text("button_enable"))
                                         continue
                                     #  遍历地区, 关卡和次数
                                     min_value = min_value_for_1st_dim

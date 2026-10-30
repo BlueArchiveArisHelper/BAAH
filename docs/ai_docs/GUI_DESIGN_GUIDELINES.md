@@ -248,6 +248,7 @@ notice_box(config.get_text('config_buy_ap_rules_notice'), tone='warning')
 ```
 
 - `notice_box` 以文字参数决定内容，以 `tone` 显式决定样式，不比较中文、英文或日文字符串。
+- `warning` 提醒框按内容收缩宽度，最长不超过父容器；短提醒不占满整行，长文字与连续字符在窄屏正常换行。`info` 提醒框保持全宽。
 - 图标与正文分列，正文支持长文字和换行；不可仅依赖颜色传达意义。
 - 普通字段解释使用 `.baah-help-text`，与字段一起放入 `.baah-described-field`，解释位于输入框上方；保留原 placeholder 和控件尺寸约束。
 - `.baah-resource-guide` 用于资源说明、主页链接和视频的成组排列。

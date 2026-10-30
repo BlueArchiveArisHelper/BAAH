@@ -246,7 +246,7 @@ body.baah-page::before {
 .baah-notice-box { width: 100%; max-width: 100%; min-width: 0; padding: 12px 16px; gap: 10px; align-items: flex-start; flex-wrap: nowrap; background: var(--baah-soft); border: 1px solid var(--baah-border); border-radius: 8px; border-left: 3px solid var(--q-primary); }
 .baah-notice-icon { font-size: 20px; line-height: 25px; flex: 0 0 20px; color: var(--q-primary); }
 .baah-notice-body { flex: 1; min-width: 0; line-height: 1.8; color: var(--baah-text); white-space: pre-line; overflow-wrap: anywhere; }
-.baah-notice-warning { border-left-color: var(--q-warning); }
+.baah-notice-warning { width: fit-content; border-left-color: var(--q-warning); }
 .baah-notice-warning .baah-notice-icon { color: var(--q-warning); }
 .baah-resource-guide { width: 100%; gap: 12px; }
 .baah-help-text { max-width: 100%; line-height: 1.8; color: var(--baah-muted); overflow-wrap: anywhere; }
