@@ -178,6 +178,7 @@
     "config_api_noti":"是否启用API通知。自定义需注意关键字段格式",
     "config_api_noti_url":"API通知URL",
     "config_api_noti_method":"请求方法",
+    "config_api_noti_header":"POST 请求头（JSON）",
     "config_api_noti_body":"POST 请求体（JSON）",
     "config_api_noti_body_desc":"请输入合法 JSON，字符串中可使用 [token]、[title]、[content] 占位符，分别指代 API通知Token、通知标题、通知内容",
     "config_api_noti_token":"API通知Token",

@@ -72,7 +72,7 @@ class Http_Sender(Message_Sender):
     """
     Api发送类
     """
-    def __init__(self, target_url, token, token_pattern="[token]", is_get=True, content_pattern="[content]", title_pattern="[title]", content="{}") -> None:
+    def __init__(self, target_url, token, token_pattern="[token]", is_get=True, content_pattern="[content]", title_pattern="[title]", content="{}", header="{}") -> None:
         super().__init__()
         self.target_url = target_url
         self.token = token
@@ -81,6 +81,7 @@ class Http_Sender(Message_Sender):
         self.content_pattern = content_pattern
         self.title_pattern = title_pattern
         self.content = content
+        self.header = header
     
     def send(self, message: str, title: str = "BAAH通知") -> str:
         request_url = self.target_url.replace(self.token_pattern, self.token).replace(self.title_pattern, title).replace(self.content_pattern, message)
@@ -98,7 +99,7 @@ class Http_Sender(Message_Sender):
                 return value
 
             request_body = replace_content(json.loads(self.content))
-            headers = {'Content-Type': 'application/json;charset=utf-8'}
+            headers = self.header
             response = http_post(request_url, json=request_body, headers=headers)
         if response.status_code == 200:
             # 自定义通知接口可能返回空响应、纯文本或不含 data 的 JSON。
@@ -160,7 +161,8 @@ def create_notificationer():
             config.userconfigdict['TARGET_HTTP_URL'],
             token=config.userconfigdict['TARGET_HTTP_TOKEN'],
             is_get=config.userconfigdict['WEB_NOTI_TYPE_GET_OR_POST'] == 0,
-            content=config.userconfigdict['WEB_NOTI_POST_CONTENT']
+            content=config.userconfigdict['WEB_NOTI_POST_CONTENT'],
+            header=config.userconfigdict['WEB_NOTI_POST_HEADER'],
         )
         notificationer.add_sender(http_sender)
 

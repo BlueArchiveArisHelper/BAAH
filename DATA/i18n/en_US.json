@@ -178,6 +178,7 @@
     "config_api_noti":"API Notification",
     "config_api_noti_url":"API Notification URL",
     "config_api_noti_method":"Request method",
+    "config_api_noti_header":"POST request headers (JSON)",
     "config_api_noti_body":"POST request body (JSON)",
     "config_api_noti_body_desc":"Enter valid JSON. Use [token], [title], and [content] placeholders in strings.",
     "config_api_noti_token":"API Notification Token",

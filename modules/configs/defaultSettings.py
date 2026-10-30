@@ -343,6 +343,10 @@ defaultUserDict = {
     "WEB_NOTI_POST_CONTENT":{
         "d":r'{"token": "[token]", "title": "[title]", "content": "[content]"}'
     },
+    # 网页url post类型通知内容 Header 内容
+    "WEB_NOTI_POST_HEADER":{
+        "d":r'{"Content-Type": "application/json;charset=utf-8","Authorization": "[token]"}'
+    },
     # 启动加速器操作
     "OBJ_ACTIONS_VPN_START":{
         "d":{},
