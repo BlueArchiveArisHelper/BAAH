@@ -16,6 +16,7 @@ from .modern_ui import form_row, operation_bar
 
 BACKGROUND_NAME = 'background.png'
 BACKGROUND_URL = '/baah/background.png'
+MAX_BACKGROUND_FILE_SIZE = 10 * 1024 * 1024
 IMAGE_FORMATS = ('PNG', 'JPEG', 'WEBP', 'BMP', 'GIF', 'TIFF')
 
 
@@ -92,7 +93,7 @@ def background_settings(shared_softwareconfig) -> None:
     """设置仅在明确操作后保存；缩放输入为草稿，不直接绑定共享配置。"""
     from starlette.formparsers import MultiPartParser
     # 由于锁定的aiofiles库有bug，超过spool_max_size的上传文件会报错，这里修改下默认大小（默认1MB） 
-    MultiPartParser.spool_max_size = 1024 * 1024 * 10  # 10 MB
+    MultiPartParser.spool_max_size = MAX_BACKGROUND_FILE_SIZE  # 10 MB
     text = shared_softwareconfig.get_text
 
     def save_setting(key, value):
@@ -108,6 +109,10 @@ def background_settings(shared_softwareconfig) -> None:
         ui.notify(text(key), type='negative')
 
     async def upload_image(event: events.UploadEventArguments):
+        if event.file.size() > MAX_BACKGROUND_FILE_SIZE:
+            show_error('notice_background_upload_rejected')
+            uploader.reset()
+            return
         try:
             await run.io_bound(save_background_image, await event.file.read())
             save_setting('BACKGROUND_PIC_NAME', BACKGROUND_NAME)
@@ -144,10 +149,10 @@ def background_settings(shared_softwareconfig) -> None:
         ui.navigate.reload()
 
     ui.label(text('setting_display')).classes('baah-section-title')
-    ui.link(text('desc_background_refresh'), target = 'https://www.gamekee.com/ba/614736',new_tab=True).classes('baah-help-text')
+    ui.link(text('desc_background_refresh'), target = 'https://www.gamekee.com/ba/162560',new_tab=True).classes('baah-help-text')
     with form_row():
-        uploader = ui.upload(on_upload=upload_image, auto_upload=True,
-                             on_rejected=lambda: show_error('notice_background_invalid_image')).props(
+        uploader = ui.upload(on_upload=upload_image, auto_upload=True, max_file_size=MAX_BACKGROUND_FILE_SIZE,
+                             on_rejected=lambda: show_error('notice_background_upload_rejected')).props(
             'accept=".png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff" flat no-border hide-upload-btn'
         ).classes('baah-background-upload')
         # 使用原生上传触发器打开本地选择器，外观只保留一个选择按钮。
