@@ -231,11 +231,17 @@ body.baah-page::before {
 .baah-form-body > .nicegui-row:first-child { margin-bottom: 0; }
 .baah-form-body > .nicegui-row:first-child > .baah-text { font-size: 16px !important; font-weight: 600; }
 .baah-description { width: 100%; background: var(--baah-soft); border-radius: 8px; }
-.baah-description .q-expansion-item__content { padding: 0 16px 12px; overflow-wrap: anywhere; }
+/* Quasar animates this box's height; bottom padding here can't reach 0 and snaps, so it lives on the last child. */
+.baah-description .q-expansion-item__content { padding: 0 16px; overflow-wrap: anywhere; }
+/* Quasar's empty ::before/::after would each pick up NiceGUI's 16px flex gap and pad the text top and bottom */
+.baah-description .q-expansion-item__content::before, .baah-description .q-expansion-item__content::after { display: none; }
+.baah-description .q-expansion-item__content > :first-child { padding-top: 4px; }
+.baah-description .q-expansion-item__content > :last-child { padding-bottom: 12px; }
 .baah-description .q-item { min-height: 38px; font-size: 13px; color: var(--baah-muted); }
 .baah-log-panel { width: 100%; flex: none; background: var(--baah-surface); border: 1px solid var(--baah-border); border-radius: 12px; overflow: hidden; }
 .baah-log-panel .q-item { min-height: 40px; font-size: 13px; }
-.baah-log { height: min(200px, 30dvh); min-height: 120px; width: 100%; padding: 0; border-top: 1px solid var(--baah-border); background: var(--baah-soft); font: 12px/1.7 Consolas, monospace; overflow: hidden; }
+/* No flex shrink: Quasar measures the open height while the box is clamped to 0, and a shrunk log made it stop short, then jump. */
+.baah-log { flex: none; height: min(200px, 30dvh); min-height: 120px; width: 100%; padding: 0; border-top: 1px solid var(--baah-border); background: var(--baah-soft); font: 12px/1.7 Consolas, monospace; overflow: hidden; }
 /* 日志使用 Quasar 自带滚动区，移除外层重复滚动与展开容器默认留白。 */
 .baah-log-panel .q-expansion-item__content { padding: 0; }
 .baah-log-panel .q-expansion-item__content > .nicegui-column { padding: 0; gap: 0; }
