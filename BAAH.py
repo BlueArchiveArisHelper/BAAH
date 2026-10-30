@@ -37,6 +37,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
     # ============= Import =============
 
     import os
+    import traceback
     import psutil
     from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app, get_screenshot_cv_data,return_now_activate_pipeline
     from modules.AllTask.myAllTask import my_AllTask
@@ -442,7 +443,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
             logging.info({"zh_CN": "通知发送结束", "en_US": "Finished sending notification"})
         except Exception as e:
             logging.error({"zh_CN": "发送通知失败", "en_US": "Failed to send notification"})
-            logging.error(e)
+            logging.error(traceback.format_exc())
 
     def BAAH_auto_quit(key_map_func = None, meet_error = False):
         """ 结束运行，如果用户没有勾选自动关闭模拟器与BAAH，等待用户按回车键 """
