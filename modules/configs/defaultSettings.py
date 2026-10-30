@@ -343,6 +343,10 @@ defaultUserDict = {
     "WEB_NOTI_POST_CONTENT":{
         "d":r'{"token": "[token]", "title": "[title]", "content": "[content]"}'
     },
+    # 网页url post类型通知内容 Header 内容
+    "WEB_NOTI_POST_HEADER":{
+        "d":r'{"Content-Type": "application/json;charset=utf-8","Authorization": "[token]"}'
+    },
     # 启动加速器操作
     "OBJ_ACTIONS_VPN_START":{
         "d":{},
@@ -451,6 +455,15 @@ defaultSoftwareDict = {
     "SEC_KEY_M":{
         "d": "",
     },
+    # 背景图片路径，为空时无背景图片
+    "BACKGROUND_PIC_NAME":{
+        "d": "",
+    },
+    # 背景图片缩放大小
+    "BACKGROUND_PIC_SCALE":{
+        "d": 100.0,
+    }
+
 }
 
 # sessiondict是一个dict，存储一个BAAH配置任务的运行时信息，每次运行的时候都会按照以下内容初始化一个新的sessiondict

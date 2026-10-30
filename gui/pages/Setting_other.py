@@ -2,6 +2,7 @@ from nicegui import ui, run
 import cv2
 from gui.components.cut_screenshot import cut_screenshot, test_screencut
 from gui.components.list_edit_area import list_edit_area
+from gui.components.background_settings import background_settings
 import os
 import subprocess
 import time
@@ -16,7 +17,9 @@ def set_other(config, gui_shared_config):
         ui.link_target("TOOL_PATH")
         ui.label(config.get_text("setting_other")).style('font-size: x-large')
 
-    ui.label("BAAH Settings").style('font-size: x-large')
+    background_settings(gui_shared_config)
+
+    ui.label("BAAH Settings").classes('baah-section-title')
     
     with ui.row():
         # 日志保存
