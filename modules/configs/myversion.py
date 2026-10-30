@@ -1,4 +1,4 @@
-myversion = "2.5.5"
+myversion = "2.5.6"
 mychangelog = """
 
 添加 GUI 自定义背景图片，请前往 BAAH-其他设置 页面进行设置 | Add custom background image, go BAAH-other settings page to set it

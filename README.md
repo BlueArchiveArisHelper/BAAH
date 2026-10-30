@@ -12,8 +12,11 @@ BAAH can help you finish daily tasks of BlueArchive (Global server, Japan server
 
 ---
 
-<img src="./docs/static/baah_page.png" />
+<img src="./docs/static/baah_show_pic_1.png" />
+<img src="./docs/static/baah_show_pic_2.png" />
 
+> [!NOTE]
+> 背景图像由用户本地存储并选择，本项目不存储任何live2D文件或图片 | Background pictures are locally stored and selected by users, this project does not store any live2D resources or pictures
 
 # Support
 
