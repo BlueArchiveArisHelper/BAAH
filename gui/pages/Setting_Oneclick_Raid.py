@@ -19,5 +19,7 @@ def set_oneclick_raid(config):
             ]
         ],
         config.get_text("desc_one_click_raid"),
-        has_switch=True
+        # 一键扫荡的使用前提统一展示为信息提醒框。
+        has_switch=True,
+        blockdesc_as_notice=True
     )

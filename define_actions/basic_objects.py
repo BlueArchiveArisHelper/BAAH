@@ -6,6 +6,7 @@ import zipfile
 import io
 from datetime import datetime
 from nicegui import ui,events
+from gui.components.modern_ui import surface, operation_bar
 from gui.components.cut_screenshot import screencut_button, cut_screenshot
 from gui.components.get_app_entrance import get_app_entrance_button
 from modules.utils import *
@@ -19,6 +20,20 @@ from modules.utils import *
 # to_json_dict 必须导出 id_name，以及其他用户会改变的，需要持久化的参数
 # return_copy 时，防止同名实例内参数被引用修改，用户能够修改的那些参数需要深拷贝
 #=======================
+
+# 在 define_actions 内定义存储和使用的字典值
+dict_values = {}
+def set_value_in_dict(name, val):
+    dict_values[name] = val
+    return True
+def get_value_in_dict(name):
+    return dict_values.get(name, 0)
+def inc_value_in_dict(name):
+    dict_values[name] = dict_values.get(name, 0) + 1
+    return dict_values[name]
+def dec_value_in_dict(name):
+    dict_values[name] = dict_values.get(name, 0) - 1
+    return dict_values[name]
 
 # 定义跳转异常，靠异常捕获实现行号跳转
 class FlowInterruptException(Exception):
@@ -683,22 +698,23 @@ class FlowActionGroup:
     def render_gui(self, dataconfig):
         @ui.refreshable
         def flow_group_area():
-            with ui.column():
+            # 动作编辑器共用展示容器，不改变动作对象或序列化。
+            with ui.column().classes("baah-flow-editor"):
                 # 第一行，添加按钮 和 导出按钮
-                with ui.row():
+                with operation_bar():
                     ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
                     ui.button("Save", on_click=lambda: save_zip())
                     ui.upload(on_upload=lambda e:upload_zip(e), max_files=1, auto_upload=True)
                 for i,action in enumerate(self.action_list):
-                    with ui.card():
+                    with surface("baah-flow-card"):
                         # 每个 action block
-                        with ui.row():
+                        with operation_bar():
                             with ui.column():
                                 with ui.row().style("align-items: center;"):
                                     ui.select({k:dataconfig.get_text(k) for k in flowitem_id2obj}, value=action.id_name, on_change=lambda v,idx=i: change_flow_item_obj(v.value, idx))
                                     ui.label(f"ID: {action.id}")
                                 action.render_gui(dataconfig)
-                        with ui.row():
+                        with operation_bar():
                             # 该行下方添加
                             ui.button(dataconfig.get_text("button_add"), on_click=lambda x,idx=i:add_flow_item(idx+1))
                             # 删除该行

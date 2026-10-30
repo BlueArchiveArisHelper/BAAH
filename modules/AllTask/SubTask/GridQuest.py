@@ -454,7 +454,7 @@ class GridQuest(Task):
                         mode = "head"
                         # 优先使用三角逼近
                         knn_positions = [self.grider.get_head_triangle(get_screenshot_cv_data())]
-                        if knn_positions[0][0] < 0 or knn_positions[0][1] < 0:
+                        if knn_positions[0] is None or knn_positions[0][0] < 0 or knn_positions[0][1] < 0:
                             # 如果三角逼近失败，那么使用头部黄色标识KNN识别
                             logging.warn({"zh_CN": "三角逼近失败，尝试识别头部黄色标识中心",
                                           "en_US": "Triangle approximation failed, "

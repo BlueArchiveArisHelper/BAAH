@@ -130,6 +130,46 @@ _main_actions = [
         ],
         line_edit_type=None,
         edit_value_map=None
-        
-    )
+    ),
+    SubActionMainObj(
+        id_name="set_value_in_dict",
+        action_gui_name="set_value_in_dict",
+        action_func=lambda name,val: set_value_in_dict(name.strip(), val),
+        action_params=[
+            ParamsObj('name', 'name', ParamsTypes.STRING, ''),
+            ParamsObj('value', 'value', ParamsTypes.NUMBER, 0)
+        ],
+        line_edit_type=None,
+        edit_value_map=None
+    ),
+    SubActionMainObj(
+        id_name="get_value_in_dict",
+        action_gui_name="get_value_in_dict",
+        action_func=lambda name: get_value_in_dict(name.strip()),
+        action_params=[
+            ParamsObj('name', 'name', ParamsTypes.STRING, '')
+        ],
+        line_edit_type=None,
+        edit_value_map=None
+    ),
+    SubActionMainObj(
+        id_name="inc_value_in_dict",
+        action_gui_name="inc_value_in_dict",
+        action_func=lambda name: inc_value_in_dict(name.strip()),
+        action_params=[
+            ParamsObj('name', 'name', ParamsTypes.STRING, '')
+        ],
+        line_edit_type=None,
+        edit_value_map=None
+    ),
+    SubActionMainObj(
+        id_name="dec_value_in_dict",
+        action_gui_name="dec_value_in_dict",
+        action_func=lambda name: dec_value_in_dict(name.strip()),
+        action_params=[
+            ParamsObj('name', 'name', ParamsTypes.STRING, '')
+        ],
+        line_edit_type=None,
+        edit_value_map=None
+    ),
 ]

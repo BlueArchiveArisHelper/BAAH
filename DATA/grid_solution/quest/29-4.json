@@ -18,7 +18,8 @@
             {
                 "name": "B",
                 "type": "yellow",
-                "position": "center"
+                "position": "right",
+                "click": [908, 281]
             }
         ],
         "fight_plan": [
@@ -26,12 +27,14 @@
                 {
                     "team": "A",
                     "action": "move",
-                    "target": "right"
+                    "target": "right",
+                    "click": [616, 419]
                 },
                 {
                     "team": "B",
                     "action": "move",
-                    "target": "left"
+                    "target": "left",
+                    "click": [656, 352]
                 }
             ],
             [
@@ -101,7 +104,8 @@
                 {
                     "team": "A",
                     "action": "move",
-                    "target": "right"
+                    "target": "right",
+                    "click": [658, 426]
                 }
             ],
             [

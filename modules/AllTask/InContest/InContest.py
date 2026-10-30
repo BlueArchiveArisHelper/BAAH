@@ -79,6 +79,7 @@ class InContest(Task):
         try: 
             rank_list = self.recognize_rank()
             level_list = self.recognize_level()
+            logging.info(f"ocr rank list: {rank_list}, level list: {level_list}")
             assert len(rank_list) == len(level_list)
             # 计算加权
             pri_level = config.userconfigdict["CONTEST_LEVEL_PRIORITY"]

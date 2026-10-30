@@ -1,4 +1,5 @@
 from nicegui import ui, run
+from .modern_ui import form_row
 from modules.utils import connect_to_device, get_now_running_app,  get_now_running_app_entrance_activity, screen_shot_to_global, screencut_tool
 
 def screencut_button(inconfig, resultdict, resultkey, input_text=None, button_text=None, save_folder_path = None, post_process = None):
@@ -11,11 +12,12 @@ def screencut_button(inconfig, resultdict, resultkey, input_text=None, button_te
         input_text = inconfig.get_text("text_screenshot")
     if button_text is None:
         button_text = inconfig.get_text("text_screenshot")
-    with ui.row().style("width:300px; height: 150px"):
+    # 预览与路径操作统一响应式布局，不改变截图与回填流程。
+    with ui.row().classes("baah-image-preview"):
         # 图片
         ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
     
-    with ui.row():
+    with form_row():
         ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")
         ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True, save_folder_path=save_folder_path, post_process=post_process))
     
