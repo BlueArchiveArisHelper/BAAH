@@ -1,4 +1,5 @@
 from enum import Enum
+from ..components.background_settings import apply_background
 # 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
 from ..components.modern_ui import (
     apply_theme, page_shell, surface, navigation_item, description_panel, log_panel,
@@ -345,6 +346,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
 async def show_json_panel(json_file_name: str):
     # 直达配置页也需在首次等待前注册样式，确保“跟随系统”模式下布局正常。
     apply_theme()
+    apply_background(gui_shared_config)
     await apply_dark_mode(gui_shared_config)
     # 0. Setup and Parse same as old file
     obj_parsed_dict_of_config = {}

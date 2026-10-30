@@ -109,19 +109,35 @@ def style_chart_options(options):
 
 STYLES = '''
 body.baah-page {
-    --baah-bg: #f3f6fb; --baah-surface: #fff; --baah-soft: #f8fafd;
+    --baah-bg: #f3f6fb; --baah-overlay-surface: #fff;
+    --baah-surface: var(--baah-overlay-surface); --baah-soft: #f8fafd;
     --baah-text: #25344b; --baah-muted: #687a91; --baah-border: #e0e7f0;
     --baah-accent: #2563eb; --baah-selected: #eaf2ff; --baah-hover: #f0f5fc;
     --baah-category-selected: #bfdbfe; --baah-page-selected: #f0f6ff;
     background: var(--baah-bg); color: var(--baah-text);
     font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; font-size: 14px;
-    margin: 0; overflow: auto;
+    margin: 0; overflow: auto; isolation: isolate;
 }
 body.body--dark.baah-page {
-    --baah-bg: #101827; --baah-surface: #182234; --baah-soft: #1d2a40;
+    --baah-bg: #101827; --baah-overlay-surface: #182234; --baah-soft: #1d2a40;
     --baah-text: #e2eaf6; --baah-muted: #a0b1c8; --baah-border: #2d3c53;
     --baah-accent: #93c5fd; --baah-selected: #233b60; --baah-hover: #213149;
     --baah-category-selected: #365b88; --baah-page-selected: #1f3049;
+}
+/* 只有存在有效背景图时，普通页面表面才透出中景。 */
+body.baah-page.baah-has-background { --baah-surface: transparent; --baah-soft: transparent; }
+/* 后景由 body 主题色提供；中景独立于前景，不参与布局或拦截操作。 */
+body.baah-page::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: var(--baah-background-image, none);
+    background-size: var(--baah-background-size, auto);
+    background-position: right bottom; background-repeat: no-repeat;
+    -webkit-mask-image: linear-gradient(to right, transparent 40%, #000 60%),
+                        linear-gradient(to bottom, transparent 0%, #000 25%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent 40%, #000 60%),
+                linear-gradient(to bottom, transparent 0%, #000 25%);
+    mask-composite: intersect;
 }
 .baah-page .nicegui-content { padding: 0; gap: 0; }
 .baah-page * { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: #9aaac0 transparent; }
@@ -134,7 +150,10 @@ body.body--dark.baah-page {
     border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px #1c355305; min-width: 0; }
 .baah-page .q-card { background: var(--baah-surface); border-color: var(--baah-border); border-radius: 12px; }
 .baah-page .q-field { color: var(--baah-text); min-width: 0; }
-.baah-page .q-field__control { border-radius: 8px; }
+.baah-page .q-field__control { border-radius: 8px; background: var(--baah-surface); }
+/* 输入沿用所属表面底色，保留选中及焦点等状态。 */
+.baah-page .q-field--filled .q-field__control:before { background: transparent; }
+.baah-page .q-uploader, .baah-page .q-uploader__header { background: var(--baah-surface); }
 .baah-page .q-field--outlined .q-field__control:before { border-color: var(--baah-border); }
 .baah-page .q-field__label, .baah-muted { color: var(--baah-muted); }
 .baah-page .q-checkbox__label, .baah-page .q-radio__label { overflow-wrap: anywhere; }
@@ -142,6 +161,10 @@ body.body--dark.baah-page {
 .baah-page .q-btn__content { gap: 5px; }
 .baah-page .q-btn:focus-visible { box-shadow: 0 0 0 3px #3b82f633; }
 .baah-page .q-btn--round { border-radius: 50%; }
+/* 浮层独立于背景状态，其内部卡片与输入也继承不透明的主题表面。 */
+.baah-page .q-menu, .baah-page .q-dialog__inner {
+    --baah-surface: var(--baah-overlay-surface); --baah-soft: var(--baah-overlay-surface);
+}
 .baah-page .q-menu { border: 1px solid var(--baah-border); background: var(--baah-surface); border-radius: 10px; }
 .baah-page .q-dialog__inner > .q-card { max-width: min(720px, calc(100vw - 32px)); overflow: auto; max-height: calc(100dvh - 48px); }
 .baah-header { width: 100%; flex: none; gap: 12px; padding: 12px 16px; }
@@ -199,6 +222,11 @@ body.body--dark.baah-page {
 /* 仅纵向排列条目卡片内的字段，外层条目行和操作栏分别控制自身布局。 */
 .baah-list-entry { flex-direction: column; flex-wrap: nowrap; align-items: center; }
 .baah-form-title { font-size: 22px; font-weight: 650; line-height: 1.4; }
+.baah-section-title { font-size: x-large; }
+.baah-background-upload { width: auto; min-width: 0; box-shadow: none; }
+.baah-background-upload .q-uploader__header { padding: 0; }
+.baah-background-upload .q-uploader__list { display: none; }
+.baah-background-scale { width: 200px; }
 .baah-form-body { width: 100%; min-width: 0; gap: 16px; }
 .baah-form-body > .nicegui-row:first-child { margin-bottom: 0; }
 .baah-form-body > .nicegui-row:first-child > .baah-text { font-size: 16px !important; font-weight: 600; }

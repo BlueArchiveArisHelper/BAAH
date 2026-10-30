@@ -451,6 +451,15 @@ defaultSoftwareDict = {
     "SEC_KEY_M":{
         "d": "",
     },
+    # 背景图片路径，为空时无背景图片
+    "BACKGROUND_PIC_NAME":{
+        "d": "",
+    },
+    # 背景图片缩放大小
+    "BACKGROUND_PIC_SCALE":{
+        "d": 100.0,
+    }
+
 }
 
 # sessiondict是一个dict，存储一个BAAH配置任务的运行时信息，每次运行的时候都会按照以下内容初始化一个新的sessiondict

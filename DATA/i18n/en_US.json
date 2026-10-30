@@ -47,6 +47,16 @@
     "setting_daily": "Daily Task",
     "setting_crash_report_manager": "Crash Report Manager",
 
+    "setting_display": "Display Settings",
+    "button_background_select": "Choose Background Image",
+    "config_background_scale": "Background Image Scale",
+    "button_background_apply_scale": "Apply Scale",
+    "button_background_clear": "Clear Background Image",
+    "desc_background_refresh": "Choosing an image, applying its scale, or clearing it immediately saves the display settings and reloads the page. Save other pending configuration changes first.",
+    "notice_background_invalid_image": "This image could not be read. Choose a valid PNG, JPEG, WebP, BMP, GIF, or TIFF image.",
+    "notice_background_invalid_scale": "Enter a valid scale between 20.0 and 200.0.",
+    "notice_background_file_error": "The background image or display settings could not be saved. Check that the files are writable.",
+
     "BAAH_desc": "BAAH can help you complete the dailies of Blue Archive in the JP server, Global server, CN official server, Bilibili server. All config files are in the BAAH_CONFIGS folder.",
     "desc_project_resources": "The project homepages and Bilibili video tutorials are listed here. Please review them to learn how to use this project.",
     "BAAH_get_version": "To get the latest version, download from Github or join the group to download",

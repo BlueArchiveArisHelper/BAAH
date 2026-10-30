@@ -1,5 +1,6 @@
 import subprocess
 from ..components.modern_ui import apply_theme, page_shell, surface, form_row
+from ..components.background_settings import apply_background
 
 from ..components.json_file_docker import get_json_list, add_new_config, copy_and_rename_config
 
@@ -181,6 +182,7 @@ def render_json_list():
 async def home_page():
     # 系统主题会等待浏览器连接，必须先注册头部样式，避免初始页面发送后 CSS 脚本不执行。
     apply_theme()
+    apply_background(gui_shared_config)
     await apply_dark_mode(gui_shared_config)
     with page_shell(home=True):
         render_json_list()
