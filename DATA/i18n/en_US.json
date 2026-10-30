@@ -53,6 +53,7 @@
     "button_background_apply_scale": "Apply Scale",
     "button_background_clear": "Clear Background Image",
     "desc_background_refresh": "Choosing an image, applying its scale, or clearing it immediately saves the display settings and reloads the page. Save other pending configuration changes first.",
+    "desc_background_source": "Download character PNG artwork from an information site.",
     "notice_background_invalid_image": "This image could not be read. Choose a valid PNG, JPEG, WebP, BMP, GIF, or TIFF image.",
     "notice_background_upload_rejected": "Choose a supported image format with a file size no larger than 10 MB.",
     "notice_background_invalid_scale": "Enter a valid scale between 20.0 and 200.0.",

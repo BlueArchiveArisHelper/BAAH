@@ -99,7 +99,9 @@ class Http_Sender(Message_Sender):
                 return value
 
             request_body = replace_content(json.loads(self.content))
-            headers = self.header
+            headers = replace_content(json.loads(self.header))
+            if not isinstance(headers, dict):
+                raise ValueError('POST headers must be a JSON object')
             response = http_post(request_url, json=request_body, headers=headers)
         if response.status_code == 200:
             # 自定义通知接口可能返回空响应、纯文本或不含 data 的 JSON。

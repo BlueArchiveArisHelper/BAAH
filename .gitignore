@@ -16,7 +16,8 @@ notrack_*.py
 /DATA/USER_STORAGE
 /aria2.zip
 /DATA/CRASH_REPORTS/
-tests/
+tests/*
+!tests/test_notification_and_background.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

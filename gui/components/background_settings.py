@@ -4,6 +4,7 @@ from io import BytesIO
 import math
 from pathlib import Path
 import tempfile
+import traceback
 
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
@@ -79,7 +80,8 @@ def apply_background(shared_softwareconfig) -> None:
             # 1080px 高度为基准；由 CSS 随视窗高度调整，不需要刷新或监听 resize。
             size = (f'calc(100dvh * {width * scale:g} / 1080) '
                     f'calc(100dvh * {height * scale:g} / 1080)')
-        except (OSError, ValueError, Image.DecompressionBombError):
+        except Exception as e:
+            print(f"Error when apply background: {traceback.format_exc()}")
             pass
     # 以实际可用图片决定表面样式，配置中有文件名并不代表文件仍然有效。
     if image == 'none':
@@ -149,7 +151,8 @@ def background_settings(shared_softwareconfig) -> None:
         ui.navigate.reload()
 
     ui.label(text('setting_display')).classes('baah-section-title')
-    ui.link(text('desc_background_refresh'), target = 'https://www.gamekee.com/ba/162560',new_tab=True).classes('baah-help-text')
+    ui.label(text('desc_background_refresh')).classes('baah-help-text')
+    ui.link(text('desc_background_source'), target='https://www.gamekee.com/ba/162560', new_tab=True).classes('baah-help-text')
     with form_row():
         uploader = ui.upload(on_upload=upload_image, auto_upload=True, max_file_size=MAX_BACKGROUND_FILE_SIZE,
                              on_rejected=lambda: show_error('notice_background_upload_rejected')).props(

@@ -53,6 +53,7 @@
     "button_background_apply_scale": "拡大率を適用",
     "button_background_clear": "背景画像を削除",
     "desc_background_refresh": "画像の選択、拡大率の適用、画像の削除を行うと、表示設定を即座に保存してページを再読み込みします。他の未保存の設定は先に保存してください。",
+    "desc_background_source": "情報サイトなどでキャラクターの PNG 立ち絵をダウンロードできます。",
     "notice_background_invalid_image": "画像を読み込めません。有効な PNG、JPEG、WebP、BMP、GIF、TIFF 画像を選択してください。",
     "notice_background_upload_rejected": "対応する画像形式で、ファイルサイズが 10 MB 以下の画像を選択してください。",
     "notice_background_invalid_scale": "20.0 から 200.0 の範囲で有効な拡大率を入力してください。",
