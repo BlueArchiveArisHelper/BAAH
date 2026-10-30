@@ -70,6 +70,21 @@ panel_types_2_str = {
 }
 
 
+def description_text(*text_ids):
+    """
+    Build a page description from i18n texts, joined by a blank line, that keeps line breaks as typed.
+    Keys missing from the current language pack are skipped, so an untranslated page shows only what it has.
+
+    Args:
+        text_ids: i18n keys to show, in order.
+
+    Returns:
+        A function that renders the description label.
+    """
+    text = "\n\n".join(gui_shared_config.get_text(t) for t in text_ids if gui_shared_config.has_text(t))
+    return lambda: ui.label(text).classes('baah-description-text')
+
+
 class ConfigPanel:
     """
     集中定义子页面的名称、图标、分类与渲染入口。
@@ -102,8 +117,14 @@ class ConfigPanel:
     ):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
-        # 未提供说明时，沿用页面名称作为默认说明。
-        self.desc = desc if desc else lambda: ui.label(f"{self.name}")
+        # Without a `desc`, show `config_desc_<nameID>` if it exists, else fall back to the page name.
+        if not desc:
+            desc_id = f"config_desc_{nameID}"
+            if gui_shared_config.has_text(desc_id):
+                desc = description_text(desc_id)
+            else:
+                desc = lambda: ui.label(self.name)
+        self.desc = desc
         self.nameID = nameID
         self.panel_types = panel_types
         self.icon = icon
@@ -240,7 +261,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='my_location',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=description_text("config_desc_task_wanted", "config_desc_times"),
         ),
         ConfigPanel(
             "task_special",
@@ -248,7 +269,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='assignment',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=description_text("config_desc_task_special", "config_desc_times"),
         ),
         ConfigPanel(
             "task_exchange",
@@ -256,7 +277,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='school',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=description_text("config_desc_task_exchange", "config_desc_times"),
         ),
         ConfigPanel(
             "task_exam",
@@ -271,7 +292,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='event',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=description_text("config_desc_task_event", "config_desc_times"),
         ),
         ConfigPanel(
             "task_assault",
@@ -300,7 +321,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='layers',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=description_text("config_desc_task_hard", "config_desc_times"),
         ),
         ConfigPanel(
             "task_normal",
@@ -308,7 +329,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='view_module',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=description_text("config_desc_task_normal", "config_desc_times"),
         ),
         ConfigPanel(
             "task_user_def_task",
@@ -325,9 +346,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='play_circle_outline',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Quick_Task_Settings],
-            desc=lambda: ui.markdown(
-                gui_shared_config.get_text("config_desc_quick_call_task")
-            ),
+            desc=description_text("config_desc_quick_call_task"),
         ),
         ConfigPanel(
             "setting_explore",

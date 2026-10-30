@@ -238,6 +238,7 @@ body.baah-page::before {
 .baah-description .q-expansion-item__content > :first-child { padding-top: 4px; }
 .baah-description .q-expansion-item__content > :last-child { padding-bottom: 12px; }
 .baah-description .q-item { min-height: 38px; font-size: 13px; color: var(--baah-muted); }
+.baah-description-text { white-space: pre-line; }
 .baah-log-panel { width: 100%; flex: none; background: var(--baah-surface); border: 1px solid var(--baah-border); border-radius: 12px; overflow: hidden; }
 .baah-log-panel .q-item { min-height: 40px; font-size: 13px; }
 /* No flex shrink: Quasar measures the open height while the box is clamped to 0, and a shrunk log made it stop short, then jump. */
