@@ -38,3 +38,16 @@ def return_now_activate_pipeline(use_config):
             task_onoff.append(False)
 
     return activate_pipeline, task_onoff, all_pipelines, activate_pipeline_ind
+
+def day_plan_index(day, n):
+    """
+    Pick the day plan that runs on a date: Day 1 on the 1st, Day 2 on the 2nd, and back to Day 1 after the last day.
+
+    Args:
+        day: the date of the month, 1 to 31.
+        n: how many day plans there are.
+
+    Returns:
+        The index of the day plan in its list.
+    """
+    return (day - 1) % n

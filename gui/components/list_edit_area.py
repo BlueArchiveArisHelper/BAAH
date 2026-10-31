@@ -2,6 +2,7 @@ import time
 from nicegui import ui
 from .modern_ui import form_row, surface, operation_bar, notice_box, info_tip
 from modules.configs.MyConfig import config
+from modules.utils.data_utils import day_plan_index
 
 def ordinal(n):
     # 1st, 2nd, 3rd, 4th ... 11th, 12th, 13th ... 21st
@@ -9,8 +10,8 @@ def ordinal(n):
     return f"{n}{suffix}"
 
 def run_dates(i, n):
-    # Plan `i` runs on these dates of the month. Keep in step with `tm_mday % len(...)` in InWanted, InSpecial, InExchange, InQuest and InEvent
-    return [d for d in range(1, 32) if d % n == i]
+    # Plan `i` runs on these dates of the month, picked the same way as the tasks do
+    return [d for d in range(1, 32) if day_plan_index(d, n) == i]
 
 def runs_text(dates):
     """

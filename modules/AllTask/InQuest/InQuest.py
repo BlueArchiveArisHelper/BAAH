@@ -7,7 +7,7 @@ from DATA.assets.PopupName import PopupName
 from modules.AllPage.Page import Page
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, istr, CN, EN, get_correct_asset, AssetMappingKeys
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, istr, CN, EN, get_correct_asset, AssetMappingKeys, day_plan_index
 from .HardQuest import HardQuest
 from .NormalQuest import NormalQuest
 from .PushQuest import PushQuest
@@ -76,7 +76,7 @@ class InQuest(Task):
             # 选择一个HARD QUEST List的下标
             if len(config.userconfigdict['HARD']) != 0:
                 # 可选任务队列不为空时
-                hard_loc = today % len(config.userconfigdict['HARD'])
+                hard_loc = day_plan_index(today, len(config.userconfigdict['HARD']))
                 # 得到要执行的HARD QUEST LIST
                 # [[13,2,3],[19,2,3]]
                 hard_list = config.userconfigdict['HARD'][hard_loc]
@@ -93,7 +93,7 @@ class InQuest(Task):
             # 选择一个NORMAL QUEST List的下标
             if len(config.userconfigdict['NORMAL']) != 0:
                 # 可选任务队列不为空时
-                normal_loc = today % len(config.userconfigdict['NORMAL'])
+                normal_loc = day_plan_index(today, len(config.userconfigdict['NORMAL']))
                 # 得到要执行的NORMAL QUEST LIST
                 # [[13,2,3],[19,2,3]]
                 normal_list = config.userconfigdict['NORMAL'][normal_loc]
@@ -110,7 +110,7 @@ class InQuest(Task):
             # 选择一个ONE CLICK RAID List的下标
             if len(config.userconfigdict['ONE_CLICK_RAID']) != 0:
                 # 可选任务队列不为空时
-                one_click_loc = today % len(config.userconfigdict['ONE_CLICK_RAID'])
+                one_click_loc = day_plan_index(today, len(config.userconfigdict['ONE_CLICK_RAID']))
                 # 得到要执行的ONE CLICK RAID LIST
                 # [[3,10],[4,-1]]
                 one_click_list = config.userconfigdict['ONE_CLICK_RAID'][one_click_loc]
