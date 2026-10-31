@@ -1,7 +1,7 @@
 from nicegui import ui, run
 from gui.components.fast_run_task_buttons import show_fast_run_task_buttons, TaskName
 from modules.utils import return_now_activate_pipeline
-from gui.components.modern_ui import confirm_delete, button_tip
+from gui.components.modern_ui import confirm_delete, button_tip, info_tip
 
 def set_task_order(config, real_taskname_to_show_taskname, logArea):
     def select_clear_all_and_refresh_task_order(type="select"):
@@ -135,13 +135,13 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     
     # pre-run command
-    with ui.row():
+    with info_tip(config, "tip_pre_command"):
         ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').classes("baah-w-long")
 
     task_order()
 
     # post-run command
-    with ui.row():
+    with info_tip(config, "tip_post_command"):
         ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').classes("baah-w-long")
     
     # with ui.row():
