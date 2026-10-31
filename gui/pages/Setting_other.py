@@ -3,6 +3,7 @@ import cv2
 from gui.components.cut_screenshot import cut_screenshot, test_screencut
 from gui.components.list_edit_area import list_edit_area
 from gui.components.background_settings import background_settings
+from gui.components.modern_ui import all_configs_tag, info_tip, notice_box
 import os
 import subprocess
 import time
@@ -20,22 +21,20 @@ def set_other(config, gui_shared_config):
     with ui.row():
         # 日志保存
         ui.checkbox(config.get_text("config_output_log")).bind_value(gui_shared_config.softwareconfigdict, 'SAVE_LOG_TO_FILE')
+        all_configs_tag(config)
     
     with ui.row():
         # 异常日志保存
         ui.checkbox(config.get_text("config_output_err_log")).bind_value(gui_shared_config.softwareconfigdict, 'SAVE_ERR_CUSTOM_LOG')
+        all_configs_tag(config)
     
-    with ui.row():
-        # 错误报告
-        ui.checkbox(config.get_text("config_crash_report")).bind_value(gui_shared_config.softwareconfigdict, "ENABLE_CRASH_REPORT")
-    
-    with ui.row():
+    with info_tip(config, "tip_run_until_try_times"):
         ui.number(config.get_text("config_run_until_try_times"),
                   step=1,
                   min=3,
                   precision=0).bind_value(config.userconfigdict, 'RUN_UNTIL_TRY_TIMES', forward=lambda x:int(x), backward=lambda x:int(x)).classes("baah-w-short")
         
-    with ui.row():
+    with info_tip(config, "tip_run_until_wait_time"):
         ui.number(config.get_text("config_run_until_wait_time"),
                   suffix="s",
                   step=0.1,
@@ -43,7 +42,7 @@ def set_other(config, gui_shared_config):
                   precision=1
                   ).bind_value(config.userconfigdict, 'RUN_UNTIL_WAIT_TIME').classes("baah-w-short")
     
-    with ui.row():
+    with info_tip(config, "tip_wait_time_after_click"):
         ui.number(config.get_text("config_wait_time_after_click"),
                     suffix="s",
                     step=0.1,
@@ -51,17 +50,18 @@ def set_other(config, gui_shared_config):
     
     ui.label(config.get_text("config_desc_response_y"))
     with ui.row():
-        ui.number(config.get_text("config_response_y"),
-                    step=1,
-                    min=1,
-                    precision=0).bind_value(config.userconfigdict, 'RESPOND_Y', forward=lambda x:int(x), backward=lambda x:int(x)).classes("baah-w-short").bind_enabled(config.userconfigdict, 'LOCK_SERVER_TO_RESPOND_Y', forward=lambda v: not v, backward=lambda v: not v)
+        with info_tip(config, "tip_response_y"):
+            ui.number(config.get_text("config_response_y"),
+                        step=1,
+                        min=1,
+                        precision=0).bind_value(config.userconfigdict, 'RESPOND_Y', forward=lambda x:int(x), backward=lambda x:int(x)).classes("baah-w-short").bind_enabled(config.userconfigdict, 'LOCK_SERVER_TO_RESPOND_Y', forward=lambda v: not v, backward=lambda v: not v)
         ui.checkbox(config.get_text("config_bind_response_to_server")).bind_value(config.userconfigdict, 'LOCK_SERVER_TO_RESPOND_Y')
     
-    with ui.row():
+    with info_tip(config, "tip_screenshot_mode"):
         # 截图模式
         ui.select(options=["png", "pipe"], label=config.get_text("config_screenshot_mode")).bind_value(config.userconfigdict, 'SCREENSHOT_METHOD').classes("baah-w-long")
 
-    ui.label(config.get_text("config_warn_change")).style('color: red')
+    notice_box(config.get_text("config_warn_change"), tone="warning")
 
     # with ui.row():
     #     # IP+端口

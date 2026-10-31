@@ -1,6 +1,6 @@
 from nicegui import ui
 from gui.components.list_edit_area import list_edit_area
-from gui.components.modern_ui import info_tip
+from gui.components.modern_ui import all_configs_tag, info_tip
 
 def set_hard(config, shared_softwareconfig):
     # ui.label(config.get_text("config_desc_times"))
@@ -13,7 +13,9 @@ def set_hard(config, shared_softwareconfig):
     else:
         # zh/jp have no `show_note` key yet, so they keep the old joined label
         show_note_label = config.get_text("button_show")+config.get_text("desc_note")
-    ui.switch(show_note_label).bind_value(show_note, "val")
+    with ui.row():
+        ui.switch(show_note_label).bind_value(show_note, "val")
+        all_configs_tag(config)
     ui.textarea().bind_value(shared_softwareconfig.softwareconfigdict["NOTE"], "HARD_NOTE").style("width: 70%").bind_visibility_from(show_note, "val")
     
     list_edit_area(

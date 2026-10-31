@@ -100,6 +100,17 @@ def button_tip(config, text_id):
         ui.tooltip(config.get_text(text_id))
 
 
+def all_configs_tag(config):
+    """
+    Tag a setting that is saved for every config file, not just the open one. Call it right after the setting.
+
+    Args:
+        config: the config whose language pack to read. zh/jp may not have the key yet, so a missing key adds no tag.
+    """
+    if config.has_text('tag_all_configs'):
+        ui.badge(config.get_text('tag_all_configs')).props('rounded').classes('self-center')
+
+
 async def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
     """
     Ask before a delete that cannot be undone, and run `on_delete` only if the user picks Delete.
