@@ -34,14 +34,14 @@ def set_cafe(config):
         # 一号咖啡馆邀请+买票+邀请
         ui.number(invite_seq_label(config, 1), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE1_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short")
         ui.checkbox(config.get_text("buy_ticket")).bind_value(config.userconfigdict, "CAFE1_BUY_INVITE_TICKET")
-        ui.number(invite_seq_label(config, 1, after_ticket=True), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE1_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short")
+        ui.number(invite_seq_label(config, 1, after_ticket=True), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE1_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short").bind_visibility_from(config.userconfigdict, "CAFE1_BUY_INVITE_TICKET")
 
     
     with ui.row().bind_visibility_from(config.userconfigdict, "CAFE_TOUCH"):
         # 二号咖啡馆邀请+买票+邀请
         ui.number(invite_seq_label(config, 2), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE2_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short")
         ui.checkbox(config.get_text("buy_ticket")).bind_value(config.userconfigdict, "CAFE2_BUY_INVITE_TICKET")
-        ui.number(invite_seq_label(config, 2, after_ticket=True), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE2_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short")
+        ui.number(invite_seq_label(config, 2, after_ticket=True), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE2_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short").bind_visibility_from(config.userconfigdict, "CAFE2_BUY_INVITE_TICKET")
 
     with ui.row().bind_visibility_from(config.userconfigdict, "CAFE_TOUCH"):
         ui.checkbox(config.get_text("config_cafe_samename_defer")).bind_value(config.userconfigdict, "CAFE_INVITE_SAME_NAME_DELAY")

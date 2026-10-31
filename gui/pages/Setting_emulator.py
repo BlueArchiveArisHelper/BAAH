@@ -34,15 +34,16 @@ def set_emulator(config):
     ui.checkbox(config.get_text("adb_disable_auto_disconnect")).bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)).bind_value(config.userconfigdict, "ADB_DISABLE_AUTO_DISCONNECT")
     
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
-        ui.label(config.get_text("big_update_type")).style('font-size: medium').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
-    
-        ui.radio({
-            "API":config.get_text("big_update_type_api"),
-            "DIRECT_GET":config.get_text("big_update_type_direct_get")
-        },
-                        value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
-    
-        ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
+        with ui.row().bind_visibility_from(config.userconfigdict, "BIG_UPDATE"):
+            ui.label(config.get_text("big_update_type")).style('font-size: medium')
+
+            ui.radio({
+                "API":config.get_text("big_update_type_api"),
+                "DIRECT_GET":config.get_text("big_update_type_direct_get")
+            },
+                            value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline')
+
+            ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
     
     def set_big_update_type(big_update_type):
         config.userconfigdict['BIG_UPDATE_TYPE'] = big_update_type
