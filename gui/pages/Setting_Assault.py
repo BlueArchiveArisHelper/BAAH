@@ -6,7 +6,9 @@ from gui.components.modern_ui import info_tip
 ASSAULT_TIERS = {1: "Normal", 2: "Hard", 3: "Very Hard", 4: "Hardcore", 5: "Extreme", 6: "Insane", 7: "Torment"}
 
 def set_assault(config):
-    ui.label(config.get_text("desc_assault"))
+    # The tooltip below replaces this sentence. zh/jp have no tooltip yet, so they keep it.
+    if not config.has_text("tip_assault_locked"):
+        ui.label(config.get_text("desc_assault"))
 
     # zh/jp have no label yet, so they show the select without one
     target_label = config.get_text("config_assault_target_level") if config.has_text("config_assault_target_level") else None
