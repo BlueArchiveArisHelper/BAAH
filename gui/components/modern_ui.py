@@ -111,19 +111,27 @@ def all_configs_tag(config):
         ui.badge(config.get_text('tag_all_configs')).props('rounded').classes('self-center')
 
 
-async def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
+def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
     """
-    Ask before a delete that cannot be undone, and run `on_delete` only if the user picks Delete.
+    Ask before a delete that cannot be undone, and run `on_delete` only if the user picks Delete. See `confirm_change`.
+    """
+    return confirm_change(config, on_delete, 'button_delete', title_id, *body_ids, **fields)
+
+
+async def confirm_change(config, on_confirm, button_id, title_id, *body_ids, **fields):
+    """
+    Ask before a change that cannot be undone, and run `on_confirm` only if the user picks the confirm button.
 
     Args:
         config: the config whose language pack to read.
-        on_delete: called with no arguments once the user confirms.
-        title_id: the i18n key of the dialog title. zh/jp may not have the keys yet, so a missing one deletes straight away as before.
+        on_confirm: called with no arguments once the user confirms.
+        button_id: the i18n key of the confirm button, such as `button_delete`.
+        title_id: the i18n key of the dialog title. zh/jp may not have the keys yet, so a missing one goes ahead straight away as before.
         body_ids: the i18n keys of the sentences under the title, joined with a space.
         fields: the values for the `{name}` placeholders in the title and the sentences.
     """
-    if not all(config.has_text(text_id) for text_id in (title_id, *body_ids)):
-        on_delete()
+    if not all(config.has_text(text_id) for text_id in (button_id, title_id, *body_ids)):
+        on_confirm()
         return
     with ui.dialog() as dialog, ui.card().classes('baah-confirm'):
         ui.label(config.get_text(title_id).format(**fields)).classes('baah-group-title')
@@ -131,12 +139,12 @@ async def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
             ui.label(' '.join(config.get_text(body_id).format(**fields) for body_id in body_ids)).classes('baah-muted')
         with ui.row().classes('baah-confirm-actions'):
             ui.button(config.get_text('button_cancel', 'button_hide'), on_click=dialog.close, color=None).props('flat')
-            ui.button(config.get_text('button_delete'), on_click=lambda: dialog.submit(True), color='negative').props('flat')
+            ui.button(config.get_text(button_id), on_click=lambda: dialog.submit(True), color='negative').props('flat')
     confirmed = await dialog
-    # Delete the dialog first: `on_delete` often refreshes the area the dialog was built in
+    # Delete the dialog first: `on_confirm` often refreshes the area the dialog was built in
     dialog.delete()
     if confirmed:
-        on_delete()
+        on_confirm()
 
 
 def navigation_item(label, selected, on_click, *, icon=None):
