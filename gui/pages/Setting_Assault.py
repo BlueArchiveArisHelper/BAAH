@@ -2,17 +2,17 @@ from nicegui import ui
 from gui.components.cut_screenshot import cut_screenshot, screencut_button
 from gui.components.modern_ui import info_tip
 
+# Difficulty names as the game shows them. Grand Assault stops at Torment, Total Assault adds Lunatic.
+ASSAULT_TIERS = {1: "Normal", 2: "Hard", 3: "Very Hard", 4: "Hardcore", 5: "Extreme", 6: "Insane", 7: "Torment"}
+
 def set_assault(config):
     ui.label(config.get_text("desc_assault"))
-    
-    ui.label('1:"Normal", 2:"Hard", 3:"Very Hard", 4: "Hardcore", 5: "Extreme", 6: "Insane", 7: "Torment"')
-    ui.number(
-        "",
-        min=1,
-        precision=0,
-        step=1
-    ).bind_value(config.userconfigdict, "AUTO_ASSAULT_LEVEL", forward=lambda x: int(x)).style("width: 100px")
-    
+
+    # zh/jp have no label yet, so they show the select without one
+    target_label = config.get_text("config_assault_target_level") if config.has_text("config_assault_target_level") else None
+    with info_tip(config, "tip_assault_locked"):
+        ui.select({**ASSAULT_TIERS, 8: "Lunatic"}, label=target_label).bind_value(config.userconfigdict, "AUTO_ASSAULT_LEVEL").style("width: 240px")
+
     with info_tip(config, "tip_assault_no_team"):
         ui.checkbox(config.get_text("error_if_assault_no_team")).bind_value(config.userconfigdict, "ASSAULT_NO_TEAM_EXCEPT")
 
