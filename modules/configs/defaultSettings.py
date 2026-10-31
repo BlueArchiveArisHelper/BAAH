@@ -421,6 +421,10 @@ defaultUserDict = {
     "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER":{
         "d":2,
     },
+    # PC 上的加速器 窗口名称
+    "PC_GAME_ACC_WINDOW_NAME":{"d":""},
+    # PC 上的加速器 启动exe路径
+    "PC_GAME_ACC_EXE_PATH":{"d":""}
 
 }
 
@@ -493,6 +497,10 @@ defaultSessionDict = {
     "HISTORY_SCREENSHOT_LIST":{"d":[]},
     # 记录当前session活动抽奖了几次
     "CURRENT_EVENT_ROLL_COUNT":{"d":0},
+    # AUTO_CONTROL_PC_WINDOW_NAME 为True时，执行任何PC操作时window_name会自动转化为ba操作需要的游戏窗口名 ( use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0] )
+    # AUTO_CONTROL_PC_WINDOW_NAME 为False时，执行任何PC操作时window_name会根据CONTROL_PC_WINDOW_NAME获取
+    "AUTO_CONTROL_PC_WINDOW_NAME":{"d":True},
+    "CONTROL_PC_WINDOW_NAME":{"d":""}
 }
 
 # storagedict存储与某一个配置文件对应的游戏实例的持久性存储信息（如钻石历史变化曲线），其生命周期与userconfig相同，但是在脚本运行时是随用随写的

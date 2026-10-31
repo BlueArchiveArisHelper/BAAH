@@ -88,6 +88,10 @@ class ConfigPanel:
         该配置项所属的类型列表，决定在不同的 Tab 栏目下是否显示
     icon: str
         导航图标名，与页面一同注册；省略时使用 settings
+    enterCallback: lambda
+        进入此页面时需要执行的回调
+    quitCallback: lambda
+        退出此页面时需要执行的回调
     """
 
     def __init__(
@@ -99,6 +103,8 @@ class ConfigPanel:
         panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         *,
         icon: str = 'settings',
+        enterCallback = None,
+        quitCallback = None
     ):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
@@ -107,6 +113,8 @@ class ConfigPanel:
         self.nameID = nameID
         self.panel_types = panel_types
         self.icon = icon
+        self.enterCallback = enterCallback
+        self.quitCallback = quitCallback
 
 
 def parse_obj_in_config(inconfig, obj_dict, backward=False):
@@ -387,6 +395,8 @@ async def show_json_panel(json_file_name: str):
                 render_description()
                 # 所有已注册设置页共用表单容器，动态表单仍由原函数生成。
                 with ui.column().classes('baah-form-body'):
+                    if current_panel.enterCallback is not None:
+                        current_panel.enterCallback()
                     current_panel.func()
 
     @ui.refreshable
@@ -397,6 +407,8 @@ async def show_json_panel(json_file_name: str):
 
     def select_panel(panel):
         nonlocal current_panel
+        if current_panel.quitCallback is not None:
+            current_panel.quitCallback()
         current_panel = panel
         render_task_list.refresh()
         render_config_area.refresh()

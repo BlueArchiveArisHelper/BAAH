@@ -112,7 +112,7 @@ _main_actions = [
         id_name = "open_apk_package_a",
         action_gui_name = "open_apk_package_a",
         action_func=lambda strapp: (
-            logging.info(f"Opening {strapp}"),
+            logging.info(f"Opening Android {strapp}"),
             open_app(strapp),
         )[-1],
         action_params=[
