@@ -255,9 +255,9 @@
     "gui_diamond": "青辉石",
     "gui_credit": "信用点",
 
-    "config_server_jp":"日服",
-    "config_server_cn":"国服官服",
-    "config_server_cn_b":"国服B服",
+    "config_server_jp":"日服（日语）",
+    "config_server_cn":"国服官服（简中）",
+    "config_server_cn_b":"国服B服（简中）",
     "config_server_global":"国际服(繁中)",
     "config_server_global_en" : "国际服(英文)",
 

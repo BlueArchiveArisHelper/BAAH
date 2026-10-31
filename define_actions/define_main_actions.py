@@ -126,7 +126,7 @@ _main_actions = [
         action_gui_name = "open_exe_app_a",
         action_func=lambda strapp: (
             logging.info(f"Opening PC {strapp}"),
-            subprocess_run(strapp, shell=True),
+            subprocess_run(strapp, isasync=True, shell=True),
         )[-1],
         action_params=[
             ParamsObj("exe_path", "exe_path", ParamsTypes.STRING, "")

@@ -49,7 +49,7 @@ def enter_PC_APP_edit_mode(use_config = None):
     if not use_config:
         use_config = config
     use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = False
-    use_config.sessiondict["CONTROL_PC_WINDOW_NAME"] = config.userconfigdict["PC_GAME_ACC_WINDOW_NAME"]
+    use_config.sessiondict["CONTROL_PC_WINDOW_NAME"] = use_config.userconfigdict["PC_GAME_ACC_WINDOW_NAME"]
 
 def quit_PC_APP_edit_mode(use_config = None):
     """控制退出其他PC应用截图模式，截图或操控时自动锁定到PC上的BA"""
