@@ -37,10 +37,12 @@ def _get_target_window_title(use_config):
     """获取当前需要聚焦的窗口标题"""
     if use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
         # 如果开启自动转换至游戏标题，获取到ba游戏窗口标题
-        return use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+        target_title = use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
     else:
         # 获取sessiondict里的CONTROL_PC_WINDOW_NAME窗口标题
-        return use_config.sessiondict["CONTROL_PC_WINDOW_NAME"]
+        target_title = use_config.sessiondict["CONTROL_PC_WINDOW_NAME"]
+    # print(f"target_title: {target_title}")
+    return target_title
 
 def _get_hwnd(window_title):
     """根据窗口标题获取窗口句柄，如果没找到会返回0"""

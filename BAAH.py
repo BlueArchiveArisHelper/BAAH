@@ -40,6 +40,7 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
     import traceback
     import psutil
     from modules.utils import subprocess_run, time, disconnect_this_device, sleep, check_connect, open_app, close_app, get_now_running_app, screenshot, click, check_app_running, subprocess, create_notificationer, EmulatorBlockError, istr, EN, CN, check_if_process_exist, _is_PC_app, get_screenshot_cv_data,return_now_activate_pipeline
+    from modules.configs.multiserverSettings import is_server_type_in_group, MultiServerType
     from modules.AllTask.myAllTask import my_AllTask
     from define_actions import FlowActionGroup
 
@@ -622,9 +623,22 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 if run_precommand:
                     BAAH_run_pre_command()
                 BAAH_release_adb_port()
-                BAAH_start_emulator()
-                BAAH_check_adb_connect()
-                BAAH_start_VPN()
+                if is_server_type_in_group(config, MultiServerType.PCGroup):
+                    # PC的ba
+                    config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = False
+                    config.sessiondict["CONTROL_PC_WINDOW_NAME"] = config.userconfigdict["PC_GAME_ACC_WINDOW_NAME"]
+                    BAAH_start_VPN()
+                    config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = True
+
+                    BAAH_start_emulator()
+                    BAAH_check_adb_connect()
+                else:
+                    # 模拟器的ba
+                    BAAH_start_emulator()
+                    BAAH_check_adb_connect()
+
+                    BAAH_start_VPN()
+                    
                 BAAH_open_target_app()
                 
                 # 运行任务
@@ -632,7 +646,14 @@ def BAAH_core_process(reread_config_name = None, must_auto_quit = False, msg_que
                 my_AllTask.run()
                 logging.info({"zh_CN": "所有任务结束", "en_US": "All tasks are finished"})
                 BAAH_close_target_app()
-                BAAH_close_VPN()
+                if is_server_type_in_group(config, MultiServerType.PCGroup):
+                    # PC的ba
+                    config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = False
+                    config.sessiondict["CONTROL_PC_WINDOW_NAME"] = config.userconfigdict["PC_GAME_ACC_WINDOW_NAME"]
+                    BAAH_close_VPN()
+                    config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = True
+                else:
+                    BAAH_close_VPN()
                 BAAH_kill_emulator()
                 BAAH_send_email()
                 print_BAAH_finish()

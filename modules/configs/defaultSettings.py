@@ -422,9 +422,7 @@ defaultUserDict = {
         "d":2,
     },
     # PC 上的加速器 窗口名称
-    "PC_GAME_ACC_WINDOW_NAME":{"d":""},
-    # PC 上的加速器 启动exe路径
-    "PC_GAME_ACC_EXE_PATH":{"d":""}
+    "PC_GAME_ACC_WINDOW_NAME":{"d":""}
 
 }
 

@@ -122,6 +122,19 @@ _main_actions = [
         edit_value_map=None
     ),
     SubActionMainObj(
+        id_name = "open_exe_app_a",
+        action_gui_name = "open_exe_app_a",
+        action_func=lambda strapp: (
+            logging.info(f"Opening PC {strapp}"),
+            subprocess_run(strapp, shell=True),
+        )[-1],
+        action_params=[
+            ParamsObj("exe_path", "exe_path", ParamsTypes.STRING, "")
+        ],
+        line_edit_type=None,
+        edit_value_map=None
+    ),
+    SubActionMainObj(
         id_name="jump_flow_item_id_a",
         action_gui_name="jump_flow_item_id_a",
         action_func=lambda flow_id: raise_flowinterrupt(flow_id.strip()),
