@@ -1,5 +1,5 @@
 import subprocess
-from ..components.modern_ui import apply_theme, page_shell, surface, form_row
+from ..components.modern_ui import apply_theme, page_shell, surface, form_row, confirm_delete
 from ..components.background_settings import apply_background
 
 from ..components.json_file_docker import get_json_list, add_new_config, copy_and_rename_config
@@ -169,7 +169,7 @@ def render_json_list():
                                 # 快捷方式按钮
                                 ui.button(gui_shared_config.get_text("button_link_to_desktop"), on_click=lambda e, c=config_name:send_quick_call_to_desktop(c) and ui.notify(gui_shared_config.get_text("notice_success")))
                                 # 删除按钮
-                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: fake_delete_config(c), color="red").props("outline")
+                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: confirm_delete(gui_shared_config, lambda: fake_delete_config(c), "confirm_delete_config", "confirm_delete_config_body", name=c), color="red").props("outline")
 
                     # 添加配置
                     user_config_name = {"val":""}

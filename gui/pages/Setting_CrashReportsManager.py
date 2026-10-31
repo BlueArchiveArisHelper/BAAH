@@ -4,6 +4,7 @@ import shutil
 
 from nicegui import ui
 from ..define import gui_shared_config
+from ..components.modern_ui import confirm_delete
 
 def get_report_list():
     """获取崩溃报告列表，返回包含filename_key的文件夹名称的列表"""
@@ -29,6 +30,11 @@ def download_report(report):
                 zipf.write(file_path, os.path.basename(file_path))
     ui.download(zip_path, report + ".zip")
 
+def delete_report(report):
+    """Delete the report folder and refresh the list."""
+    shutil.rmtree(os.path.join(gui_shared_config.CRASH_REPORT_FOLDER, report))
+    report_list_gui.refresh()
+
 @ui.refreshable
 def report_list_gui(config):
     """GUI的崩溃报告列表组件"""
@@ -38,7 +44,7 @@ def report_list_gui(config):
                 with ui.card().props('flat bordered').style("border-radius: 5; border-color: gray;"):
                     ui.label(report).style("font-size: large;")
                 ui.button(config.get_text("button_download"), on_click=lambda _, r=report: download_report(r))
-                ui.button(config.get_text("button_delete"), on_click=lambda _, r=report: (shutil.rmtree(os.path.join(gui_shared_config.CRASH_REPORT_FOLDER, r)), report_list_gui.refresh()))
+                ui.button(config.get_text("button_delete"), on_click=lambda _, r=report: confirm_delete(config, lambda: delete_report(r), "confirm_delete_report", "confirm_delete_report_body", name=r))
 
 def Set_Crash_Report_Manager(config):
     """崩溃报告管理界面"""

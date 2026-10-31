@@ -1,6 +1,6 @@
 import time
 from nicegui import ui
-from .modern_ui import form_row, surface, operation_bar, notice_box, info_tip
+from .modern_ui import form_row, surface, operation_bar, notice_box, info_tip, confirm_delete
 from modules.configs.MyConfig import config
 from modules.utils.data_utils import day_plan_index
 
@@ -95,7 +95,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                         ui.label(runs).classes("baah-day-runs baah-muted")
                     if is_today:
                         ui.badge(config.get_text("config_today")).props("rounded")
-                with ui.button(icon="delete_outline", on_click=lambda: del_item(i), color=None).props("flat round dense"):
+                with ui.button(icon="delete_outline", on_click=lambda: ask_del_day(i, title), color=None).props("flat round dense"):
                     ui.tooltip(config.get_text("tip_remove_day", "button_delete").format(day=title))
             if len(line_item) == 0:
                 notice_box(config.get_text(empty_line_prompt_id), tone="warning")
@@ -192,6 +192,17 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
     def del_item(item_ind):
         datadict.pop(item_ind)
         item_list.refresh()
+
+    def ask_del_day(i, title):
+        # An empty last day loses nothing, since Add day brings it back as it was
+        body_ids = []
+        if datadict[i]:
+            body_ids.append("confirm_delete_day_stages")
+        if i < len(datadict) - 1:
+            body_ids.append("confirm_delete_day_shift")
+        if not body_ids:
+            return del_item(i)
+        return confirm_delete(config, lambda: del_item(i), "confirm_delete_day", *body_ids, day=title, stages=len(datadict[i]))
         
     def get_num_of_last_item(mylist):
         """

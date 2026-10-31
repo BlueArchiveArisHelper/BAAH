@@ -1,6 +1,7 @@
 from nicegui import ui, run
 from gui.components.fast_run_task_buttons import show_fast_run_task_buttons, TaskName
 from modules.utils import return_now_activate_pipeline
+from gui.components.modern_ui import confirm_delete
 
 def set_task_order(config, real_taskname_to_show_taskname, logArea):
     def select_clear_all_and_refresh_task_order(type="select"):
@@ -26,7 +27,7 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
             ui.toggle({ind:f"{config.get_text('config_pipeline')} {ind+1}" for ind in range(len(all_pipelines))}, value=activated_ind, on_change=lambda e:change_activated_pipeline(e)).props("no-caps")
             ui.button(icon="add", on_click=add_one_pipeline).props("flat round dense")
             if len(all_pipelines) > 1:
-                with ui.button(icon="delete", on_click=del_one_pipeline, color="red").props("flat round dense"):
+                with ui.button(icon="delete", on_click=ask_del_pipeline, color="red").props("flat round dense"):
                     ui.tooltip(config.get_text("config_delete_now_activated_pipeline"))
         # 当前被激活的pipeline
         with ui.card().classes("w-full"):
@@ -109,6 +110,14 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
             all_pipelines.pop(activated_ind)
             config.userconfigdict["TASK_ORDER_GROUP"]["ACTIVATE_IND"] = 0
         task_order.refresh()
+
+    def ask_del_pipeline():
+        # An empty pipeline loses nothing, so it goes without asking
+        task_pipeline, _, _, activated_ind = return_now_activate_pipeline(config)
+        if not task_pipeline:
+            return del_one_pipeline()
+        pipeline = f"{config.get_text('config_pipeline')} {activated_ind+1}"
+        return confirm_delete(config, del_one_pipeline, "confirm_delete_pipeline", "confirm_delete_pipeline_tasks", pipeline=pipeline, tasks=len(task_pipeline))
 
     def change_activated_pipeline(e):
         # 切换要被激活的pipeline

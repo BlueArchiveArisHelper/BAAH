@@ -88,6 +88,34 @@ def info_tip(config, text_id):
                 ui.tooltip(config.get_text(text_id)).classes('baah-info-tooltip')
 
 
+async def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
+    """
+    Ask before a delete that cannot be undone, and run `on_delete` only if the user picks Delete.
+
+    Args:
+        config: the config whose language pack to read.
+        on_delete: called with no arguments once the user confirms.
+        title_id: the i18n key of the dialog title. zh/jp may not have the keys yet, so a missing one deletes straight away as before.
+        body_ids: the i18n keys of the sentences under the title, joined with a space.
+        fields: the values for the `{name}` placeholders in the title and the sentences.
+    """
+    if not all(config.has_text(text_id) for text_id in (title_id, *body_ids)):
+        on_delete()
+        return
+    with ui.dialog() as dialog, ui.card().classes('baah-confirm'):
+        ui.label(config.get_text(title_id).format(**fields)).classes('baah-group-title')
+        if body_ids:
+            ui.label(' '.join(config.get_text(body_id).format(**fields) for body_id in body_ids)).classes('baah-muted')
+        with ui.row().classes('baah-confirm-actions'):
+            ui.button(config.get_text('button_cancel', 'button_hide'), on_click=dialog.close, color=None).props('flat')
+            ui.button(config.get_text('button_delete'), on_click=lambda: dialog.submit(True), color='negative').props('flat')
+    confirmed = await dialog
+    # Delete the dialog first: `on_delete` often refreshes the area the dialog was built in
+    dialog.delete()
+    if confirmed:
+        on_delete()
+
+
 def navigation_item(label, selected, on_click, *, icon=None):
     """使用原生按钮提供键盘可达性，选中态仅改变样式。"""
     return ui.button(label, on_click=on_click, color=None, icon=icon).props('flat align=left').classes(
@@ -186,6 +214,8 @@ body.baah-page::before {
 }
 .baah-page .q-menu { border: 1px solid var(--baah-border); background: var(--baah-surface); border-radius: 10px; }
 .baah-page .q-dialog__inner > .q-card { max-width: min(720px, calc(100vw - 32px)); overflow: auto; max-height: calc(100dvh - 48px); }
+.baah-confirm { width: 380px; padding: 20px; gap: 14px; }
+.baah-confirm-actions { width: 100%; justify-content: flex-end; gap: 8px; }
 .baah-header { width: 100%; flex: none; gap: 12px; padding: 12px 16px; }
 .baah-title-row { width: 100%; align-items: center; justify-content: space-between; gap: 12px; }
 .baah-brand { align-items: center; gap: 10px; min-width: 0; flex: 1 1 180px; }
