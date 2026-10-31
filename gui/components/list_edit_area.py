@@ -1,6 +1,6 @@
 import time
 from nicegui import ui
-from .modern_ui import form_row, surface, operation_bar, notice_box
+from .modern_ui import form_row, surface, operation_bar, notice_box, info_tip
 from modules.configs.MyConfig import config
 
 def ordinal(n):
@@ -34,7 +34,8 @@ def runs_text(dates):
     return config.get_text(key).format(dates=", ".join(map(ordinal, dates[:3])) + more)
 
 def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False, 
-                   min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99, *, blockdesc_as_notice=False, empty_line_prompt_id="config_no_data_set_here"):
+                   min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99, *, blockdesc_as_notice=False, empty_line_prompt_id="config_no_data_set_here",
+                   column_tips=()):
     """
     datadict: 要修改的二维或三维列表，长度代表列表维度
         [str1, str2] 或 [str1, str2, [str3, str4]] 或 [str1, str2, [str3, str4, str5]]
@@ -45,6 +46,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
     min_value_for_1st_dim: 元素长度为3时元素中的第一维度（地区序号）的最小值，默认为1
     min_value_for_2nd_dim: 元素长度为3时元素中的第二维度（关卡序号）的最小值，默认为1
     min_value_for_3rd_dim: 元素长度为3时元素中的第三维度（关卡扫荡次数）的最小值，默认为-99
+    column_tips: i18n keys of the tooltips for the column names in `linedesc[2]`, one per column. A missing key shows no icon.
     """
     dim = len(linedesc)
     # 对列表的最后一维的元素的文字描述的数量
@@ -101,7 +103,8 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                 columns = f"repeat({subdim}, 112px)" + (" auto" if has_switch else "") + " auto"
                 with ui.element("div").classes("baah-day-grid").style(f"grid-template-columns: {columns}"):
                     for k in range(subdim):
-                        ui.label(linedesc[2][k]).classes("baah-day-column baah-muted")
+                        with info_tip(config, column_tips[k] if k < len(column_tips) else None):
+                            ui.label(linedesc[2][k]).classes("baah-day-column baah-muted")
                     if has_switch:
                         ui.label(config.get_text("config_switch_column", "button_enable")).classes("baah-day-column baah-muted")
                     ui.element("div")

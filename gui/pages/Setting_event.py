@@ -44,5 +44,6 @@ def set_event(config):
         ], 
         config.get_text("config_desc_list_edit"),
         has_switch=True,
+        column_tips=["tip_column_event_stage", "tip_column_times"],
         empty_line_prompt_id="config_no_tasks_set_here"
     )
