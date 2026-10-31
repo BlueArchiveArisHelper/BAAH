@@ -1,5 +1,6 @@
 from nicegui import ui
 from gui.components.cut_screenshot import cut_screenshot, screencut_button
+from gui.components.modern_ui import info_tip
 
 def set_exam(config):
     # 设置考试关卡
@@ -9,11 +10,12 @@ def set_exam(config):
                   forward=lambda x: int(x)
                   ).classes("baah-w-short")
     # 设置考试的队伍数量
-    ui.number(config.get_text("desc_exam_times"), 
-              min=1, max=3, step=1, precision=0).bind_value(
-                  config.userconfigdict, "EXAM_TEAM_COUNT",
-                  forward=lambda x: int(x)
-                  ).classes("baah-w-short")
+    with info_tip(config, "tip_exam_times"):
+        ui.number(config.get_text("desc_exam_times"),
+                  min=1, max=3, step=1, precision=0).bind_value(
+                      config.userconfigdict, "EXAM_TEAM_COUNT",
+                      forward=lambda x: int(x)
+                      ).classes("baah-w-short")
     # 如果考试失败则尝试挑战上一关卡
     ui.checkbox(config.get_text("desc_exam_allow_fallback")).bind_value(config.userconfigdict, "EXAM_ALLOW_FALLBACK")
 
