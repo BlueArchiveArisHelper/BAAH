@@ -340,6 +340,8 @@
     "tip_grand_assault_no_fight": "BAAH sweeps the areas you have already cleared at this difficulty and skips the rest instead of fighting.",
     "tip_grand_assault_no_team": "On: the run stops here and the error notification is sent. Off: BAAH skips that area and moves on to the next one.",
     "flow_mode": "Action flow mode",
+    "config_python_code": "Python code",
+    "tip_python_code": "Python that BAAH runs as this task. You can call its helpers, such as click((x, y)) and sleep(seconds).",
     "desc_flow_when_login_game": "Execute the following custom actions on the account login page",
     "tip_flow_when_login_game": "BAAH runs these steps each time it reaches the account login screen, before it taps through to the lobby. Most players can leave this off.",
     "desc_rerun_when_script_error": "Number of times to rerun the current config file when script error occurs",
