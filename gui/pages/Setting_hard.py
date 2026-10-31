@@ -10,7 +10,12 @@ def set_hard(config, shared_softwareconfig):
     ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "HARD_QUEST_EVENT_STATUS") 
     
     show_note = {"val": False}
-    ui.switch(config.get_text("button_show")+config.get_text("desc_note")).bind_value(show_note, "val")
+    if config.has_text("show_note"):
+        show_note_label = config.get_text("show_note")
+    else:
+        # zh/jp have no `show_note` key yet, so they keep the old joined label
+        show_note_label = config.get_text("button_show")+config.get_text("desc_note")
+    ui.switch(show_note_label).bind_value(show_note, "val")
     ui.textarea().bind_value(shared_softwareconfig.softwareconfigdict["NOTE"], "HARD_NOTE").style("width: 70%").bind_visibility_from(show_note, "val")
     
     list_edit_area(

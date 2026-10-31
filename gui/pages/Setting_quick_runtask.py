@@ -38,7 +38,7 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
         time.sleep(0.5)
         subprocess.run([config.userconfigdict['ADB_PATH'], "start-server"])
         print("adb server restarted")
-        ui.notify("adb server resstarted")
+        ui.notify("adb server restarted")
 
     # adb kill-server
     with ui.row():
