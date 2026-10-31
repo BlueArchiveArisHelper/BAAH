@@ -289,6 +289,12 @@ body.baah-page::before {
 .baah-list-entry { padding: 12px; gap: 10px; min-width: 130px; }
 .baah-list-entry .q-field { width: 128px; }
 .baah-list-actions { gap: 8px; justify-content: center; }
+/* One card per day: column names once, then a grid row per stage. */
+.baah-day-card { width: fit-content; min-width: min(360px, 100%); max-width: 100%; padding: 12px 14px; gap: 10px; }
+.baah-day-card .baah-list-actions { justify-content: flex-start; }
+.baah-day-grid { display: grid; gap: 6px 8px; align-items: center; }
+.baah-day-column { font-size: 12px; }
+.baah-day-grid .q-field { width: 100%; }
 .baah-team-row > .q-field { flex: 1 1 150px; }
 .baah-image-preview { width: 300px; max-width: 100%; height: 150px; border: 1px dashed var(--baah-border); border-radius: 10px; overflow: hidden; background: var(--baah-soft); }
 .baah-flow-editor { width: 100%; gap: 16px; }

@@ -22,6 +22,64 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
     subdim = 0
     if dim >= 3:
         subdim = len(linedesc[2])
+
+    def heading(i):
+        # en_US reads "Day 1". zh/jp have no template yet, so they keep the old "第 1 天: " order.
+        if config.has_text("config_nth_heading"):
+            return config.get_text("config_nth_heading").format(item=linedesc[0], n=i+1)
+        return f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: '
+
+    def item_actions(i):
+        with operation_bar().classes("baah-list-actions"):
+            ui.button(f"{config.get_text('button_add')} {linedesc[1]}", on_click=lambda: add_item_item(i))
+            if len(datadict[i]) > 0:
+                ui.button(f"{config.get_text('button_delete')} {linedesc[1]}", on_click=lambda: del_item_item(i), color="red")
+
+    def min_value_of(k):
+        # 最后一列是扫荡次数，倒数第二列是关卡序号，其余（地区序号）用第一维的最小值
+        if k == subdim-1:
+            return min_value_for_3rd_dim
+        if k == subdim-2:
+            return min_value_for_2nd_dim
+        return min_value_for_1st_dim
+
+    def set_switch(row, value):
+        # Sets the switch, or adds it to a stage that an old config saved without one
+        row[subdim:] = [value]
+
+    def day_card(i):
+        """
+        Show one day as a card: the column names once, then one row of inputs per stage.
+
+        Args:
+            i: the index of the day in `datadict`.
+        """
+        line_item = datadict[i]
+        with surface("baah-day-card"):
+            ui.label(heading(i)).classes("baah-group-title")
+            if len(line_item) == 0:
+                notice_box(config.get_text(empty_line_prompt_id), tone="warning")
+            else:
+                columns = f"repeat({subdim}, 112px)" + (" auto" if has_switch else "")
+                with ui.element("div").classes("baah-day-grid").style(f"grid-template-columns: {columns}"):
+                    for k in range(subdim):
+                        ui.label(linedesc[2][k]).classes("baah-day-column baah-muted")
+                    if has_switch:
+                        ui.label(config.get_text("config_switch_column", "button_enable")).classes("baah-day-column baah-muted")
+                    for row in line_item:
+                        for k in range(subdim):
+                            ui.number(min=min_value_of(k),
+                                      step=1,
+                                      precision=0,
+                                      format="%.0f",
+                                      value=row[k],
+                                      on_change=lambda v,row=row,k=k: row.__setitem__(k, int(v.value)),
+                                      )
+                        if has_switch:
+                            # BAAH runs a stage that has no switch, so an empty slice shows as ticked
+                            ui.checkbox(value=all(row[subdim:]), on_change=lambda v,row=row: set_switch(row, bool(v.value)))
+            item_actions(i)
+
     # 列表共用卡片与操作栏，增删及数值约束保持原有逻辑。
     @ui.refreshable
     def item_list():
@@ -32,79 +90,43 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
             for blocklinedesc in blockdesc.split('\n'):
                 ui.label(f'{blocklinedesc}')
         for i in range(len(datadict)):
+            if dim == 3:
+                day_card(i)
+                continue
             line_item = datadict[i]
-            # en_US reads "Day 1". zh/jp have no template yet, so they keep the old "第 1 天: " order.
-            if config.has_text("config_nth_heading"):
-                ui.label(config.get_text("config_nth_heading").format(item=linedesc[0], n=i+1))
-            else:
-                ui.label(f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: ')
+            ui.label(heading(i))
             with form_row().classes("baah-list-items"):
                 if len(line_item) == 0:
                     notice_box(config.get_text(empty_line_prompt_id), tone="warning")
                 for j in range(len(line_item)):
-                    if len(linedesc) == 2:
-                        # 第i个地区的第j个教室, or 商店里的第i行第j个物品
-                        if isinstance(datadict[i][j], tuple) or isinstance(datadict[i][j], list):
-                            # 如果该元素是个元组或者列表，那么该元素应当包含一个开关
-                            # [值，开关boolean]
-                            with surface("baah-list-entry"):
-                                ui.number(f'{linedesc[1]}',
-                                    min=1,
-                                    step=1,
-                                    precision=0,
-                                    format="%.0f",
-                                    value=line_item[j][0],
-                                    on_change=lambda v,i=i,j=j: datadict[i][j].__setitem__(0, int(v.value)),
-                                    ).style('width: 128px')
-                                if len(line_item[j]) == 2 and has_switch:
-                                    with form_row():
-                                        ui.checkbox(value=line_item[j][1],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(1, bool(v.value)))
-                                        ui.label(config.get_text("button_enable"))
-                        else:
-                            # 否则就按照单个数字渲染
+                    # 第i个地区的第j个教室, or 商店里的第i行第j个物品
+                    if isinstance(datadict[i][j], tuple) or isinstance(datadict[i][j], list):
+                        # 如果该元素是个元组或者列表，那么该元素应当包含一个开关
+                        # [值，开关boolean]
+                        with surface("baah-list-entry"):
                             ui.number(f'{linedesc[1]}',
-                                    min=1,
-                                    step=1,
-                                    precision=0,
-                                    format="%.0f",
-                                    value=line_item[j],
-                                    on_change=lambda v,i=i,j=j: datadict[i].__setitem__(j, int(v.value)),
-                                    ).style('width: 128px')
-                    elif len(linedesc) == 3:
-                        # 无副标题的列表不额外渲染孤立冒号，字段和值仍按原顺序显示。
-                        if linedesc[1]:
-                            ui.label(f'{linedesc[1]}:')
-                        with form_row().classes("baah-list-items"):
-                            with surface("baah-list-entry"):
-                                for k in range(len(line_item[j])):
-                                    # 如果一个元素的数据量超出了给定的文字描述的数量，而且是有开关的
-                                    # 那么最后那个'多出来的'数据就是开关
-                                    if k >= subdim: # 多出来的数据下标continue掉，没有对应的渲染文字
-                                        if k == subdim and has_switch: # 如果刚好多一个数据而且has_switch就渲染个开关
-                                            with form_row():
-                                                ui.checkbox(value=line_item[j][k],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(k, bool(v.value)))
-                                                ui.label(config.get_text("button_enable"))
-                                        continue
-                                    #  遍历地区, 关卡和次数
-                                    min_value = min_value_for_1st_dim
-                                    # 如果数据的位置就是最后一个文字描述的位置，代表的数据是扫荡次数，最小值为-99
-                                    if k == subdim-1:
-                                        min_value = min_value_for_3rd_dim
-                                    # 如果数据的位置是倒数第二个文字描述的位置，代表数据对应扫荡的关卡序号
-                                    if k == subdim-2:
-                                        min_value = min_value_for_2nd_dim
-                                    ui.number(f'{linedesc[2][k]}',
-                                                min=min_value,
-                                                step=1,
-                                                precision=0,
-                                                format="%.0f",
-                                                value=line_item[j][k],
-                                                on_change=lambda v,i=i,j=j,k=k: datadict[i][j].__setitem__(k, int(v.value)),
-                                                ).style('width: 128px')
-                with operation_bar().classes("baah-list-actions"):
-                    ui.button(f"{config.get_text('button_add')} {linedesc[1]}", on_click=lambda i=i: add_item_item(i))
-                    if len(datadict[i]) > 0:
-                        ui.button(f"{config.get_text('button_delete')} {linedesc[1]}", on_click=lambda i=i: del_item_item(i), color="red")
+                                min=1,
+                                step=1,
+                                precision=0,
+                                format="%.0f",
+                                value=line_item[j][0],
+                                on_change=lambda v,i=i,j=j: datadict[i][j].__setitem__(0, int(v.value)),
+                                ).style('width: 128px')
+                            if len(line_item[j]) == 2 and has_switch:
+                                with form_row():
+                                    ui.checkbox(value=line_item[j][1],on_change=lambda v,i=i,j=j:datadict[i][j].__setitem__(1, bool(v.value)))
+                                    ui.label(config.get_text("button_enable"))
+                    else:
+                        # 否则就按照单个数字渲染
+                        ui.number(f'{linedesc[1]}',
+                                min=1,
+                                step=1,
+                                precision=0,
+                                format="%.0f",
+                                value=line_item[j],
+                                on_change=lambda v,i=i,j=j: datadict[i].__setitem__(j, int(v.value)),
+                                ).style('width: 128px')
+                item_actions(i)
         with form_row().classes("baah-list-items"):
             ui.button(f"{config.get_text('button_add')} {linedesc[0]}", on_click=add_item)
             if len(datadict) > 0:

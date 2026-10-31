@@ -110,6 +110,7 @@
     "config_day": "Day",
     "config_level": "Stage",
     "config_times": "Times",
+    "config_switch_column": "On",
     "config_no_tasks_set_here": "No tasks are configured for this day. This task will be skipped when the script runs on that day.",
     "config_no_data_set_here": "Empty line here",
     "config_desc_list_edit": "BAAH runs one day's list each day and cycles through them. Keep one day to do the same thing every day.",
