@@ -69,6 +69,25 @@ def notice_box(text, *, tone='info'):
     return box
 
 
+@contextmanager
+def info_tip(config, text_id):
+    """
+    Put the fields built in the `with` block in a row, with an `i` icon just right of them whose tooltip explains them.
+
+    Args:
+        config: the config whose language pack to read.
+        text_id: the i18n key of the tooltip. zh/jp may not have it yet, so a missing key shows no icon.
+
+    Yields:
+        The row, so a caller can bind its visibility the way it would bind the field's.
+    """
+    with ui.row().classes('baah-info-row') as row:
+        yield row
+        if config.has_text(text_id):
+            with ui.icon('info_outline').classes('baah-info-tip'):
+                ui.tooltip(config.get_text(text_id)).classes('baah-info-tooltip')
+
+
 def navigation_item(label, selected, on_click, *, icon=None):
     """使用原生按钮提供键盘可达性，选中态仅改变样式。"""
     return ui.button(label, on_click=on_click, color=None, icon=icon).props('flat align=left').classes(
@@ -221,6 +240,10 @@ body.baah-page::before {
 /* 仅纵向排列条目卡片内的字段，外层条目行和操作栏分别控制自身布局。 */
 .baah-list-entry { flex-direction: column; flex-wrap: nowrap; align-items: center; }
 .baah-form-title { font-size: 22px; font-weight: 650; line-height: 1.4; }
+.baah-info-row { flex-wrap: nowrap; align-items: center; gap: 4px; }
+.baah-info-tip { font-size: 18px; color: var(--baah-muted); cursor: help; }
+.baah-info-tip:hover { color: var(--q-primary); }
+.baah-info-tooltip { max-width: 280px; font-size: 12px; line-height: 1.45; }
 .baah-section-title { font-size: x-large; }
 .baah-background-upload { width: auto; min-width: 0; box-shadow: none; }
 .baah-background-upload .q-uploader__header { padding: 0; }

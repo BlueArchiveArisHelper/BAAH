@@ -254,6 +254,8 @@
     "desc_noti_when_error": "Notify when an error occurs",
     "desc_noti_when_success": "Notify when the run finishes",
     "error_if_assault_no_team": "Throw error if no team can fight in assault",
+    "tip_assault_no_team": "On: the run stops here and the error notification is sent. Off: BAAH skips Total Assault and moves on to the next task.",
+    "tip_assault_helper": "BAAH borrows the assistant for the first fight only. If it can't find the student, it fights without one.",
     "error_if_grand_assault_no_team": "Throw error if no team can fight in grand assault",
     "flow_mode": "Action flow mode",
     "desc_flow_when_login_game": "Execute the following custom actions on the account login page",
