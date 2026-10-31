@@ -1,6 +1,37 @@
+import time
 from nicegui import ui
 from .modern_ui import form_row, surface, operation_bar, notice_box
 from modules.configs.MyConfig import config
+
+def ordinal(n):
+    # 1st, 2nd, 3rd, 4th ... 11th, 12th, 13th ... 21st
+    suffix = "th" if 11 <= n % 100 <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+def run_dates(i, n):
+    # Plan `i` runs on these dates of the month. Keep in step with `tm_mday % len(...)` in InWanted, InSpecial, InExchange, InQuest and InEvent
+    return [d for d in range(1, 32) if d % n == i]
+
+def runs_text(dates):
+    """
+    Say on which dates of the month a day plan runs.
+
+    Args:
+        dates: the dates from `run_dates`.
+
+    Returns:
+        The sentence, or "" when the language pack has no text for it.
+    """
+    if len(dates) == 31:
+        key = "config_runs_every_day"
+    elif not dates:
+        key = "config_runs_never"
+    else:
+        key = "config_runs_on"
+    if not config.has_text(key):
+        return ""
+    more = " \u2026" if len(dates) > 3 else ""
+    return config.get_text(key).format(dates=", ".join(map(ordinal, dates[:3])) + more)
 
 def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False, 
                    min_value_for_1st_dim = 1,min_value_for_2nd_dim = 1, min_value_for_3rd_dim = -99, *, blockdesc_as_notice=False, empty_line_prompt_id="config_no_data_set_here"):
@@ -50,9 +81,17 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
         """
         line_item = datadict[i]
         title = heading(i)
-        with surface("baah-day-card"):
+        dates = run_dates(i, len(datadict))
+        runs = runs_text(dates)
+        is_today = config.has_text("config_today") and time.localtime().tm_mday in dates
+        with surface("baah-day-card" + (" baah-day-today" if is_today else "")):
             with ui.row(wrap=False).classes("baah-title-row"):
-                ui.label(title).classes("baah-group-title")
+                with ui.row().classes("baah-day-head"):
+                    ui.label(title).classes("baah-group-title")
+                    if runs:
+                        ui.label(runs).classes("baah-day-runs baah-muted")
+                    if is_today:
+                        ui.badge(config.get_text("config_today")).props("rounded")
                 with ui.button(icon="delete_outline", on_click=lambda: del_item(i), color=None).props("flat round dense"):
                     ui.tooltip(config.get_text("tip_remove_day", "button_delete").format(day=title))
             if len(line_item) == 0:

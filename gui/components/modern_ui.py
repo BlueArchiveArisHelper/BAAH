@@ -294,6 +294,9 @@ body.baah-page::before {
 .baah-day-grid { display: grid; gap: 6px 8px; align-items: center; }
 .baah-day-column { font-size: 12px; }
 .baah-day-grid .q-field { width: 100%; }
+.baah-day-head { align-items: center; gap: 4px 10px; }
+.baah-day-runs { font-size: 13px; }
+.baah-page .baah-day-today { border-color: var(--baah-accent); }
 .baah-team-row > .q-field { flex: 1 1 150px; }
 .baah-image-preview { width: 300px; max-width: 100%; height: 150px; border: 1px dashed var(--baah-border); border-radius: 10px; overflow: hidden; background: var(--baah-soft); }
 .baah-flow-editor { width: 100%; gap: 16px; }
