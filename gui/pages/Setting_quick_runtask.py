@@ -98,9 +98,9 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
         ui.notify(res.stdout)
     brightness_number = {"val": 21}
     with ui.row():
-        ui.button("查询亮度/Query", on_click=query_brightness)
-        ui.number("亮度/Brightness", step=1, min=0, precision=0).bind_value(brightness_number, 'val', forward=lambda x:int(x), backward=lambda x:int(x))
-        ui.button("设置/Set", on_click=lambda: [
+        ui.button(config.get_text("button_query_brightness", default="查询亮度/Query"), on_click=query_brightness)
+        ui.number(config.get_text("config_brightness", default="亮度/Brightness"), step=1, min=0, precision=0).bind_value(brightness_number, 'val', forward=lambda x:int(x), backward=lambda x:int(x))
+        ui.button(config.get_text("button_set_brightness", default="设置/Set"), on_click=lambda: [
             connect_to_device(config),
             subprocess_run([get_config_adb_path(config), "-s", getNewestSeialNumber(config), "shell", "settings", "put", "system", "screen_brightness", str(brightness_number["val"])]), 
             ui.notify("Done")

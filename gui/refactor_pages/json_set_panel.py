@@ -613,11 +613,14 @@ async def show_json_panel(json_file_name: str):
                     "SERVER_TYPE",
                     lambda v: not _is_STEAM_app(v),
                 ):
-                    ui.input(curr_config.get_text("config_emulator_path")).bind_value(
+                    ui.input(
+                        curr_config.get_text("config_emulator_path"),
+                        placeholder=curr_config.get_text("placeholder_emulator_path", default="模拟器路径"),
+                    ).bind_value(
                         curr_config.userconfigdict,
                         "TARGET_EMULATOR_PATH",
                         forward=smart_replace_main2device,
-                    ).props('placeholder="模拟器路径"').classes("w-full")
+                    ).classes("w-full")
 
 
     # 编辑器使用正常 flex 布局，日志展开时缩小表单区域而不覆盖控件。

@@ -14,7 +14,7 @@ def edit_the_team_strength_of_this_config(inconfig, affect_key):
         strength_list.append({color: 0 for color in color_list})
     strength_list = strength_list[:4]
     for i in range(4):
-        ui.label(f"队伍 {i+1} : ")
+        ui.label(inconfig.get_text("config_team_n", default="队伍 {n} : ").format(n=i+1))
         # 队伍字段自动换行，保留原有强度范围与绑定。
         with form_row():
             for cind, color in enumerate(color_list):

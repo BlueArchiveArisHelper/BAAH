@@ -265,20 +265,21 @@ class MyConfigger:
             # 确保值存在后，执行post parse action
             self._do_post_parse_action(defaultSessionDict, self.sessiondict, shouldKey)
 
-    def get_text(self, text_id, fallback_id=None):
+    def get_text(self, text_id, fallback_id=None, default=None):
         """
         获取语言包对应id的字符串
 
         Args:
             text_id: the i18n key.
             fallback_id: the key to read instead when `text_id` is missing, for en_US-only keys that zh/jp have not translated yet.
+            default: the text to return when neither key exists, for en_US-only keys whose text zh/jp still hard-code in the GUI.
 
         Returns:
-            The string, or the `[key]` placeholder when neither key exists.
+            The string, else `default`, else the `[key]` placeholder.
         """
         if fallback_id is not None and not self.has_text(text_id):
             text_id = fallback_id
-        return self.languagepackagedict.get(text_id, f"[{text_id}]")
+        return self.languagepackagedict.get(text_id, default if default is not None else f"[{text_id}]")
 
     def has_text(self, text_id):
         """
