@@ -291,7 +291,6 @@ body.baah-page::before {
 .baah-list-actions { gap: 8px; justify-content: center; }
 /* One card per day: column names once, then a grid row per stage. */
 .baah-day-card { width: fit-content; min-width: min(360px, 100%); max-width: 100%; padding: 12px 14px; gap: 10px; }
-.baah-day-card .baah-list-actions { justify-content: flex-start; }
 .baah-day-grid { display: grid; gap: 6px 8px; align-items: center; }
 .baah-day-column { font-size: 12px; }
 .baah-day-grid .q-field { width: 100%; }

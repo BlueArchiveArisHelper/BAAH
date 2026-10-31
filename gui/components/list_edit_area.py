@@ -29,12 +29,6 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
             return config.get_text("config_nth_heading").format(item=linedesc[0], n=i+1)
         return f'{config.get_text("config_nth")} {i+1} {linedesc[0]}: '
 
-    def item_actions(i):
-        with operation_bar().classes("baah-list-actions"):
-            ui.button(f"{config.get_text('button_add')} {linedesc[1]}", on_click=lambda: add_item_item(i))
-            if len(datadict[i]) > 0:
-                ui.button(f"{config.get_text('button_delete')} {linedesc[1]}", on_click=lambda: del_item_item(i), color="red")
-
     def min_value_of(k):
         # 最后一列是扫荡次数，倒数第二列是关卡序号，其余（地区序号）用第一维的最小值
         if k == subdim-1:
@@ -55,18 +49,24 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
             i: the index of the day in `datadict`.
         """
         line_item = datadict[i]
+        title = heading(i)
         with surface("baah-day-card"):
-            ui.label(heading(i)).classes("baah-group-title")
+            with ui.row(wrap=False).classes("baah-title-row"):
+                ui.label(title).classes("baah-group-title")
+                with ui.button(icon="delete_outline", on_click=lambda: del_item(i), color=None).props("flat round dense"):
+                    ui.tooltip(config.get_text("tip_remove_day", "button_delete").format(day=title))
             if len(line_item) == 0:
                 notice_box(config.get_text(empty_line_prompt_id), tone="warning")
             else:
-                columns = f"repeat({subdim}, 112px)" + (" auto" if has_switch else "")
+                # 最后一列放每个关卡的删除按钮
+                columns = f"repeat({subdim}, 112px)" + (" auto" if has_switch else "") + " auto"
                 with ui.element("div").classes("baah-day-grid").style(f"grid-template-columns: {columns}"):
                     for k in range(subdim):
                         ui.label(linedesc[2][k]).classes("baah-day-column baah-muted")
                     if has_switch:
                         ui.label(config.get_text("config_switch_column", "button_enable")).classes("baah-day-column baah-muted")
-                    for row in line_item:
+                    ui.element("div")
+                    for j, row in enumerate(line_item):
                         for k in range(subdim):
                             ui.number(min=min_value_of(k),
                                       step=1,
@@ -78,7 +78,9 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                         if has_switch:
                             # BAAH runs a stage that has no switch, so an empty slice shows as ticked
                             ui.checkbox(value=all(row[subdim:]), on_change=lambda v,row=row: set_switch(row, bool(v.value)))
-            item_actions(i)
+                        with ui.button(icon="remove_circle_outline", on_click=lambda j=j: del_item_item(i, j), color="red").props("flat round dense"):
+                            ui.tooltip(config.get_text("tip_remove_stage", "button_delete"))
+            ui.button(config.get_text("button_add_stage", "button_add"), icon="add", on_click=lambda: add_item_item(i)).props("flat")
 
     # 列表共用卡片与操作栏，增删及数值约束保持原有逻辑。
     @ui.refreshable
@@ -126,18 +128,26 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                                 value=line_item[j],
                                 on_change=lambda v,i=i,j=j: datadict[i].__setitem__(j, int(v.value)),
                                 ).style('width: 128px')
-                item_actions(i)
+                with operation_bar().classes("baah-list-actions"):
+                    ui.button(f"{config.get_text('button_add')} {linedesc[1]}", on_click=lambda i=i: add_item_item(i))
+                    if len(datadict[i]) > 0:
+                        ui.button(f"{config.get_text('button_delete')} {linedesc[1]}", on_click=lambda i=i: del_item_item(i, -1), color="red")
         with form_row().classes("baah-list-items"):
-            ui.button(f"{config.get_text('button_add')} {linedesc[0]}", on_click=add_item)
-            if len(datadict) > 0:
-                ui.button(f"{config.get_text('button_delete')} {linedesc[0]}", on_click=del_item, color="red")
+            if dim == 3:
+                # Each day card has its own remove button, so only Add stays here
+                add_day = config.get_text("button_add_day") if config.has_text("button_add_day") else f"{config.get_text('button_add')} {linedesc[0]}"
+                ui.button(add_day, icon="add", on_click=add_item).props("outline")
+            else:
+                ui.button(f"{config.get_text('button_add')} {linedesc[0]}", on_click=add_item)
+                if len(datadict) > 0:
+                    ui.button(f"{config.get_text('button_delete')} {linedesc[0]}", on_click=lambda: del_item(-1), color="red")
  
     def add_item():
         datadict.append([])
         item_list.refresh()
     
-    def del_item():
-        datadict.pop()
+    def del_item(item_ind):
+        datadict.pop(item_ind)
         item_list.refresh()
         
     def get_num_of_last_item(mylist):
@@ -179,8 +189,8 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
         
         item_list.refresh()
     
-    def del_item_item(item_ind):
-        datadict[item_ind].pop()
+    def del_item_item(item_ind, sub_ind):
+        datadict[item_ind].pop(sub_ind)
         item_list.refresh()
 
     item_list()
