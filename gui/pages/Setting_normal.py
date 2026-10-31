@@ -1,10 +1,12 @@
 from nicegui import ui
 from gui.components.edit_team_strength import edit_the_team_strength_of_this_config
 from gui.components.list_edit_area import list_edit_area
+from gui.components.modern_ui import info_tip
 
 def set_normal(config):
     # ui.label(config.get_text("config_desc_times"))
-    ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "NORMAL_QUEST_EVENT_STATUS") 
+    with info_tip(config, "tip_campaign_only"):
+        ui.switch(config.get_text("config_campaign_only", fallback_id="config_event_status")).bind_value(config.userconfigdict, "NORMAL_QUEST_EVENT_STATUS")
     list_edit_area(
         config.userconfigdict["NORMAL"], 
         [

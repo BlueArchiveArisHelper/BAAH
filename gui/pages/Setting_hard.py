@@ -1,9 +1,11 @@
 from nicegui import ui
 from gui.components.list_edit_area import list_edit_area
+from gui.components.modern_ui import info_tip
 
 def set_hard(config, shared_softwareconfig):
     # ui.label(config.get_text("config_desc_times"))
-    ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "HARD_QUEST_EVENT_STATUS") 
+    with info_tip(config, "tip_campaign_only_hard"):
+        ui.switch(config.get_text("config_campaign_only", fallback_id="config_event_status")).bind_value(config.userconfigdict, "HARD_QUEST_EVENT_STATUS")
     
     show_note = {"val": False}
     if config.has_text("show_note"):

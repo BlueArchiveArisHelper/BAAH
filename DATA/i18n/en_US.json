@@ -359,6 +359,9 @@
 
 
     "config_event_status": "Execute only when the event is active",
+    "config_campaign_only":"Only run during a 2x/3x reward campaign",
+    "tip_campaign_only":"When on, BAAH skips this task unless a 2x/3x reward campaign is running for it.",
+    "tip_campaign_only_hard":"When on, BAAH skips this task unless a 2x/3x Hard campaign is running.",
     "notice_QA":"How to use and FAQ, view the official website",
     "mirror_desc": "You can add an existing Mirror key to speed up the download of update packages and improve stability",
     "notice_steam_esc_break": "Close the button mention, Long press esc to interrupt script execution",
