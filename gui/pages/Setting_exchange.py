@@ -2,10 +2,6 @@ from nicegui import ui
 from gui.components.list_edit_area import list_edit_area
 
 def set_exchange(config):
-    with ui.row():
-        ui.link_target("EXCHANGE")
-        ui.label(config.get_text("task_exchange")).style('font-size: x-large')
-    
     # ui.label(config.get_text("config_desc_times"))
     ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "EXCHANGE_EVENT_STATUS") 
     list_edit_area(

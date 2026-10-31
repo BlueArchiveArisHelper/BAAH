@@ -3,11 +3,6 @@ from gui.components.fast_run_task_buttons import show_fast_run_task_buttons, Tas
 from modules.utils import return_now_activate_pipeline
 
 def set_task_order(config, real_taskname_to_show_taskname, logArea):
-    with ui.row():
-        ui.link_target("TASK_ORDER")
-        ui.label(config.get_text("setting_task_order")).style('font-size: x-large')
-    
-    
     def select_clear_all_and_refresh_task_order(type="select"):
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         if type == "select":

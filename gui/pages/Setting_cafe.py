@@ -19,11 +19,6 @@ def invite_seq_label(config, cafe_no, after_ticket=False):
     return f'{prefix}{cafe_no}{config.get_text("cafe_invite_desc")}'
 
 def set_cafe(config):
-    with ui.row():
-        ui.link_target("CAFE")
-        ui.label(config.get_text("task_cafe")).style('font-size: x-large')
-    
-    
     # 收集
     with ui.row():
         ui.checkbox(config.get_text("cafe_collect_desc")).bind_value(config.userconfigdict, "CAFE_COLLECT")

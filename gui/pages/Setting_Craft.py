@@ -1,11 +1,6 @@
 from nicegui import ui
 
 def set_craft(config):
-    with ui.row():
-        ui.link_target("CRAFT")
-        ui.label(config.get_text("task_craft")).style('font-size: x-large')
-    
-    
     ui.label(config.get_text("config_craft_desc"))
     
     ui.number(config.get_text("config_craft_max_times"),

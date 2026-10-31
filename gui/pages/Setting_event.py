@@ -4,10 +4,6 @@ from gui.components.list_edit_area import list_edit_area
 from gui.components.cut_screenshot import screencut_button
 
 def set_event(config):
-    with ui.row():
-        ui.link_target("ACTIVITY")
-        ui.label(config.get_text("task_event")).style('font-size: x-large')
-
     # 尝试进入活动的次数
     with ui.row().style("width: 100%; align-items: flex-start"):
         ui.label(config.get_text("config_try_enter_event_number"))

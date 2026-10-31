@@ -214,7 +214,6 @@ body.baah-page::before {
 .baah-form .q-field--labeled .q-field__suffix { grid-column: 3; grid-row: 2; padding: 0 0 0 6px; white-space: nowrap; line-height: 24px; }
 /* 前后附加图标与按钮对齐输入值，避免下拉箭头、清除和密码按钮停留在标签一行。 */
 .baah-form .q-field--labeled .q-field__control > .q-field__marginal { align-self: flex-end; height: 26px; margin-bottom: 7px; }
-.baah-form-body > .nicegui-row:first-child:has(> a[name]) > div { font-size: 16px !important; font-weight: 600; }
 .baah-product-title { font-size: 20px; font-weight: 600; line-height: 1.5; }
 .baah-notice { padding: 12px 16px; border-left: 3px solid var(--q-warning); background: var(--baah-soft); border-radius: 8px; }
 .baah-notice-text { font-size: 14px; line-height: 1.8; color: var(--q-warning); }
@@ -228,8 +227,6 @@ body.baah-page::before {
 .baah-background-upload .q-uploader__list { display: none; }
 .baah-background-scale { width: 200px; }
 .baah-form-body { width: 100%; min-width: 0; gap: 16px; }
-.baah-form-body > .nicegui-row:first-child { margin-bottom: 0; }
-.baah-form-body > .nicegui-row:first-child > .baah-text { font-size: 16px !important; font-weight: 600; }
 .baah-description { width: 100%; background: var(--baah-soft); border-radius: 8px; }
 /* Quasar animates this box's height; bottom padding here can't reach 0 and snaps, so it lives on the last child. */
 .baah-description .q-expansion-item__content { padding: 0 16px; overflow-wrap: anywhere; }

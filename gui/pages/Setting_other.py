@@ -13,10 +13,6 @@ from DATA.assets.PopupName import PopupName
 from modules.utils import screencut_tool, connect_to_device, screen_shot_to_global, button_pic, popup_pic, page_pic, match_pattern,screenshot,get_config_adb_path,getNewestSeialNumber,subprocess_run
 
 def set_other(config, gui_shared_config):
-    with ui.row():
-        ui.link_target("TOOL_PATH")
-        ui.label(config.get_text("setting_other")).style('font-size: x-large')
-
     background_settings(gui_shared_config)
 
     ui.label("BAAH Settings").classes('baah-section-title')

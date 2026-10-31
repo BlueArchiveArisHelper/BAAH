@@ -2,10 +2,6 @@ from nicegui import ui
 from gui.components.cut_screenshot import cut_screenshot, screencut_button
 
 def set_assault(config):
-    with ui.row():
-        ui.link_target("ASSAULT")
-        ui.label(config.get_text("task_assault")).style('font-size: x-large')
-    
     ui.label(config.get_text("desc_assault"))
     
     ui.label('1:"Normal", 2:"Hard", 3:"Very Hard", 4: "Hardcore", 5: "Extreme", 6: "Insane", 7: "Torment"')

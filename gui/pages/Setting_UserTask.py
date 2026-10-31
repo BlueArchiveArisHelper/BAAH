@@ -2,10 +2,6 @@ from nicegui import ui
 from gui.components.cut_screenshot import test_screencut
 
 def set_usertask(config, parsed_obj_dict):
-    with ui.row():
-        ui.link_target("USER_DEF_TASK")
-        ui.label(config.get_text("task_user_def_task")).style('font-size: x-large')
-    
     # 是否开启操作actions flow group模式
     ui.checkbox(config.get_text("flow_mode")).bind_value(config.userconfigdict, "USE_OBJ_USER_DEFINE_TASK")
 

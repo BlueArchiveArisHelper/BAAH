@@ -6,9 +6,6 @@ def show_fast_run_task_buttons(task_confname_list, config, real_taskname_to_show
     """
     展示快速运行任务按钮
     """
-    if show_title:
-        ui.label(config.get_text("config_quick_call_task")).style('font-size: x-large')
-    
     if show_desc:
         ui.label(config.get_text("config_desc_quick_call_task"))
 

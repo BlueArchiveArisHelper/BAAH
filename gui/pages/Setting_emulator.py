@@ -26,10 +26,6 @@ def set_emulator(config):
     #     connect_to_device(cfig)
     #     res = await run.io_bound(mumu_rm_mu, cfig)
     #     noti_user(res)
-    
-    
-    ui.link_target("EMULATOR")
-    ui.label(config.get_text("setting_emulator")).style('font-size: x-large')
 
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):    
     #  大更新配置

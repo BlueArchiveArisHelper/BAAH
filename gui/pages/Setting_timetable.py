@@ -49,10 +49,6 @@ def pic_list_edit_area(config, datalist, component_desc):
 
 
 def set_timetable(config):
-    with ui.row():
-        ui.link_target("TIME_TABLE")
-        ui.label(config.get_text("task_timetable")).style('font-size: x-large')
-    
     ui.checkbox(config.get_text("config_smart_timetable_desc")).bind_value(config.userconfigdict, "SMART_TIMETABLE")
     
     with ui.column() as smart_area:

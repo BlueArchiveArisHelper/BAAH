@@ -42,10 +42,7 @@ def report_list_gui(config):
 
 def Set_Crash_Report_Manager(config):
     """崩溃报告管理界面"""
-    ui.link_target("Crash_Report_Manager")
-    with ui.row().classes("items-center"):
-        ui.label(config.get_text("setting_crash_report_manager")).style("font-size: x-large")
-        ui.button(icon="refresh", on_click=lambda: report_list_gui.refresh()).props("flat round")
+    ui.button(icon="refresh", on_click=lambda: report_list_gui.refresh()).props("flat round")
     
     ui.checkbox(config.get_text("config_crash_report")).bind_value(gui_shared_config.softwareconfigdict, "ENABLE_CRASH_REPORT")
     

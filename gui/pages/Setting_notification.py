@@ -2,10 +2,6 @@ from nicegui import ui
 from modules.utils import encrypt_data, decrypt_data
 
 def set_notification(config, shared_softwareconfig):
-    with ui.row():
-        ui.link_target("NOTIFICATION")
-        ui.label(config.get_text("setting_notification")).style('font-size: x-large')
-    
     with ui.card():
         ui.checkbox(config.get_text("desc_noti_when_success")).bind_value(config.userconfigdict, "NOTI_WHEN_SUCCESS")
         ui.checkbox(config.get_text("desc_noti_when_error")).bind_value(config.userconfigdict, "NOTI_WHEN_ERROR")
