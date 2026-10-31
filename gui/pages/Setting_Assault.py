@@ -13,7 +13,7 @@ def set_assault(config):
     # zh/jp have no label yet, so they show the select without one
     target_label = config.get_text("config_assault_target_level") if config.has_text("config_assault_target_level") else None
     with info_tip(config, "tip_assault_locked"):
-        ui.select({**ASSAULT_TIERS, 8: "Lunatic"}, label=target_label).bind_value(config.userconfigdict, "AUTO_ASSAULT_LEVEL").style("width: 240px")
+        ui.select({**ASSAULT_TIERS, 8: "Lunatic"}, label=target_label).bind_value(config.userconfigdict, "AUTO_ASSAULT_LEVEL").classes("baah-w-long")
 
     with info_tip(config, "tip_assault_no_team"):
         ui.checkbox(config.get_text("error_if_assault_no_team")).bind_value(config.userconfigdict, "ASSAULT_NO_TEAM_EXCEPT")

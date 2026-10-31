@@ -103,5 +103,5 @@ def set_emulator(config):
             ui.checkbox(config.get_text("config_close_even_if_error")).bind_value(config.userconfigdict, 'CLOSE_BAAH_ERROR').bind_visibility_from(config.userconfigdict, "CLOSE_BAAH_FINISH")
 
     # 登录超时重启模拟器
-    ui.number(config.get_text("config_login_timeout"), min=180, precision=0, step=1).bind_value(config.userconfigdict, "GAME_LOGIN_TIMEOUT", forward= lambda x: int(x)).style("width: 200px")
-    ui.number(config.get_text("config_max_emulator_restart_times"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "MAX_RESTART_EMULATOR_TIMES", forward= lambda x: int(x)).style("width: 400px")
+    ui.number(config.get_text("config_login_timeout"), min=180, precision=0, step=1).bind_value(config.userconfigdict, "GAME_LOGIN_TIMEOUT", forward= lambda x: int(x)).classes("baah-w-short")
+    ui.number(config.get_text("config_max_emulator_restart_times"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "MAX_RESTART_EMULATOR_TIMES", forward= lambda x: int(x)).classes("baah-w-short")

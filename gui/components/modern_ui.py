@@ -248,7 +248,6 @@ body.baah-page::before {
 .baah-background-upload { width: auto; min-width: 0; box-shadow: none; }
 .baah-background-upload .q-uploader__header { padding: 0; }
 .baah-background-upload .q-uploader__list { display: none; }
-.baah-background-scale { width: 200px; }
 .baah-form-body { width: 100%; min-width: 0; gap: 16px; }
 .baah-description { width: 100%; background: var(--baah-soft); border-radius: 8px; }
 /* Quasar animates this box's height; bottom padding here can't reach 0 and snaps, so it lives on the last child. */
@@ -281,6 +280,9 @@ body.baah-page::before {
 /* 图表筛选控件整体居中，换行后每一行仍保持居中。 */
 .baah-chart-filters { width: 100%; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
 .baah-form-row { width: 100%; align-items: center; gap: 12px; flex-wrap: wrap; }
+/* One width scale for fields: short for numbers and short dropdowns, long for text and paths. URLs take w-full. */
+.baah-w-short { width: 200px; }
+.baah-w-long { width: 400px; }
 .baah-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); width: 100%; gap: 16px; align-items: start; }
 .baah-setting-group { width: 100%; gap: 12px; }
 .baah-group-title { font-size: 15px; font-weight: 600; }
@@ -297,7 +299,6 @@ body.baah-page::before {
 .baah-day-head { align-items: center; gap: 4px 10px; }
 .baah-day-runs { font-size: 13px; }
 .baah-page .baah-day-today { border-color: var(--baah-accent); }
-.baah-team-row > .q-field { flex: 1 1 150px; }
 .baah-image-preview { width: 300px; max-width: 100%; height: 150px; border: 1px dashed var(--baah-border); border-radius: 10px; overflow: hidden; background: var(--baah-soft); }
 .baah-flow-editor { width: 100%; gap: 16px; }
 .baah-flow-card { width: 100%; padding: 16px; gap: 12px; }

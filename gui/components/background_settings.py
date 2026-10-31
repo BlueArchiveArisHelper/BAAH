@@ -165,6 +165,6 @@ def background_settings(shared_softwareconfig) -> None:
         with operation_bar():
             scale = ui.number(text('config_background_scale'), value=_current_scale(shared_softwareconfig),
                               min=20.0, max=200.0, step=10, precision=1, format='%.1f', suffix='%').classes(
-                'baah-background-scale')
+                'baah-w-short')
             ui.button(text('button_background_apply_scale'), on_click=confirm_scale)
             ui.button(text('button_background_clear'), on_click=clear_image, color='negative')

@@ -11,39 +11,39 @@ def set_notification(config, shared_softwareconfig):
         # 邮件
         with ui.card():
             ui.checkbox(config.get_text("email_notification_desc")).bind_value(config.userconfigdict, 'ENABLE_MAIL_NOTI')
-            ui.input(config.get_text("email_account")).bind_value(config.userconfigdict, "MAIL_USER").style("width: 300px")
+            ui.input(config.get_text("email_account")).bind_value(config.userconfigdict, "MAIL_USER").classes("baah-w-long")
             ui.input(config.get_text("email_pwd"), password=True, password_toggle_button=True).bind_value(
                 config.userconfigdict, 
                 "MAIL_PASS", 
                 forward= lambda x: encrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"]),
                 backward= lambda x: decrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"])
-                ).style("width: 300px")
+                ).classes("baah-w-long")
             
             # 高级模式让用户自己选择邮件发送服务器
             ui.checkbox(config.get_text("config_email_advaned")).bind_value(config.userconfigdict, "ADVANCED_EMAIL")
             
             with ui.row().bind_visibility_from(config.userconfigdict, "ADVANCED_EMAIL"):
                 # 发件人
-                ui.input(config.get_text("config_email_sender")).bind_value(config.userconfigdict, "SENDER_EMAIL").style("width: 300px")
+                ui.input(config.get_text("config_email_sender")).bind_value(config.userconfigdict, "SENDER_EMAIL").classes("baah-w-long")
                 # 收件人
-                ui.input(config.get_text("config_email_receiver")).bind_value(config.userconfigdict, "RECEIVER_EMAIL").style("width: 300px")
+                ui.input(config.get_text("config_email_receiver")).bind_value(config.userconfigdict, "RECEIVER_EMAIL").classes("baah-w-long")
                 # 邮件服务器
-                ui.input(config.get_text("config_email_smtp")).bind_value(config.userconfigdict, "MAIL_HOST").style("width: 300px")
+                ui.input(config.get_text("config_email_smtp")).bind_value(config.userconfigdict, "MAIL_HOST").classes("baah-w-long")
 
             ui.label(config.get_text("get_email_pwd"))
             ui.html('<iframe src="//player.bilibili.com/player.html?aid=583874363&bvid=BV16z4y1D74s&cid=211611094&p=1&autoplay=0" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>', sanitize=False)
         
         with ui.card():
             ui.checkbox(config.get_text("config_api_noti")).bind_value(config.userconfigdict, "ENABLE_HTTP_NOTI")
-            ui.select({0: "GET", 1: "POST"}, label=config.get_text("config_api_noti_method")).bind_value(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST").style("width: 300px")
+            ui.select({0: "GET", 1: "POST"}, label=config.get_text("config_api_noti_method")).bind_value(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST").classes("baah-w-long")
             ui.input(config.get_text("config_api_noti_token"),
                      password=True,
                      password_toggle_button=True
-                     ).bind_value(config.userconfigdict, "TARGET_HTTP_TOKEN").style("width: 300px")
+                     ).bind_value(config.userconfigdict, "TARGET_HTTP_TOKEN").classes("baah-w-long")
                 
             # 目标url
             ui.label("Keywords: [token], [title], [content]")
-            ui.input(config.get_text("config_api_noti_url")).bind_value(config.userconfigdict, "TARGET_HTTP_URL").style("width: 500px")
+            ui.input(config.get_text("config_api_noti_url")).bind_value(config.userconfigdict, "TARGET_HTTP_URL").classes("w-full")
             with ui.column().bind_visibility_from(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST", backward=lambda x: x == 1):
                 ui.label(config.get_text("config_api_noti_body_desc"))
                 ui.textarea(label=config.get_text("config_api_noti_header"),

@@ -7,13 +7,13 @@ def set_exam(config):
               min=1, max=4, step=1, precision=0).bind_value(
                   config.userconfigdict, "EXAM_TARGET_LEVEL",
                   forward=lambda x: int(x)
-                  ).style('width: 200px')
+                  ).classes("baah-w-short")
     # 设置考试的队伍数量
     ui.number(config.get_text("desc_exam_times"), 
               min=1, max=3, step=1, precision=0).bind_value(
                   config.userconfigdict, "EXAM_TEAM_COUNT",
                   forward=lambda x: int(x)
-                  ).style('width: 200px')
+                  ).classes("baah-w-short")
     # 如果考试失败则尝试挑战上一关卡
     ui.checkbox(config.get_text("desc_exam_allow_fallback")).bind_value(config.userconfigdict, "EXAM_ALLOW_FALLBACK")
 

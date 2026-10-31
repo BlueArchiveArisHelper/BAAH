@@ -78,10 +78,10 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
             match_pattern(cv2.imread(config.userconfigdict['SCREENSHOT_NAME']), pic_path_dict[now_focus_pic_type["typename"]]["func"](now_focus_pic_type["filename"]), show_result=True, auto_rotate_if_trans=False)
         with ui.row():
             with ui.column():
-                ui.select(list(pic_path_dict.keys()), on_change=update_big_type, value=now_focus_pic_type["typename"]).style('width: 200px')
+                ui.select(list(pic_path_dict.keys()), on_change=update_big_type, value=now_focus_pic_type["typename"]).classes("baah-w-short")
             
             with ui.column():
-                ui.select(list(pic_path_dict[now_focus_pic_type["typename"]]["list"]), on_change=update_small_name, value=now_focus_pic_type["filename"]).style('width: 200px')
+                ui.select(list(pic_path_dict[now_focus_pic_type["typename"]]["list"]), on_change=update_small_name, value=now_focus_pic_type["filename"]).classes("baah-w-short")
             
             with ui.column():
                 ui.button("GO!", on_click=screencut_and_match)

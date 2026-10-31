@@ -33,7 +33,7 @@ def pic_list_edit_area(config, datalist, component_desc):
         for i in range(len(datalist)):
             with ui.row():
                 screencut_button(config, datalist[i], "path", save_folder_path=config.USER_STORAGE_FOLDER, post_process=transparent_right_bottom_part_of_image)
-                ui.number(config.get_text("config_weight_of_sth"), precision=0, step=1).bind_value(datalist[i], "w").style("width: 300px")
+                ui.number(config.get_text("config_weight_of_sth"), precision=0, step=1).bind_value(datalist[i], "w").classes("baah-w-short")
                 ui.button(config.get_text("button_delete"), on_click=lambda i=i: action_delete_item(i),  color="red").style("margin-left: 10px")
         ui.button(config.get_text("button_add"), on_click=action_add_item).style("margin-top: 10px")
     
@@ -52,9 +52,9 @@ def set_timetable(config):
     ui.checkbox(config.get_text("config_smart_timetable_desc")).bind_value(config.userconfigdict, "SMART_TIMETABLE")
     
     with ui.column() as smart_area:
-        ui.number(config.get_text("config_weight_of_rewards"), precision=0, step=1).bind_value(config.userconfigdict, "TIMETABLE_WEIGHT_OF_REWARD").style("width: 300px")
-        ui.number(config.get_text("config_weight_of_hearts"), precision=0, step=1).bind_value(config.userconfigdict, "TIMETABLE_WEIGHT_OF_HEART").style("width: 300px")
-        ui.number(config.get_text("config_weight_of_lock"), precision=0, step=1).bind_value(config.userconfigdict, "TIMETABLE_WEIGHT_OF_LOCK").style("width: 300px")
+        ui.number(config.get_text("config_weight_of_rewards"), precision=0, step=1).bind_value(config.userconfigdict, "TIMETABLE_WEIGHT_OF_REWARD").classes("baah-w-short")
+        ui.number(config.get_text("config_weight_of_hearts"), precision=0, step=1).bind_value(config.userconfigdict, "TIMETABLE_WEIGHT_OF_HEART").classes("baah-w-short")
+        ui.number(config.get_text("config_weight_of_lock"), precision=0, step=1).bind_value(config.userconfigdict, "TIMETABLE_WEIGHT_OF_LOCK").classes("baah-w-short")
         pic_list_edit_area(config, config.userconfigdict["TIMETABLE_SPECIAL_STUDENT_PIC"], config.get_text("config_timetable_special_student_pic_desc"))
     smart_area.bind_visibility_from(config.userconfigdict, "SMART_TIMETABLE")
     

@@ -45,7 +45,7 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
                                           value=task_pipeline[i],
                                           on_change=lambda v,i=i: task_pipeline.__setitem__(i, v.value),
                                           with_input=True
-                                          ).props("dense outlined").classes("flex-1")
+                                          ).props("dense outlined").classes("baah-w-long")
                                 ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense")
                                 ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense")
                                 ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else ""))
@@ -122,13 +122,13 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     # pre-run command
     with ui.row():
-        ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').style('width: 300px')
+        ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').classes("baah-w-long")
 
     task_order()
 
     # post-run command
     with ui.row():
-        ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').style('width: 300px')
+        ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').classes("baah-w-long")
     
     # with ui.row():
     #     ui.link_target("NEXT_CONFIG")
@@ -141,7 +141,7 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     # 脚本运行报错自动重启脚本
     with ui.row():
-        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).style("width: 400px")
+        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).classes("baah-w-short")
         ui.checkbox(config.get_text("desc_rerun_start_from_lastpoint")).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR_FROM_LAST_TASK").bind_visibility_from(config.userconfigdict, "RETRY_WHEN_ERROR", backward=lambda x:x>0)
 
 

@@ -33,7 +33,7 @@ def set_other(config, gui_shared_config):
         ui.number(config.get_text("config_run_until_try_times"),
                   step=1,
                   min=3,
-                  precision=0).bind_value(config.userconfigdict, 'RUN_UNTIL_TRY_TIMES', forward=lambda x:int(x), backward=lambda x:int(x))
+                  precision=0).bind_value(config.userconfigdict, 'RUN_UNTIL_TRY_TIMES', forward=lambda x:int(x), backward=lambda x:int(x)).classes("baah-w-short")
         
     with ui.row():
         ui.number(config.get_text("config_run_until_wait_time"),
@@ -41,25 +41,25 @@ def set_other(config, gui_shared_config):
                   step=0.1,
                   min=0.1,
                   precision=1
-                  ).bind_value(config.userconfigdict, 'RUN_UNTIL_WAIT_TIME')
+                  ).bind_value(config.userconfigdict, 'RUN_UNTIL_WAIT_TIME').classes("baah-w-short")
     
     with ui.row():
         ui.number(config.get_text("config_wait_time_after_click"),
                     suffix="s",
                     step=0.1,
-                    precision=1).bind_value(config.userconfigdict, 'TIME_AFTER_CLICK')
+                    precision=1).bind_value(config.userconfigdict, 'TIME_AFTER_CLICK').classes("baah-w-short")
     
     ui.label(config.get_text("config_desc_response_y"))
     with ui.row():
         ui.number(config.get_text("config_response_y"),
                     step=1,
                     min=1,
-                    precision=0).bind_value(config.userconfigdict, 'RESPOND_Y', forward=lambda x:int(x), backward=lambda x:int(x)).bind_enabled(config.userconfigdict, 'LOCK_SERVER_TO_RESPOND_Y', forward=lambda v: not v, backward=lambda v: not v)
+                    precision=0).bind_value(config.userconfigdict, 'RESPOND_Y', forward=lambda x:int(x), backward=lambda x:int(x)).classes("baah-w-short").bind_enabled(config.userconfigdict, 'LOCK_SERVER_TO_RESPOND_Y', forward=lambda v: not v, backward=lambda v: not v)
         ui.checkbox(config.get_text("config_bind_response_to_server")).bind_value(config.userconfigdict, 'LOCK_SERVER_TO_RESPOND_Y')
     
     with ui.row():
         # 截图模式
-        ui.select(options=["png", "pipe"], label=config.get_text("config_screenshot_mode")).bind_value(config.userconfigdict, 'SCREENSHOT_METHOD').style('width: 400px')
+        ui.select(options=["png", "pipe"], label=config.get_text("config_screenshot_mode")).bind_value(config.userconfigdict, 'SCREENSHOT_METHOD').classes("baah-w-long")
 
     ui.label(config.get_text("config_warn_change")).style('color: red')
 
@@ -74,11 +74,11 @@ def set_other(config, gui_shared_config):
     #     ui.checkbox(config.get_text("adb_direct_use_serial")).bind_value(config.userconfigdict, 'ADB_DIRECT_USE_SERIAL_NUMBER')
     
     with ui.row():
-        ui.input(config.get_text("config_adb_path")).bind_value(config.userconfigdict, 'ADB_PATH',forward=lambda v: v.replace("\\", "/")).style('width: 400px')
+        ui.input(config.get_text("config_adb_path")).bind_value(config.userconfigdict, 'ADB_PATH',forward=lambda v: v.replace("\\", "/")).classes("baah-w-long")
 
     
     with ui.row():
-        ui.input(config.get_text("config_screenshot_name")).bind_value(config.userconfigdict, 'SCREENSHOT_NAME',forward=lambda v: v.replace("\\", "/")).style('width: 400px').set_enabled(False)
+        ui.input(config.get_text("config_screenshot_name")).bind_value(config.userconfigdict, 'SCREENSHOT_NAME',forward=lambda v: v.replace("\\", "/")).classes("baah-w-long").set_enabled(False)
     
     # 测试/开发使用
     # 检查当前文件夹下有没有screencut.exe文件
@@ -88,19 +88,19 @@ def set_other(config, gui_shared_config):
     #         ui.button("测试截图/screencut test", on_click=lambda: os.system(f'start screencut.exe "{load_jsonname}"'))
 
     with ui.row():
-        ui.input(config.get_text("aria2_path")).bind_value(config.userconfigdict, 'ARIA2_PATH',forward=lambda v: v.replace("\\", "/")).style('width: 400px')
+        ui.input(config.get_text("aria2_path")).bind_value(config.userconfigdict, 'ARIA2_PATH',forward=lambda v: v.replace("\\", "/")).classes("baah-w-long")
     
     with ui.row():
         ui.number(config.get_text("aria2_thread"),
                   step=1,
                   min=1,
-                  precision=0).bind_value(config.userconfigdict, 'ARIA2_THREADS', forward=lambda x: int(x) if x is not None else 0, backward=lambda x: int(x) if x is not None else 0)
+                  precision=0).bind_value(config.userconfigdict, 'ARIA2_THREADS', forward=lambda x: int(x) if x is not None else 0, backward=lambda x: int(x) if x is not None else 0).classes("baah-w-short")
     
     with ui.row():
         ui.number(config.get_text("aria2_max_tries"),
                   step=1,
                   min=1,
-                  precision=0).bind_value(config.userconfigdict, 'ARIA2_MAX_TRIES', forward=lambda x: int(x) if x is not None else 0, backward=lambda x: int(x) if x is not None else 0)   
+                  precision=0).bind_value(config.userconfigdict, 'ARIA2_MAX_TRIES', forward=lambda x: int(x) if x is not None else 0, backward=lambda x: int(x) if x is not None else 0).classes("baah-w-short")   
 
     with ui.row():
         ui.number(config.get_text("aria2_failured_wait_time"),
@@ -108,4 +108,4 @@ def set_other(config, gui_shared_config):
                   step=0.1,
                   min=0.1,
                   precision=1
-                  ).bind_value(config.userconfigdict, 'ARIA2_FAILURED_WAIT_TIME')
+                  ).bind_value(config.userconfigdict, 'ARIA2_FAILURED_WAIT_TIME').classes("baah-w-short")

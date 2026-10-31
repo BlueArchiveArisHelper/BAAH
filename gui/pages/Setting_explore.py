@@ -26,8 +26,8 @@ def set_explore(config, real_taskname_to_show_taskname, logArea):
     with ui.row():
         with ui.card():
             ui.checkbox(config.get_text("config_use_simple_explore")).bind_value(config.userconfigdict, "PUSH_NORMAL_USE_SIMPLE")
-            ui.number(config.get_text("config_push_normal_desc"), min=4, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_NORMAL_QUEST", forward=lambda x: int(x)).style("width: 300px")
-            ui.number(config.get_text("config_level"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_NORMAL_QUEST_LEVEL", forward=lambda x:int(x)).style("width: 300px")
+            ui.number(config.get_text("config_push_normal_desc"), min=4, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_NORMAL_QUEST", forward=lambda x: int(x)).classes("baah-w-short")
+            ui.number(config.get_text("config_level"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_NORMAL_QUEST_LEVEL", forward=lambda x:int(x)).classes("baah-w-short")
         show_fast_run_task_buttons([TaskName.PUSH_NORMAL], config, real_taskname_to_show_taskname, logArea, show_desc=False)
         
     # ----------hard explore-------------
@@ -38,8 +38,8 @@ def set_explore(config, real_taskname_to_show_taskname, logArea):
     with ui.row():
         with ui.card():
             ui.checkbox(config.get_text("config_use_simple_explore")).bind_value(config.userconfigdict, "PUSH_HARD_USE_SIMPLE")
-            ui.number(config.get_text("config_push_hard_desc"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_HARD_QUEST", forward=lambda x: int(x)).style("width: 300px")
-            ui.number(config.get_text("config_level"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_HARD_QUEST_LEVEL", forward=lambda x:int(x)).style("width: 300px")
+            ui.number(config.get_text("config_push_hard_desc"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_HARD_QUEST", forward=lambda x: int(x)).classes("baah-w-short")
+            ui.number(config.get_text("config_level"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "PUSH_HARD_QUEST_LEVEL", forward=lambda x:int(x)).classes("baah-w-short")
         show_fast_run_task_buttons([TaskName.PUSH_HARD], config, real_taskname_to_show_taskname, logArea, show_desc=False)
         
     

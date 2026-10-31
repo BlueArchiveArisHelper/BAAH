@@ -14,7 +14,7 @@ def set_shop(config):
             precision=0,
             min=0,
             max=3
-            ).bind_value(config.userconfigdict, 'SHOP_NORMAL_REFRESH_TIME', forward=lambda v: int(v)).style('width: 400px')
+            ).bind_value(config.userconfigdict, 'SHOP_NORMAL_REFRESH_TIME', forward=lambda v: int(v)).classes("baah-w-short")
     
     # 购买所有
     ui.checkbox(config.get_text("config_shop_normal_buyall")).bind_value(config.userconfigdict, "SHOP_NORMAL_BUYALL").style("color: red")
@@ -34,7 +34,7 @@ def set_shop(config):
             precision=0,
             min=0,
             max=3
-            ).bind_value(config.userconfigdict, 'SHOP_CONTEST_REFRESH_TIME', forward=lambda v: int(v)).style('width: 400px')
+            ).bind_value(config.userconfigdict, 'SHOP_CONTEST_REFRESH_TIME', forward=lambda v: int(v)).classes("baah-w-short")
     
 
     # 购买所有
