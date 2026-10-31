@@ -1,5 +1,23 @@
 from nicegui import ui
 from gui.components.list_edit_area import list_edit_area
+from gui.components.modern_ui import info_tip
+
+def refresh_field(config, shop):
+    """
+    Build a shop's refresh count field, with a tooltip that names what each refresh costs.
+
+    Args:
+        config: the config to edit.
+        shop: `normal` or `contest`. zh/jp have no short label key yet, so they keep the old label built from the shop name.
+    """
+    with info_tip(config, f"tip_shop_{shop}_refresh"):
+        ui.number(
+                config.get_text("config_shop_refreshes", default=f'{config.get_text(f"config_shop_{shop}")} {config.get_text("config_refresh")} {config.get_text("config_times")}'),
+                step=1,
+                precision=0,
+                min=0,
+                max=3
+                ).bind_value(config.userconfigdict, f'SHOP_{shop.upper()}_REFRESH_TIME', forward=lambda v: int(v)).classes("baah-w-short")
 
 def set_shop(config):
     with ui.row():
@@ -9,13 +27,7 @@ def set_shop(config):
         ui.switch(config.get_text("config_shop_normal_switch")).bind_value(config.userconfigdict, "SHOP_NORMAL_SWITCH")    
     
     with ui.column().bind_visibility_from(config.userconfigdict, "SHOP_NORMAL_SWITCH"):
-        ui.number(
-                f'{config.get_text("config_shop_normal")} {config.get_text("config_refresh")} {config.get_text("config_times")}',
-                step=1,
-                precision=0,
-                min=0,
-                max=3
-                ).bind_value(config.userconfigdict, 'SHOP_NORMAL_REFRESH_TIME', forward=lambda v: int(v)).classes("baah-w-short")
+        refresh_field(config, "normal")
 
         # 购买所有
         ui.checkbox(config.get_text("config_shop_normal_buyall")).bind_value(config.userconfigdict, "SHOP_NORMAL_BUYALL").style("color: red")
@@ -30,13 +42,7 @@ def set_shop(config):
         ui.switch(config.get_text("config_shop_contest_switch")).bind_value(config.userconfigdict, "SHOP_CONTEST_SWITCH") 
 
     with ui.column().bind_visibility_from(config.userconfigdict, "SHOP_CONTEST_SWITCH"):
-        ui.number(
-                f'{config.get_text("config_shop_contest")} {config.get_text("config_refresh")} {config.get_text("config_times")}',
-                step=1,
-                precision=0,
-                min=0,
-                max=3
-                ).bind_value(config.userconfigdict, 'SHOP_CONTEST_REFRESH_TIME', forward=lambda v: int(v)).classes("baah-w-short")
+        refresh_field(config, "contest")
 
         # 购买所有
         ui.checkbox(config.get_text("config_shop_contest_buyall")).bind_value(config.userconfigdict, "SHOP_CONTEST_BUYALL").style("color: red")
