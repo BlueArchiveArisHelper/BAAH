@@ -162,7 +162,7 @@ class ParamsObj:
         if self.param_type == ParamsTypes.NUMBER:
             ui.number(label=self.param_gui_name).bind_value(self, 'param_value').style("width:100px")
         elif self.param_type == ParamsTypes.STRING:
-            ui.input(label=self.param_gui_name).bind_value(self, 'param_value').style("width:100px")
+            ui.input(label=self.param_gui_name).bind_value(self, 'param_value').style("width:300px")
         elif self.param_type == ParamsTypes.PICPATH:
             with ui.column():
                 screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value', save_folder_path=dataconfig.USER_STORAGE_FOLDER)

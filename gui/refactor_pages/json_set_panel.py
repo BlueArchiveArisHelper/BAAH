@@ -2,7 +2,7 @@ from enum import Enum
 from ..components.background_settings import apply_background
 # 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
 from ..components.modern_ui import (
-    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel,
+    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, notice_box,
 )
 
 from ..components.exec_arg_parse import get_token
@@ -611,6 +611,13 @@ async def show_json_panel(json_file_name: str):
                         forward=smart_replace_main2device,
                     ).props('placeholder="模拟器路径"').classes("w-full")
 
+
+    # 状态卡片独立于工作台与刷新区域，固定悬浮且鼠标穿透，不占用文档流。
+    notice_box(curr_config.get_text('notice_pc_acc_mode'), tone='warning').classes(
+        'baah-top-middle-card-notice'
+    ).props('role=status aria-live=polite').bind_visibility_from(
+        curr_config.sessiondict, 'AUTO_CONTROL_PC_WINDOW_NAME', backward=lambda x: not x,
+    )
 
     # 编辑器使用正常 flex 布局，日志展开时缩小表单区域而不覆盖控件。
     with page_shell():

@@ -248,6 +248,12 @@ body.baah-page::before {
 .baah-notice-body { flex: 1; min-width: 0; line-height: 1.8; color: var(--baah-text); white-space: pre-line; overflow-wrap: anywhere; }
 .baah-notice-warning { width: fit-content; border-left-color: var(--q-warning); }
 .baah-notice-warning .baah-notice-icon { color: var(--q-warning); }
+/* 顶部居中的卡片提醒不占文档流；鼠标穿透以保留底层控件操作。 */
+.baah-top-middle-card-notice { position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 1900; width: max-content; max-width: min(680px, calc(100vw - 32px));
+    border-radius: 12px; background: var(--baah-overlay-surface);
+    box-shadow: 0 8px 28px #0002; pointer-events: none; }
+.baah-top-middle-card-notice .baah-notice-body { line-height: 1.6; }
 .baah-resource-guide { width: 100%; gap: 12px; }
 .baah-help-text { max-width: 100%; line-height: 1.8; color: var(--baah-muted); overflow-wrap: anywhere; }
 .baah-described-field { width: 500px; max-width: 100%; gap: 8px; }
