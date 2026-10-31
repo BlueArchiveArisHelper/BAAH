@@ -44,6 +44,19 @@ def get_config_adb_path(use_config=None):
     return target_config.userconfigdict['ADB_PATH']
 
 
+def enter_PC_APP_edit_mode(use_config = None):
+    """控制进入其他PC应用截图模式，截图或操控时不再自动锁定到PC上的BA"""
+    if not use_config:
+        use_config = config
+    use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = False
+    use_config.sessiondict["CONTROL_PC_WINDOW_NAME"] = config.userconfigdict["PC_GAME_ACC_WINDOW_NAME"]
+
+def quit_PC_APP_edit_mode(use_config = None):
+    """控制退出其他PC应用截图模式，截图或操控时自动锁定到PC上的BA"""
+    if not use_config:
+        use_config = config
+    use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"] = True
+
 # 判断是否有TARGET_PORT这个配置项
 def disconnect_this_device():
     """Disconnect this device."""
