@@ -88,6 +88,18 @@ def info_tip(config, text_id):
                 ui.tooltip(config.get_text(text_id)).classes('baah-info-tooltip')
 
 
+def button_tip(config, text_id):
+    """
+    Name an icon-only button in a tooltip. Call it inside the button's `with` block.
+
+    Args:
+        config: the config whose language pack to read.
+        text_id: the i18n key of the tooltip. zh/jp may not have it yet, so a missing key adds no tooltip.
+    """
+    if config.has_text(text_id):
+        ui.tooltip(config.get_text(text_id))
+
+
 async def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
     """
     Ask before a delete that cannot be undone, and run `on_delete` only if the user picks Delete.

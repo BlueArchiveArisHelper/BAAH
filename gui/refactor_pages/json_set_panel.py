@@ -2,7 +2,7 @@ from enum import Enum
 from ..components.background_settings import apply_background
 # 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
 from ..components.modern_ui import (
-    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel,
+    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, button_tip,
 )
 
 from ..components.exec_arg_parse import get_token
@@ -458,10 +458,11 @@ async def show_json_panel(json_file_name: str):
         with surface('baah-header'):
             with ui.row().classes('baah-title-row'):
                 with ui.row().classes("baah-brand"):
-                    ui.button(
+                    with ui.button(
                         icon="arrow_back",
                         on_click=lambda: ui.run_javascript("window.history.back()"),
-                    ).props("flat round dense")
+                    ).props("flat round dense"):
+                        button_tip(gui_shared_config, "tip_back_to_configs")
                     ui.label(f"{json_file_name}").classes("baah-brand-name")
 
                 with ui.row().classes("baah-operation-bar"):
@@ -648,7 +649,7 @@ async def show_json_panel(json_file_name: str):
 
         with middle_section:
             # 小窗口专用导航开关只切换展示类，不接触配置参数。
-            ui.button(icon='menu', on_click=lambda: workspace.classes(
-                toggle='baah-nav-collapsed')).props('flat').classes('baah-nav-toggle').tooltip(
-                    gui_shared_config.get_text('setting_daily'))
+            with ui.button(icon='menu', on_click=lambda: workspace.classes(
+                toggle='baah-nav-collapsed')).props('flat').classes('baah-nav-toggle'):
+                button_tip(gui_shared_config, 'tip_toggle_menu')
             render_config_area()

@@ -4,7 +4,7 @@ import shutil
 
 from nicegui import ui
 from ..define import gui_shared_config
-from ..components.modern_ui import confirm_delete
+from ..components.modern_ui import confirm_delete, button_tip
 
 def get_report_list():
     """获取崩溃报告列表，返回包含filename_key的文件夹名称的列表"""
@@ -48,7 +48,8 @@ def report_list_gui(config):
 
 def Set_Crash_Report_Manager(config):
     """崩溃报告管理界面"""
-    ui.button(icon="refresh", on_click=lambda: report_list_gui.refresh()).props("flat round")
+    with ui.button(icon="refresh", on_click=lambda: report_list_gui.refresh()).props("flat round"):
+        button_tip(config, "tip_refresh_list")
     
     ui.checkbox(config.get_text("config_crash_report")).bind_value(gui_shared_config.softwareconfigdict, "ENABLE_CRASH_REPORT")
     
