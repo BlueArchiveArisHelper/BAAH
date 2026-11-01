@@ -703,7 +703,7 @@ class FlowActionGroup:
                 # 第一行，添加按钮 和 导出按钮
                 with operation_bar():
                     ui.button(dataconfig.get_text("button_add"), on_click=lambda x:add_flow_item(0))
-                    ui.button("Save", on_click=lambda: save_zip())
+                    ui.button(dataconfig.get_text("button_save"), on_click=lambda: save_zip())
                     ui.upload(on_upload=lambda e:upload_zip(e), max_files=1, auto_upload=True)
                 for i,action in enumerate(self.action_list):
                     with surface("baah-flow-card"):

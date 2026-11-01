@@ -470,7 +470,7 @@ async def show_json_panel(json_file_name: str):
                     )
 
                     # Container for the run button group
-                    with ui.row().classes("items-center gap-0"):
+                    with ui.row().classes("baah-split-button"):
 
                         # RUN BUTTON (GUI)
                         run_btn = (
@@ -479,7 +479,7 @@ async def show_json_panel(json_file_name: str):
                                 icon="play_arrow",
                                 on_click=run_in_gui,
                             )
-                            .classes("blue-button rounded-r-none")
+                            .classes("blue-button baah-split-main")
                             .bind_visibility_from(
                                 msg_obj, "runing_signal", backward=lambda x: x == 0
                             )
@@ -493,7 +493,6 @@ async def show_json_panel(json_file_name: str):
                                 color="red",
                                 on_click=stop_run,
                             )
-                            .classes("rounded-r-none")
                             .bind_visibility_from(
                                 msg_obj, "runing_signal", backward=lambda x: x == 1
                             )
@@ -501,11 +500,13 @@ async def show_json_panel(json_file_name: str):
 
                         # DROPDOWN TRIGGER
                         with ui.button(icon="arrow_drop_down").classes(
-                            "px-1 rounded-l-none border-l border-white/30 blue-button"
+                            "baah-split-arrow blue-button"
                         ).bind_visibility_from(
                             msg_obj, "runing_signal", backward=lambda x: x == 0
                         ):
-                            with ui.menu().classes("min-w-60"):
+                            with ui.menu().classes("baah-action-menu").props(
+                                'transition-show=fade transition-hide=fade'
+                            ):
                                 ui.menu_item(
                                     gui_shared_config.get_text(
                                         "button_save_and_run_terminal"
