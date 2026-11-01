@@ -20,6 +20,7 @@ def set_vpn(config, parsed_obj_dict):
         with setting_group(config.get_text("config_pc_accelerator")) as pc_group:
             pc_group.bind_visibility_from(config.userconfigdict, "SERVER_TYPE", backward=lambda x: is_server_type_in_group(x, MultiServerType.PCGroup))
             # 填入PC上加速器相关参数 PC_GAME_ACC_WINDOW_NAME
+            ui.label(config.get_text("gui_explain_pc_acc_mode")).classes('w-full')
             with form_row():
                 ui.input(config.get_text("config_pc_acc_window_name"), value=config.userconfigdict["PC_GAME_ACC_WINDOW_NAME"], on_change=lambda e: track_ACC_WINDOW_NAME(e, config)).classes('w-full')
             with operation_bar():

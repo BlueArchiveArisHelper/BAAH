@@ -156,6 +156,7 @@
     "button_quit_pc_acc_mode": "Exit accelerator screenshot mode",
     "config_vpn_start_actions": "Start accelerator actions",
     "config_vpn_stop_actions": "Close accelerator actions",
+    "gui_explain_pc_acc_mode": "If you want to take screenshots of the accelerator page, please enter the window title of the accelerator (you can check it by hovering over the Windows bar), and then click to enter the accelerator screenshot mode. ",
     "notice_pc_acc_mode": "You are in PC accelerator screenshot mode. All operations target the accelerator software. Go to VPN Configuration - Exit accelerator screenshot mode to end this editing mode.",
     "cafe_collect_desc":"Whether collect in cafe",
     "cafe_touch_desc":"Whether touch in cafe",

@@ -156,6 +156,7 @@
     "button_quit_pc_acc_mode": "退出加速器截图模式",
     "config_vpn_start_actions": "启动加速器操作",
     "config_vpn_stop_actions": "关闭加速器操作",
+    "gui_explain_pc_acc_mode": "如果你要给加速器页面进行截图，请输入加速器的窗口标题（可以在Windows栏鼠标悬停查看），然后点击进入加速器截图模式。",
     "notice_pc_acc_mode": "你当前处于PC加速器截图模式，所有操作均定向到加速器软件。前往 每日-加速器设置-退出加速器截图模式 结束此编辑模式",
     "cafe_collect_desc":"咖啡馆是否收集",
     "cafe_touch_desc":"咖啡馆是否摸头",
