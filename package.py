@@ -233,11 +233,11 @@ print(f"压缩包大小为{os.path.getsize(f'./dist/BAAH{config_version}.zip')/1
 z = zipfile.ZipFile(f'./dist/BAAH{config_version}_update.zip', 'w', zipfile.ZIP_DEFLATED)
 startdir = f"./dist/BAAH"
 for dirpath, dirnames, filenames in os.walk(startdir):
-    # 历史遗留问题，1.6.6之前打包的版本的实际pyinstaller版本过老.
-    # 新版本打更新包需要额外添加_internal/jaraco/text文件夹内lorem文件
-    # if "_internal" in dirpath and "jaraco" in dirpath and "text" in dirpath:
-    #     for filename in filenames:
-    #         z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace(startdir.strip("."),""))
+    # 历史遗留问题
+    # 新版本打更新包需要额外添加_internal/charset_normalizer文件夹内文件
+    if "_internal" in dirpath and "charset_normalizer" in dirpath:
+        for filename in filenames:
+            z.write(os.path.join(dirpath, filename), arcname=os.path.join(dirpath, filename).replace(startdir.strip("."),""))
     if "_internal" in dirpath or "tools" in dirpath or "BAAH_CONFIGS" in dirpath:
         continue
     for filename in filenames:
