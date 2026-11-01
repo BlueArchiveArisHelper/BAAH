@@ -33,6 +33,13 @@ import numpy as np
 import cv2
 import pythoncom
 
+def _get_is_auto_set_pc_window_name(use_config):
+    """获取当前是否开启自动转换至游戏标题"""
+    if use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
+        return True
+    else:
+        return False
+
 def _get_target_window_title(use_config):
     """获取当前需要聚焦的窗口标题"""
     if use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
@@ -148,7 +155,8 @@ def _wrap_activate_window(func):
             # 设置1280*720
             client_window_info = _get_window_client_pos(window_title)
             cx, cy, cw, ch = client_window_info[0]
-            if cw != 1280 or ch != 720:
+            if _get_is_auto_set_pc_window_name(use_config) and (cw != 1280 or ch != 720):
+                # 如果开启自动转换至游戏标题，并且client区域不是1280*720，则尝试调整游戏区域
                 logging.info(istr({
                     CN: "调整分辨率为 1280*720",
                     EN: "Change resolution to 1280*720"
