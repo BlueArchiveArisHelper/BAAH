@@ -77,9 +77,17 @@ def navigation_item(label, selected, on_click, *, icon=None):
 
 
 def log_panel(title):
-    """折叠仅隐藏内容，不销毁日志实例，保持后台输出绑定有效。"""
-    with ui.expansion(title, icon='terminal', value=False).classes('baah-log-panel'):
-        return ui.log(max_lines=1000).props('visible').classes('baah-log')
+    """保留折叠中的日志实例，每次展开完成后定位到最新日志。"""
+    with ui.expansion(title, icon='terminal', value=False).classes('baah-log-panel') as panel:
+        log = ui.log(max_lines=1000).props('visible').classes('baah-log')
+    # 隐藏时滚动区无法可靠计算位置；展开动画结束并完成布局后再滚动。
+    panel.on('after-show', js_handler=f'''() => requestAnimationFrame(() => {{
+        const log = getElement({log.id});
+        if (log?.$el.getClientRects().length) {{
+            log.$refs.qRef.setScrollPosition('vertical', Number.MAX_SAFE_INTEGER, 0);
+        }}
+    }})''')
+    return log
 
 
 def description_panel(title):
@@ -161,6 +169,17 @@ body.baah-page::before {
 .baah-page .q-btn__content { gap: 5px; }
 .baah-page .q-btn:focus-visible { box-shadow: 0 0 0 3px #3b82f633; }
 .baah-page .q-btn--round { border-radius: 50%; }
+/* 分段控件仅最外侧保留圆角，覆盖公共按钮圆角而不裁切焦点轮廓。 */
+.baah-page .baah-segmented { border-radius: 8px; }
+.baah-page .baah-segmented > .q-btn { border-radius: 0; }
+.baah-page .baah-segmented > .q-btn:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.baah-page .baah-segmented > .q-btn:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+/* 拼接按钮显式标记两端，不依赖会受隐藏按钮影响的子项顺序。 */
+.baah-split-button { align-items: center; flex-wrap: nowrap; gap: 0; }
+.baah-page .baah-split-button > .baah-split-main { border-radius: 8px 0 0 8px; }
+.baah-page .baah-split-button > .baah-split-arrow { border-radius: 0 8px 8px 0; padding: 0 4px; border-left: 1px solid #ffffff4d; }
+.baah-page .baah-action-menu { min-width: min(240px, calc(100vw - 32px)); max-width: calc(100vw - 32px); width: max-content; }
+.baah-action-menu .q-item { overflow-wrap: anywhere; }
 /* 浮层独立于背景状态，其内部卡片与输入也继承不透明的主题表面。 */
 .baah-page .q-menu, .baah-page .q-dialog__inner {
     --baah-surface: var(--baah-overlay-surface); --baah-soft: var(--baah-overlay-surface);
@@ -248,6 +267,12 @@ body.baah-page::before {
 .baah-notice-body { flex: 1; min-width: 0; line-height: 1.8; color: var(--baah-text); white-space: pre-line; overflow-wrap: anywhere; }
 .baah-notice-warning { width: fit-content; border-left-color: var(--q-warning); }
 .baah-notice-warning .baah-notice-icon { color: var(--q-warning); }
+/* 顶部居中的卡片提醒不占文档流；鼠标穿透以保留底层控件操作。 */
+.baah-top-middle-card-notice { position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 1900; width: max-content; max-width: min(680px, calc(100vw - 32px));
+    border-radius: 12px; background: var(--baah-overlay-surface);
+    box-shadow: 0 8px 28px #0002; pointer-events: none; }
+.baah-top-middle-card-notice .baah-notice-body { line-height: 1.6; }
 .baah-resource-guide { width: 100%; gap: 12px; }
 .baah-help-text { max-width: 100%; line-height: 1.8; color: var(--baah-muted); overflow-wrap: anywhere; }
 .baah-described-field { width: 500px; max-width: 100%; gap: 8px; }

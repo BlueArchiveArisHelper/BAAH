@@ -112,11 +112,24 @@ _main_actions = [
         id_name = "open_apk_package_a",
         action_gui_name = "open_apk_package_a",
         action_func=lambda strapp: (
-            logging.info(f"Opening {strapp}"),
+            logging.info(f"Opening Android {strapp}"),
             open_app(strapp),
         )[-1],
         action_params=[
             ParamsObj("package", "package", ParamsTypes.APKPACKAGE, "")
+        ],
+        line_edit_type=None,
+        edit_value_map=None
+    ),
+    SubActionMainObj(
+        id_name = "open_exe_app_a",
+        action_gui_name = "open_exe_app_a",
+        action_func=lambda strapp: (
+            logging.info(f"Opening PC {strapp}"),
+            subprocess_run(strapp, isasync=True, shell=True),
+        )[-1],
+        action_params=[
+            ParamsObj("exe_path", "exe_path", ParamsTypes.STRING, "")
         ],
         line_edit_type=None,
         edit_value_map=None

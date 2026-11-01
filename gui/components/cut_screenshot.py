@@ -15,7 +15,7 @@ def screencut_button(inconfig, resultdict, resultkey, input_text=None, button_te
     # 预览与路径操作统一响应式布局，不改变截图与回填流程。
     with ui.row().classes("baah-image-preview"):
         # 图片
-        ui.image(resultdict[resultkey]).bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
+        ui.image(resultdict[resultkey]).props('fit=contain').bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
     
     with form_row():
         ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")

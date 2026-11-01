@@ -55,11 +55,11 @@ def render_json_list():
                     # 项目链接
                     with ui.row():
                         # 语言切换
-                        ui.toggle({"zh_CN":"中文", "en_US":"English", "jp_JP":"日本語"}, value=gui_shared_config.softwareconfigdict["LANGUAGE"], on_change=lambda e:select_language(e.value)).bind_value_from(gui_shared_config.softwareconfigdict, "LANGUAGE")
+                        ui.toggle({"zh_CN":"中文", "en_US":"English", "jp_JP":"日本語"}, value=gui_shared_config.softwareconfigdict["LANGUAGE"], on_change=lambda e:select_language(e.value)).bind_value_from(gui_shared_config.softwareconfigdict, "LANGUAGE").classes('baah-segmented')
                     
                     with ui.row():
                         # 暗色模式切换
-                        ui.toggle({"light": gui_shared_config.get_text("text_light"), "dark": gui_shared_config.get_text("text_dark"), "system": gui_shared_config.get_text("text_system")}, value=gui_shared_config.softwareconfigdict.get("DARK_MODE", "system"), on_change=lambda e: change_dark_mode(e.value, gui_shared_config)).bind_value_from(gui_shared_config.softwareconfigdict, "DARK_MODE")
+                        ui.toggle({"light": gui_shared_config.get_text("text_light"), "dark": gui_shared_config.get_text("text_dark"), "system": gui_shared_config.get_text("text_system")}, value=gui_shared_config.softwareconfigdict.get("DARK_MODE", "system"), on_change=lambda e: change_dark_mode(e.value, gui_shared_config)).bind_value_from(gui_shared_config.softwareconfigdict, "DARK_MODE").classes('baah-segmented')
 
                     # 如何使用
                     with ui.row().style("display: flex; justify-content: space-between; align-items: center;"):
