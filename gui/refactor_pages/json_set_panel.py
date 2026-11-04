@@ -2,7 +2,7 @@ from enum import Enum
 from ..components.background_settings import apply_background
 # 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
 from ..components.modern_ui import (
-    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, button_tip,
+    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, button_tip, notice_box,
 )
 
 from ..components.exec_arg_parse import get_token
@@ -103,6 +103,10 @@ class ConfigPanel:
         该配置项所属的类型列表，决定在不同的 Tab 栏目下是否显示
     icon: str
         导航图标名，与页面一同注册；省略时使用 settings
+    enterCallback: lambda
+        进入此页面时需要执行的回调
+    quitCallback: lambda
+        退出此页面时需要执行的回调
     """
 
     def __init__(
@@ -114,6 +118,8 @@ class ConfigPanel:
         panel_types=[ConfigPanelType.BAAH_Bsic_Settings],
         *,
         icon: str = 'settings',
+        enterCallback = None,
+        quitCallback = None
     ):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
@@ -128,6 +134,8 @@ class ConfigPanel:
         self.nameID = nameID
         self.panel_types = panel_types
         self.icon = icon
+        self.enterCallback = enterCallback
+        self.quitCallback = quitCallback
 
 
 def parse_obj_in_config(inconfig, obj_dict, backward=False):
@@ -406,6 +414,8 @@ async def show_json_panel(json_file_name: str):
                 render_description()
                 # 所有已注册设置页共用表单容器，动态表单仍由原函数生成。
                 with ui.column().classes('baah-form-body'):
+                    if current_panel.enterCallback is not None:
+                        current_panel.enterCallback()
                     current_panel.func()
 
     @ui.refreshable
@@ -416,6 +426,8 @@ async def show_json_panel(json_file_name: str):
 
     def select_panel(panel):
         nonlocal current_panel
+        if current_panel.quitCallback is not None:
+            current_panel.quitCallback()
         current_panel = panel
         render_task_list.refresh()
         render_config_area.refresh()
@@ -478,7 +490,7 @@ async def show_json_panel(json_file_name: str):
                     )
 
                     # Container for the run button group
-                    with ui.row().classes("items-center gap-0"):
+                    with ui.row().classes("baah-split-button"):
 
                         # RUN BUTTON (GUI)
                         run_btn = (
@@ -487,7 +499,7 @@ async def show_json_panel(json_file_name: str):
                                 icon="play_arrow",
                                 on_click=run_in_gui,
                             )
-                            .classes("blue-button rounded-r-none")
+                            .classes("blue-button baah-split-main")
                             .bind_visibility_from(
                                 msg_obj, "runing_signal", backward=lambda x: x == 0
                             )
@@ -501,7 +513,6 @@ async def show_json_panel(json_file_name: str):
                                 color="red",
                                 on_click=stop_run,
                             )
-                            .classes("rounded-r-none")
                             .bind_visibility_from(
                                 msg_obj, "runing_signal", backward=lambda x: x == 1
                             )
@@ -509,11 +520,13 @@ async def show_json_panel(json_file_name: str):
 
                         # DROPDOWN TRIGGER
                         with ui.button(icon="arrow_drop_down").classes(
-                            "px-1 rounded-l-none border-l border-white/30 blue-button"
+                            "baah-split-arrow blue-button"
                         ).bind_visibility_from(
                             msg_obj, "runing_signal", backward=lambda x: x == 0
                         ):
-                            with ui.menu().classes("min-w-60"):
+                            with ui.menu().classes("baah-action-menu").props(
+                                'transition-show=fade transition-hide=fade'
+                            ):
                                 ui.menu_item(
                                     gui_shared_config.get_text(
                                         "button_save_and_run_terminal"
@@ -622,6 +635,13 @@ async def show_json_panel(json_file_name: str):
                         forward=smart_replace_main2device,
                     ).classes("w-full")
 
+
+    # 状态卡片独立于工作台与刷新区域，固定悬浮且鼠标穿透，不占用文档流。
+    notice_box(curr_config.get_text('notice_pc_acc_mode'), tone='warning').classes(
+        'baah-top-middle-card-notice'
+    ).props('role=status aria-live=polite').bind_visibility_from(
+        curr_config.sessiondict, 'AUTO_CONTROL_PC_WINDOW_NAME', backward=lambda x: not x,
+    )
 
     # 编辑器使用正常 flex 布局，日志展开时缩小表单区域而不覆盖控件。
     with page_shell():

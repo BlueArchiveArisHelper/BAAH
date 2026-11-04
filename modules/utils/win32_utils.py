@@ -33,6 +33,24 @@ import numpy as np
 import cv2
 import pythoncom
 
+def _get_is_auto_set_pc_window_name(use_config):
+    """获取当前是否开启自动转换至游戏标题"""
+    if use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
+        return True
+    else:
+        return False
+
+def _get_target_window_title(use_config):
+    """获取当前需要聚焦的窗口标题"""
+    if use_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
+        # 如果开启自动转换至游戏标题，获取到ba游戏窗口标题
+        target_title = use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+    else:
+        # 获取sessiondict里的CONTROL_PC_WINDOW_NAME窗口标题
+        target_title = use_config.sessiondict["CONTROL_PC_WINDOW_NAME"]
+    # print(f"target_title: {target_title}")
+    return target_title
+
 def _get_hwnd(window_title):
     """根据窗口标题获取窗口句柄，如果没找到会返回0"""
     # 使用win32gui获取更精确的客户端区域
@@ -107,7 +125,7 @@ def _wrap_activate_window(func):
             use_config = kwargs.get("use_config", None)
             if not use_config:
                 use_config = config
-            window_title = use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+            window_title = _get_target_window_title(use_config)  # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
             hwnd = _get_hwnd(window_title)
 
             # 2. 恢复窗口（如果它被最小化）
@@ -137,7 +155,8 @@ def _wrap_activate_window(func):
             # 设置1280*720
             client_window_info = _get_window_client_pos(window_title)
             cx, cy, cw, ch = client_window_info[0]
-            if cw != 1280 or ch != 720:
+            if _get_is_auto_set_pc_window_name(use_config) and (cw != 1280 or ch != 720):
+                # 如果开启自动转换至游戏标题，并且client区域不是1280*720，则尝试调整游戏区域
                 logging.info(istr({
                     CN: "调整分辨率为 1280*720",
                     EN: "Change resolution to 1280*720"
@@ -239,7 +258,7 @@ def capture_program_window_precise(use_config = None):
     try:
         if not use_config:
             use_config = config
-        window_title = use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+        window_title = _get_target_window_title(use_config) # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
 
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
@@ -266,7 +285,7 @@ def click_program_window_precise(x, y, use_config = None):
     try:
         if not use_config:
             use_config = config
-        window_title = use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+        window_title = _get_target_window_title(use_config) # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
         # print(client_x, client_y)
@@ -281,7 +300,7 @@ def scroll_program_window_precise(x1, y1, x2, y2, duration_ms, use_config = None
     try:
         if not use_config:
             use_config = config
-        window_title = use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+        window_title = _get_target_window_title(use_config) # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
         _scroll_in_multiple_screens(cx+x1, cy+y1, cx+x2, cy+y2, duration_ms)
