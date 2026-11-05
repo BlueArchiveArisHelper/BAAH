@@ -95,7 +95,6 @@
     "button_link_to_desktop":"创建桌面快捷方式",
 
     "config_cafe_attention":"请将咖啡馆视角拉到最高，把互动家具的开关关闭",
-    "config_camera_full":"进入咖啡馆时视角为最高",
     "desc_cafe_invite":"如果你想要邀请特定/好感最低的学生，请收藏/排序想要邀请的学生并在咖啡馆邀请列表内设置筛选方式为收藏/好感度",
     "config_emulator_port":"ADB端口",
     "config_kill_port": "模拟器启动前强制释放端口",

@@ -95,7 +95,6 @@
     "button_link_to_desktop":"デスクトップショートカットを作成",
 
     "config_cafe_attention": "カフェの視点を最大にしてください。インタラクティブな家具のスイッチをオフにしてください",
-    "config_camera_full": "カフェに入るときに視点が最大になる",
     "desc_cafe_invite": "特定の学生を招待したい場合は、招待したい学生をコレクションして、カフェの招待リストでフィルタリング方法を設定してください",
     "config_emulator_port": "ADBポート",
     "config_kill_port": "エミュレータ起動前にポートを強制解放する",

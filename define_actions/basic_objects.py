@@ -160,9 +160,9 @@ class ParamsObj:
     
     def render_gui(self, dataconfig):
         if self.param_type == ParamsTypes.NUMBER:
-            ui.number(label=self.param_gui_name).bind_value(self, 'param_value').style("width:100px")
+            ui.number(label=self.param_gui_name).bind_value(self, 'param_value').classes("baah-w-short")
         elif self.param_type == ParamsTypes.STRING:
-            ui.input(label=self.param_gui_name).bind_value(self, 'param_value').style("width:300px")
+            ui.input(label=self.param_gui_name).bind_value(self, 'param_value').classes("baah-w-long")
         elif self.param_type == ParamsTypes.PICPATH:
             with ui.column():
                 screencut_button(inconfig=dataconfig, resultdict=self, resultkey='param_value', save_folder_path=dataconfig.USER_STORAGE_FOLDER)

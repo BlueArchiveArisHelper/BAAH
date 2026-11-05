@@ -10,7 +10,7 @@ from modules.AllPage.Page import Page
 from modules.AllTask.InSpecial.RunSpecialFight import RunSpecialFight
 from modules.AllTask.Task import Task
 
-from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, match_pixel,screenshot, get_correct_asset, AssetMappingKeys
+from modules.utils import click, swipe, match, page_pic, button_pic, popup_pic, sleep, ocr_area, config, match_pixel,screenshot, get_correct_asset, AssetMappingKeys, day_plan_index
 
 import numpy as np
 
@@ -30,7 +30,7 @@ class InSpecial(Task):
         # 得到今天是几号
         today = time.localtime().tm_mday
         # 选择一个location的下标
-        target_loc = today%len(config.userconfigdict['SPECIAL_HIGHTEST_LEVEL'])
+        target_loc = day_plan_index(today, len(config.userconfigdict['SPECIAL_HIGHTEST_LEVEL']))
         target_info = config.userconfigdict['SPECIAL_HIGHTEST_LEVEL'][target_loc]
         # 判断这一天是否设置有特殊关卡
         if len(target_info) == 0:

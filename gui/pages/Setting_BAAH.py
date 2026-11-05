@@ -27,7 +27,7 @@ def set_BAAH(config, shared_softwareconfig):
         with ui.column().classes('baah-resource-guide'):
             ui.label(config.get_text('desc_project_resources')).classes('baah-help-text')
             with ui.row():
-                ui.link("Github", web_url["github"], new_tab=True)
+                ui.link("GitHub", web_url["github"], new_tab=True)
                 ui.link("Bilibili", web_url["bilibili"], new_tab=True)
             # kei的教程
             with ui.row():

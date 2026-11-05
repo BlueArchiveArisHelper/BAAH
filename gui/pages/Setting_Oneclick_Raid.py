@@ -3,7 +3,6 @@ from gui.components.list_edit_area import list_edit_area
 
 def set_oneclick_raid(config):
     # 一键扫荡
-    ui.label(config.get_text("task_oneclick_raid")).style('font-size: x-large')
     ui.checkbox(config.get_text("config_event_status")).bind_value(config.userconfigdict, "DO_ONE_CLICK_RAID_ONLY_DURING_EVENT")
     with ui.row().bind_visibility_from(config.userconfigdict, "DO_ONE_CLICK_RAID_ONLY_DURING_EVENT"): 
         ui.switch(f'{config.get_text("config_event_status")} ({config.get_text("word_normal")})').bind_value(config.userconfigdict, "DO_ONE_CLICK_RAID_ONLY_DURING_NORMAL_TRIPLE") 
