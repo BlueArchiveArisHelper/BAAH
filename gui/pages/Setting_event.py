@@ -5,7 +5,7 @@ from gui.components.cut_screenshot import screencut_button
 
 def set_event(config):
     # 尝试进入活动的次数
-    ui.number(config.get_text("config_try_enter_event_number"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER", forward=lambda x:int(x)).classes("baah-w-short")
+    ui.number(config.get_text("config_try_enter_event_number"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER", forward=lambda x:int(x)).classes("baah-w-long")
 
     # 自动配队伍
     ui.checkbox(config.get_text("config_auto_team")).bind_value(config.userconfigdict, "ACTIVITY_AUTO_TEAM")

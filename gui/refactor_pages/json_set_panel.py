@@ -70,7 +70,7 @@ panel_types_2_str = {
 }
 
 
-def description_text(*text_ids):
+def get_drawfunc_description_text(*text_ids):
     """
     Build a page description from i18n texts, joined by a blank line, that keeps line breaks as typed.
     Keys missing from the current language pack are skipped, so an untranslated page shows only what it has.
@@ -123,11 +123,11 @@ class ConfigPanel:
     ):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
-        # Without a `desc`, show `config_desc_<nameID>` if it exists, else fall back to the page name.
+        #NOTE: Without a `desc`, show `config_desc_<nameID>` if it exists, else fall back to the page name.
         if not desc:
             desc_id = f"config_desc_{nameID}"
             if gui_shared_config.has_text(desc_id):
-                desc = description_text(desc_id)
+                desc = get_drawfunc_description_text(desc_id)
             else:
                 desc = lambda: ui.label(self.name)
         self.desc = desc
@@ -269,7 +269,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='my_location',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=description_text("config_desc_task_wanted", "config_desc_times"),
+            desc=get_drawfunc_description_text("config_desc_task_wanted", "config_desc_times"),
         ),
         ConfigPanel(
             "task_special",
@@ -277,7 +277,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='assignment',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=description_text("config_desc_task_special", "config_desc_times"),
+            desc=get_drawfunc_description_text("config_desc_task_special", "config_desc_times"),
         ),
         ConfigPanel(
             "task_exchange",
@@ -285,7 +285,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='school',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=description_text("config_desc_task_exchange", "config_desc_times"),
+            desc=get_drawfunc_description_text("config_desc_task_exchange", "config_desc_times"),
         ),
         ConfigPanel(
             "task_exam",
@@ -300,7 +300,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='event',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=description_text("config_desc_task_event", "config_desc_times"),
+            desc=get_drawfunc_description_text("config_desc_task_event", "config_desc_times"),
         ),
         ConfigPanel(
             "task_assault",
@@ -329,7 +329,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='layers',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=description_text("config_desc_task_hard", "config_desc_times"),
+            desc=get_drawfunc_description_text("config_desc_task_hard", "config_desc_times"),
         ),
         ConfigPanel(
             "task_normal",
@@ -337,7 +337,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='view_module',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=description_text("config_desc_task_normal", "config_desc_times"),
+            desc=get_drawfunc_description_text("config_desc_task_normal", "config_desc_times"),
         ),
         ConfigPanel(
             "task_user_def_task",
@@ -354,7 +354,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='play_circle_outline',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Quick_Task_Settings],
-            desc=description_text("config_desc_quick_call_task"),
+            desc=get_drawfunc_description_text("config_desc_quick_call_task"),
         ),
         ConfigPanel(
             "setting_explore",
@@ -628,7 +628,7 @@ async def show_json_panel(json_file_name: str):
                 ):
                     ui.input(
                         curr_config.get_text("config_emulator_path"),
-                        placeholder=curr_config.get_text("placeholder_emulator_path", default="模拟器路径"),
+                        placeholder=curr_config.get_text("placeholder_emulator_path"),
                     ).bind_value(
                         curr_config.userconfigdict,
                         "TARGET_EMULATOR_PATH",

@@ -14,8 +14,7 @@ def invite_seq_label(config, cafe_no, after_ticket=False):
         The short label used inside the cafe's card, else the old joined label (zh/jp have no short key yet).
     """
     key = "cafe_buy_invite_seq" if after_ticket else "cafe_invite_seq"
-    prefix = config.get_text("buy_ticket") if after_ticket else ""
-    return config.get_text(key, default=f'{prefix}{cafe_no}{config.get_text("cafe_invite_desc")}')
+    return config.get_text(key)
 
 def cafe_card(config, cafe_no):
     """
@@ -25,6 +24,7 @@ def cafe_card(config, cafe_no):
         config: the config to edit.
         cafe_no: the cafe number, 1 or 2.
     """
+    cafe_no = int(cafe_no)
     with setting_group(f'{config.get_text("task_cafe")} {cafe_no}'):
         with info_tip(config, "tip_cafe_invite_seq"):
             ui.number(invite_seq_label(config, cafe_no), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, f"CAFE{cafe_no}_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short")

@@ -96,7 +96,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                     if is_today:
                         ui.badge(config.get_text("config_today")).props("rounded")
                 with ui.button(icon="delete_outline", on_click=lambda: ask_del_day(i, title), color=None).props("flat round dense"):
-                    ui.tooltip(config.get_text("tip_remove_day", "button_delete").format(day=title))
+                    ui.tooltip(config.get_text("tip_remove_day").format(day=title))
             if len(line_item) == 0:
                 notice_box(config.get_text(empty_line_prompt_id), tone="warning")
             else:
@@ -107,7 +107,7 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                         with info_tip(config, column_tips[k] if k < len(column_tips) else None):
                             ui.label(linedesc[2][k]).classes("baah-day-column baah-muted")
                     if has_switch:
-                        ui.label(config.get_text("config_switch_column", "button_enable")).classes("baah-day-column baah-muted")
+                        ui.label(config.get_text("config_switch_column")).classes("baah-day-column baah-muted")
                     ui.element("div")
                     for j, row in enumerate(line_item):
                         for k in range(subdim):
@@ -122,8 +122,8 @@ def list_edit_area(datadict, linedesc, blockdesc="", has_switch=False,
                             # BAAH runs a stage that has no switch, so an empty slice shows as ticked
                             ui.checkbox(value=all(row[subdim:]), on_change=lambda v,row=row: set_switch(row, bool(v.value)))
                         with ui.button(icon="remove_circle_outline", on_click=lambda j=j: del_item_item(i, j), color="red").props("flat round dense"):
-                            ui.tooltip(config.get_text("tip_remove_stage", "button_delete"))
-            ui.button(config.get_text("button_add_stage", "button_add"), icon="add", on_click=lambda: add_item_item(i)).props("flat")
+                            ui.tooltip(config.get_text("tip_remove_stage"))
+            ui.button(config.get_text("button_add_stage"), icon="add", on_click=lambda: add_item_item(i)).props("flat")
 
     # 列表共用卡片与操作栏，增删及数值约束保持原有逻辑。
     @ui.refreshable

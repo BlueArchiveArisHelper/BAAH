@@ -5,7 +5,7 @@ from gui.components.modern_ui import info_tip
 def set_exchange(config):
     # ui.label(config.get_text("config_desc_times"))
     with info_tip(config, "tip_campaign_only"):
-        ui.switch(config.get_text("config_campaign_only", fallback_id="config_event_status")).bind_value(config.userconfigdict, "EXCHANGE_EVENT_STATUS")
+        ui.switch(config.get_text("config_campaign_only")).bind_value(config.userconfigdict, "EXCHANGE_EVENT_STATUS")
     list_edit_area(
         config.userconfigdict["EXCHANGE_HIGHEST_LEVEL"], 
         [

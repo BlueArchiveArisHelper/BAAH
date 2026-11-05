@@ -12,7 +12,7 @@ def refresh_field(config, shop):
     """
     with info_tip(config, f"tip_shop_{shop}_refresh"):
         ui.number(
-                config.get_text("config_shop_refreshes", default=f'{config.get_text(f"config_shop_{shop}")} {config.get_text("config_refresh")} {config.get_text("config_times")}'),
+                config.get_text("config_shop_refreshes"),
                 step=1,
                 precision=0,
                 min=0,

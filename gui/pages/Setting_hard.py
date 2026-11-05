@@ -5,14 +5,10 @@ from gui.components.modern_ui import all_configs_tag, info_tip
 def set_hard(config, shared_softwareconfig):
     # ui.label(config.get_text("config_desc_times"))
     with info_tip(config, "tip_campaign_only_hard"):
-        ui.switch(config.get_text("config_campaign_only", fallback_id="config_event_status")).bind_value(config.userconfigdict, "HARD_QUEST_EVENT_STATUS")
+        ui.switch(config.get_text("config_campaign_only")).bind_value(config.userconfigdict, "HARD_QUEST_EVENT_STATUS")
     
     show_note = {"val": False}
-    if config.has_text("show_note"):
-        show_note_label = config.get_text("show_note")
-    else:
-        # zh/jp have no `show_note` key yet, so they keep the old joined label
-        show_note_label = config.get_text("button_show")+config.get_text("desc_note")
+    show_note_label = config.get_text("show_note")
     with ui.row():
         ui.switch(show_note_label).bind_value(show_note, "val")
         all_configs_tag(config)
@@ -24,7 +20,7 @@ def set_hard(config, shared_softwareconfig):
             config.get_text("config_day"), 
             "",
             [
-                config.get_text("config_area", "config_location"),
+                config.get_text("config_area"),
                 config.get_text("config_level"),
                 config.get_text("config_times")
             ]

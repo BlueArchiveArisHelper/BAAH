@@ -44,7 +44,7 @@ def set_notification(config, shared_softwareconfig):
                      ).bind_value(config.userconfigdict, "TARGET_HTTP_TOKEN").classes("baah-w-long")
                 
             # 目标url
-            ui.label(config.get_text("config_api_noti_keywords", default="Keywords: [token], [title], [content]"))
+            ui.label(config.get_text("config_api_noti_keywords"))
             ui.input(config.get_text("config_api_noti_url")).bind_value(config.userconfigdict, "TARGET_HTTP_URL").classes("w-full")
             with ui.column().bind_visibility_from(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST", backward=lambda x: x == 1):
                 ui.label(config.get_text("config_api_noti_body_desc"))
@@ -95,4 +95,4 @@ def set_notification(config, shared_softwareconfig):
     with ui.column().classes('baah-described-field'):
         ui.label(config.get_text('desc_noti_content_diy_hint')).classes('baah-help-text')
         # `stack-label` keeps the placeholder visible on an empty box now that the box has a label
-        ui.textarea(label=config.get_text("config_noti_format", default=""), placeholder=config.get_text("desc_noti_content_diy")).props("stack-label").bind_value(config.userconfigdict, "CUSTOM_EMAIL").style("width: 500px; height: 200px")
+        ui.textarea(label=config.get_text("config_noti_format"), placeholder=config.get_text("desc_noti_content_diy")).props("stack-label").bind_value(config.userconfigdict, "CUSTOM_EMAIL").style("width: 500px; height: 200px")

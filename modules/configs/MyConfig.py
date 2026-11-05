@@ -265,7 +265,7 @@ class MyConfigger:
             # 确保值存在后，执行post parse action
             self._do_post_parse_action(defaultSessionDict, self.sessiondict, shouldKey)
 
-    def get_text(self, text_id, fallback_id=None, default=None):
+    def get_text(self, text_id):
         """
         获取语言包对应id的字符串
 
@@ -277,9 +277,7 @@ class MyConfigger:
         Returns:
             The string, else `default`, else the `[key]` placeholder.
         """
-        if fallback_id is not None and not self.has_text(text_id):
-            text_id = fallback_id
-        return self.languagepackagedict.get(text_id, default if default is not None else f"[{text_id}]")
+        return self.languagepackagedict.get(text_id, f"[{text_id}]")
 
     def has_text(self, text_id):
         """

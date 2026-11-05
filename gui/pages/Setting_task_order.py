@@ -121,8 +121,8 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
         task_pipeline, _, _, activated_ind = return_now_activate_pipeline(config)
         if not task_pipeline:
             return del_one_pipeline()
-        pipeline = f"{config.get_text('config_pipeline')} {activated_ind+1}"
-        return confirm_delete(config, del_one_pipeline, "confirm_delete_pipeline", "confirm_delete_pipeline_tasks", pipeline=pipeline, tasks=len(task_pipeline))
+        pipeline_str = f"{config.get_text('config_pipeline')} {activated_ind+1}"
+        return confirm_delete(config, del_one_pipeline, "confirm_delete_pipeline", "confirm_delete_pipeline_tasks", pipeline=pipeline_str, tasks=len(task_pipeline))
 
     def change_activated_pipeline(e):
         # 切换要被激活的pipeline

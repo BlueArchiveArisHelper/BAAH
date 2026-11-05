@@ -14,4 +14,4 @@ def set_usertask(config, parsed_obj_dict):
 
         with info_tip(config, "tip_python_code") as row:
             row.bind_visibility_from(config.userconfigdict, "USE_OBJ_USER_DEFINE_TASK", backward=lambda x:not x)
-            ui.textarea(label = config.get_text("config_python_code", fallback_id="task_user_def_task")).bind_value(config.userconfigdict, "USER_DEF_TASKS").style('width: 40vw;')
+            ui.textarea(label = config.get_text("config_python_code")).bind_value(config.userconfigdict, "USER_DEF_TASKS").style('width: 40vw;')

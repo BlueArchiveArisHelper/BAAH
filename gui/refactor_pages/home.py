@@ -151,10 +151,10 @@ def render_json_list():
                     # 复制操作的相关参数：被复制的文件名，新文件名
                     copy_related_params = {"old_name":"", "new_name":""}
                     with ui.dialog() as dialog, ui.card():
-                        ui.input(gui_shared_config.get_text("config_copy_from", "button_copy")).bind_value_from(copy_related_params, "old_name").set_enabled(False)
-                        ui.input(gui_shared_config.get_text("config_new_name", "button_rename")).bind_value_to(copy_related_params, "new_name")
+                        ui.input(gui_shared_config.get_text("config_copy_from")).bind_value_from(copy_related_params, "old_name").set_enabled(False)
+                        ui.input(gui_shared_config.get_text("config_new_name")).bind_value_to(copy_related_params, "new_name")
                         with ui.row():
-                            ui.button(gui_shared_config.get_text("button_cancel", "button_hide"), color=None, on_click=dialog.close).props("flat")
+                            ui.button(gui_shared_config.get_text("button_cancel"), color=None, on_click=dialog.close).props("flat")
                             ui.button(gui_shared_config.get_text("button_copy"), on_click=lambda e:[copy_and_rename_config(copy_related_params["old_name"], copy_related_params["new_name"]), dialog.close()])
                             
 

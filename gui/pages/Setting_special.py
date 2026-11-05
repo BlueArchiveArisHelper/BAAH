@@ -5,14 +5,14 @@ from gui.components.modern_ui import info_tip
 def set_special(config):
     # ui.label(config.get_text("config_desc_times"))
     with info_tip(config, "tip_campaign_only"):
-        ui.switch(config.get_text("config_campaign_only", fallback_id="config_event_status")).bind_value(config.userconfigdict, "SPEICAL_EVENT_STATUS")
+        ui.switch(config.get_text("config_campaign_only")).bind_value(config.userconfigdict, "SPEICAL_EVENT_STATUS")
     list_edit_area(
         config.userconfigdict["SPECIAL_HIGHTEST_LEVEL"], 
         [
             config.get_text("config_day"), 
             "",
             [
-                config.get_text("config_request", "config_location"),
+                config.get_text("config_request"),
                 config.get_text("config_level"),
                 config.get_text("config_times")
             ]

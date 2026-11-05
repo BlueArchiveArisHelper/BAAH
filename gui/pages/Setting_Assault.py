@@ -11,7 +11,7 @@ def set_assault(config):
         ui.label(config.get_text("desc_assault"))
 
     # zh/jp have no label yet, so they show the select without one
-    target_label = config.get_text("config_assault_target_level") if config.has_text("config_assault_target_level") else None
+    target_label = config.get_text("config_assault_target_level")
     with info_tip(config, "tip_assault_locked"):
         ui.select({**ASSAULT_TIERS, 8: "Lunatic"}, label=target_label).bind_value(config.userconfigdict, "AUTO_ASSAULT_LEVEL").classes("baah-w-long")
 

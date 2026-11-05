@@ -83,9 +83,8 @@ def info_tip(config, text_id):
     """
     with ui.row().classes('baah-info-row') as row:
         yield row
-        if config.has_text(text_id):
-            with ui.icon('info_outline').classes('baah-info-tip'):
-                ui.tooltip(config.get_text(text_id)).classes('baah-info-tooltip')
+        with ui.icon('info_outline').classes('baah-info-tip'):
+            ui.tooltip(config.get_text(text_id)).classes('baah-info-tooltip')
 
 
 def button_tip(config, text_id):
@@ -138,7 +137,7 @@ async def confirm_change(config, on_confirm, button_id, title_id, *body_ids, **f
         if body_ids:
             ui.label(' '.join(config.get_text(body_id).format(**fields) for body_id in body_ids)).classes('baah-muted')
         with ui.row().classes('baah-confirm-actions'):
-            ui.button(config.get_text('button_cancel', 'button_hide'), on_click=dialog.close, color=None).props('flat')
+            ui.button(config.get_text('button_cancel'), on_click=dialog.close, color=None).props('flat')
             ui.button(config.get_text(button_id), on_click=lambda: dialog.submit(True), color='negative').props('flat')
     confirmed = await dialog
     # Delete the dialog first: `on_confirm` often refreshes the area the dialog was built in
