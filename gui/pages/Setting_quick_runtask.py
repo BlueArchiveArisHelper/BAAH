@@ -38,7 +38,7 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
         time.sleep(0.5)
         subprocess.run([config.userconfigdict['ADB_PATH'], "start-server"])
         print("adb server restarted")
-        ui.notify("adb server resstarted")
+        ui.notify("adb server restarted")
 
     # adb kill-server
     with ui.row():
@@ -78,10 +78,10 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
             match_pattern(cv2.imread(config.userconfigdict['SCREENSHOT_NAME']), pic_path_dict[now_focus_pic_type["typename"]]["func"](now_focus_pic_type["filename"]), show_result=True, auto_rotate_if_trans=False)
         with ui.row():
             with ui.column():
-                ui.select(list(pic_path_dict.keys()), on_change=update_big_type, value=now_focus_pic_type["typename"]).style('width: 200px')
+                ui.select(list(pic_path_dict.keys()), on_change=update_big_type, value=now_focus_pic_type["typename"]).classes("baah-w-short")
             
             with ui.column():
-                ui.select(list(pic_path_dict[now_focus_pic_type["typename"]]["list"]), on_change=update_small_name, value=now_focus_pic_type["filename"]).style('width: 200px')
+                ui.select(list(pic_path_dict[now_focus_pic_type["typename"]]["list"]), on_change=update_small_name, value=now_focus_pic_type["filename"]).classes("baah-w-short")
             
             with ui.column():
                 ui.button("GO!", on_click=screencut_and_match)
@@ -98,9 +98,9 @@ def set_quick_runtask(config, real_taskname_to_show_taskname, logArea):
         ui.notify(res.stdout)
     brightness_number = {"val": 21}
     with ui.row():
-        ui.button("查询亮度/Query", on_click=query_brightness)
-        ui.number("亮度/Brightness", step=1, min=0, precision=0).bind_value(brightness_number, 'val', forward=lambda x:int(x), backward=lambda x:int(x))
-        ui.button("设置/Set", on_click=lambda: [
+        ui.button(config.get_text("button_query_brightness"), on_click=query_brightness)
+        ui.number(config.get_text("config_brightness"), step=1, min=0, precision=0).bind_value(brightness_number, 'val', forward=lambda x:int(x), backward=lambda x:int(x))
+        ui.button(config.get_text("button_set_brightness"), on_click=lambda: [
             connect_to_device(config),
             subprocess_run([get_config_adb_path(config), "-s", getNewestSeialNumber(config), "shell", "settings", "put", "system", "screen_brightness", str(brightness_number["val"])]), 
             ui.notify("Done")

@@ -18,7 +18,7 @@ def screencut_button(inconfig, resultdict, resultkey, input_text=None, button_te
         ui.image(resultdict[resultkey]).props('fit=contain').bind_source_from(resultdict, resultkey).style("width: 100%; height: 100%;")
     
     with form_row():
-        ui.input(input_text).bind_value(resultdict, resultkey).style("width: 300px")
+        ui.input(input_text).bind_value(resultdict, resultkey).classes("baah-w-long")
         ui.button(button_text, on_click=lambda: cut_screenshot(inconfig=inconfig, resultdict=resultdict, resultkey=resultkey, left_click=True, right_click=False, quick_return=True, save_folder_path=save_folder_path, post_process=post_process))
     
 

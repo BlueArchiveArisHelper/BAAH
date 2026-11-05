@@ -1,11 +1,37 @@
 from nicegui import ui
+from gui.components.modern_ui import setting_group, form_grid, info_tip, notice_box
+
+def invite_seq_label(config, cafe_no, after_ticket=False):
+    """
+    Build the label of a cafe's invite number field.
+
+    Args:
+        config: the config whose language pack to read.
+        cafe_no: the cafe number, 1 or 2.
+        after_ticket: True for the field used after buying a ticket.
+
+    Returns:
+        The short label used inside the cafe's card, else the old joined label (zh/jp have no short key yet).
+    """
+    key = "cafe_buy_invite_seq" if after_ticket else "cafe_invite_seq"
+    return config.get_text(key)
+
+def cafe_card(config, cafe_no):
+    """
+    Build one cafe's invite settings in a card titled with the cafe's number.
+
+    Args:
+        config: the config to edit.
+        cafe_no: the cafe number, 1 or 2.
+    """
+    cafe_no = int(cafe_no)
+    with setting_group(f'{config.get_text("task_cafe")} {cafe_no}'):
+        with info_tip(config, "tip_cafe_invite_seq"):
+            ui.number(invite_seq_label(config, cafe_no), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, f"CAFE{cafe_no}_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short")
+        ui.checkbox(config.get_text("buy_ticket")).bind_value(config.userconfigdict, f"CAFE{cafe_no}_BUY_INVITE_TICKET")
+        ui.number(invite_seq_label(config, cafe_no, after_ticket=True), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, f"CAFE{cafe_no}_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).classes("baah-w-short").bind_visibility_from(config.userconfigdict, f"CAFE{cafe_no}_BUY_INVITE_TICKET")
 
 def set_cafe(config):
-    with ui.row():
-        ui.link_target("CAFE")
-        ui.label(config.get_text("task_cafe")).style('font-size: x-large')
-    
-    
     # 收集
     with ui.row():
         ui.checkbox(config.get_text("cafe_collect_desc")).bind_value(config.userconfigdict, "CAFE_COLLECT")
@@ -17,18 +43,10 @@ def set_cafe(config):
         
     ui.label(config.get_text("desc_cafe_invite"))
 
-    with ui.row().bind_visibility_from(config.userconfigdict, "CAFE_TOUCH"):
-        # 一号咖啡馆邀请+买票+邀请
-        ui.number("1" + config.get_text("cafe_invite_desc"), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE1_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).style("width: 300px;")
-        ui.checkbox(config.get_text("buy_ticket")).bind_value(config.userconfigdict, "CAFE1_BUY_INVITE_TICKET")
-        ui.number(config.get_text("buy_ticket") + "1" + config.get_text("cafe_invite_desc"), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE1_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).style("width: 300px;")
-
-    
-    with ui.row().bind_visibility_from(config.userconfigdict, "CAFE_TOUCH"):
-        # 二号咖啡馆邀请+买票+邀请
-        ui.number("2" + config.get_text("cafe_invite_desc"), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE2_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).style("width: 300px;")
-        ui.checkbox(config.get_text("buy_ticket")).bind_value(config.userconfigdict, "CAFE2_BUY_INVITE_TICKET")
-        ui.number(config.get_text("buy_ticket") + "2" + config.get_text("cafe_invite_desc"), min=0, max=5, precision=0, step=1).bind_value(config.userconfigdict, "CAFE2_BUY_INVITE_SEQ", forward=lambda x:int(x), backward=lambda x: int(x)).style("width: 300px;")
+    # 每个咖啡馆一张卡片：邀请+买票+邀请
+    with form_grid().bind_visibility_from(config.userconfigdict, "CAFE_TOUCH"):
+        cafe_card(config, 1)
+        cafe_card(config, 2)
 
     with ui.row().bind_visibility_from(config.userconfigdict, "CAFE_TOUCH"):
         ui.checkbox(config.get_text("config_cafe_samename_defer")).bind_value(config.userconfigdict, "CAFE_INVITE_SAME_NAME_DELAY")
@@ -36,7 +54,6 @@ def set_cafe(config):
 
 
     # 关于视角的提示
-    ui.label(config.get_text("config_cafe_attention"))
-    full_camera = ui.checkbox(config.get_text("config_camera_full")).bind_value(config.userconfigdict, "CAFE_CAMERA_FULL").bind_visibility_from(config.userconfigdict, "CAFE_TOUCH")
-    full_camera.set_value(True)
-    full_camera.set_enabled(False)
+    notice_box(config.get_text("config_cafe_attention"))
+    # Touching assumes the widest camera view and never pans, so the page keeps it on as before; the old checkbox was always on and disabled
+    config.userconfigdict["CAFE_CAMERA_FULL"] = True

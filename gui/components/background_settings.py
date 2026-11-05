@@ -12,7 +12,7 @@ from nicegui import app, events, run, ui
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from modules.configs.MyConfig import MyConfigger
-from .modern_ui import form_row, operation_bar
+from .modern_ui import all_configs_tag, form_row, operation_bar
 
 
 BACKGROUND_NAME = 'background.png'
@@ -150,7 +150,9 @@ def background_settings(shared_softwareconfig) -> None:
             return
         ui.navigate.reload()
 
-    ui.label(text('setting_display')).classes('baah-section-title')
+    with ui.row():
+        ui.label(text('setting_display')).classes('baah-section-title')
+        all_configs_tag(shared_softwareconfig)
     ui.label(text('desc_background_refresh')).classes('baah-help-text')
     ui.link(text('desc_background_source'), target='https://www.gamekee.com/ba/162560', new_tab=True).classes('baah-help-text')
     with form_row():
@@ -165,6 +167,6 @@ def background_settings(shared_softwareconfig) -> None:
         with operation_bar():
             scale = ui.number(text('config_background_scale'), value=_current_scale(shared_softwareconfig),
                               min=20.0, max=200.0, step=10, precision=1, format='%.1f', suffix='%').classes(
-                'baah-background-scale')
+                'baah-w-short')
             ui.button(text('button_background_apply_scale'), on_click=confirm_scale)
             ui.button(text('button_background_clear'), on_click=clear_image, color='negative')

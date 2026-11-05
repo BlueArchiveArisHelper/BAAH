@@ -1,4 +1,5 @@
 from modules.configs.MyConfig import MyConfigger
+from ..define import gui_shared_config
 
 from nicegui import ui
 import os
@@ -30,11 +31,11 @@ async def add_new_config(configname):
     """
     configname = configname.strip()
     if not configname:
-        ui.notify("配置名为空！/Config name is None!")
+        ui.notify(gui_shared_config.get_text("notice_config_name_empty"))
     else:
         configname = configname.replace(".json", "") + ".json"
         if configname in alljson_list:
-            ui.notify("配置名已存在/Config name already exists")
+            ui.notify(gui_shared_config.get_text("notice_config_exists").format(name=configname))
         else:
             # 创建一个新的json文件
             with open(os.path.join(MyConfigger.USER_CONFIG_FOLDER, configname), 'w', encoding="utf8") as f:
@@ -47,20 +48,20 @@ def copy_and_rename_config(configname, rename_configname):
     """
     configname = configname.strip()
     if configname not in alljson_list:
-        ui.notify(f"配置 {configname} 不存在！/Config does not exist!")
+        ui.notify(gui_shared_config.get_text("notice_config_missing").format(name=configname))
         return
     if not rename_configname:
-        ui.notify("缺少新文件名！/Missing new file name!")
+        ui.notify(gui_shared_config.get_text("notice_new_name_missing"))
         return
     rename_configname = rename_configname.strip().replace(".json", "") + ".json" # 确保结尾有且只有一个.json
     if rename_configname in alljson_list:
-        ui.notify(f"配置名 {rename_configname} 已存在！/Config name already exists!")
+        ui.notify(gui_shared_config.get_text("notice_config_exists").format(name=rename_configname))
         return
     # 复制并重命名
     with open(os.path.join(MyConfigger.USER_CONFIG_FOLDER, configname), 'r', encoding="utf-8") as f:
         content = f.read()
     with open(os.path.join(MyConfigger.USER_CONFIG_FOLDER, rename_configname), 'w', encoding="utf-8") as f:
         f.write(content)
-    ui.notify(f"复制并重命名成功！/Copy and rename successfully!")
+    ui.notify(gui_shared_config.get_text("notice_config_copied").format(name=rename_configname))
     # js等待1.5秒后刷新页面
     ui.run_javascript('setTimeout(() => {window.location.reload()}, 1500)')

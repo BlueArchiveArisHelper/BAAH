@@ -1,13 +1,11 @@
 from nicegui import ui
 from gui.components.list_edit_area import list_edit_area
+from gui.components.modern_ui import info_tip
 
 def set_exchange(config):
-    with ui.row():
-        ui.link_target("EXCHANGE")
-        ui.label(config.get_text("task_exchange")).style('font-size: x-large')
-    
     # ui.label(config.get_text("config_desc_times"))
-    ui.switch(config.get_text("config_event_status")).bind_value(config.userconfigdict, "EXCHANGE_EVENT_STATUS") 
+    with info_tip(config, "tip_campaign_only"):
+        ui.switch(config.get_text("config_campaign_only")).bind_value(config.userconfigdict, "EXCHANGE_EVENT_STATUS")
     list_edit_area(
         config.userconfigdict["EXCHANGE_HIGHEST_LEVEL"], 
         [
@@ -21,6 +19,7 @@ def set_exchange(config):
         ], 
         config.get_text("config_desc_list_edit"),
         has_switch=True,
+        column_tips=["tip_column_scrimmage", "tip_column_stage", "tip_column_times"],
         min_value_for_2nd_dim=-1,
         empty_line_prompt_id="config_no_tasks_set_here"
     )

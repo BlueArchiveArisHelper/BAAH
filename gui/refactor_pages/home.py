@@ -1,5 +1,5 @@
 import subprocess
-from ..components.modern_ui import apply_theme, page_shell, surface, form_row
+from ..components.modern_ui import apply_theme, page_shell, surface, form_row, confirm_delete
 from ..components.background_settings import apply_background
 
 from ..components.json_file_docker import get_json_list, add_new_config, copy_and_rename_config
@@ -78,7 +78,9 @@ def render_json_list():
                     async def show_release():
                         resultVI = await run.io_bound(only_check_version)
                         with release_area:
-                            ui.label((gui_shared_config.get_text("gui_new_update") if resultVI.has_new_version else "") + " " + resultVI.msg).classes('baah-group-title').style('color: var(--q-negative)' if resultVI.has_new_version else '')
+                            # `msg` already reads "New version: ...", so the heading is followed by the bare version instead
+                            title = f'{gui_shared_config.get_text("gui_new_update")} v{resultVI.version_str}' if resultVI.has_new_version else resultVI.msg
+                            ui.label(title).classes('baah-group-title').style('color: var(--q-negative)' if resultVI.has_new_version else '')
                             ui.html(f'<div style="white-space: pre-line;font-size: 14px;line-height: 1.8">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
                                 if edition == "windows-pyinstaller":
@@ -149,11 +151,11 @@ def render_json_list():
                     # 复制操作的相关参数：被复制的文件名，新文件名
                     copy_related_params = {"old_name":"", "new_name":""}
                     with ui.dialog() as dialog, ui.card():
-                        ui.input(gui_shared_config.get_text("button_copy")).bind_value_from(copy_related_params, "old_name").set_enabled(False)
-                        ui.input(gui_shared_config.get_text("button_rename")).bind_value_to(copy_related_params, "new_name")
+                        ui.input(gui_shared_config.get_text("config_copy_from")).bind_value_from(copy_related_params, "old_name").set_enabled(False)
+                        ui.input(gui_shared_config.get_text("config_new_name")).bind_value_to(copy_related_params, "new_name")
                         with ui.row():
-                            ui.button(gui_shared_config.get_text("button_hide"), color="white", on_click=dialog.close)
-                            ui.button(gui_shared_config.get_text("button_save"), on_click=lambda e:[copy_and_rename_config(copy_related_params["old_name"], copy_related_params["new_name"]), dialog.close()])
+                            ui.button(gui_shared_config.get_text("button_cancel"), color=None, on_click=dialog.close).props("flat")
+                            ui.button(gui_shared_config.get_text("button_copy"), on_click=lambda e:[copy_and_rename_config(copy_related_params["old_name"], copy_related_params["new_name"]), dialog.close()])
                             
 
                     # 配置文件名 卡片
@@ -169,7 +171,7 @@ def render_json_list():
                                 # 快捷方式按钮
                                 ui.button(gui_shared_config.get_text("button_link_to_desktop"), on_click=lambda e, c=config_name:send_quick_call_to_desktop(c) and ui.notify(gui_shared_config.get_text("notice_success")))
                                 # 删除按钮
-                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: fake_delete_config(c), color="red").props("outline")
+                                ui.button(gui_shared_config.get_text("button_delete"), on_click=lambda e, c=config_name: confirm_delete(gui_shared_config, lambda: fake_delete_config(c), "confirm_delete_config", "confirm_delete_config_body", name=c), color="red").props("outline")
 
                     # 添加配置
                     user_config_name = {"val":""}

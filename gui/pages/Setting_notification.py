@@ -1,11 +1,8 @@
 from nicegui import ui
 from modules.utils import encrypt_data, decrypt_data
+from gui.components.modern_ui import confirm_change, info_tip
 
 def set_notification(config, shared_softwareconfig):
-    with ui.row():
-        ui.link_target("NOTIFICATION")
-        ui.label(config.get_text("setting_notification")).style('font-size: x-large')
-    
     with ui.card():
         ui.checkbox(config.get_text("desc_noti_when_success")).bind_value(config.userconfigdict, "NOTI_WHEN_SUCCESS")
         ui.checkbox(config.get_text("desc_noti_when_error")).bind_value(config.userconfigdict, "NOTI_WHEN_ERROR")
@@ -15,39 +12,40 @@ def set_notification(config, shared_softwareconfig):
         # 邮件
         with ui.card():
             ui.checkbox(config.get_text("email_notification_desc")).bind_value(config.userconfigdict, 'ENABLE_MAIL_NOTI')
-            ui.input(config.get_text("email_account")).bind_value(config.userconfigdict, "MAIL_USER").style("width: 300px")
-            ui.input(config.get_text("email_pwd"), password=True, password_toggle_button=True).bind_value(
-                config.userconfigdict, 
-                "MAIL_PASS", 
-                forward= lambda x: encrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"]),
-                backward= lambda x: decrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"])
-                ).style("width: 300px")
+            ui.input(config.get_text("email_account")).bind_value(config.userconfigdict, "MAIL_USER").classes("baah-w-long")
+            with info_tip(config, "tip_email_pwd"):
+                ui.input(config.get_text("email_pwd"), password=True, password_toggle_button=True).bind_value(
+                    config.userconfigdict, 
+                    "MAIL_PASS", 
+                    forward= lambda x: encrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"]),
+                    backward= lambda x: decrypt_data(x, shared_softwareconfig.softwareconfigdict["ENCRYPT_KEY"])
+                    ).classes("baah-w-long")
             
             # 高级模式让用户自己选择邮件发送服务器
             ui.checkbox(config.get_text("config_email_advaned")).bind_value(config.userconfigdict, "ADVANCED_EMAIL")
             
             with ui.row().bind_visibility_from(config.userconfigdict, "ADVANCED_EMAIL"):
                 # 发件人
-                ui.input(config.get_text("config_email_sender")).bind_value(config.userconfigdict, "SENDER_EMAIL").style("width: 300px")
+                ui.input(config.get_text("config_email_sender")).bind_value(config.userconfigdict, "SENDER_EMAIL").classes("baah-w-long")
                 # 收件人
-                ui.input(config.get_text("config_email_receiver")).bind_value(config.userconfigdict, "RECEIVER_EMAIL").style("width: 300px")
+                ui.input(config.get_text("config_email_receiver")).bind_value(config.userconfigdict, "RECEIVER_EMAIL").classes("baah-w-long")
                 # 邮件服务器
-                ui.input(config.get_text("config_email_smtp")).bind_value(config.userconfigdict, "MAIL_HOST").style("width: 300px")
+                ui.input(config.get_text("config_email_smtp")).bind_value(config.userconfigdict, "MAIL_HOST").classes("baah-w-long")
 
             ui.label(config.get_text("get_email_pwd"))
             ui.html('<iframe src="//player.bilibili.com/player.html?aid=583874363&bvid=BV16z4y1D74s&cid=211611094&p=1&autoplay=0" width="720px" height="480px" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>', sanitize=False)
         
         with ui.card():
             ui.checkbox(config.get_text("config_api_noti")).bind_value(config.userconfigdict, "ENABLE_HTTP_NOTI")
-            ui.select({0: "GET", 1: "POST"}, label=config.get_text("config_api_noti_method")).bind_value(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST").style("width: 300px")
+            ui.select({0: "GET", 1: "POST"}, label=config.get_text("config_api_noti_method")).bind_value(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST").classes("baah-w-long")
             ui.input(config.get_text("config_api_noti_token"),
                      password=True,
                      password_toggle_button=True
-                     ).bind_value(config.userconfigdict, "TARGET_HTTP_TOKEN").style("width: 300px")
+                     ).bind_value(config.userconfigdict, "TARGET_HTTP_TOKEN").classes("baah-w-long")
                 
             # 目标url
-            ui.label("Keywords: [token], [title], [content]")
-            ui.input(config.get_text("config_api_noti_url")).bind_value(config.userconfigdict, "TARGET_HTTP_URL").style("width: 500px")
+            ui.label(config.get_text("config_api_noti_keywords"))
+            ui.input(config.get_text("config_api_noti_url")).bind_value(config.userconfigdict, "TARGET_HTTP_URL").classes("w-full")
             with ui.column().bind_visibility_from(config.userconfigdict, "WEB_NOTI_TYPE_GET_OR_POST", backward=lambda x: x == 1):
                 ui.label(config.get_text("config_api_noti_body_desc"))
                 ui.textarea(label=config.get_text("config_api_noti_header"),
@@ -80,13 +78,21 @@ def set_notification(config, shared_softwareconfig):
                             'inline-flex items-center justify-center p-1 rounded'
                         ).props(f'aria-label="{name}: {config.get_text("text_description")}" rel="noopener noreferrer"').tooltip(name):
                             ui.icon('info_outline').classes('text-lg')
-            def set_api_noti_type(type):
-                config.userconfigdict["TARGET_HTTP_URL"] = mapdict.get(type, {}).get("url", "")
-                # 用户切换渠道，先只改url格式
-                # config.userconfigdict["WEB_NOTI_TYPE_GET_OR_POST"] = 0
+            async def set_api_noti_type(type):
+                url = mapdict.get(type, {}).get("url", "")
+                def use_url():
+                    config.userconfigdict["TARGET_HTTP_URL"] = url
+                    # 用户切换渠道，先只改url格式
+                    # config.userconfigdict["WEB_NOTI_TYPE_GET_OR_POST"] = 0
+                # Ask before a preset overwrites a URL the user typed or picked before
+                if config.userconfigdict["TARGET_HTTP_URL"] in ("", url):
+                    use_url()
+                else:
+                    await confirm_change(config, use_url, "button_replace", "confirm_replace_api_url", "confirm_replace_api_url_body", name=type)
             
     
     # 说明与输入框保持同列，原有 placeholder 和配置绑定不变。
     with ui.column().classes('baah-described-field'):
         ui.label(config.get_text('desc_noti_content_diy_hint')).classes('baah-help-text')
-        ui.textarea(placeholder=config.get_text("desc_noti_content_diy")).bind_value(config.userconfigdict, "CUSTOM_EMAIL").style("width: 500px; height: 200px")
+        # `stack-label` keeps the placeholder visible on an empty box now that the box has a label
+        ui.textarea(label=config.get_text("config_noti_format"), placeholder=config.get_text("desc_noti_content_diy")).props("stack-label").bind_value(config.userconfigdict, "CUSTOM_EMAIL").style("width: 500px; height: 200px")

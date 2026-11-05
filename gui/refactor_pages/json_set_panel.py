@@ -2,7 +2,7 @@ from enum import Enum
 from ..components.background_settings import apply_background
 # 公共视觉组件仅负责容器与样式，保留原有配置和运行逻辑。
 from ..components.modern_ui import (
-    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, notice_box,
+    apply_theme, page_shell, surface, navigation_item, description_panel, log_panel, button_tip, notice_box,
 )
 
 from ..components.exec_arg_parse import get_token
@@ -70,6 +70,21 @@ panel_types_2_str = {
 }
 
 
+def get_drawfunc_description_text(*text_ids):
+    """
+    Build a page description from i18n texts, joined by a blank line, that keeps line breaks as typed.
+    Keys missing from the current language pack are skipped, so an untranslated page shows only what it has.
+
+    Args:
+        text_ids: i18n keys to show, in order.
+
+    Returns:
+        A function that renders the description label.
+    """
+    text = "\n\n".join(gui_shared_config.get_text(t) for t in text_ids if gui_shared_config.has_text(t))
+    return lambda: ui.label(text).classes('baah-description-text')
+
+
 class ConfigPanel:
     """
     集中定义子页面的名称、图标、分类与渲染入口。
@@ -108,8 +123,14 @@ class ConfigPanel:
     ):
         self.name = i18n_config.get_text(nameID) if i18n_config else nameID
         self.func = func
-        # 未提供说明时，沿用页面名称作为默认说明。
-        self.desc = desc if desc else lambda: ui.label(f"{self.name}")
+        #NOTE: Without a `desc`, show `config_desc_<nameID>` if it exists, else fall back to the page name.
+        if not desc:
+            desc_id = f"config_desc_{nameID}"
+            if gui_shared_config.has_text(desc_id):
+                desc = get_drawfunc_description_text(desc_id)
+            else:
+                desc = lambda: ui.label(self.name)
+        self.desc = desc
         self.nameID = nameID
         self.panel_types = panel_types
         self.icon = icon
@@ -248,7 +269,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='my_location',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=get_drawfunc_description_text("config_desc_task_wanted", "config_desc_times"),
         ),
         ConfigPanel(
             "task_special",
@@ -256,7 +277,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='assignment',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=get_drawfunc_description_text("config_desc_task_special", "config_desc_times"),
         ),
         ConfigPanel(
             "task_exchange",
@@ -264,7 +285,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='school',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=get_drawfunc_description_text("config_desc_task_exchange", "config_desc_times"),
         ),
         ConfigPanel(
             "task_exam",
@@ -279,7 +300,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='event',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=get_drawfunc_description_text("config_desc_task_event", "config_desc_times"),
         ),
         ConfigPanel(
             "task_assault",
@@ -308,7 +329,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='layers',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=get_drawfunc_description_text("config_desc_task_hard", "config_desc_times"),
         ),
         ConfigPanel(
             "task_normal",
@@ -316,7 +337,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='view_module',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Daily_Task_Settings],
-            desc=lambda: ui.markdown(gui_shared_config.get_text("config_desc_times")),
+            desc=get_drawfunc_description_text("config_desc_task_normal", "config_desc_times"),
         ),
         ConfigPanel(
             "task_user_def_task",
@@ -333,9 +354,7 @@ def get_config_list(lst_config: MyConfigger, logArea, parsed_obj_dict) -> list:
             icon='play_circle_outline',
             i18n_config=lst_config,
             panel_types=[ConfigPanelType.Quick_Task_Settings],
-            desc=lambda: ui.markdown(
-                gui_shared_config.get_text("config_desc_quick_call_task")
-            ),
+            desc=get_drawfunc_description_text("config_desc_quick_call_task"),
         ),
         ConfigPanel(
             "setting_explore",
@@ -451,10 +470,11 @@ async def show_json_panel(json_file_name: str):
         with surface('baah-header'):
             with ui.row().classes('baah-title-row'):
                 with ui.row().classes("baah-brand"):
-                    ui.button(
+                    with ui.button(
                         icon="arrow_back",
                         on_click=lambda: ui.run_javascript("window.history.back()"),
-                    ).props("flat round dense")
+                    ).props("flat round dense"):
+                        button_tip(gui_shared_config, "tip_back_to_configs")
                     ui.label(f"{json_file_name}").classes("baah-brand-name")
 
                 with ui.row().classes("baah-operation-bar"):
@@ -606,11 +626,14 @@ async def show_json_panel(json_file_name: str):
                     "SERVER_TYPE",
                     lambda v: not _is_STEAM_app(v),
                 ):
-                    ui.input(curr_config.get_text("config_emulator_path")).bind_value(
+                    ui.input(
+                        curr_config.get_text("config_emulator_path"),
+                        placeholder=curr_config.get_text("placeholder_emulator_path"),
+                    ).bind_value(
                         curr_config.userconfigdict,
                         "TARGET_EMULATOR_PATH",
                         forward=smart_replace_main2device,
-                    ).props('placeholder="模拟器路径"').classes("w-full")
+                    ).classes("w-full")
 
 
     # 状态卡片独立于工作台与刷新区域，固定悬浮且鼠标穿透，不占用文档流。
@@ -649,7 +672,7 @@ async def show_json_panel(json_file_name: str):
 
         with middle_section:
             # 小窗口专用导航开关只切换展示类，不接触配置参数。
-            ui.button(icon='menu', on_click=lambda: workspace.classes(
-                toggle='baah-nav-collapsed')).props('flat').classes('baah-nav-toggle').tooltip(
-                    gui_shared_config.get_text('setting_daily'))
+            with ui.button(icon='menu', on_click=lambda: workspace.classes(
+                toggle='baah-nav-collapsed')).props('flat').classes('baah-nav-toggle'):
+                button_tip(gui_shared_config, 'tip_toggle_menu')
             render_config_area()

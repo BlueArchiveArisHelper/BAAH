@@ -1,5 +1,6 @@
 from nicegui import ui
 from gui.components.modern_ui import style_chart_options
+from gui.define import gui_shared_config
 import json
 from datetime import datetime
 
@@ -192,26 +193,27 @@ def create_line_chart(storage_data_list, name_of_credit = 'Credit', name_of_diam
 
     # 存储日期筛选值的变量
     # 日期与筛选操作共享全宽居中容器，不改变筛选条件或回调。
+    close_label = gui_shared_config.get_text('button_close')
     with ui.row().classes('baah-chart-filters'):
-        with ui.input('开始日期/Start Date', placeholder='YYYY-MM-DD', value=None) as start_date_input:
+        with ui.input(gui_shared_config.get_text('chart_start_date'), placeholder='YYYY-MM-DD', value=None) as start_date_input:
             with ui.menu().props('no-parent-event') as start_menu:
                 with ui.date().bind_value(start_date_input):
                     with ui.row().classes('justify-end'):
-                        ui.button('关闭/Close', on_click=start_menu.close).props('flat')
+                        ui.button(close_label, on_click=start_menu.close).props('flat')
             with start_date_input.add_slot('append'):
                 ui.icon('edit_calendar').on('click', start_menu.open).classes('cursor-pointer')
         
-        with ui.input('结束日期/End Date', placeholder='YYYY-MM-DD', value=None) as end_date_input:
+        with ui.input(gui_shared_config.get_text('chart_end_date'), placeholder='YYYY-MM-DD', value=None) as end_date_input:
             with ui.menu().props('no-parent-event') as end_menu:
                 with ui.date().bind_value(end_date_input):
                     with ui.row().classes('justify-end'):
-                        ui.button('关闭/Close', on_click=end_menu.close).props('flat')
+                        ui.button(close_label, on_click=end_menu.close).props('flat')
             with end_date_input.add_slot('append'):
                 ui.icon('edit_calendar').on('click', end_menu.open).classes('cursor-pointer')
         
         # 添加筛选按钮
-        ui.button('应用筛选/Apply Filter', on_click=lambda: update_chart())
-        ui.button('显示全部/Show All', on_click=lambda: (
+        ui.button(gui_shared_config.get_text('chart_apply_filter'), on_click=lambda: update_chart())
+        ui.button(gui_shared_config.get_text('chart_show_all'), on_click=lambda: (
             setattr(start_date_input, 'value', ''), 
             setattr(end_date_input, 'value', ''),
             update_chart()

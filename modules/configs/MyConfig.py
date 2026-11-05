@@ -268,8 +268,28 @@ class MyConfigger:
     def get_text(self, text_id):
         """
         获取语言包对应id的字符串
+
+        Args:
+            text_id: the i18n key.
+            fallback_id: the key to read instead when `text_id` is missing, for en_US-only keys that zh/jp have not translated yet.
+            default: the text to return when neither key exists, for en_US-only keys whose text zh/jp still hard-code in the GUI.
+
+        Returns:
+            The string, else `default`, else the `[key]` placeholder.
         """
         return self.languagepackagedict.get(text_id, f"[{text_id}]")
+
+    def has_text(self, text_id):
+        """
+        Check whether the language pack has a string for `text_id`.
+
+        Args:
+            text_id: the i18n key.
+
+        Returns:
+            True if `get_text` would return a real string, not the `[text_id]` placeholder.
+        """
+        return text_id in self.languagepackagedict
     
     def save_user_config(self, file_name):
         file_path = os.path.join(self.current_dir, self.USER_CONFIG_FOLDER, file_name)

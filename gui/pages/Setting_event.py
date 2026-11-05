@@ -4,14 +4,8 @@ from gui.components.list_edit_area import list_edit_area
 from gui.components.cut_screenshot import screencut_button
 
 def set_event(config):
-    with ui.row():
-        ui.link_target("ACTIVITY")
-        ui.label(config.get_text("task_event")).style('font-size: x-large')
-
     # 尝试进入活动的次数
-    with ui.row().style("width: 100%; align-items: flex-start"):
-        ui.label(config.get_text("config_try_enter_event_number"))
-        ui.number(config.get_text("config_try_enter_event_number"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER", forward=lambda x:int(x))
+    ui.number(config.get_text("config_try_enter_event_number"), min=1, precision=0, step=1).bind_value(config.userconfigdict, "TRY_ENTER_EVENT_AFTER_FAIL_NUMBER", forward=lambda x:int(x)).classes("baah-w-long")
 
     # 自动配队伍
     ui.checkbox(config.get_text("config_auto_team")).bind_value(config.userconfigdict, "ACTIVITY_AUTO_TEAM")
@@ -29,7 +23,7 @@ def set_event(config):
             ui.label(config.get_text("config_event_roll_enter_desc"))
             screencut_button(config, config.userconfigdict, "EVENT_ENTER_ROLL_PAGE_BUTTON", save_folder_path=config.USER_STORAGE_FOLDER)
             ui.number(config.get_text("config_event_roll_times"),
-                    min=0,precision=0,step=1).bind_value(config.userconfigdict, "EVENT_ROLL_TARGET_COUNT", forward=lambda x:int(x)).bind_visibility_from(config.userconfigdict, "EVENT_ENTER_ROLL_PAGE_BUTTON")
+                    min=0,precision=0,step=1).bind_value(config.userconfigdict, "EVENT_ROLL_TARGET_COUNT", forward=lambda x:int(x)).classes("baah-w-short").bind_visibility_from(config.userconfigdict, "EVENT_ENTER_ROLL_PAGE_BUTTON")
         with setting_group():
             # 赠品交换相关配置
             ui.label(config.get_text("config_event_exchange_enter_desc"))
@@ -48,5 +42,6 @@ def set_event(config):
         ], 
         config.get_text("config_desc_list_edit"),
         has_switch=True,
+        column_tips=["tip_column_event_stage", "tip_column_times"],
         empty_line_prompt_id="config_no_tasks_set_here"
     )

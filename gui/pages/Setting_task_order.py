@@ -1,13 +1,9 @@
 from nicegui import ui, run
 from gui.components.fast_run_task_buttons import show_fast_run_task_buttons, TaskName
 from modules.utils import return_now_activate_pipeline
+from gui.components.modern_ui import confirm_delete, button_tip, info_tip
 
 def set_task_order(config, real_taskname_to_show_taskname, logArea):
-    with ui.row():
-        ui.link_target("TASK_ORDER")
-        ui.label(config.get_text("setting_task_order")).style('font-size: x-large')
-    
-    
     def select_clear_all_and_refresh_task_order(type="select"):
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         if type == "select":
@@ -29,9 +25,10 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
         ui.label(config.get_text("config_pipelines_desc")).classes("text-subtitle2 text-grey-7")
         with ui.row().classes("items-center"):
             ui.toggle({ind:f"{config.get_text('config_pipeline')} {ind+1}" for ind in range(len(all_pipelines))}, value=activated_ind, on_change=lambda e:change_activated_pipeline(e)).props("no-caps")
-            ui.button(icon="add", on_click=add_one_pipeline).props("flat round dense")
+            with ui.button(icon="add", on_click=add_one_pipeline).props("flat round dense"):
+                button_tip(config, "tip_add_pipeline")
             if len(all_pipelines) > 1:
-                with ui.button(icon="delete", on_click=del_one_pipeline, color="red").props("flat round dense"):
+                with ui.button(icon="delete", on_click=ask_del_pipeline, color="red").props("flat round dense"):
                     ui.tooltip(config.get_text("config_delete_now_activated_pipeline"))
         # 当前被激活的pipeline
         with ui.card().classes("w-full"):
@@ -50,11 +47,15 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
                                           value=task_pipeline[i],
                                           on_change=lambda v,i=i: task_pipeline.__setitem__(i, v.value),
                                           with_input=True
-                                          ).props("dense outlined").classes("flex-1")
-                                ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense")
-                                ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense")
-                                ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else ""))
-                                ui.button(icon="arrow_downward", on_click=lambda i=i: move_task_down(i)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else ""))
+                                          ).props("dense outlined").classes("baah-w-long")
+                                with ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense"):
+                                    button_tip(config, "tip_add_task")
+                                with ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense"):
+                                    button_tip(config, "tip_remove_task")
+                                with ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else "")):
+                                    button_tip(config, "tip_move_up")
+                                with ui.button(icon="arrow_downward", on_click=lambda i=i: move_task_down(i)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else "")):
+                                    button_tip(config, "tip_move_down")
                     ui.separator()
             if len(task_pipeline) == 0:
                 with ui.row().classes("w-full justify-center"):
@@ -115,6 +116,14 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
             config.userconfigdict["TASK_ORDER_GROUP"]["ACTIVATE_IND"] = 0
         task_order.refresh()
 
+    def ask_del_pipeline():
+        # An empty pipeline loses nothing, so it goes without asking
+        task_pipeline, _, _, activated_ind = return_now_activate_pipeline(config)
+        if not task_pipeline:
+            return del_one_pipeline()
+        pipeline_str = f"{config.get_text('config_pipeline')} {activated_ind+1}"
+        return confirm_delete(config, del_one_pipeline, "confirm_delete_pipeline", "confirm_delete_pipeline_tasks", pipeline=pipeline_str, tasks=len(task_pipeline))
+
     def change_activated_pipeline(e):
         # 切换要被激活的pipeline
         i = e.value
@@ -126,14 +135,14 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     
     # pre-run command
-    with ui.row():
-        ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').style('width: 300px')
+    with info_tip(config, "tip_pre_command"):
+        ui.input(config.get_text("config_pre_command"), placeholder='start cmd /c "BAAH.exe config1.json"').bind_value(config.userconfigdict, 'PRE_COMMAND').classes("baah-w-long")
 
     task_order()
 
     # post-run command
-    with ui.row():
-        ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').style('width: 300px')
+    with info_tip(config, "tip_post_command"):
+        ui.input(config.get_text("config_post_command"), placeholder='start cmd /c "BAAH.exe config2.json"').bind_value(config.userconfigdict, 'POST_COMMAND').classes("baah-w-long")
     
     # with ui.row():
     #     ui.link_target("NEXT_CONFIG")
@@ -146,7 +155,7 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     # 脚本运行报错自动重启脚本
     with ui.row():
-        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).style("width: 400px")
+        ui.number(config.get_text("desc_rerun_when_script_error"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR", forward= lambda x: int(x)).classes("baah-w-short")
         ui.checkbox(config.get_text("desc_rerun_start_from_lastpoint")).bind_value(config.userconfigdict, "RETRY_WHEN_ERROR_FROM_LAST_TASK").bind_visibility_from(config.userconfigdict, "RETRY_WHEN_ERROR", backward=lambda x:x>0)
 
 

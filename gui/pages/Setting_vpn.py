@@ -1,15 +1,11 @@
 from nicegui import ui
 import platform
 from define_actions import FlowActionGroup
-from gui.components.modern_ui import setting_group, form_row, operation_bar
+from gui.components.modern_ui import setting_group, form_row, operation_bar, info_tip
 from modules.configs.multiserverSettings import is_server_type_in_group, MultiServerType
 from modules.utils import enter_PC_APP_edit_mode, quit_PC_APP_edit_mode
 
 def set_vpn(config, parsed_obj_dict):
-    with ui.row():
-        ui.link_target("VPN")
-        ui.label(config.get_text("setting_vpn")).classes('baah-section-title')
-
     # PC 窗口设置复用公共分组，保留原有区服显隐与模式切换回调。
     if platform.system() == "Windows":
         def track_ACC_WINDOW_NAME(e, cfg):
@@ -31,13 +27,15 @@ def set_vpn(config, parsed_obj_dict):
     # -----------------------------
     # 选择是否定义 开加速器 actions
     with setting_group(config.get_text("config_vpn_start_actions")):
-        ui.checkbox(config.get_text("vpn_desc")).bind_value(config.userconfigdict, "USE_VPN")
+        with info_tip(config, "tip_vpn_start"):
+            ui.checkbox(config.get_text("vpn_desc")).bind_value(config.userconfigdict, "USE_VPN")
         start_group:FlowActionGroup = parsed_obj_dict["OBJ_ACTIONS_VPN_START"]
         start_group.render_gui(config)
     # -----------------------------
     # 选择是否定义 关闭加速器 actions
     with setting_group(config.get_text("config_vpn_stop_actions")):
-        ui.checkbox(config.get_text("vpn_stop_desc")).bind_value(config.userconfigdict, "CLOSE_VPN")
+        with info_tip(config, "tip_vpn_stop"):
+            ui.checkbox(config.get_text("vpn_stop_desc")).bind_value(config.userconfigdict, "CLOSE_VPN")
         end_group:FlowActionGroup = parsed_obj_dict["OBJ_ACTIONS_VPN_SHUT"]
         end_group.render_gui(config)
     # -----------------------------

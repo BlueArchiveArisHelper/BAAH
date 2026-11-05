@@ -1,5 +1,6 @@
 from nicegui import ui, run
 from modules.utils import check_connect, connect_to_device, _is_PC_app
+from gui.components.modern_ui import info_tip
 
 
 def set_emulator(config):
@@ -26,27 +27,24 @@ def set_emulator(config):
     #     connect_to_device(cfig)
     #     res = await run.io_bound(mumu_rm_mu, cfig)
     #     noti_user(res)
-    
-    
-    ui.link_target("EMULATOR")
-    ui.label(config.get_text("setting_emulator")).style('font-size: x-large')
 
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):    
     #  大更新配置
         ui.checkbox(config.get_text("config_big_update")).bind_value(config.userconfigdict, "BIG_UPDATE")
 
-    ui.checkbox(config.get_text("adb_disable_auto_disconnect")).bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)).bind_value(config.userconfigdict, "ADB_DISABLE_AUTO_DISCONNECT")
-    
     with ui.row().bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)):
-        ui.label(config.get_text("big_update_type")).style('font-size: medium').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
-    
-        ui.radio({
-            "API":config.get_text("big_update_type_api"),
-            "DIRECT_GET":config.get_text("big_update_type_direct_get")
-        },
-                        value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline').bind_visibility_from(config.userconfigdict, "BIG_UPDATE", lambda x: x)
-    
-        ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
+        with ui.row().bind_visibility_from(config.userconfigdict, "BIG_UPDATE").style("padding-left: 32px"):
+            ui.label(config.get_text("big_update_type")).style('font-size: medium')
+
+            ui.radio({
+                "API":config.get_text("big_update_type_api"),
+                "DIRECT_GET":config.get_text("big_update_type_direct_get")
+            },
+                            value=config.userconfigdict['BIG_UPDATE_TYPE'], on_change=lambda a:set_big_update_type(a.value)).props('inline')
+
+            ui.label(config.get_text("big_update_type_direct_get_tips")).bind_visibility_from(config.userconfigdict, "BIG_UPDATE_TYPE", lambda x: x == "DIRECT_GET")
+
+    ui.checkbox(config.get_text("adb_disable_auto_disconnect")).bind_visibility_from(config.userconfigdict, "SERVER_TYPE", lambda v: not _is_PC_app(v)).bind_value(config.userconfigdict, "ADB_DISABLE_AUTO_DISCONNECT")
     
     def set_big_update_type(big_update_type):
         config.userconfigdict['BIG_UPDATE_TYPE'] = big_update_type
@@ -107,5 +105,7 @@ def set_emulator(config):
             ui.checkbox(config.get_text("config_close_even_if_error")).bind_value(config.userconfigdict, 'CLOSE_BAAH_ERROR').bind_visibility_from(config.userconfigdict, "CLOSE_BAAH_FINISH")
 
     # 登录超时重启模拟器
-    ui.number(config.get_text("config_login_timeout"), min=180, precision=0, step=1).bind_value(config.userconfigdict, "GAME_LOGIN_TIMEOUT", forward= lambda x: int(x)).style("width: 200px")
-    ui.number(config.get_text("config_max_emulator_restart_times"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "MAX_RESTART_EMULATOR_TIMES", forward= lambda x: int(x)).style("width: 400px")
+    with info_tip(config, "tip_login_timeout"):
+        ui.number(config.get_text("config_login_timeout"), min=180, precision=0, step=1, suffix="s").bind_value(config.userconfigdict, "GAME_LOGIN_TIMEOUT", forward= lambda x: int(x)).classes("baah-w-short")
+    with info_tip(config, "tip_max_emulator_restart_times"):
+        ui.number(config.get_text("config_max_emulator_restart_times"), min=0, max=10, precision=0, step=1).bind_value(config.userconfigdict, "MAX_RESTART_EMULATOR_TIMES", forward= lambda x: int(x)).classes("baah-w-short")

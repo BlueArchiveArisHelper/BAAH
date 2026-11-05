@@ -69,6 +69,83 @@ def notice_box(text, *, tone='info'):
     return box
 
 
+@contextmanager
+def info_tip(config, text_id):
+    """
+    Put the fields built in the `with` block in a row, with an `i` icon just right of them whose tooltip explains them.
+
+    Args:
+        config: the config whose language pack to read.
+        text_id: the i18n key of the tooltip. zh/jp may not have it yet, so a missing key shows no icon.
+
+    Yields:
+        The row, so a caller can bind its visibility the way it would bind the field's.
+    """
+    with ui.row().classes('baah-info-row') as row:
+        yield row
+        with ui.icon('info_outline').classes('baah-info-tip'):
+            ui.tooltip(config.get_text(text_id)).classes('baah-info-tooltip')
+
+
+def button_tip(config, text_id):
+    """
+    Name an icon-only button in a tooltip. Call it inside the button's `with` block.
+
+    Args:
+        config: the config whose language pack to read.
+        text_id: the i18n key of the tooltip. zh/jp may not have it yet, so a missing key adds no tooltip.
+    """
+    if config.has_text(text_id):
+        ui.tooltip(config.get_text(text_id))
+
+
+def all_configs_tag(config):
+    """
+    Tag a setting that is saved for every config file, not just the open one. Call it right after the setting.
+
+    Args:
+        config: the config whose language pack to read. zh/jp may not have the key yet, so a missing key adds no tag.
+    """
+    if config.has_text('tag_all_configs'):
+        ui.badge(config.get_text('tag_all_configs')).props('rounded').classes('self-center')
+
+
+def confirm_delete(config, on_delete, title_id, *body_ids, **fields):
+    """
+    Ask before a delete that cannot be undone, and run `on_delete` only if the user picks Delete. See `confirm_change`.
+    """
+    return confirm_change(config, on_delete, 'button_delete', title_id, *body_ids, **fields)
+
+
+async def confirm_change(config, on_confirm, button_id, title_id, *body_ids, **fields):
+    """
+    Ask before a change that cannot be undone, and run `on_confirm` only if the user picks the confirm button.
+
+    Args:
+        config: the config whose language pack to read.
+        on_confirm: called with no arguments once the user confirms.
+        button_id: the i18n key of the confirm button, such as `button_delete`.
+        title_id: the i18n key of the dialog title. zh/jp may not have the keys yet, so a missing one goes ahead straight away as before.
+        body_ids: the i18n keys of the sentences under the title, joined with a space.
+        fields: the values for the `{name}` placeholders in the title and the sentences.
+    """
+    if not all(config.has_text(text_id) for text_id in (button_id, title_id, *body_ids)):
+        on_confirm()
+        return
+    with ui.dialog() as dialog, ui.card().classes('baah-confirm'):
+        ui.label(config.get_text(title_id).format(**fields)).classes('baah-group-title')
+        if body_ids:
+            ui.label(' '.join(config.get_text(body_id).format(**fields) for body_id in body_ids)).classes('baah-muted')
+        with ui.row().classes('baah-confirm-actions'):
+            ui.button(config.get_text('button_cancel'), on_click=dialog.close, color=None).props('flat')
+            ui.button(config.get_text(button_id), on_click=lambda: dialog.submit(True), color='negative').props('flat')
+    confirmed = await dialog
+    # Delete the dialog first: `on_confirm` often refreshes the area the dialog was built in
+    dialog.delete()
+    if confirmed:
+        on_confirm()
+
+
 def navigation_item(label, selected, on_click, *, icon=None):
     """使用原生按钮提供键盘可达性，选中态仅改变样式。"""
     return ui.button(label, on_click=on_click, color=None, icon=icon).props('flat align=left').classes(
@@ -186,6 +263,8 @@ body.baah-page::before {
 }
 .baah-page .q-menu { border: 1px solid var(--baah-border); background: var(--baah-surface); border-radius: 10px; }
 .baah-page .q-dialog__inner > .q-card { max-width: min(720px, calc(100vw - 32px)); overflow: auto; max-height: calc(100dvh - 48px); }
+.baah-confirm { width: 380px; padding: 20px; gap: 14px; }
+.baah-confirm-actions { width: 100%; justify-content: flex-end; gap: 8px; }
 .baah-header { width: 100%; flex: none; gap: 12px; padding: 12px 16px; }
 .baah-title-row { width: 100%; align-items: center; justify-content: space-between; gap: 12px; }
 .baah-brand { align-items: center; gap: 10px; min-width: 0; flex: 1 1 180px; }
@@ -233,7 +312,6 @@ body.baah-page::before {
 .baah-form .q-field--labeled .q-field__suffix { grid-column: 3; grid-row: 2; padding: 0 0 0 6px; white-space: nowrap; line-height: 24px; }
 /* 前后附加图标与按钮对齐输入值，避免下拉箭头、清除和密码按钮停留在标签一行。 */
 .baah-form .q-field--labeled .q-field__control > .q-field__marginal { align-self: flex-end; height: 26px; margin-bottom: 7px; }
-.baah-form-body > .nicegui-row:first-child:has(> a[name]) > div { font-size: 16px !important; font-weight: 600; }
 .baah-product-title { font-size: 20px; font-weight: 600; line-height: 1.5; }
 .baah-notice { padding: 12px 16px; border-left: 3px solid var(--q-warning); background: var(--baah-soft); border-radius: 8px; }
 .baah-notice-text { font-size: 14px; line-height: 1.8; color: var(--q-warning); }
@@ -241,20 +319,28 @@ body.baah-page::before {
 /* 仅纵向排列条目卡片内的字段，外层条目行和操作栏分别控制自身布局。 */
 .baah-list-entry { flex-direction: column; flex-wrap: nowrap; align-items: center; }
 .baah-form-title { font-size: 22px; font-weight: 650; line-height: 1.4; }
+.baah-info-row { flex-wrap: nowrap; align-items: center; gap: 4px; }
+.baah-info-tip { font-size: 18px; color: var(--baah-muted); cursor: help; }
+.baah-info-tip:hover { color: var(--q-primary); }
+.baah-info-tooltip { max-width: 280px; font-size: 12px; line-height: 1.45; }
 .baah-section-title { font-size: x-large; }
 .baah-background-upload { width: auto; min-width: 0; box-shadow: none; }
 .baah-background-upload .q-uploader__header { padding: 0; }
 .baah-background-upload .q-uploader__list { display: none; }
-.baah-background-scale { width: 200px; }
 .baah-form-body { width: 100%; min-width: 0; gap: 16px; }
-.baah-form-body > .nicegui-row:first-child { margin-bottom: 0; }
-.baah-form-body > .nicegui-row:first-child > .baah-text { font-size: 16px !important; font-weight: 600; }
 .baah-description { width: 100%; background: var(--baah-soft); border-radius: 8px; }
-.baah-description .q-expansion-item__content { padding: 0 16px 12px; overflow-wrap: anywhere; }
+/* Quasar animates this box's height; bottom padding here can't reach 0 and snaps, so it lives on the last child. */
+.baah-description .q-expansion-item__content { padding: 0 16px; overflow-wrap: anywhere; }
+/* Quasar's empty ::before/::after would each pick up NiceGUI's 16px flex gap and pad the text top and bottom */
+.baah-description .q-expansion-item__content::before, .baah-description .q-expansion-item__content::after { display: none; }
+.baah-description .q-expansion-item__content > :first-child { padding-top: 4px; }
+.baah-description .q-expansion-item__content > :last-child { padding-bottom: 12px; }
 .baah-description .q-item { min-height: 38px; font-size: 13px; color: var(--baah-muted); }
+.baah-description-text { white-space: pre-line; }
 .baah-log-panel { width: 100%; flex: none; background: var(--baah-surface); border: 1px solid var(--baah-border); border-radius: 12px; overflow: hidden; }
 .baah-log-panel .q-item { min-height: 40px; font-size: 13px; }
-.baah-log { height: min(200px, 30dvh); min-height: 120px; width: 100%; padding: 0; border-top: 1px solid var(--baah-border); background: var(--baah-soft); font: 12px/1.7 Consolas, monospace; overflow: hidden; }
+/* No flex shrink: Quasar measures the open height while the box is clamped to 0, and a shrunk log made it stop short, then jump. */
+.baah-log { flex: none; height: min(200px, 30dvh); min-height: 120px; width: 100%; padding: 0; border-top: 1px solid var(--baah-border); background: var(--baah-soft); font: 12px/1.7 Consolas, monospace; overflow: hidden; }
 /* 日志使用 Quasar 自带滚动区，移除外层重复滚动与展开容器默认留白。 */
 .baah-log-panel .q-expansion-item__content { padding: 0; }
 .baah-log-panel .q-expansion-item__content > .nicegui-column { padding: 0; gap: 0; }
@@ -279,6 +365,9 @@ body.baah-page::before {
 /* 图表筛选控件整体居中，换行后每一行仍保持居中。 */
 .baah-chart-filters { width: 100%; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
 .baah-form-row { width: 100%; align-items: center; gap: 12px; flex-wrap: wrap; }
+/* One width scale for fields: short for numbers and short dropdowns, long for text and paths. URLs take w-full. */
+.baah-w-short { width: 200px; }
+.baah-w-long { width: 400px; }
 .baah-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); width: 100%; gap: 16px; align-items: start; }
 .baah-setting-group { width: 100%; gap: 12px; }
 .baah-group-title { font-size: 15px; font-weight: 600; }
@@ -287,7 +376,14 @@ body.baah-page::before {
 .baah-list-entry { padding: 12px; gap: 10px; min-width: 130px; }
 .baah-list-entry .q-field { width: 128px; }
 .baah-list-actions { gap: 8px; justify-content: center; }
-.baah-team-row > .q-field { flex: 1 1 150px; }
+/* One card per day: column names once, then a grid row per stage. */
+.baah-day-card { width: fit-content; min-width: min(360px, 100%); max-width: 100%; padding: 12px 14px; gap: 10px; }
+.baah-day-grid { display: grid; gap: 6px 8px; align-items: center; }
+.baah-day-column { font-size: 12px; }
+.baah-day-grid .q-field { width: 100%; }
+.baah-day-head { align-items: center; gap: 4px 10px; }
+.baah-day-runs { font-size: 13px; }
+.baah-page .baah-day-today { border-color: var(--baah-accent); }
 .baah-image-preview { width: 300px; max-width: 100%; height: 150px; border: 1px dashed var(--baah-border); border-radius: 10px; overflow: hidden; background: var(--baah-soft); }
 .baah-flow-editor { width: 100%; gap: 16px; }
 .baah-flow-card { width: 100%; padding: 16px; gap: 12px; }
