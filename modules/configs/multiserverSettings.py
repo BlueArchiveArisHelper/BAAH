@@ -159,7 +159,7 @@ class AssetMappingKeys:
     }
     # 每日免费奖励弹窗里的tab页签红点位置以及要点击页签的位置
     FREE_AWARD_TAB_POSITIONS = {
-        MultiServerType.JapanGroup: ((228, 222), (66, 233)),
+        MultiServerType.JapanGroup: ((228, 287), (66, 315)),
         MultiServerType.Other_groups: ((1030, 153), (900, 181))
     }
     # 主页进入商店的点击位置
