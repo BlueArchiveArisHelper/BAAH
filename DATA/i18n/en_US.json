@@ -112,9 +112,10 @@
     "config_close_emulator_and_baah": "Close Emulator and BAAH After Execution",
     "config_close_game_when_finish" : "Close Game After Execution",
     "config_close_emulator_when_finish" : "Close Emulator After Execution",
-    "config_close_BAAH_when_finish" : "Close BAAH After Execution", 
+    "config_close_BAAH_when_finish" : "Close BAAH After Execution",
     "config_close_even_if_error" : "Also close on error",
     "config_desc_times": "About the level number, 3 means the third level, if -1 that means the last level which can be raid. About the number of times: 4 times means sweep 4 times, -1 means sweep max times, -2 means sweep max - 2 times.",
+    "config_nth": "The",
     "config_nth_heading": "{item} {n}",
     "config_day": "Day",
     "config_level": "Stage",
@@ -234,6 +235,8 @@
     "config_email_sender":"Sender Email",
     "config_email_receiver":"Receiver Email",
     "config_email_smtp":"SMTP Server",
+    "desc_assault": "Fight or sweep Total Assault at the target difficulty. If it is locked, BAAH tries to unlock it first. It uses the game's Auto mode; choosing a difficulty one or two tiers below what you can clear manually is recommended.",
+    "desc_grand_assault": "Sweep Grand Assault at the target difficulty. If it has not been cleared, BAAH tries the game's Auto mode; choosing a difficulty one or two tiers below what you can clear manually is recommended.",
     "desc_grand_assault_left_level":"Left Area Level",
     "desc_grand_assault_middle_level":"Middle Area Level",
     "desc_grand_assault_right_level":"Right Area Level",
@@ -447,6 +450,6 @@
     "do_action_f_pattern": "Execute action #%0#",
 
     "container_auto_update": "Enable container update on startup",
-    
+
     "status_finish": "All Tasks Completed"
 }
