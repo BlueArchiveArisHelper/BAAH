@@ -376,6 +376,16 @@ body.baah-page::before {
 .baah-list-entry { padding: 12px; gap: 10px; min-width: 130px; }
 .baah-list-entry .q-field { width: 128px; }
 .baah-list-actions { gap: 8px; justify-content: center; }
+.baah-task-order-item { position: relative; }
+.baah-task-drag-handle { cursor: grab; user-select: none; font-size: 24px; color: var(--baah-muted); }
+.baah-task-drag-handle:active { cursor: grabbing; }
+.baah-task-dragging { opacity: .45; }
+.baah-task-drop-before::before, .baah-task-drop-after::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 3px;
+    background: var(--q-primary); border-radius: 2px; pointer-events: none;
+}
+.baah-task-drop-before::before { top: 0; }
+.baah-task-drop-after::after { bottom: 0; }
 /* One card per day: column names once, then a grid row per stage. */
 .baah-day-card { width: fit-content; min-width: min(360px, 100%); max-width: 100%; padding: 12px 14px; gap: 10px; }
 .baah-day-grid { display: grid; gap: 6px 8px; align-items: center; }
