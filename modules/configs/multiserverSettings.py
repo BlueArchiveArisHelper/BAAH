@@ -153,14 +153,13 @@ class AssetMappingKeys:
     }
     # 活动一栏x轴y轴黄点linspace分布
     EVENT_RECAP_YELLOW_GRID = {
-        MultiServerType.JapanGroup: ((783, 1215, 3), (156, 495, 3)),
         MultiServerType.CNGroup: ((786, 1228, 3), (155, 502, 3)),
-        MultiServerType.Other_groups: ((790, 1222, 3), (155, 494, 3))
+        MultiServerType.Other_groups: ((783, 1215, 3), (156, 495, 3)),
     }
     # 每日免费奖励弹窗里的tab页签红点位置以及要点击页签的位置
     FREE_AWARD_TAB_POSITIONS = {
-        MultiServerType.JapanGroup: ((228, 287), (66, 315)),
-        MultiServerType.Other_groups: ((1030, 153), (900, 181))
+        MultiServerType.CNGroup: ((1030, 153), (900, 181)),
+        MultiServerType.Other_groups: ((228, 287), (66, 315))
     }
     # 主页进入商店的点击位置
     SHOP_ENTRY_POS = {
