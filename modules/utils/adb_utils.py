@@ -8,6 +8,7 @@ import time
 import numpy as np
 import cv2
 import platform
+from .screen_geometry import REFERENCE_WIDTH, REFERENCE_HEIGHT, is_widescreen, to_native_point
 if platform.system() == "Windows":
     from .win32_utils import _get_hwnd, check_esc_is_pressed, capture_program_window_precise, click_program_window_precise, scroll_program_window_precise
 
@@ -93,6 +94,7 @@ def click_on_screen(x, y):
     if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         click_program_window_precise(x, y)
         return
+    x, y = _adb_native_point(x, y)
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "tap", str(int(x)), str(int(y))])
 
 def swipe_on_screen(x1, y1, x2, y2, ms):
@@ -100,7 +102,27 @@ def swipe_on_screen(x1, y1, x2, y2, ms):
     if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         scroll_program_window_precise(x1, y1, x2, y2, ms)
         return
+    x1, y1 = _adb_native_point(x1, y1)
+    x2, y2 = _adb_native_point(x2, y2)
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "swipe", str(int(x1)), str(int(y1)), str(int(x2)), str(int(y2)), str(int(ms))])
+
+def _adb_native_point(x, y):
+    size = config.sessiondict.get("NATIVE_SCREENSHOT_SIZE")
+    return to_native_point(x, y, *size) if size else (x, y)
+
+
+def _normalize_game_screenshot(image, target_config):
+    if image is None:
+        return None
+    height, width = image.shape[:2]
+    target_config.sessiondict["NATIVE_SCREENSHOT_SIZE"] = (width, height)
+    if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]) and not target_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
+        return image
+    if is_widescreen(width, height) and (width, height) != (REFERENCE_WIDTH, REFERENCE_HEIGHT):
+        interpolation = cv2.INTER_AREA if width > REFERENCE_WIDTH else cv2.INTER_LINEAR
+        return cv2.resize(image, (REFERENCE_WIDTH, REFERENCE_HEIGHT), interpolation=interpolation)
+    return image
+
 
 def convert_img(path):
     with open(path, "rb") as f:
@@ -123,13 +145,14 @@ def screen_shot_to_global(use_config=None, output_png=False):
     if use_config:
         target_config = use_config
     whether_pipe = target_config.userconfigdict["SCREENSHOT_METHOD"] == "pipe"
+    target_config.sessiondict["NATIVE_SCREENSHOT_SIZE"] = None
     if not whether_pipe:
         # 方法一，重定向输出到文件
         filename = target_config.userconfigdict['SCREENSHOT_NAME']
         if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
             img_array = capture_program_window_precise(use_config=target_config)
             try:
-                cv2.imwrite("./{}".format(filename), img_array)
+                cv2.imwrite("./{}".format(filename), _normalize_game_screenshot(img_array, target_config))
             except Exception as e:
                 logging.warn(istr({
                     CN: f"保存opencv图像出错：{e}",
@@ -141,6 +164,11 @@ def screen_shot_to_global(use_config=None, output_png=False):
         #adb 命令有时直接截图保存到电脑出错的解决办法-加下面一段即可
         if not _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]) and platform.system() not in ["Linux", "Darwin"]:
             convert_img("./{}".format(filename))
+        if not _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
+            image = cv2.imread("./{}".format(filename))
+            normalized = _normalize_game_screenshot(image, target_config)
+            if normalized is not image and not cv2.imwrite("./{}".format(filename), normalized):
+                raise OSError(f"Could not save normalized screenshot: {filename}")
     else:
         # 方法二，使用cv2提取PIPE管道中的数据
         # 使用subprocess的Popen调用adb shell命令，并将结果保存到PIPE管道中
@@ -163,8 +191,9 @@ def screen_shot_to_global(use_config=None, output_png=False):
                 target_config.sessiondict["SCREENSHOT_DATA"] = None
                 return
             img_screenshot = cv2.imdecode(np.frombuffer(binary_screenshot, np.uint8), cv2.IMREAD_COLOR)
+        img_screenshot = _normalize_game_screenshot(img_screenshot, target_config)
         target_config.sessiondict["SCREENSHOT_DATA"] = img_screenshot
-        if output_png:
+        if output_png and img_screenshot is not None:
             cv2.imwrite("./{}".format(target_config.userconfigdict['SCREENSHOT_NAME']), img_screenshot)
 
 def get_now_running_app(use_config=None):
