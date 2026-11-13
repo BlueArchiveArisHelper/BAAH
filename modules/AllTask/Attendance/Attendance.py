@@ -13,7 +13,8 @@ class Attendance(Task):
     def __init__(self, name="Attendance") -> None:
         super().__init__(name)
         self.attendance_xy = [221, 137] # 主页进入出席簿的按钮位置
-        self.left_button_xy_list = [[123, 218], [127, 297]] # 左边要点的两个长期签到位置
+        # [52, 216] 往下每 81 个像素一个格子
+        self.left_button_xy_start = [52, 216] # 左边要点的长期签到格子开始点
         self.collect_button_xy = [1076, 693] # 右下角领取奖励按钮黄色像素位置
      
     def pre_condition(self) -> bool:
@@ -26,8 +27,13 @@ class Attendance(Task):
             CN: "进入统合出席簿",
             EN: "Entering the Attendance page",
         }))
-        enter_attandancepage = self.run_until(
+        leave_mainpage = self.run_until(
             lambda: click(self.attendance_xy, sleeptime=1),
+            lambda: not Page.is_page(PageName.PAGE_HOME),
+            times=3
+        )
+        enter_attandancepage = self.run_until(
+            lambda: sleep(0.5),
             lambda: Page.is_page(PageName.PAGE_ATTENDANCE),
             times=3
         )
@@ -36,7 +42,9 @@ class Attendance(Task):
                 CN: "进入统合出席簿失败",
                 EN: "Failed to enter the Attendance page",
             }))
-        for i,button_xy in enumerate(self.left_button_xy_list):
+            return
+        for i in range(4):
+            button_xy = [self.left_button_xy_start[0], self.left_button_xy_start[1] + i * 81]
             click(button_xy)
             click(button_xy)
             # 可能有蓝色OK解释弹窗

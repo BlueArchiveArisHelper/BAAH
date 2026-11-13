@@ -1,7 +1,9 @@
-myversion = "2.5.9"
+myversion = "2.5.10"
 mychangelog = """
 
 # Feat
+
+适配所有服务器战斗通行证领取任务 | Adapt to all server battle pass collection tasks
 
 适配国际服新版本（11.11） | Adapt to the new version (11.11) of the international server
 

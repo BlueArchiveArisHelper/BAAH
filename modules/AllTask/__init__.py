@@ -36,3 +36,5 @@ from .InFreeAward.InFreeAward import InFreeAward
 from .PostAllTask.PostAllTask import PostAllTask
 
 from .Attendance.Attendance import Attendance
+
+from .InBattlePass.InBattlePass import InBattlePass

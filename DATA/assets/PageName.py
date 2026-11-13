@@ -55,3 +55,7 @@ class PageName:
     PAGE_SHOP_PAY = "PAGE_SHOP_PAY" # 氪金商店页面
 
     PAGE_ATTENDANCE = "PAGE_ATTENDANCE" # 统合出席簿页面
+
+    PAGE_BATTLE_PASS = "PAGE_BATTLE_PASS" # 战斗通行证页面
+
+    PAGE_BATTLE_PASS_CENTER = "PAGE_BATTLE_PASS_CENTER" # 战斗通行证页任务页面
