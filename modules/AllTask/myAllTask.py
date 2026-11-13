@@ -44,6 +44,7 @@ class TaskName():
     SHORT_STORY = "短篇剧情"
     SIDE_STORY = "支线剧情"
     SOLVE_CHALLENGE = "挑战任务"
+    BATTLEPASS = "战斗通行证"
     CUSTOM = "自定义任务"
 
 class TaskInstance:
@@ -94,6 +95,12 @@ class TaskInstanceMap:
                     task_config_name= TaskName.ATTENDANCE,
                     i18n_key_name="task_attendance",
                     task_module=Attendance,
+                    task_params = {}
+            ),
+            TaskName.BATTLEPASS: TaskInstance(
+                    task_config_name = TaskName.BATTLEPASS,
+                    i18n_key_name = "task_battlepass",
+                    task_module = InBattlePass,
                     task_params = {}
             ),
             TaskName.CAFE: TaskInstance(

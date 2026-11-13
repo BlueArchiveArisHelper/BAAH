@@ -108,6 +108,9 @@ class Task:
             if(Page.is_page(PageName.PAGE_HOME)):
                 logging.info({"zh_CN": "返回主页成功", "en_US":"Successfully returned to the home page"})
                 return True
+            # 如果在战斗通行证页面
+            if(Page.is_page(PageName.PAGE_BATTLE_PASS) or Page.is_page(PageName.PAGE_BATTLE_PASS_CENTER)):
+                click((1242, 43), sleeptime=2)
             # 跳过故事
             screenshot()
             if match(button_pic(ButtonName.BUTTON_STORY_MENU)):
