@@ -2,6 +2,7 @@ from nicegui import ui, run
 from gui.components.fast_run_task_buttons import show_fast_run_task_buttons, TaskName
 from modules.utils import return_now_activate_pipeline
 from gui.components.modern_ui import confirm_delete, button_tip, info_tip
+from gui.components.task_order_drag import enable_task_drag
 
 def set_task_order(config, real_taskname_to_show_taskname, logArea):
     def select_clear_all_and_refresh_task_order(type="select"):
@@ -32,9 +33,12 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
                     ui.tooltip(config.get_text("config_delete_now_activated_pipeline"))
         # 当前被激活的pipeline
         with ui.card().classes("w-full"):
-            with ui.list().props("padding"):
+            with ui.list().props("padding separator").classes("w-full") as task_list:
+                enable_task_drag(task_list, move_task)
                 for i in range(len(task_pipeline)):
-                    with ui.item():
+                    with ui.item().classes("baah-task-order-item").props(f"data-task-index={i}"):
+                        with ui.item_section().props("side").classes("pr-2"):
+                            ui.icon("drag_indicator").classes("baah-task-drag-handle").props("draggable=true")
                         # 启用开关（左侧 side section，不参与 flex 分配；pr-2 覆盖 Quasar side 默认 16px 间距，与行内 gap 统一为 8px）
                         with ui.item_section().props("side no-wrap").classes("pr-2"):
                             ui.checkbox(value=task_onoff[i], on_change=lambda v,i=i: task_onoff.__setitem__(i, v.value))
@@ -52,11 +56,10 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
                                     button_tip(config, "tip_add_task")
                                 with ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense"):
                                     button_tip(config, "tip_remove_task")
-                                with ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else "")):
+                                with ui.button(icon="arrow_upward", on_click=lambda i=i: move_task(i, i - 1)).props("flat round dense" + (" disable" if i == 0 else "")):
                                     button_tip(config, "tip_move_up")
-                                with ui.button(icon="arrow_downward", on_click=lambda i=i: move_task_down(i)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else "")):
+                                with ui.button(icon="arrow_downward", on_click=lambda i=i: move_task(i, i + 1)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else "")):
                                     button_tip(config, "tip_move_down")
-                    ui.separator()
             if len(task_pipeline) == 0:
                 with ui.row().classes("w-full justify-center"):
                     ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0)).props("outline no-caps")
@@ -76,22 +79,13 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
         task_onoff.pop(i)
         task_order.refresh()
 
-    def move_task_up(i):
-        # 将第i个任务上移一格
+    def move_task(source, target):
+        # 任务与启用状态一起移动，拖放和上下按钮共用相同的配置更新逻辑。
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
-        if i <= 0:
+        if source == target or not (0 <= source < len(task_pipeline) and 0 <= target < len(task_pipeline)):
             return
-        task_pipeline[i - 1], task_pipeline[i] = task_pipeline[i], task_pipeline[i - 1]
-        task_onoff[i - 1], task_onoff[i] = task_onoff[i], task_onoff[i - 1]
-        task_order.refresh()
-
-    def move_task_down(i):
-        # 将第i个任务下移一格
-        task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
-        if i >= len(task_pipeline) - 1:
-            return
-        task_pipeline[i + 1], task_pipeline[i] = task_pipeline[i], task_pipeline[i + 1]
-        task_onoff[i + 1], task_onoff[i] = task_onoff[i], task_onoff[i + 1]
+        task_pipeline.insert(target, task_pipeline.pop(source))
+        task_onoff.insert(target, task_onoff.pop(source))
         task_order.refresh()
 
     def add_one_pipeline():
