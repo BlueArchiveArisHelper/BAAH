@@ -12,6 +12,7 @@ from .data_utils import *
 from .I18nstr import *
 from .baah_exceptions import *
 from .adb_utils import _is_PC_app, _is_STEAM_app
+from .screen_geometry import is_widescreen
 
 from modules.utils.log_utils import logging
 import time
@@ -263,14 +264,16 @@ def check_connect():
     screenshot()
     time.sleep(1)
     sc_data = get_screenshot_cv_data()
-    if sc_data is not None:
+    native_size = config.sessiondict.get("NATIVE_SCREENSHOT_SIZE")
+    if sc_data is not None and native_size is not None:
         logging.info({"zh_CN":"adb与模拟器连接正常" , "en_US":"The connection between adb and the emulator is normal"})
         # 检查图片长和宽
-        wm_height = sc_data.shape[0]
-        wm_width = sc_data.shape[1]
-        # 第一维度是高，第二维度是宽
-        if wm_height == 720 and wm_width == 1280:
-            logging.info({"zh_CN": "图片分辨率为1280*720", "en_US":"The resolution is 1280*720"})
+        wm_width, wm_height = native_size
+        if is_widescreen(wm_width, wm_height):
+            logging.info({
+                "zh_CN": f"截图分辨率为 {wm_width}×{wm_height}，识别使用 1280×720",
+                "en_US": f"Screenshot resolution is {wm_width}×{wm_height}; recognition uses 1280×720",
+            })
             dpi_res = get_dpi()
             logging.info(f"DPI: {dpi_res}")
             if "240" not in dpi_res:
@@ -302,8 +305,11 @@ def check_connect():
                 window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
                 if _change_window_client_size(window_title):
                     return True
-            logging.error({"zh_CN": "图片分辨率不为1280*720，请设置模拟器分辨率为1280*720（当前{}*{}）".format(wm_width, wm_height), "en_US":"The resolution is not 1280*720, please set the resolution to 1280*720 (current {}*{})".format(wm_width, wm_height)})
-            raise Exception("图片分辨率不为1280*720，请设置模拟器分辨率为1280*720（当前{}*{}）".format(wm_width, wm_height))
+            logging.error({
+                "zh_CN": f"截图须为横屏 16:9（当前 {wm_width}×{wm_height}）",
+                "en_US": f"Screenshot must be landscape 16:9 (current {wm_width}×{wm_height})",
+            })
+            raise Exception(f"截图须为横屏 16:9（当前 {wm_width}×{wm_height}）")
     else:
         logging.error(istr({
             CN: f"截图文件为空",

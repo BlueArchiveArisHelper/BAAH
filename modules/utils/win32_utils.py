@@ -1,5 +1,6 @@
 from modules.utils.log_utils import logging, istr, CN, EN
 from modules.configs.MyConfig import config
+from .screen_geometry import is_widescreen, to_native_point
 import traceback
 import platform
 if platform.system() != "Windows":
@@ -152,11 +153,9 @@ def _wrap_activate_window(func):
                 time.sleep(0.5)
                 pythoncom.CoUninitialize()
             
-            # 设置1280*720
             client_window_info = _get_window_client_pos(window_title)
             cx, cy, cw, ch = client_window_info[0]
-            if _get_is_auto_set_pc_window_name(use_config) and (cw != 1280 or ch != 720):
-                # 如果开启自动转换至游戏标题，并且client区域不是1280*720，则尝试调整游戏区域
+            if _get_is_auto_set_pc_window_name(use_config) and not is_widescreen(cw, ch):
                 logging.info(istr({
                     CN: "调整分辨率为 1280*720",
                     EN: "Change resolution to 1280*720"
@@ -288,7 +287,8 @@ def click_program_window_precise(x, y, use_config = None):
         window_title = _get_target_window_title(use_config) # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
-        # print(client_x, client_y)
+        if _get_is_auto_set_pc_window_name(use_config):
+            x, y = to_native_point(x, y, cw, ch)
         _click_in_multiple_screens(cx+x, cy+y)
     except Exception as e:
         logging.error(f"click_program_window_precise Exception: {str(e)}\n{traceback.format_exc()}")
@@ -303,6 +303,9 @@ def scroll_program_window_precise(x1, y1, x2, y2, duration_ms, use_config = None
         window_title = _get_target_window_title(use_config) # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
+        if _get_is_auto_set_pc_window_name(use_config):
+            x1, y1 = to_native_point(x1, y1, cw, ch)
+            x2, y2 = to_native_point(x2, y2, cw, ch)
         _scroll_in_multiple_screens(cx+x1, cy+y1, cx+x2, cy+y2, duration_ms)
     except Exception as e:
         logging.error(f"scroll_program_window_precise Exception: {str(e)}\n{traceback.format_exc()}")
