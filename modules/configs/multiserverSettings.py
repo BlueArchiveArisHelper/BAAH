@@ -200,6 +200,11 @@ class AssetMappingKeys:
         MultiServerType.SteamGroup: (1023, 123),
         MultiServerType.Other_groups: None
     }
+    # jjc OCR等级框额外偏差修正(加宽OCR区域)
+    JJC_OCR_LEVEL_OFFSET = {
+        MultiServerType.CNGroup: (16, 6),
+        MultiServerType.Other_groups: (0, 0)
+    }
 
 
 def get_correct_asset(config, asset_mapping):
