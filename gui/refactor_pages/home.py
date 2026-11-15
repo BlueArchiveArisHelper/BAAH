@@ -1,4 +1,5 @@
 import subprocess
+import os
 from ..components.modern_ui import apply_theme, page_shell, surface, form_row, confirm_delete
 from ..components.background_settings import apply_background
 
@@ -72,7 +73,6 @@ def render_json_list():
 
 
                     #=================更新区域=================
-                                        
                     # 显示更新信息
                     release_area = surface('baah-release')
                     async def show_release():
@@ -80,22 +80,30 @@ def render_json_list():
                         with release_area:
                             # `msg` already reads "New version: ...", so the heading is followed by the bare version instead
                             title = f'{gui_shared_config.get_text("gui_new_update")} v{resultVI.version_str}' if resultVI.has_new_version else resultVI.msg
-                            ui.label(title).classes('baah-group-title').style('color: var(--q-negative)' if resultVI.has_new_version else '')
+                            ui.markdown(f"## {title}").style('color: var(--q-negative)' if resultVI.has_new_version else '')
                             ui.html(f'<div style="white-space: pre-line;font-size: 14px;line-height: 1.8">{resultVI.update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
-                                if edition == "windows-pyinstaller":
-                                    # 一键更新按钮(Pyinstaller)
-                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_pyinstaller, color="green")
-                                elif edition == "linux-container":
-                                    # 一键更新按钮(Container)
-                                    ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container, color="green")
-                            if edition == "linux-container":
-                                import os
+                                render_update_operation_buttons.refresh(True)
+
+                    # 更新按钮，随update_release_info["has_new_version"] 动态显示
+                    @ui.refreshable
+                    def render_update_operation_buttons(has_new_version = False):
+                        if has_new_version:
+                            if edition == "windows-pyinstaller":
+                                # 一键更新按钮(Pyinstaller)
+                                ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_pyinstaller, color="green")
+                            elif edition == "linux-container":
+                                # 一键更新按钮(Container)
+                                ui.button(gui_shared_config.get_text("button_update_advance"), on_click=update_advance_container, color="green")
+                        # 容器运行的话，显示是否自动更新checkbox
+                        if edition == "linux-container":
+                            with surface('baah-release'):
                                 ui.checkbox(
                                     gui_shared_config.get_text("container_auto_update"),
                                     value=os.path.exists('.enable_auto_update'),
                                     on_change=handle_auto_update_change
                                 )
+                    render_update_operation_buttons()
                     # TODO: 改成服务器启动时检查更新
                     ui.timer(0.5, show_release, once=True)
                     
@@ -105,7 +113,6 @@ def render_json_list():
                             with open('.enable_auto_update', 'w') as f:
                                 f.write('')
                         else:
-                            import os
                             if os.path.exists('.enable_auto_update'):
                                 os.remove('.enable_auto_update')
                     
