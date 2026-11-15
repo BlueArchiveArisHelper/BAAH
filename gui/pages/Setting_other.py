@@ -63,6 +63,9 @@ def set_other(config, gui_shared_config):
 
     notice_box(config.get_text("config_warn_change"), tone="warning")
 
+    with ui.row():
+        ui.checkbox(config.get_text("config_enable_169_compatibility_mode")).bind_value(config.userconfigdict, "ENABLE_169_COMPATIBILITY_MODE")
+
     # with ui.row():
     #     # IP+端口
     #     ui.input(config.get_text("config_ip_root")).bind_value(config.userconfigdict, 'TARGET_IP_PATH',forward=lambda v: v.replace("\\", "/")).style('width: 400px').bind_visibility_from(config.userconfigdict, "ADB_DIRECT_USE_SERIAL_NUMBER", lambda v: not v)

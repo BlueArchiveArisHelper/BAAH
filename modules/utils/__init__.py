@@ -12,7 +12,7 @@ from .data_utils import *
 from .I18nstr import *
 from .baah_exceptions import *
 from .adb_utils import _is_PC_app, _is_STEAM_app
-from .screen_geometry import is_widescreen
+from .screen_geometry import is_169ratio, is_720p, is_horizontal_screen
 
 from modules.utils.log_utils import logging
 import time
@@ -260,74 +260,82 @@ def check_connect():
         os.remove(get_config_screenshot_name())
     connect_to_device()
     reconnect_offline()
+    # PC端尝试调整ba窗口大小为720p
+    if is_server_type_in_group(config, MultiServerType.PCGroup) and platform.system() == "Windows":
+        from .win32_utils import _change_window_client_size
+        window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
+        _change_window_client_size(window_title)
     # 尝试截图
     screenshot()
     time.sleep(1)
     sc_data = get_screenshot_cv_data()
-    native_size = config.sessiondict.get("NATIVE_SCREENSHOT_SIZE")
-    if sc_data is not None and native_size is not None:
-        logging.info({"zh_CN":"adb与模拟器连接正常" , "en_US":"The connection between adb and the emulator is normal"})
+    # 各步骤检查结果
+    check_size_scale = False # 分辨率比例
+    check_dpi = False # dpi
+    # 提醒信息list
+    mention_list = []
+    if sc_data is not None:
+        mention_list.append(istr({
+            CN: "截图成功",
+            EN: "Screenshot success"
+        }))
         # 检查图片长和宽
-        wm_width, wm_height = native_size
-        if is_widescreen(wm_width, wm_height):
-            logging.info({
-                "zh_CN": f"截图分辨率为 {wm_width}×{wm_height}，识别使用 1280×720",
-                "en_US": f"Screenshot resolution is {wm_width}×{wm_height}; recognition uses 1280×720",
-            })
-            dpi_res = get_dpi()
-            logging.info(f"DPI: {dpi_res}")
-            if "240" not in dpi_res:
-                logging.warn(istr({
-                    CN: "请设置模拟器dpi为240",
-                    EN: "Please set the emulator dpi to 240"
-                }))
-                # auto fix
-                set_dpi(240)
-                return False
-            return True
-        elif wm_height == 1280 and wm_width == 720:
-            logging.warn({"zh_CN": "图片分辨率为720*1280，可能是模拟器设置错误，也可能是模拟器bug", "en_US":"The resolution is 720*1280, it may be the wrong setting of the emulator, or it may be a bug of the emulator"})
-            logging.warn({"zh_CN": "继续运行，但是可能会出现问题，请确保模拟器分辨率为1280*720", "en_US":"Continue to run, but there may be problems, please make sure the emulator resolution is 1280*720"})
-            dpi_res = get_dpi()
-            logging.info(f"DPI: {dpi_res}")
-            if "240" not in dpi_res:
-                logging.warn(istr({
-                    CN: "请设置模拟器dpi为240",
-                    EN: "Please set the emulator dpi to 240"
-                }))
-                # auto fix
-                set_dpi(240)
-                return False
-            return True
+        native_width = config.sessiondict.get("NATIVE_SCREENSHOT_WIDTH")
+        native_height = config.sessiondict.get("NATIVE_SCREENSHOT_HEIGHT")
+        wm_width, wm_height = native_width, native_height # 兼容老代码
+        # 是否开启了16：9兼容模式
+        compatibility_169 = config.userconfigdict["ENABLE_169_COMPATIBILITY_MODE"]
+        # 检查分辨率和比例要求
+        if compatibility_169:
+            check_size_scale = is_169ratio(wm_width, wm_height, rotate_free=True)
         else:
-            if is_server_type_in_group(config, MultiServerType.PCGroup):
-                from .win32_utils import _change_window_client_size
-                window_title = config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
-                if _change_window_client_size(window_title):
-                    return True
-            logging.error({
-                "zh_CN": f"截图须为横屏 16:9（当前 {wm_width}×{wm_height}）",
-                "en_US": f"Screenshot must be landscape 16:9 (current {wm_width}×{wm_height})",
-            })
-            raise Exception(f"截图须为横屏 16:9（当前 {wm_width}×{wm_height}）")
+            check_size_scale = is_720p(wm_width, wm_height, rotate_free=True)
+        if not check_size_scale:
+            mention_list.append(istr({
+                CN: f'{"已开启" if compatibility_169 else "未开启"} 16:9 兼容模式，要求宽高1280x720, 当前宽高 {wm_width}x{wm_height}, 不符合要求。{"请设置16:9画面" if compatibility_169 else "请设置 1280x720 画面"}',
+                EN: f'{"Enable" if compatibility_169 else "Disable"} 16:9 compatibility mode, required size 1280x720, current size {wm_width}x{wm_height}, not align with requirement. {"Please set 16:9 screen." if compatibility_169 else "Please set 1280x720 screen."}'
+            }))
+        # 检查dpi要求
+        if "240" not in get_dpi():
+            mention_list.append(istr({
+                CN: f"目标DPI为240，当前DPI为{get_dpi()}",
+                EN: f"Target DPI is 240, current dpi is {get_dpi()}"
+            }))
+        set_dpi(240) # 强制设置dpi为240，避免截图异常
+        check_dpi = "240" in get_dpi()
     else:
-        logging.error(istr({
+        # 截图文件为空
+        mention_list.append(istr({
             CN: f"截图文件为空",
             EN: "Screenshot is null"
         }))
-    logging.error({"zh_CN": "模拟器adb或ba程序连接失败", "en_US":"Failed to connect to the emulator or ba program"})
-    logging.warn({"zh_CN": "模拟器请检查adb与模拟器连接端口号是否正确，PC端请检查游戏是否在更新", "en_US":"Please check if the adb and emulator connection port number is correct or PC ba is updating"})
-    if not is_server_type_in_group(config, MultiServerType.PCGroup) and "127.0.0.1" in getNewestSeialNumber():
-        logging.warn({"zh_CN": "请确保关闭模拟器网络桥接", "en_US":"Please check if the emulator network bridging is turned off"})
-    # adb devices
-    all_devices_list = get_all_devices()
-    logging.info(istr({
-        CN: f"连接方式 ({getNewestSeialNumber()})是否正确? 当前检测到的设备列表:",
-        EN: f"Is Connection ({getNewestSeialNumber()}) right?Detected devices:"
-    }))
-    for each in all_devices_list:
-        logging.info(f"    {each}")
-    return False
+        if is_server_type_in_group(config, MultiServerType.PCGroup):
+            mention_list.append(istr({
+                CN: f"请以管理员身份运行BAAH，检查游戏是否在更新，或检查PC端ba程序是否正常运行",
+                EN: f"Please run BAAH as admin, and check if the game is updating or if the PC ba program is running normally"
+            }))
+        else:
+            mention_list.append(istr({
+                CN: f"请检查模拟器是否正常运行，或检查模拟器adb连接端口号是否正确",
+                EN: f"Please check if the emulator is running normally, or check if the emulator adb connection port number is correct"
+            }))
+            if "127.0.0.1" in getNewestSeialNumber():
+                mention_list.append(istr({
+                    CN: "请确保关闭模拟器网络桥接", 
+                    EN: "Please check if the emulator network bridging is turned off"
+                }))
+            # adb devices
+            all_devices_list = get_all_devices()
+            mention_list.append(istr({
+                CN: f"连接方式 ({getNewestSeialNumber()})是否正确? 当前检测到的设备列表:",
+                EN: f"Is Connection ({getNewestSeialNumber()}) right?Detected devices:"
+            }))
+            for each in all_devices_list:
+                mention_list.append(f"    {each}")
+    # ---------- return ----------
+    for line in mention_list:
+        logging.info(line)
+    return check_size_scale and check_dpi
 
 def _global_screenshot_check():
     """
