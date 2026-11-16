@@ -34,14 +34,19 @@ class InContest(Task):
         return [int(each) for each in res_list]
 
     def recognize_level(self) -> list[int]:
+        ocr_box_additional_offset = get_correct_asset(config, AssetMappingKeys.JJC_OCR_LEVEL_OFFSET)
         res_list = []
-        res_list.append(filter_num(ocr_area((162, 186), (226, 213))[0]))
-        other3_L_T_Y = [291, 449, 609]
+        res_list.append(filter_num(ocr_area((162, 186), (226 + ocr_box_additional_offset[0], 213+ocr_box_additional_offset[1]))[0]))
+        other3_L_T_Y = [290, 448, 607]
         other3_X = 461
-        other3_offset = (56, 26)
+        other3_offset = (57, 26)
 
         for y in other3_L_T_Y:
-            res_list.append(filter_num(ocr_area((other3_X, y), (other3_X+other3_offset[0], y+other3_offset[1]))[0]))
+            res_list.append(filter_num(ocr_area(
+                (other3_X, y), 
+                (other3_X+other3_offset[0]+ocr_box_additional_offset[0], 
+                y+other3_offset[1]+ocr_box_additional_offset[1])
+                )[0]))
         
         return [int(each) for each in res_list]
         

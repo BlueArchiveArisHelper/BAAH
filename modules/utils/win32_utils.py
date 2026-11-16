@@ -1,5 +1,7 @@
+# NOTE: PC 截图不进行适应任何 16：9 图像的图片缩放（窗口本身大小能直接改）
 from modules.utils.log_utils import logging, istr, CN, EN
 from modules.configs.MyConfig import config
+from .screen_geometry import is_169ratio, to_native_point, is_720p
 import traceback
 import platform
 if platform.system() != "Windows":
@@ -151,12 +153,11 @@ def _wrap_activate_window(func):
                 }))
                 time.sleep(0.5)
                 pythoncom.CoUninitialize()
-            
-            # 设置1280*720
+
+            # 设置1280*720分辨率
             client_window_info = _get_window_client_pos(window_title)
             cx, cy, cw, ch = client_window_info[0]
-            if _get_is_auto_set_pc_window_name(use_config) and (cw != 1280 or ch != 720):
-                # 如果开启自动转换至游戏标题，并且client区域不是1280*720，则尝试调整游戏区域
+            if _get_is_auto_set_pc_window_name(use_config) and not is_720p(cw, ch):
                 logging.info(istr({
                     CN: "调整分辨率为 1280*720",
                     EN: "Change resolution to 1280*720"
@@ -288,7 +289,6 @@ def click_program_window_precise(x, y, use_config = None):
         window_title = _get_target_window_title(use_config) # use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0]
         client_window_info = _get_window_client_pos(window_title)
         cx, cy, cw, ch = client_window_info[0]
-        # print(client_x, client_y)
         _click_in_multiple_screens(cx+x, cy+y)
     except Exception as e:
         logging.error(f"click_program_window_precise Exception: {str(e)}\n{traceback.format_exc()}")

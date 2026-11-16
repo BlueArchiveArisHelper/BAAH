@@ -422,8 +422,9 @@ defaultUserDict = {
         "d":2,
     },
     # PC 上的加速器 窗口名称
-    "PC_GAME_ACC_WINDOW_NAME":{"d":""}
-
+    "PC_GAME_ACC_WINDOW_NAME":{"d":""},
+    # 是否开启任意 16:9 分辨率兼容模式，仅作为门禁判断
+    "ENABLE_169_COMPATIBILITY_MODE":{"d":False}
 }
 
 # 软件的config里的默认值
@@ -498,7 +499,10 @@ defaultSessionDict = {
     # AUTO_CONTROL_PC_WINDOW_NAME 为True时，执行任何PC操作时window_name会自动转化为ba操作需要的游戏窗口名 ( use_config.userconfigdict["ACTIVITY_PATH"].split("/")[0] )
     # AUTO_CONTROL_PC_WINDOW_NAME 为False时，执行任何PC操作时window_name会根据CONTROL_PC_WINDOW_NAME获取
     "AUTO_CONTROL_PC_WINDOW_NAME":{"d":True},
-    "CONTROL_PC_WINDOW_NAME":{"d":""}
+    "CONTROL_PC_WINDOW_NAME":{"d":""},
+    # 存储当前session截图数据的原始图像宽和高，仅由截图方法写，其他地方只读
+    "NATIVE_SCREENSHOT_WIDTH":{"d":1280},
+    "NATIVE_SCREENSHOT_HEIGHT":{"d":720}
 }
 
 # storagedict存储与某一个配置文件对应的游戏实例的持久性存储信息（如钻石历史变化曲线），其生命周期与userconfig相同，但是在脚本运行时是随用随写的

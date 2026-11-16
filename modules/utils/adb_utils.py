@@ -8,6 +8,7 @@ import time
 import numpy as np
 import cv2
 import platform
+from .screen_geometry import REFERENCE_WIDTH, REFERENCE_HEIGHT, is_169ratio, is_720p, to_native_point, is_horizontal_screen
 if platform.system() == "Windows":
     from .win32_utils import _get_hwnd, check_esc_is_pressed, capture_program_window_precise, click_program_window_precise, scroll_program_window_precise
 
@@ -93,6 +94,7 @@ def click_on_screen(x, y):
     if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         click_program_window_precise(x, y)
         return
+    x, y = to_native_point(x, y)
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "tap", str(int(x)), str(int(y))])
 
 def swipe_on_screen(x1, y1, x2, y2, ms):
@@ -100,7 +102,34 @@ def swipe_on_screen(x1, y1, x2, y2, ms):
     if _is_PC_app(config.userconfigdict["SERVER_TYPE"]):
         scroll_program_window_precise(x1, y1, x2, y2, ms)
         return
+    x1, y1 = to_native_point(x1, y1)
+    x2, y2 = to_native_point(x2, y2)
     subprocess_run([get_config_adb_path(), "-s", getNewestSeialNumber(), "shell", "input", "swipe", str(int(x1)), str(int(y1)), str(int(x2)), str(int(y2)), str(int(ms))])
+
+
+
+def _normalize_game_screenshot(image, target_config):
+    if image is None:
+        return None
+    height, width = image.shape[:2]
+    # 更新当前session截图数据的原始图像宽和高
+    target_config.sessiondict["NATIVE_SCREENSHOT_WIDTH"] = width
+    target_config.sessiondict["NATIVE_SCREENSHOT_HEIGHT"] = height
+    if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]) or not target_config.sessiondict["AUTO_CONTROL_PC_WINDOW_NAME"]:
+        # 如果是PC端ba，或者当前处于PC应用截图模式，就不进行720p缩放
+        return image
+    if is_720p(width, height, rotate_free=True):
+        # 如果图像已经是旋转无关的720p分辨率，就不进行缩放
+        return image
+    if is_169ratio(width, height, rotate_free=True):
+        # 只对16:9分辨率进行缩放，其他分辨率直接返回原图
+        if is_horizontal_screen(width, height):
+            return cv2.resize(image, (REFERENCE_WIDTH, REFERENCE_HEIGHT), interpolation=cv2.INTER_AREA)
+        else:
+            # 竖屏，交换逻辑宽高，缩放后的宽720（REFERENCE_HEIGHT），高1280（REFERENCE_WIDTH）
+            return cv2.resize(image, (REFERENCE_HEIGHT, REFERENCE_WIDTH), interpolation=cv2.INTER_AREA)
+    return image
+
 
 def convert_img(path):
     with open(path, "rb") as f:
@@ -129,7 +158,7 @@ def screen_shot_to_global(use_config=None, output_png=False):
         if _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
             img_array = capture_program_window_precise(use_config=target_config)
             try:
-                cv2.imwrite("./{}".format(filename), img_array)
+                cv2.imwrite("./{}".format(filename), _normalize_game_screenshot(img_array, target_config))
             except Exception as e:
                 logging.warn(istr({
                     CN: f"保存opencv图像出错：{e}",
@@ -141,6 +170,11 @@ def screen_shot_to_global(use_config=None, output_png=False):
         #adb 命令有时直接截图保存到电脑出错的解决办法-加下面一段即可
         if not _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]) and platform.system() not in ["Linux", "Darwin"]:
             convert_img("./{}".format(filename))
+        if not _is_PC_app(target_config.userconfigdict["SERVER_TYPE"]):
+            image = cv2.imread("./{}".format(filename))
+            normalized_img = _normalize_game_screenshot(image, target_config)
+            if normalized_img is None or not cv2.imwrite("./{}".format(filename), normalized_img):
+                raise OSError(f"Could not save normalized screenshot: {filename}")
     else:
         # 方法二，使用cv2提取PIPE管道中的数据
         # 使用subprocess的Popen调用adb shell命令，并将结果保存到PIPE管道中
@@ -163,8 +197,10 @@ def screen_shot_to_global(use_config=None, output_png=False):
                 target_config.sessiondict["SCREENSHOT_DATA"] = None
                 return
             img_screenshot = cv2.imdecode(np.frombuffer(binary_screenshot, np.uint8), cv2.IMREAD_COLOR)
+        img_screenshot = _normalize_game_screenshot(img_screenshot, target_config)
         target_config.sessiondict["SCREENSHOT_DATA"] = img_screenshot
         if output_png:
+            # 保存截图到本地，如果截图异常，那么图片也会异常，方便排查问题
             cv2.imwrite("./{}".format(target_config.userconfigdict['SCREENSHOT_NAME']), img_screenshot)
 
 def get_now_running_app(use_config=None):

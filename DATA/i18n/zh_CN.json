@@ -385,6 +385,7 @@
     "gui_new_update": "检测到更新",
     "gui_diamond": "青辉石",
     "gui_credit": "信用点",
+    "config_enable_169_compatibility_mode": "是否开启16:9通用画面比例兼容模式，这可能会导致预期之外的脚本失败（实验性）",
 
     "config_server_jp": "日服（日语）",
     "config_server_cn": "国服官服（简中）",
