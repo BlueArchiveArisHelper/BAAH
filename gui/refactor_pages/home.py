@@ -77,11 +77,12 @@ def render_json_list():
                     release_area = surface('baah-release')
                     async def show_release():
                         resultVI = await run.io_bound(only_check_version)
+                        optimized_update_body_text = resultVI.update_body_text.strip("\n\r ") if resultVI.update_body_text else ""
                         with release_area:
                             # `msg` already reads "New version: ...", so the heading is followed by the bare version instead
                             title = f'{gui_shared_config.get_text("gui_new_update")} v{resultVI.version_str}' if resultVI.has_new_version else resultVI.msg
                             ui.markdown(f"## {title}").style('color: var(--q-negative)' if resultVI.has_new_version else '')
-                            ui.html(f'<div style="white-space: pre-line;font-size: 14px;line-height: 1.8">{resultVI.update_body_text}</div>', sanitize=False)
+                            ui.html(f'<div style="white-space: pre-line;font-size: 14px;line-height: 1.8">{optimized_update_body_text}</div>', sanitize=False)
                             if resultVI.has_new_version:
                                 render_update_operation_buttons.refresh(True)
 
