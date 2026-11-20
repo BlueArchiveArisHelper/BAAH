@@ -161,6 +161,7 @@ guicmd = [
     '-n', 'BAAH',  # 1.11.0 GUI包含了script内容，把GUI打包为BAAH.exe
     # '--windowed', # prevent console appearing, only use with ui.run(native=True, ...)
     '--add-data', f'{Path(nicegui.__file__).parent}{os.pathsep}nicegui',
+    '--add-data', f'{Path(__file__).resolve().parent / "gui" / "assets"}{os.pathsep}gui/assets',
     '--add-data', f'{Path(pponnxcr.__file__).parent}{os.pathsep}pponnxcr',
     '--icon', './DATA/icons/aris.ico',
     '-y'
