@@ -300,6 +300,14 @@ body.baah-page::before {
 .baah-form .nicegui-row, .baah-form .nicegui-column { min-width: 0; max-width: 100%; }
 .baah-form .q-field, .baah-form .q-uploader { max-width: 100%; }
 .baah-form .q-card { max-width: 100%; }
+/* 侧栏卡片保持受控宽度，避免主列表收缩后撑满中间空白。 */
+.baah-form .q-card.baah-aside-card { flex: 1 1 100%; min-width: 0; }
+@media (min-width: 1024px) {
+    .baah-form .q-card.baah-aside-card { flex: 1 1 17rem; }
+}
+@media (min-width: 1280px) {
+    .baah-form .q-card.baah-aside-card { max-width: 33.5rem; }
+}
 .baah-form iframe { max-width: 100%; border-radius: 10px; }
 .baah-form .baah-text { overflow-wrap: anywhere; }
 /* 标签独占首行，前缀、输入值、后缀共用第二行；长标签换行不会拆散数字与单位。 */
@@ -337,6 +345,9 @@ body.baah-page::before {
 .baah-description .q-expansion-item__content > :last-child { padding-bottom: 12px; }
 .baah-description .q-item { min-height: 38px; font-size: 13px; color: var(--baah-muted); }
 .baah-description-text { white-space: pre-line; }
+/* 收紧折叠面板图标与标题间距，使其与 .baah-notice-box 保持一致。 */
+.baah-expansion-compact .q-item__section--avatar { min-width: 0; padding-right: 10px; }
+.baah-expansion-compact .q-item__section--avatar > .q-icon { font-size: 20px; }
 .baah-log-panel { width: 100%; flex: none; background: var(--baah-surface); border: 1px solid var(--baah-border); border-radius: 12px; overflow: hidden; }
 .baah-log-panel .q-item { min-height: 40px; font-size: 13px; }
 /* No flex shrink: Quasar measures the open height while the box is clamped to 0, and a shrunk log made it stop short, then jump. */

@@ -1,9 +1,23 @@
-from nicegui import ui, run
-from gui.components.fast_run_task_buttons import show_fast_run_task_buttons, TaskName
+from nicegui import app, ui
+
+from gui.components.daily_task_suggestions import analyze_daily_tasks
+from gui.components.modern_ui import button_tip, confirm_delete, info_tip
+from modules.AllTask.myAllTask import TaskName
 from modules.utils import return_now_activate_pipeline
-from gui.components.modern_ui import confirm_delete, button_tip, info_tip
+
 
 def set_task_order(config, real_taskname_to_show_taskname, logArea):
+    preferences = app.storage.user
+    preference_key = "show_daily_task_suggestions"
+    panel_open: dict[str, bool] = {}
+    pending_focus_index = None
+
+    def update_task(task_pipeline, index, value):
+        nonlocal pending_focus_index
+        task_pipeline[index] = value
+        pending_focus_index = index
+        task_order.refresh()
+
     def select_clear_all_and_refresh_task_order(type="select"):
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         if type == "select":
@@ -20,6 +34,9 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
     
     @ui.refreshable
     def task_order():
+        nonlocal pending_focus_index
+        focus_index = pending_focus_index
+        pending_focus_index = None
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
         # pipelines页签管理
         ui.label(config.get_text("config_pipelines_desc")).classes("text-subtitle2 text-grey-7")
@@ -30,36 +47,49 @@ def set_task_order(config, real_taskname_to_show_taskname, logArea):
             if len(all_pipelines) > 1:
                 with ui.button(icon="delete", on_click=ask_del_pipeline, color="red").props("flat round dense"):
                     ui.tooltip(config.get_text("config_delete_now_activated_pipeline"))
-        # 当前被激活的pipeline
-        with ui.card().classes("w-full"):
-            with ui.list().props("padding"):
-                for i in range(len(task_pipeline)):
-                    with ui.item():
-                        # 启用开关（左侧 side section，不参与 flex 分配；pr-2 覆盖 Quasar side 默认 16px 间距，与行内 gap 统一为 8px）
-                        with ui.item_section().props("side no-wrap").classes("pr-2"):
-                            ui.checkbox(value=task_onoff[i], on_change=lambda v,i=i: task_onoff.__setitem__(i, v.value))
-                        # 主内容：序号 + 任务下拉 + 添加/删除按钮（一行左→右排列，下拉撑开使按钮靠右）
-                        with ui.item_section().props("no-wrap").classes("flex-1"):
-                            with ui.row().classes("items-center w-full no-wrap gap-2"):
-                                # 序号固定宽度+居中，保证各行下拉框左边缘对齐
-                                ui.label(f'{config.get_text("config_task")} {i+1}:').classes("text-subtitle2 text-grey-7 text-no-wrap w-16 text-center shrink-0")
-                                ui.select(real_taskname_to_show_taskname,
-                                          value=task_pipeline[i],
-                                          on_change=lambda v,i=i: task_pipeline.__setitem__(i, v.value),
-                                          with_input=True
-                                          ).props("dense outlined").classes("baah-w-long")
-                                with ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense"):
-                                    button_tip(config, "tip_add_task")
-                                with ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense"):
-                                    button_tip(config, "tip_remove_task")
-                                with ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else "")):
-                                    button_tip(config, "tip_move_up")
-                                with ui.button(icon="arrow_downward", on_click=lambda i=i: move_task_down(i)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else "")):
-                                    button_tip(config, "tip_move_down")
-                    ui.separator()
-            if len(task_pipeline) == 0:
-                with ui.row().classes("w-full justify-center"):
-                    ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0)).props("outline no-caps")
+            suggestions_switch = ui.switch(
+                config.get_text("daily_task_check_switch"),
+                value=preferences.get(preference_key, True),
+                on_change=lambda event: preferences.__setitem__(preference_key, event.value),
+            ).props("dense")
+
+        # 任务列表和建议卡片按可用宽度换行；列表保持自身内容宽度。
+        with ui.row().classes("w-full items-start"):
+            with ui.card().classes("min-w-0 max-w-full"):
+                with ui.list().props("padding").classes("max-w-full"):
+                    for i in range(len(task_pipeline)):
+                        with ui.item():
+                            # 启用开关（左侧 side section，不参与 flex 分配；pr-2 覆盖 Quasar side 默认 16px 间距，与行内 gap 统一为 8px）
+                            with ui.item_section().props("side no-wrap").classes("pr-2"):
+                                ui.checkbox(value=task_onoff[i], on_change=lambda v, i=i: task_onoff.__setitem__(i, v.value))
+                            # 主内容：序号 + 任务下拉 + 添加/删除按钮（一行左→右排列，下拉撑开使按钮靠右）
+                            with ui.item_section().props("no-wrap").classes("min-w-0 flex-1"):
+                                with ui.row().classes("items-center w-full no-wrap gap-2"):
+                                    # 序号固定宽度+居中，保证各行下拉框左边缘对齐
+                                    ui.label(f'{config.get_text("config_task")} {i+1}:').classes("text-subtitle2 text-grey-7 text-no-wrap w-16 text-center shrink-0")
+                                    task_select = ui.select(
+                                        real_taskname_to_show_taskname,
+                                        value=task_pipeline[i],
+                                        on_change=lambda v, i=i: update_task(task_pipeline, i, v.value),
+                                        with_input=True,
+                                    ).props("dense outlined").classes("baah-w-long min-w-0")
+                                    if i == focus_index:
+                                        task_select.props("autofocus")
+                                    with ui.button(icon="add", on_click=lambda i=i+1: add_task(i)).props("flat round dense"):
+                                        button_tip(config, "tip_add_task")
+                                    with ui.button(icon="delete", on_click=lambda i=i: del_task(i), color="red").props("flat round dense"):
+                                        button_tip(config, "tip_remove_task")
+                                    with ui.button(icon="arrow_upward", on_click=lambda i=i: move_task_up(i)).props("flat round dense" + (" disable" if i == 0 else "")):
+                                        button_tip(config, "tip_move_up")
+                                    with ui.button(icon="arrow_downward", on_click=lambda i=i: move_task_down(i)).props("flat round dense" + (" disable" if i == len(task_pipeline) - 1 else "")):
+                                        button_tip(config, "tip_move_down")
+                        ui.separator()
+                if len(task_pipeline) == 0:
+                    with ui.row().classes("w-full justify-center"):
+                        ui.button(f'{config.get_text("button_add")} {config.get_text("config_task")}', on_click=lambda: add_task(0)).props("outline no-caps")
+            draw_suggestions = analyze_daily_tasks(task_pipeline)
+            suggestions_card = draw_suggestions(config, real_taskname_to_show_taskname, panel_open)
+            suggestions_card.bind_visibility_from(suggestions_switch, "value")
 
     def add_task(i):
         task_pipeline, task_onoff, all_pipelines, activated_ind = return_now_activate_pipeline(config)
