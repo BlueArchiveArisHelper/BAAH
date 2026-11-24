@@ -70,7 +70,7 @@ class InBattlePass(Task):
             self.__collect_battle_pass_reward()
             # 返回战斗通行证页面
             self.run_until(
-                click(self.back_to_battlepass_xy),
+                lambda: click(self.back_to_battlepass_xy),
                 lambda: match(page_pic(PageName.PAGE_BATTLE_PASS)),
                 times=3
             )
