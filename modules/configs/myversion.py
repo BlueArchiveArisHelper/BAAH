@@ -1,4 +1,4 @@
-myversion = "2.5.14"
+myversion = "2.5.15"
 mychangelog = """
 
 # Feat
@@ -7,7 +7,9 @@ mychangelog = """
 
 新增任意大于720p的16:9画面兼容模式，前往BAAH-其他设置开启 | Can adapt to any 16:9 image greater than 720p, please go to BAAH-Other Settings to enable this feature
 
-适配所有服务器战斗通行证领取任务 | Adapt to all server battle pass collection tasks
+# Fix
+
+修复战斗通行证领取任务结束后会报错的问题 | Fix exception is raised after battle pass collection tasks
 
 # Update
 

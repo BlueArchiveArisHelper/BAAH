@@ -62,7 +62,7 @@ class InContest(Task):
             logging.info({"zh_CN": "上次进入竞技场已经无票卷，本次不再进入竞技场",
                           "en_US": "There are no tickets for the last time you entered the arena, "
                                    "you will not enter the arena this time"})
-            self.collect_reward()
+            
             self.back_to_home()
             return
         fight_center_pos = get_correct_asset(config, AssetMappingKeys.HOME_FIGHT_CENTER_POS)
