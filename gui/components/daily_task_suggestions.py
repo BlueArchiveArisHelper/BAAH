@@ -12,53 +12,76 @@ RECOMMENDED_DAILY_TASKS = (
     TaskName.CLUB,
     TaskName.SCHOOL_EXCHANGE_MEETING,
     TaskName.BOUNTY,
-    (TaskName.HARD, TaskName.ONE_CLICK_RAID),
+    TaskName.HARD,
     TaskName.TACTICAL_CHALLENGE,
     TaskName.MAIL,
     TaskName.DAILY,
+    TaskName.FREE_SHOP_AWARD,
 )
 OPTIONAL_DAILY_TASKS = (TaskName.MANUFACTURE, TaskName.STORE, TaskName.SPECIAL)
 STAMINA_TASKS = (TaskName.ONE_CLICK_RAID, TaskName.NORMAL, TaskName.HARD, TaskName.EVENT)
+AP_SPENDING_TASKS = STAMINA_TASKS + (
+    TaskName.SPECIAL,
+    TaskName.SCHOOL_EXCHANGE_MEETING,
+    TaskName.PUSH_NORMAL,
+    TaskName.PUSH_HARD,
+    TaskName.EVENTPUSHSTORYQUEST,
+    TaskName.SOLVE_CHALLENGE,
+)
+DAILY_CLAIM_TASKS = (TaskName.DAILY, TaskName.SOLVE_CHALLENGE)
+DAILY_PROGRESS_TASKS = (TaskName.CAFE, TaskName.TACTICAL_CHALLENGE, TaskName.BOUNTY)
 DAILY_ARENA_TARGET = 5
 DAILY_TASK_COVERED_IMAGE = Path(__file__).resolve().parents[1] / "assets" / "Goods_Icon_Gem_4900_Preset_2.png"
 
 
 @dataclass
 class DailyTaskCheck:
-    missing_recommended: list[tuple[str, ...]]
+    missing_recommended: list[str]
     missing_optional: list[str]
     arena_rounds: int
     late_timetable: bool
     pickups_without_stamina: list[str]
+    daily_tasks_after_claim: list[str]
+    purchase_without_stamina: bool
 
 
 def check_daily_tasks(task_pipeline: list[str]) -> DailyTaskCheck:
     first_positions = {}
-    last_stamina_position = -1
+    last_positions = {}
     for index, task in enumerate(task_pipeline):
         first_positions.setdefault(task, index)
-        if task in STAMINA_TASKS:
-            last_stamina_position = index
+        last_positions[task] = index
 
-    recommended_alternatives = [(item,) if isinstance(item, str) else item for item in RECOMMENDED_DAILY_TASKS]
-    daily_position = first_positions.get(TaskName.DAILY)
-    timetable_position = first_positions.get(TaskName.TIMETABLE)
+    covered_tasks = set(first_positions)
+    if TaskName.ONE_CLICK_RAID in covered_tasks:
+        covered_tasks.add(TaskName.HARD)
+
+    daily_position = first_positions.get(TaskName.DAILY, -1)
+    timetable_position = first_positions.get(TaskName.TIMETABLE, -1)
+    last_stamina_position = max(last_positions.get(task, -1) for task in STAMINA_TASKS)
+    last_ap_spending_position = max(last_positions.get(task, -1) for task in AP_SPENDING_TASKS)
+    last_daily_claim = max(last_positions.get(task, -1) for task in DAILY_CLAIM_TASKS)
+
     return DailyTaskCheck(
-        missing_recommended=[
-            alternatives for alternatives in recommended_alternatives
-            if not any(task in first_positions for task in alternatives)
-        ],
+        missing_recommended=[task for task in RECOMMENDED_DAILY_TASKS if task not in covered_tasks],
         missing_optional=[task for task in OPTIONAL_DAILY_TASKS if task not in first_positions],
         arena_rounds=task_pipeline.count(TaskName.TACTICAL_CHALLENGE),
         late_timetable=(
-            daily_position is not None
-            and timetable_position is not None
-            and daily_position < timetable_position
+            0 <= daily_position < timetable_position
+            and not any(
+                timetable_position < index < last_stamina_position and task in DAILY_CLAIM_TASKS
+                for index, task in enumerate(task_pipeline)
+            )
         ),
         pickups_without_stamina=[
             task for task in (TaskName.DAILY, TaskName.MAIL)
             if first_positions.get(task, -1) > last_stamina_position
         ],
+        daily_tasks_after_claim=[
+            task for task in DAILY_PROGRESS_TASKS
+            if 0 <= last_daily_claim < first_positions.get(task, -1)
+        ],
+        purchase_without_stamina=last_positions.get(TaskName.BUY_AP, -1) > last_ap_spending_position,
     )
 
 
@@ -67,16 +90,18 @@ def analyze_daily_tasks(task_pipeline: list[str]):
     result = check_daily_tasks(task_pipeline)
 
     def draw(config, real_taskname_to_show_taskname, panel_open: dict[str, bool]):
-        def missing_task_suggestions(alternatives_list):
+        def missing_task_suggestions(tasks):
             add_task_text = config.get_text("daily_task_check_add_task")
             add_either_text = config.get_text("daily_task_check_add_either_task")
             suggestions = []
-            for alternatives in alternatives_list:
-                names = [real_taskname_to_show_taskname[task] for task in alternatives]
-                suggestions.append(
-                    add_task_text.format(task=names[0]) if len(names) == 1
-                    else add_either_text.format(task=names[0], other=names[1])
-                )
+            for task in tasks:
+                name = real_taskname_to_show_taskname[task]
+                if task == TaskName.HARD:
+                    suggestions.append(add_either_text.format(
+                        task=name, other=real_taskname_to_show_taskname[TaskName.ONE_CLICK_RAID],
+                    ))
+                else:
+                    suggestions.append(add_task_text.format(task=name))
             return suggestions
 
         def suggestion_items(items):
@@ -104,6 +129,19 @@ def analyze_daily_tasks(task_pipeline: list[str]):
                 daily=real_taskname_to_show_taskname[TaskName.DAILY],
             ))
 
+        if result.daily_tasks_after_claim:
+            task_names = config.get_text("daily_task_check_separator").join(
+                real_taskname_to_show_taskname[task] for task in result.daily_tasks_after_claim
+            )
+            order_notes.append(config.get_text("daily_task_check_claim_again").format(
+                tasks=task_names, daily=real_taskname_to_show_taskname[TaskName.DAILY],
+            ))
+
+        if result.purchase_without_stamina:
+            order_notes.append(config.get_text("daily_task_check_buy_ap").format(
+                buy_ap=real_taskname_to_show_taskname[TaskName.BUY_AP],
+            ))
+
         stamina_hint = None
         if result.pickups_without_stamina:
             stamina_template = config.get_text("daily_task_check_stamina")
@@ -114,7 +152,7 @@ def analyze_daily_tasks(task_pipeline: list[str]):
             )
             stamina_hint = config.get_text("daily_task_check_stamina_options").format(tasks=stamina_names)
 
-        optional_notes = missing_task_suggestions([(task,) for task in result.missing_optional])
+        optional_notes = missing_task_suggestions(result.missing_optional)
         # 缺少竞技场时已有强烈建议，安排过场次后再提示补足。
         if 0 < result.arena_rounds < DAILY_ARENA_TARGET:
             optional_notes.append(config.get_text("daily_task_check_arena").format(
